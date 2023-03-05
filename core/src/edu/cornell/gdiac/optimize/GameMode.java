@@ -12,16 +12,11 @@
 package edu.cornell.gdiac.optimize;
 
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.utils.*;
-import com.badlogic.gdx.assets.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.graphics.g2d.freetype.*;
 
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.util.*;
-
-import javax.annotation.processing.SupportedSourceVersion;
 
 /**
  * The primary controller class for the game.
@@ -78,6 +73,9 @@ public class GameMode implements Screen {
 	/** Listener that will update the player mode when we are done */
 	private ScreenListener listener;
 
+	/** Amount of game ticks which have gone by */
+	private int tick;
+
 
 	/**
 	 * Creates a new game with the given drawing context.
@@ -88,6 +86,7 @@ public class GameMode implements Screen {
 	public GameMode(GameCanvas canvas) {
 		this.canvas = canvas;
 		active = false;
+		tick = 0;
 		// Null out all pointers, 0 out all ints, etc.
 		gameState = GameState.INTRO;
 
@@ -173,6 +172,7 @@ public class GameMode implements Screen {
 				break;
 			case OVER:
 				if (inputController.didReset()) {
+					tick = 0;
 					gameState = GameState.PLAY;
 					gameplayController.reset();
 					gameplayController.start(canvas.getWidth() / 2.0f, physicsController.getFloorLedge());
@@ -182,6 +182,7 @@ public class GameMode implements Screen {
 				break;
 			case PLAY:
 				play(delta);
+				tick++;
 				break;
 			default:
 				break;
@@ -205,6 +206,17 @@ public class GameMode implements Screen {
 			gameplayController.addShell(canvas.getWidth(), canvas.getHeight());
 		}
 
+		if (tick % 120 == 0){
+			for (int i = 0; i < gameplayController.lineAmount(); i++) {
+				gameplayController.setHealth(-1, i);
+			}
+		}
+
+		for (int health : gameplayController.getHealth()) {
+			if (health == 0){
+				gameState = GameState.OVER;
+			}
+		}
 		// Update objects.
 		gameplayController.resolveActions(inputController,delta, canvas.getWidth(), canvas.getHeight());
 
@@ -245,6 +257,8 @@ public class GameMode implements Screen {
 			canvas.drawText(hp, displayFont, i * canvas.getWidth()/(float)health.length, canvas.getHeight() - COUNTER_OFFSET - 30);
 		}
 
+		String Time = "Time: "+tick;
+		canvas.drawText(Time, displayFont, COUNTER_OFFSET + 300, canvas.getHeight()-COUNTER_OFFSET);
 		displayFont.setColor(gameplayController.trigger ? Color.CYAN : Color.NAVY);
 		String message2 = "____________";
 		canvas.drawText(message2, displayFont, gameplayController.lane * canvas.getWidth()/4f, canvas.getHeight()/3f);
