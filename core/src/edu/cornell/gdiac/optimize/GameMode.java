@@ -2,7 +2,7 @@
  * GameMode.java
  *
  * This is the primary class file for running the game.  You should study this file for
- * ideas on how to structure your own root class. This class follows a 
+ * ideas on how to structure your own root class. This class follows a
  * model-view-controller pattern fairly strictly.
  *
  * Author: Walker M. White
@@ -27,14 +27,14 @@ import javax.annotation.processing.SupportedSourceVersion;
  * The primary controller class for the game.
  *
  * While GDXRoot is the root class, it delegates all of the work to the player mode
- * classes. This is the player mode class for running the game. In initializes all 
+ * classes. This is the player mode class for running the game. In initializes all
  * of the other classes in the game and hooks them together.  It also provides the
  * basic game loop (update-draw).
  */
 public class GameMode implements Screen {
-	/** 
- 	 * Track the current state of the game for the update loop.
- 	 */
+	/**
+	 * Track the current state of the game for the update loop.
+	 */
 	public enum GameState {
 		/** Before the game has started */
 		INTRO,
@@ -43,7 +43,7 @@ public class GameMode implements Screen {
 		/** When the ships is dead (but shells still work) */
 		OVER
 	}
-	
+
 	// Loaded assets
 	/** The background image for the game */
 	private Texture background;
@@ -57,24 +57,24 @@ public class GameMode implements Screen {
 	private static final float COUNTER_OFFSET   = 5.0f;
 	/** Offset for the game over message on the screen */
 	private static final float GAME_OVER_OFFSET = 40.0f;
-	
+
 	/** Reference to drawing context to display graphics (VIEW CLASS) */
 	private GameCanvas canvas;
-	
+
 	/** Reads input from keyboard or game pad (CONTROLLER CLASS) */
 	private InputController inputController;
 	/** Handle collision and physics (CONTROLLER CLASS) */
 	private CollisionController physicsController;
 	/** Constructs the game models and handle basic gameplay (CONTROLLER CLASS) */
 	private GameplayController gameplayController;
-	
+
 	/** Variable to track the game state (SIMPLE FIELDS) */
 	private GameState gameState;
 	/** Variable to track total time played in milliseconds (SIMPLE FIELDS) */
 	private float totalTime = 0;
 	/** Whether or not this player mode is still active */
 	private boolean active;
-	
+
 	/** Listener that will update the player mode when we are done */
 	private ScreenListener listener;
 
@@ -109,7 +109,7 @@ public class GameMode implements Screen {
 		physicsController = new CollisionController(canvas.getWidth(), canvas.getHeight(), 40.0f);
 
 	}
-	
+
 	/**
 	 * Dispose of all (non-static) resources allocated to this mode.
 	 */
@@ -167,28 +167,28 @@ public class GameMode implements Screen {
 
 		// Test whether to reset the game.
 		switch (gameState) {
-		case INTRO:
-			gameState = GameState.PLAY;
-			gameplayController.start(canvas.getWidth() / 2.0f, physicsController.getFloorLedge());
-			break;
-		case OVER:
-			if (inputController.didReset()) {
+			case INTRO:
 				gameState = GameState.PLAY;
-				gameplayController.reset();
 				gameplayController.start(canvas.getWidth() / 2.0f, physicsController.getFloorLedge());
-			} else {
+				break;
+			case OVER:
+				if (inputController.didReset()) {
+					gameState = GameState.PLAY;
+					gameplayController.reset();
+					gameplayController.start(canvas.getWidth() / 2.0f, physicsController.getFloorLedge());
+				} else {
+					play(delta);
+				}
+				break;
+			case PLAY:
 				play(delta);
-			}
-			break;
-		case PLAY:
-			play(delta);
-			break;
-		default:
-			break;
+				break;
+			default:
+				break;
 		}
 	}
 	int done = 0;
-	
+
 	/**
 	 * This method processes a single step in the game loop.
 	 *
@@ -216,7 +216,7 @@ public class GameMode implements Screen {
 		// Clean up destroyed objects
 		gameplayController.garbageCollect();
 	}
-	
+
 	/**
 	 * Draw the status of this player mode.
 	 *
@@ -238,6 +238,12 @@ public class GameMode implements Screen {
 
 		String message = "Current shells: "+gameplayController.getShellCount();
 		canvas.drawText(message, displayFont, COUNTER_OFFSET, canvas.getHeight()-COUNTER_OFFSET);
+
+		int[] health = gameplayController.getHealth();
+		String health1 = "Health: "+health[0];
+		String health2 = "Health: "+health[1];
+		canvas.drawText(health1, displayFont, COUNTER_OFFSET + 100, canvas.getHeight()-COUNTER_OFFSET-30);
+		canvas.drawText(health2, displayFont, COUNTER_OFFSET + 500, canvas.getHeight()-COUNTER_OFFSET-30);
 
 		displayFont.setColor(gameplayController.trigger ? Color.CYAN : Color.NAVY);
 		String message2 = "________________________";
@@ -273,11 +279,11 @@ public class GameMode implements Screen {
 		// Flush information to the graphic buffer.
 		canvas.end();
 	}
-	
+
 	/**
-	 * Called when the Screen is resized. 
+	 * Called when the Screen is resized.
 	 *
-	 * This can happen at any point during a non-paused state but will never happen 
+	 * This can happen at any point during a non-paused state but will never happen
 	 * before a call to show().
 	 *
 	 * @param width  The new width in pixels
@@ -307,8 +313,8 @@ public class GameMode implements Screen {
 
 	/**
 	 * Called when the Screen is paused.
-	 * 
-	 * This is usually when it's not active or visible on screen. An Application is 
+	 *
+	 * This is usually when it's not active or visible on screen. An Application is
 	 * also paused before it is destroyed.
 	 */
 	public void pause() {
@@ -323,7 +329,7 @@ public class GameMode implements Screen {
 	public void resume() {
 		// TODO Auto-generated method stub
 	}
-	
+
 	/**
 	 * Called when this screen becomes the current screen for a Game.
 	 */
