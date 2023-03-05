@@ -48,7 +48,7 @@ public class Shell extends GameObject {
 
 	/** Friction multiplier for this shell */
 	//private float friction;
-	/** Minimum Y velocity for this shell */
+	/** Minimum Y velocity for this sheall */
 	private float minvelocy;
 	/** Current animation frame for this shell */
 	private float animeframe;
@@ -69,6 +69,7 @@ public class Shell extends GameObject {
 	//#endregion
 	public int hitStatus;
 
+	/** line the note is one */
 	public int line;
 
 	/**
@@ -159,15 +160,15 @@ public class Shell extends GameObject {
 		// Set friction multiplier for this shell
 		//friction = RandomController.rollFloat(MIN_FRICTION_MULT, MAX_FRICTION_MULT);
 		// Set minimum Y velocity for this shell
+		this.line = line;
 		minvelocy = -2f;
 		hitStatus = 0;
 		animeframe = 0.0f;
-
-		this.line = line;
 	}
 	public int getHitVal(){
 		return hitStatus;
 	}
+	public int getLine() { return line;}
 	public void setTexture(Texture texture) {
 		animator = new FilmStrip(texture,1,NUM_ANIM_FRAMES,NUM_ANIM_FRAMES);
 		origin = new Vector2(animator.getRegionWidth()/2.0f, animator.getRegionHeight()/2.0f);

@@ -150,6 +150,11 @@ public class InputController {
 
 	private boolean hold;
 
+	private boolean tlast = false;
+	private boolean lslast = false;
+	private boolean rslast = false;
+	private boolean aslast = false;
+
 	private void readKeyboard(boolean secondary) {
 		// Give priority to gamepad results
 		resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.R));
@@ -163,11 +168,17 @@ public class InputController {
 		if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
 			offset -= 1.0f;
 		}
-		trigger = Gdx.input.isKeyJustPressed(Input.Keys.SPACE);
-		lswitch = Gdx.input.isKeyJustPressed(Input.Keys.COMMA);
-		rswitch = Gdx.input.isKeyJustPressed(Input.Keys.PERIOD);
-		allswitch = Gdx.input.isKeyJustPressed(Input.Keys.BACKSLASH);
 
+		boolean tpress = Gdx.input.isKeyPressed(Input.Keys.SPACE);
+		boolean rspress = Gdx.input.isKeyPressed(Input.Keys.PERIOD);
+		boolean lspress = Gdx.input.isKeyPressed(Input.Keys.COMMA);
+		trigger = !tlast && tpress;
+		lswitch = !lslast && lspress;
+		rswitch = !rslast && rspress;
+
+		tlast = tpress;
+		rslast = rspress;
+		lslast = lspress;
 
 		//firePressed =  (secondary && firePressed) || Gdx.input.isKeyPressed(Input.Keys.SPACE);
 	}

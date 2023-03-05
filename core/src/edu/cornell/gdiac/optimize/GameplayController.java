@@ -1,15 +1,15 @@
 /*
  * GameplayController.java
  *
- * For many of you, this class will seem like the most unusual one in the entire project.  
- * It implements a lot of functionality that looks like it should go into the various 
+ * For many of you, this class will seem like the most unusual one in the entire project.
+ * It implements a lot of functionality that looks like it should go into the various
  * GameObject subclasses. However, a lot of this functionality involves the creation or
- * destruction of objects.  We cannot do this without a lot of cyclic dependencies, 
+ * destruction of objects.  We cannot do this without a lot of cyclic dependencies,
  * which are bad.
  *
- * You will notice that gameplay-wise, most of the features in this class are 
- * interactions, not actions. This demonstrates why a software developer needs to 
- * understand the difference between these two.  
+ * You will notice that gameplay-wise, most of the features in this class are
+ * interactions, not actions. This demonstrates why a software developer needs to
+ * understand the difference between these two.
  *
  * You will definitely need to modify this file in Part 2 of the lab. However, you are
  * free to modify any file you want.  You are also free to add new classes and assets.
@@ -26,6 +26,8 @@ import com.badlogic.gdx.graphics.Texture;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.optimize.entity.*;
 import edu.cornell.gdiac.optimize.GameObject.ObjectType;
+
+import java.util.Random;
 
 import java.util.HashMap;
 
@@ -65,10 +67,22 @@ public class GameplayController {
 	/** The maximum velocity offset (+ shell velocity) of a newly created star */
 	private static final float MAX_STAR_OFFSET = 3.0f;
 
+	/** The amount of health gained when hitting a note weakly */
+	private static final int WEAK_HIT_HEALTH = 1;
+
+	/** The amount of health gained when hitting a note strongly */
+	private static final int STRONG_HIT_HEALTH = 2;
+
+	/** THe amount of health lost when missing a note */
+	private static final int MISS_HIT_HEALTH = 3;
+
 	/** Reference to player (need to change to allow multiple players) */
 	//private Ship player;
 	/** Shell count for the display in window corner */
 	private int shellCount;
+
+	/** health of lines */
+	private int[] health;
 
 	// List of objects with the garbage collection set.
 	/** The currently active object */
@@ -128,18 +142,23 @@ public class GameplayController {
 
 	private boolean hsflag;
 
-	public int side;
+	public int lane;
 	/**
 	 * Creates a new GameplayController with no active elements.
 	 */
 	public GameplayController() {
 		//player = null;
 		shellCount = 0;
+		health = new int[4];
+		health[0] = 100;
+		health[1] = 100;
+		health[2] = 100;
+		health[3] = 100;
 		objects = new Array<GameObject>();
 		backing = new Array<GameObject>();
 		highscore = 0;
 		hsflag = false;
-		side = 1;
+		lane = 0;
 	}
 
 	/**
@@ -162,8 +181,8 @@ public class GameplayController {
 	/**
 	 * Returns the list of the currently active (not destroyed) game objects
 	 *
- 	 * As this method returns a reference and Lists are mutable, other classes can 
- 	 * technical modify this list.  That is a very bad idea.  Other classes should
+	 * As this method returns a reference and Lists are mutable, other classes can
+	 * technical modify this list.  That is a very bad idea.  Other classes should
 	 * only mark objects as destroyed and leave list management to this class.
 	 *
 	 * @return the list of the currently active (not destroyed) game objects
@@ -202,6 +221,13 @@ public class GameplayController {
 	public int getShellCount() {
 		return shellCount;
 	}
+
+	/**
+	 * Returns the line healths.
+	 *
+	 * @return the line healths.
+	 */
+	public int[] getHealth() {return health;}
 
 	public boolean newhsreached(){
 		return hsflag;
@@ -250,13 +276,30 @@ public class GameplayController {
 	 */
 	public void addShell(float width, float height, int frame) {
 
+		if(shellCount > 4){
+			return;
+		}
+		int lane = RandomController.rollInt(0,3);
 		Shell b = noteCoords.get(frame);
 
 //		if(shellCount > 4){
 //			return;
 //		}
 
+		Shell b;
+		b = new Shell(lane);
+		b.setX(width/8 + lane * width/4);
 		// Add a new shell
+		if (RandomController.rollInt(0,1) == 0) {
+			b.setTexture(redTexture);
+		} else {
+			b.setTexture(greenTexture);
+		}
+
+		// Position the shella
+		b.setY(height);
+		b.setVX(0);
+		b.setVY(-5f);
 //		Shell b = new Shell();
 //		if (RandomController.rollInt(0, 2) == 0) {
 //
@@ -276,12 +319,12 @@ public class GameplayController {
 		objects.add(b);
 		shellCount++;
 	}
-	
+
 	/**
 	 * Garbage collects all deleted objects.
 	 *
 	 * This method works on the principle that it is always cheaper to copy live objects
-	 * than to delete dead ones.  Deletion restructures the list and is O(n^2) if the 
+	 * than to delete dead ones.  Deletion restructures the list and is O(n^2) if the
 	 * number of deletions is high.  Since Add() is O(1), copying is O(n).
 	 */
 	public void garbageCollect() {
@@ -301,60 +344,65 @@ public class GameplayController {
 		objects = tmp;
 		backing.clear();
 	}
-	
+
 	/**
 	 * Process specialized destruction functionality
 	 *
-	 * Some objects do something special (e.g. explode) on destruction. That is handled 
+	 * Some objects do something special (e.g. explode) on destruction. That is handled
 	 * in this method.
 	 *
-	 * Notice that this allocates memory to the heap.  If we were REALLY worried about 
+	 * Notice that this allocates memory to the heap.  If we were REALLY worried about
 	 * performance, we would use a memory pool here.
 	 *
 	 * @param o Object to destroy
 	 */
 	protected void destroy(GameObject o) {
 		switch(o.getType()) {
-		case SHIP:
-			//player = null;
-			break;
-		case SHELL:
-			// Create some stars if hit on beat - more stars if more accurate
+			case SHIP:
+				//player = null;
+				break;
+			case SHELL:
+				// Create some stars if hit on beat - more stars if more accurate
 
-			if(((Shell) o).getHitVal() >= 1){
-				for (int j = 0; j < 3; j++) {
-					Star s = new Star();
-					s.setTexture(starTexture);
-					s.getPosition().set(o.getPosition());
-					float vx = o.getVX() * RandomController.rollFloat(MIN_STAR_FACTOR, MAX_STAR_FACTOR)
-							+ RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
-					float vy = o.getVY() * RandomController.rollFloat(MIN_STAR_FACTOR, MAX_STAR_FACTOR)
-							+ RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
-					s.getVelocity().set(vx,vy);
-					backing.add(s);
+				if(((Shell) o).getHitVal() == 1){
+					health[((Shell) o).getLine()] += WEAK_HIT_HEALTH;
+					for (int j = 0; j < 3; j++) {
+						Star s = new Star();
+						s.setTexture(starTexture);
+						s.getPosition().set(o.getPosition());
+						float vx = o.getVX() * RandomController.rollFloat(MIN_STAR_FACTOR, MAX_STAR_FACTOR)
+								+ RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
+						float vy = o.getVY() * RandomController.rollFloat(MIN_STAR_FACTOR, MAX_STAR_FACTOR)
+								+ RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
+						s.getVelocity().set(vx,vy);
+						backing.add(s);
+					}
 				}
-			}
-			if(((Shell) o).getHitVal() >= 2){
-				for (int j = 0; j < 6; j++) {
-					Star s = new Star();
-					s.setTexture(starTexture);
-					s.getPosition().set(o.getPosition());
-					float vx = o.getVX() * RandomController.rollFloat(MIN_STAR_FACTOR, MAX_STAR_FACTOR)
-							+ RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
-					float vy = o.getVY() * RandomController.rollFloat(MIN_STAR_FACTOR, MAX_STAR_FACTOR)
-							+ RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
-					s.getVelocity().set(vx,vy);
-					backing.add(s);
+				else if(((Shell) o).getHitVal() == 2) {
+					health[((Shell) o).getLine()] += STRONG_HIT_HEALTH;
+					for (int j = 0; j < 9; j++) {
+						Star s = new Star();
+						s.setTexture(starTexture);
+						s.getPosition().set(o.getPosition());
+						float vx = o.getVX() * RandomController.rollFloat(MIN_STAR_FACTOR, MAX_STAR_FACTOR)
+								+ RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
+						float vy = o.getVY() * RandomController.rollFloat(MIN_STAR_FACTOR, MAX_STAR_FACTOR)
+								+ RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
+						s.getVelocity().set(vx, vy);
+						backing.add(s);
+					}
 				}
-			}
+				else if(((Shell) o).getHitVal() == 0) {
+					health[((Shell) o).getLine()] -= MISS_HIT_HEALTH;
+				}
 
-			shellCount--;
-			break;
-		default:
-			break;
+				shellCount--;
+				break;
+			default:
+				break;
 		}
 	}
-	
+
 	/**
 	 * Resolve the actions of all game objects (player and shells)
 	 *
@@ -375,14 +423,15 @@ public class GameplayController {
 //		}
 		boolean[] switches = input.switches();
 
-		side *= (switches[0] ||(side > 0 && switches[2]) || (side < 0 && switches[1])) ? -1:1;
+		lane = Math.max(Math.min(3, lane + (switches[2] ? 1 : 0) - (switches[1] ? 1 : 0)), 0);
+
 		trigger = input.isTrigger();
 
 		// Process the other (non-ship) objects.
 		for (GameObject o : objects) {
 			o.update(delta);
 			if(o.getType() == ObjectType.SHELL){
-				if(trigger && ((o.getX() <= width/2f && side > 0) || (o.getX() >= width/2f && side < 0))){
+				if(trigger && lane == ((Shell)o).getLine()){
 					System.out.println(height/3f + " " + o.getY() + " " + o.getRadius());
 
 					if(o.getY() <= (height/3f - o.getRadius()/4f) && o.getY() >= (height/3f - 3*o.getRadius()/4f)){
@@ -396,6 +445,10 @@ public class GameplayController {
 						o.setDestroyed(true);
 
 					}
+					else {
+						System.out.println("miss");
+						((Shell) o).hitStatus = 0;
+					}
 				}
 			}
 
@@ -405,7 +458,7 @@ public class GameplayController {
 	/**
 	 * Process the player's actions.
 	 *
-	 * Notice that firing bullets allocates memory to the heap.  If we were REALLY 
+	 * Notice that firing bullets allocates memory to the heap.  If we were REALLY
 	 * worried about performance, we would use a memory pool here.
 	 *
 	 * @param input  Reference to the input controller
