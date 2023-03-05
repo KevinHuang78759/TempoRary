@@ -19,9 +19,11 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.freetype.*;
 
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.optimize.entity.Shell;
 import edu.cornell.gdiac.util.*;
 
 import javax.annotation.processing.SupportedSourceVersion;
+import java.util.HashMap;
 
 /**
  * The primary controller class for the game.
@@ -202,6 +204,10 @@ public class GameMode implements Screen {
 		// Add a new shell if time.
 		if (RandomController.rollInt(0, 25) < 15 && counter % 30 == 0) {
 			counter = 1;
+			// create some kind of data structure for coordinates of notes
+			// hm {frame : notes}
+			HashMap<Integer, Shell> notes_cords = new HashMap<>();
+
 			gameplayController.addShell(canvas.getWidth(), canvas.getHeight());
 		}
 

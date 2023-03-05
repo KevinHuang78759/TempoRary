@@ -218,7 +218,7 @@ public class GameplayController {
 			b.setX(3 * width/4);
 		}
 
-		// Position the shella
+		// Position the shell
 		b.setY(height);
 		b.setVX(0);
 		b.setVY(-5f);
