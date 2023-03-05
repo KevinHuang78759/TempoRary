@@ -208,7 +208,7 @@ public class GameMode implements Screen {
 		// create some kind of data structure for coordinates of notes
 		// hm {frame : notes}
 
-		gameplayController.addShell(canvas.getWidth(), canvas.getHeight(),ticks);
+		gameplayController.addShell(canvas.getWidth(), canvas.getHeight(), ticks);
 
 		ticks = (ticks + 1) % 1800;
 		// TODO: FINISH THIS

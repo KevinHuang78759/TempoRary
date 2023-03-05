@@ -92,50 +92,22 @@ public class GameplayController {
 
 	HashMap<Integer, Shell> noteCoords = new HashMap<>();
 
-	private void setCoords(int width) {
-
-//		Shell[] noteList = new Shell[10];
-
+	private void setCoords(float width, float height) {
 		// note appears every two seconds if we have a 30 second loop
-		final int NUM_NOTES = 15;
+		final int NUM_NOTES = 60;
 
 		// 1800
 		for (int i = 0; i < NUM_NOTES; i++) {
 			Shell b = new Shell (i%4);
-			b.setX(width/4);
-
+			b.setX(width/8 + (i % 4) * width/4);
 			b.setTexture(redTexture);
-//			b.setX(width/4);
-//		} else {
-//
-//			b.setTexture(greenTexture);
-//			b.setX(3 * width/4);
-//		}
-
-			// Position the shell
-//		b.setY(height);
-//		b.setVX(0);
-//		b.setVY(-5f);
-
-			noteCoords.put(i * 120, b);
-
+			b.setY(height);
+			b.setVX(0);
+			b.setVY(-5f);
+			noteCoords.put(i * 30, b);
 		}
 
-//		Texture[] tex = new Texture[]{redTexture};
-//
-//		for (int i=0; i<=n_notes;i++){
-//			Shell s = new Shell();
-//			s.setTexture(redTexture);
-//			s.setX(x_coords[i]);
-//			s.setY(y_coords[i]);
-////			s.setVX();
-////			s.setVY();
-//			noteCoords.put(i,s);
-//		}
 	}
-
-
-
 
 
 	private int highscore;
@@ -251,7 +223,8 @@ public class GameplayController {
 //
 //		// Player must be in object list.
 //		objects.add(player);
-		setCoords(width);
+		setCoords(width,height);
+		System.out.println(noteCoords);
 	}
 
 	/**
@@ -276,49 +249,32 @@ public class GameplayController {
 	 */
 	public void addShell(float width, float height, int frame) {
 
-		if(shellCount > 4){
-			return;
-		}
-		int lane = RandomController.rollInt(0,3);
-//		Shell b = noteCoords.get(frame);
-
 //		if(shellCount > 4){
 //			return;
 //		}
+//		int lane = RandomController.rollInt(0,3);
 
 		Shell b;
 
-		b = new Shell(lane);
-		b.setX(width/8 + lane * width/4);
-		// Add a new shell
-		if (RandomController.rollInt(0,1) == 0) {
-			b.setTexture(redTexture);
-		} else {
-			b.setTexture(greenTexture);
-		}
+		b = noteCoords.get(frame);
 
-		// Position the shella
-		b.setY(height);
-		b.setVX(0);
-		b.setVY(-5f);
-//		Shell b = new Shell();
-//		if (RandomController.rollInt(0, 2) == 0) {
-//
-//			// Needs two shots to kill
+//		b = new Shell(lane);
+//		b.setX(width/8 + lane * width/4);
+//		// Add a new shell
+//		if (RandomController.rollInt(0,1) == 0) {
 //			b.setTexture(redTexture);
-//			b.setX(width/4);
 //		} else {
-//
 //			b.setTexture(greenTexture);
-//			b.setX(3 * width/4);
 //		}
 
-		// Position the shell
+		// Position the shella
 //		b.setY(height);
 //		b.setVX(0);
 //		b.setVY(-5f);
-		objects.add(b);
-		shellCount++;
+		if (b != null) {
+			objects.add(b);
+			shellCount++;
+		}
 	}
 
 	/**
