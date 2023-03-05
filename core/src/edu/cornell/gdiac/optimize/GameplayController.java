@@ -28,6 +28,8 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.optimize.entity.*;
 import edu.cornell.gdiac.optimize.GameObject.ObjectType;
 
+import java.util.Random;
+
 /**
  * Controller to handle gameplay interactions.
  * </summary>
@@ -95,7 +97,7 @@ public class GameplayController {
 
 	private boolean hsflag;
 
-	public int side;
+	public int lane;
 	/**
 	 * Creates a new GameplayController with no active elements.
 	 */
@@ -107,13 +109,15 @@ public class GameplayController {
 		backing = new Array<GameObject>();
 		highscore = 0;
 		hsflag = false;
-		side = 1;
+		lane = 0;
 	}
 
-	private void InitializeHealth(){
-		health = new int[2];
-		health[0] = MAX_HEALTH;
-		health[1] = MAX_HEALTH;
+	private void InitializeHealth() {
+		health = new int[4];
+		health[0] = 100;
+		health[1] = 100;
+		health[2] = 100;
+		health[3] = 100;
 	}
 
 	/**
@@ -257,18 +261,16 @@ public class GameplayController {
 		if(shellCount > 4){
 			return;
 		}
-		Shell b;
-		// Add a new shell
-		if (RandomController.rollInt(0, 2) == 0) {
+		int lane = RandomController.rollInt(0,3);
 
-			// Needs two shots to kill
-			b = new Shell(0);
+		Shell b;
+		b = new Shell(lane);
+		b.setX(width/8 + lane * width/4);
+		// Add a new shell
+		if (RandomController.rollInt(0,1) == 0) {
 			b.setTexture(redTexture);
-			b.setX(width/4);
 		} else {
-			b = new Shell(1);
 			b.setTexture(greenTexture);
-			b.setX(3 * width/4);
 		}
 
 		// Position the shella
@@ -382,14 +384,15 @@ public class GameplayController {
 //		}
 		boolean[] switches = input.switches();
 
-		side *= (switches[0] ||(side > 0 && switches[2]) || (side < 0 && switches[1])) ? -1:1;
+		lane = Math.max(Math.min(3, lane + (switches[2] ? 1 : 0) - (switches[1] ? 1 : 0)), 0);
+
 		trigger = input.isTrigger();
 
 		// Process the other (non-ship) objects.
 		for (GameObject o : objects) {
 			o.update(delta);
 			if(o.getType() == ObjectType.SHELL){
-				if(trigger && ((o.getX() <= width/2f && side > 0) || (o.getX() >= width/2f && side < 0))){
+				if(trigger && lane == ((Shell)o).getLine()){
 					System.out.println(height/3f + " " + o.getY() + " " + o.getRadius());
 
 					if(o.getY() <= (height/3f - o.getRadius()/4f) && o.getY() >= (height/3f - 3*o.getRadius()/4f)){

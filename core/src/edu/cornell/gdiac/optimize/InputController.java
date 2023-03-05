@@ -172,16 +172,13 @@ public class InputController {
 		boolean tpress = Gdx.input.isKeyPressed(Input.Keys.SPACE);
 		boolean rspress = Gdx.input.isKeyPressed(Input.Keys.PERIOD);
 		boolean lspress = Gdx.input.isKeyPressed(Input.Keys.COMMA);
-		boolean aspress = Gdx.input.isKeyPressed(Input.Keys.BACKSLASH);
 		trigger = !tlast && tpress;
 		lswitch = !lslast && lspress;
 		rswitch = !rslast && rspress;
-		allswitch = !aslast && aspress;
 
 		tlast = tpress;
 		rslast = rspress;
 		lslast = lspress;
-		aslast = aspress;
 
 		//firePressed =  (secondary && firePressed) || Gdx.input.isKeyPressed(Input.Keys.SPACE);
 	}
