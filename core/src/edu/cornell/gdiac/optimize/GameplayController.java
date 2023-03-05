@@ -280,13 +280,14 @@ public class GameplayController {
 			return;
 		}
 		int lane = RandomController.rollInt(0,3);
-		Shell b = noteCoords.get(frame);
+//		Shell b = noteCoords.get(frame);
 
 //		if(shellCount > 4){
 //			return;
 //		}
 
 		Shell b;
+
 		b = new Shell(lane);
 		b.setX(width/8 + lane * width/4);
 		// Add a new shell
