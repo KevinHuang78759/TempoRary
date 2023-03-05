@@ -12,16 +12,11 @@
 package edu.cornell.gdiac.optimize;
 
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.utils.*;
-import com.badlogic.gdx.assets.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.graphics.g2d.freetype.*;
 
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.util.*;
-
-import javax.annotation.processing.SupportedSourceVersion;
 
 /**
  * The primary controller class for the game.
@@ -212,8 +207,8 @@ public class GameMode implements Screen {
 		}
 
 		if (tick % 120 == 0){
-			for (int i = 0; i < gameplayController.LineAmount(); i++) {
-				gameplayController.SetHealth(-1, i);
+			for (int i = 0; i < gameplayController.lineAmount(); i++) {
+				gameplayController.setHealth(-1, i);
 			}
 		}
 

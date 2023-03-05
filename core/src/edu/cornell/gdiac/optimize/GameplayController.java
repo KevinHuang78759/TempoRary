@@ -21,14 +21,11 @@
 package edu.cornell.gdiac.optimize;
 
 import com.badlogic.gdx.utils.*;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.optimize.entity.*;
 import edu.cornell.gdiac.optimize.GameObject.ObjectType;
-
-import java.util.Random;
 
 /**
  * Controller to handle gameplay interactions.
@@ -78,6 +75,9 @@ public class GameplayController {
 	/** Maximum amount of health */
 	private static final int MAX_HEALTH = 20;
 
+	/** Maximum amount of health */
+	private static final int NUM_LANES = 4;
+
 	/** Reference to player (need to change to allow multiple players) */
 	//private Ship player;
 	/** Shell count for the display in window corner */
@@ -92,7 +92,6 @@ public class GameplayController {
 	/** The backing set for garbage collection */
 	private Array<GameObject> backing;
 
-
 	private int highscore;
 
 	private boolean hsflag;
@@ -104,7 +103,7 @@ public class GameplayController {
 	public GameplayController() {
 		//player = null;
 		shellCount = 0;
-		InitializeHealth();
+		initializeHealth();
 		objects = new Array<GameObject>();
 		backing = new Array<GameObject>();
 		highscore = 0;
@@ -112,12 +111,11 @@ public class GameplayController {
 		lane = 0;
 	}
 
-	private void InitializeHealth() {
-		health = new int[4];
-		health[0] = 100;
-		health[1] = 100;
-		health[2] = 100;
-		health[3] = 100;
+	private void initializeHealth() {
+		health = new int[NUM_LANES];
+		for (int i = 0; i < NUM_LANES; i++) {
+			health[i] = MAX_HEALTH;
+		}
 	}
 
 	/**
@@ -193,13 +191,13 @@ public class GameplayController {
 	 *
 	 * @param amount The amount health changes by
 	 */
-	public void SetHealth(int amount, int line) {
-			if (health[line] + amount <= MAX_HEALTH){
-				health[line] += amount;
-			}
-			else {
-				health[line] = MAX_HEALTH;
-			}
+	public void setHealth(int amount, int line) {
+		if (health[line] + amount <= MAX_HEALTH){
+			health[line] += amount;
+		}
+		else {
+			health[line] = MAX_HEALTH;
+		}
 	}
 
 	/**
@@ -207,7 +205,7 @@ public class GameplayController {
 	 *
 	 * @return The amount of lines.
 	 */
-	public int LineAmount(){
+	public int lineAmount(){
 		return health.length;
 	}
 
@@ -243,7 +241,7 @@ public class GameplayController {
 		shellCount = 0;
 		objects.clear();
 		hsflag = false;
-		InitializeHealth();
+		initializeHealth();
 	}
 
 	/**
@@ -324,9 +322,8 @@ public class GameplayController {
 				break;
 			case SHELL:
 				// Create some stars if hit on beat - more stars if more accurate
-
 				if(((Shell) o).getHitVal() == 1){
-					SetHealth(WEAK_HIT_HEALTH, ((Shell) o).getLine());
+					setHealth(WEAK_HIT_HEALTH, ((Shell) o).getLine());
 					for (int j = 0; j < 3; j++) {
 						Star s = new Star();
 						s.setTexture(starTexture);
@@ -340,7 +337,7 @@ public class GameplayController {
 					}
 				}
 				else if(((Shell) o).getHitVal() == 2) {
-					SetHealth(STRONG_HIT_HEALTH, ((Shell) o).getLine());
+					setHealth(STRONG_HIT_HEALTH, ((Shell) o).getLine());
 					for (int j = 0; j < 9; j++) {
 						Star s = new Star();
 						s.setTexture(starTexture);
@@ -354,7 +351,7 @@ public class GameplayController {
 					}
 				}
 				else if(((Shell) o).getHitVal() == 0) {
-					SetHealth(-MISS_HIT_HEALTH, ((Shell) o).getLine());
+					setHealth(-MISS_HIT_HEALTH, ((Shell) o).getLine());
 				}
 
 				shellCount--;
@@ -412,7 +409,6 @@ public class GameplayController {
 					}
 				}
 			}
-
 		}
 	}
 
