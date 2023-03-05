@@ -80,7 +80,7 @@ public class GameplayController {
 
 	private boolean hsflag;
 
-	public int side;
+	public int lane;
 	/**
 	 * Creates a new GameplayController with no active elements.
 	 */
@@ -91,7 +91,7 @@ public class GameplayController {
 		backing = new Array<GameObject>();
 		highscore = 0;
 		hsflag = false;
-		side = 1;
+		lane = 0;
 	}
 
 	/**
@@ -324,14 +324,15 @@ public class GameplayController {
 //		}
 		boolean[] switches = input.switches();
 
-		side *= (switches[0] ||(side > 0 && switches[2]) || (side < 0 && switches[1])) ? -1:1;
+		lane = Math.max(Math.min(3, lane + (switches[1] ? 1 : 0) - (switches[2] ? 1 : 0)), 0);
+
 		trigger = input.isTrigger();
 
 		// Process the other (non-ship) objects.
 		for (GameObject o : objects) {
 			o.update(delta);
 			if(o.getType() == ObjectType.SHELL){
-				if(trigger && ((o.getX() <= width/2f && side > 0) || (o.getX() >= width/2f && side < 0))){
+				if(trigger){
 					System.out.println(height/3f + " " + o.getY() + " " + o.getRadius());
 
 					if(o.getY() <= (height/3f - o.getRadius()/4f) && o.getY() >= (height/3f - 3*o.getRadius()/4f)){
