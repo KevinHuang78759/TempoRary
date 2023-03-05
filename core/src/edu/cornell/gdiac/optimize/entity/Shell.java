@@ -48,7 +48,7 @@ public class Shell extends GameObject {
 
 	/** Friction multiplier for this shell */
 	//private float friction;
-	/** Minimum Y velocity for this shell */
+	/** Minimum Y velocity for this sheall */
 	private float minvelocy;
 	/** Current animation frame for this shell */
 	private float animeframe;
