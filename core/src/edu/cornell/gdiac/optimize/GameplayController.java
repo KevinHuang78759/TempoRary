@@ -21,12 +21,13 @@
 package edu.cornell.gdiac.optimize;
 
 import com.badlogic.gdx.utils.*;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.optimize.entity.*;
 import edu.cornell.gdiac.optimize.GameObject.ObjectType;
+
+import java.util.HashMap;
 
 /**
  * Controller to handle gameplay interactions.
@@ -74,6 +75,53 @@ public class GameplayController {
 	private Array<GameObject> objects;
 	/** The backing set for garbage collection */
 	private Array<GameObject> backing;
+
+	HashMap<Integer, Shell> noteCoords = new HashMap<>();
+
+	private void setCoords(int width) {
+
+//		Shell[] noteList = new Shell[10];
+
+		// note appears every two seconds if we have a 30 second loop
+		final int NUM_NOTES = 15;
+
+		// 1800
+		for (int i = 0; i < NUM_NOTES; i++) {
+			Shell b = new Shell (i%4);
+			b.setX(width/4);
+
+			b.setTexture(redTexture);
+//			b.setX(width/4);
+//		} else {
+//
+//			b.setTexture(greenTexture);
+//			b.setX(3 * width/4);
+//		}
+
+			// Position the shell
+//		b.setY(height);
+//		b.setVX(0);
+//		b.setVY(-5f);
+
+			noteCoords.put(i * 120, b);
+
+		}
+
+//		Texture[] tex = new Texture[]{redTexture};
+//
+//		for (int i=0; i<=n_notes;i++){
+//			Shell s = new Shell();
+//			s.setTexture(redTexture);
+//			s.setX(x_coords[i]);
+//			s.setY(y_coords[i]);
+////			s.setVX();
+////			s.setVY();
+//			noteCoords.put(i,s);
+//		}
+	}
+
+
+
 
 
 	private int highscore;
@@ -169,7 +217,7 @@ public class GameplayController {
 	 * @param x Starting x-position for the player
 	 * @param y Starting y-position for the player
 	 */
-	public void start(float x, float y) {
+	public void start(float x, float y, int width, int height) {
 		// Create the player's ship
 //		player = new Ship();
 //		player.setTexture(beetleTexture);
@@ -177,6 +225,7 @@ public class GameplayController {
 //
 //		// Player must be in object list.
 //		objects.add(player);
+		setCoords(width);
 	}
 
 	/**
@@ -199,29 +248,31 @@ public class GameplayController {
 	 * @param width  Current game width
 	 * @param height Current game height
 	 */
-	public void addShell(float width, float height) {
+	public void addShell(float width, float height, int frame) {
 
-		if(shellCount > 4){
-			return;
-		}
+		Shell b = noteCoords.get(frame);
+
+//		if(shellCount > 4){
+//			return;
+//		}
 
 		// Add a new shell
-		Shell b = new Shell();
-		if (RandomController.rollInt(0, 2) == 0) {
-
-			// Needs two shots to kill
-			b.setTexture(redTexture);
-			b.setX(width/4);
-		} else {
-
-			b.setTexture(greenTexture);
-			b.setX(3 * width/4);
-		}
+//		Shell b = new Shell();
+//		if (RandomController.rollInt(0, 2) == 0) {
+//
+//			// Needs two shots to kill
+//			b.setTexture(redTexture);
+//			b.setX(width/4);
+//		} else {
+//
+//			b.setTexture(greenTexture);
+//			b.setX(3 * width/4);
+//		}
 
 		// Position the shell
-		b.setY(height);
-		b.setVX(0);
-		b.setVY(-5f);
+//		b.setY(height);
+//		b.setVX(0);
+//		b.setVY(-5f);
 		objects.add(b);
 		shellCount++;
 	}

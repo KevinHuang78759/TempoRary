@@ -80,6 +80,8 @@ public class GameMode implements Screen {
 	/** Listener that will update the player mode when we are done */
 	private ScreenListener listener;
 
+	private int ticks = 0;
+
 
 	/**
 	 * Creates a new game with the given drawing context.
@@ -160,7 +162,7 @@ public class GameMode implements Screen {
 //			counter = 0;
 //		}
 //
-		++counter;
+//		++counter;
 
 		// Process the game input
 		inputController.readInput();
@@ -171,13 +173,13 @@ public class GameMode implements Screen {
 		switch (gameState) {
 		case INTRO:
 			gameState = GameState.PLAY;
-			gameplayController.start(canvas.getWidth() / 2.0f, physicsController.getFloorLedge());
+			gameplayController.start(canvas.getWidth() / 2.0f, physicsController.getFloorLedge(), canvas.getWidth(), canvas.getHeight());
 			break;
 		case OVER:
 			if (inputController.didReset()) {
 				gameState = GameState.PLAY;
 				gameplayController.reset();
-				gameplayController.start(canvas.getWidth() / 2.0f, physicsController.getFloorLedge());
+				gameplayController.start(canvas.getWidth() / 2.0f, physicsController.getFloorLedge(), canvas.getWidth(), canvas.getHeight());
 			} else {
 				play(delta);
 			}
@@ -202,14 +204,14 @@ public class GameMode implements Screen {
 //			gameState = GameState.OVER;
 //		}
 		// Add a new shell if time.
-		if (RandomController.rollInt(0, 25) < 15 && counter % 30 == 0) {
-			counter = 1;
-			// create some kind of data structure for coordinates of notes
-			// hm {frame : notes}
-			HashMap<Integer, Shell> notes_cords = new HashMap<>();
 
-			gameplayController.addShell(canvas.getWidth(), canvas.getHeight());
-		}
+		// create some kind of data structure for coordinates of notes
+		// hm {frame : notes}
+
+		gameplayController.addShell(canvas.getWidth(), canvas.getHeight(),ticks);
+
+		ticks = (ticks + 1) % 1800;
+		// TODO: FINISH THIS
 
 		// Update objects.
 		gameplayController.resolveActions(inputController,delta, canvas.getWidth(), canvas.getHeight());

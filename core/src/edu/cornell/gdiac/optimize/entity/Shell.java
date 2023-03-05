@@ -68,6 +68,9 @@ public class Shell extends GameObject {
 	private int cooldown;
 	//#endregion
 	public int hitStatus;
+
+	public int line;
+
 	/**
 	 * Returns the type of this object.
 	 *
@@ -152,13 +155,15 @@ public class Shell extends GameObject {
 	/**
 	 * Initialize shell with trivial starting position.
 	 */
-	public Shell() {
+	public Shell(int line) {
 		// Set friction multiplier for this shell
 		//friction = RandomController.rollFloat(MIN_FRICTION_MULT, MAX_FRICTION_MULT);
 		// Set minimum Y velocity for this shell
 		minvelocy = -2f;
 		hitStatus = 0;
 		animeframe = 0.0f;
+
+		this.line = line;
 	}
 	public int getHitVal(){
 		return hitStatus;
