@@ -239,8 +239,11 @@ public class GameMode implements Screen {
 		String message = "Current shells: "+gameplayController.getShellCount();
 		canvas.drawText(message, displayFont, COUNTER_OFFSET, canvas.getHeight()-COUNTER_OFFSET);
 
-		message = "Health: "+gameplayController.getHealth();
-		canvas.drawText(message, displayFont, COUNTER_OFFSET, canvas.getHeight()-COUNTER_OFFSET-10);
+		int[] health = gameplayController.getHealth();
+		String health1 = "Health: "+health[0];
+		String health2 = "Health: "+health[1];
+		canvas.drawText(health1, displayFont, COUNTER_OFFSET + 100, canvas.getHeight()-COUNTER_OFFSET-30);
+		canvas.drawText(health2, displayFont, COUNTER_OFFSET + 500, canvas.getHeight()-COUNTER_OFFSET-30);
 
 		displayFont.setColor(gameplayController.trigger ? Color.CYAN : Color.NAVY);
 		String message2 = "________________________";

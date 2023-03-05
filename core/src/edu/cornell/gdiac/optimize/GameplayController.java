@@ -78,8 +78,8 @@ public class GameplayController {
 	/** Shell count for the display in window corner */
 	private int shellCount;
 
-	/** health of player */
-	private int health;
+	/** health of lines */
+	private int[] health;
 
 	// List of objects with the garbage collection set.
 	/** The currently active object */
@@ -99,7 +99,9 @@ public class GameplayController {
 	public GameplayController() {
 		//player = null;
 		shellCount = 0;
-		health = 100;
+		health = new int[2];
+		health[0] = 100;
+		health[1] = 100;
 		objects = new Array<GameObject>();
 		backing = new Array<GameObject>();
 		highscore = 0;
@@ -169,11 +171,11 @@ public class GameplayController {
 	}
 
 	/**
-	 * Returns the player health.
+	 * Returns the line healths.
 	 *
-	 * @return the player health.
+	 * @return the line healths.
 	 */
-	public int getHealth() {return health;}
+	public int[] getHealth() {return health;}
 
 	public boolean newhsreached(){
 		return hsflag;
@@ -224,16 +226,16 @@ public class GameplayController {
 		if(shellCount > 4){
 			return;
 		}
-
+		Shell b;
 		// Add a new shell
-		Shell b = new Shell();
 		if (RandomController.rollInt(0, 2) == 0) {
 
 			// Needs two shots to kill
+			b = new Shell(0);
 			b.setTexture(redTexture);
 			b.setX(width/4);
 		} else {
-
+			b = new Shell(1);
 			b.setTexture(greenTexture);
 			b.setX(3 * width/4);
 		}
@@ -291,7 +293,7 @@ public class GameplayController {
 				// Create some stars if hit on beat - more stars if more accurate
 
 				if(((Shell) o).getHitVal() == 1){
-					health += WEAK_HIT_HEALTH;
+					health[((Shell) o).getLine()] += WEAK_HIT_HEALTH;
 					for (int j = 0; j < 3; j++) {
 						Star s = new Star();
 						s.setTexture(starTexture);
@@ -305,7 +307,7 @@ public class GameplayController {
 					}
 				}
 				else if(((Shell) o).getHitVal() == 2) {
-					health += STRONG_HIT_HEALTH;
+					health[((Shell) o).getLine()] += STRONG_HIT_HEALTH;
 					for (int j = 0; j < 9; j++) {
 						Star s = new Star();
 						s.setTexture(starTexture);
@@ -319,7 +321,7 @@ public class GameplayController {
 					}
 				}
 				else if(((Shell) o).getHitVal() == 0) {
-					health -= MISS_HIT_HEALTH;
+					health[((Shell) o).getLine()] -= MISS_HIT_HEALTH;
 				}
 
 				shellCount--;
