@@ -163,10 +163,10 @@ public class InputController {
 		if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
 			offset -= 1.0f;
 		}
-		trigger = Gdx.input.isKeyJustPressed(Input.Keys.SPACE);
-		lswitch = Gdx.input.isKeyJustPressed(Input.Keys.COMMA);
-		rswitch = Gdx.input.isKeyJustPressed(Input.Keys.PERIOD);
-		allswitch = Gdx.input.isKeyJustPressed(Input.Keys.BACKSLASH);
+		trigger = Gdx.input.isKeyPressed(Input.Keys.SPACE);
+		lswitch = Gdx.input.isKeyPressed(Input.Keys.COMMA);
+		rswitch = Gdx.input.isKeyPressed(Input.Keys.PERIOD);
+		allswitch = Gdx.input.isKeyPressed(Input.Keys.BACKSLASH);
 
 
 		//firePressed =  (secondary && firePressed) || Gdx.input.isKeyPressed(Input.Keys.SPACE);
