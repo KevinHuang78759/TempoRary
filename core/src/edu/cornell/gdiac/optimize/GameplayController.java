@@ -27,6 +27,10 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.optimize.entity.*;
 import edu.cornell.gdiac.optimize.GameObject.ObjectType;
 
+import java.util.Random;
+
+import java.util.HashMap;
+
 /**
  * Controller to handle gameplay interactions.
  * </summary>
@@ -78,6 +82,9 @@ public class GameplayController {
 	/** Maximum amount of health */
 	private static final int NUM_LANES = 4;
 
+	/** Number of notes present in repeating rhythm */
+	private static final int NUM_NOTES = 60;
+
 	/** Reference to player (need to change to allow multiple players) */
 	//private Ship player;
 	/** Shell count for the display in window corner */
@@ -92,6 +99,23 @@ public class GameplayController {
 	/** The backing set for garbage collection */
 	private Array<GameObject> backing;
 
+	HashMap<Integer, Shell> noteCoords = new HashMap<>();
+
+	private void setCoords(float width, float height) {
+		// note appears every two seconds if we have a 30 second loop
+
+		// 1800
+		for (int i = 0; i < NUM_NOTES; i++) {
+			Shell s = new Shell (i%4);
+			s.setX(width/8 + (i % 4) * width/4);
+			s.setTexture(redTexture);
+			s.setY(height);
+			s.setVX(0);
+			s.setVY(-5f);
+			noteCoords.put(i * 30, s);
+		}
+	}
+
 	private int highscore;
 
 	private boolean hsflag;
@@ -101,7 +125,6 @@ public class GameplayController {
 	 * Creates a new GameplayController with no active elements.
 	 */
 	public GameplayController() {
-		//player = null;
 		shellCount = 0;
 		initializeHealth();
 		objects = new Array<GameObject>();
@@ -223,7 +246,7 @@ public class GameplayController {
 	 * @param x Starting x-position for the player
 	 * @param y Starting y-position for the player
 	 */
-	public void start(float x, float y) {
+	public void start(float x, float y, int width, int height) {
 		// Create the player's ship
 //		player = new Ship();
 //		player.setTexture(beetleTexture);
@@ -231,6 +254,7 @@ public class GameplayController {
 //
 //		// Player must be in object list.
 //		objects.add(player);
+		setCoords(width, height);
 	}
 
 	/**
@@ -254,29 +278,18 @@ public class GameplayController {
 	 * @param width  Current game width
 	 * @param height Current game height
 	 */
-	public void addShell(float width, float height) {
+	public void addShell(float width, float height, int frame) {
+		Shell s = noteCoords.get(frame);
+		if (s != null) {
+//			s.setDestroyed(false);
+			objects.add(s);
+			shellCount++;
 
-		if(shellCount > 4){
-			return;
+			if (shellCount == NUM_NOTES) {
+				setCoords(width, height);
+				shellCount = 0;
+			}
 		}
-		int lane = RandomController.rollInt(0,3);
-
-		Shell b;
-		b = new Shell(lane);
-		b.setX(width/8 + lane * width/4);
-		// Add a new shell
-		if (RandomController.rollInt(0,1) == 0) {
-			b.setTexture(redTexture);
-		} else {
-			b.setTexture(greenTexture);
-		}
-
-		// Position the shella
-		b.setY(height);
-		b.setVX(0);
-		b.setVY(-5f);
-		objects.add(b);
-		shellCount++;
 	}
 
 	/**
@@ -353,8 +366,6 @@ public class GameplayController {
 				else if(((Shell) o).getHitVal() == 0) {
 					setHealth(-MISS_HIT_HEALTH, ((Shell) o).getLine());
 				}
-
-				shellCount--;
 				break;
 			default:
 				break;
@@ -371,14 +382,6 @@ public class GameplayController {
 	 */
 	boolean trigger;
 	public void resolveActions(InputController input, float delta, float width, float height) {
-		// Process the player
-//		if (player != null) {
-//			resolvePlayer(input,delta);
-//			if(player.getPoints() > highscore){
-//				hsflag = true;
-//				highscore = player.getPoints();
-//			}
-//		}
 		boolean[] switches = input.switches();
 		lane = Math.max(Math.min(3, lane + (switches[1] ? 1 : 0) - (switches[0] ? 1 : 0)), 0);
 		trigger = input.didTrigger();
@@ -408,34 +411,6 @@ public class GameplayController {
 				}
 			}
 		}
-	}
 
-	/**
-	 * Process the player's actions.
-	 *
-	 * Notice that firing bullets allocates memory to the heap.  If we were REALLY
-	 * worried about performance, we would use a memory pool here.
-	 *
-	 * @param input  Reference to the input controller
-	 * @param delta  Number of seconds since last animation frame
-	 */
-//	public void resolvePlayer(InputController input, float delta) {
-//		player.setMovement(input.getMovement());
-//		player.setFiring(input.didFire());
-//		player.update(delta);
-//		if (!player.isFiring()) {
-//			return;
-//		}
-//
-//		// Create a new bullet
-//		Bullet b = new Bullet(player);
-//		b.setTexture(bulletTexture);
-//		b.setX(player.getX());
-//		b.setY(player.getY()+player.getRadius()+BULLET_OFFSET);
-//		b.setVY(BULLET_SPEED);
-//		backing.add(b); // Bullet added NEXT frame.
-//
-//		// Prevent player from firing immediately afterwards.
-//		player.resetCooldown();
-//	}
+	}
 }

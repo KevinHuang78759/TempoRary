@@ -62,6 +62,7 @@ public class Shell extends GameObject {
 
 	/** line the note is one */
 	public int line;
+
 	/**
 	 * Returns the type of this object.
 	 *
@@ -128,7 +129,7 @@ public class Shell extends GameObject {
 	public Texture getDamagedTexture() {
 		return dmgTexture;
 	}
-	
+
 	/**
 	 * Updates the animation frame and velocity of this shell.
 	 *
@@ -159,4 +160,21 @@ public class Shell extends GameObject {
 					0.0f, SHELL_SIZE_MULTIPLE, SHELL_SIZE_MULTIPLE);
 	}
 
+	@Override
+	public String toString() {
+		return "Shell{" +
+				"position=" + position +
+				", velocity=" + velocity +
+				", origin=" + origin +
+				", radius=" + radius +
+				", destroyed=" + destroyed +
+				", animator=" + animator +
+				", minvelocy=" + minvelocy +
+				", animeframe=" + animeframe +
+				", damaged=" + damaged +
+				", dmgTexture=" + dmgTexture +
+				", hitStatus=" + hitStatus +
+				", line=" + line +
+				'}';
+	}
 }
