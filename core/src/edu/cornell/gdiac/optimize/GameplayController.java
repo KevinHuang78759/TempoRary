@@ -380,10 +380,8 @@ public class GameplayController {
 //			}
 //		}
 		boolean[] switches = input.switches();
-
-		lane = Math.max(Math.min(3, lane + (switches[2] ? 1 : 0) - (switches[1] ? 1 : 0)), 0);
-
-		trigger = input.isTrigger();
+		lane = Math.max(Math.min(3, lane + (switches[1] ? 1 : 0) - (switches[0] ? 1 : 0)), 0);
+		trigger = input.didTrigger();
 
 		// Process the other (non-ship) objects.
 		for (GameObject o : objects) {
