@@ -76,7 +76,6 @@ public class GameMode implements Screen {
 	/** Amount of game ticks which have gone by */
 	private int tick;
 
-
 	/**
 	 * Creates a new game with the given drawing context.
 	 *
@@ -245,49 +244,21 @@ public class GameMode implements Screen {
 			o.draw(canvas);
 		}
 
-		// Output a simple debugging message stating the number of shells on the screen
-		displayFont.setColor(Color.RED);
-
-		String message = "Current shells: "+gameplayController.getShellCount();
-		canvas.drawText(message, displayFont, COUNTER_OFFSET, canvas.getHeight()-COUNTER_OFFSET);
-
 		int[] health = gameplayController.getHealth();
 		for(int i = 0; i < health.length; ++i){
 			String hp = "Health: " + health[i];
 			canvas.drawText(hp, displayFont, i * canvas.getWidth()/(float)health.length, canvas.getHeight() - COUNTER_OFFSET - 30);
 		}
 
-		String Time = "Time: "+tick;
+		String Time = "Time: " + tick;
 		canvas.drawText(Time, displayFont, COUNTER_OFFSET + 300, canvas.getHeight()-COUNTER_OFFSET);
 		displayFont.setColor(gameplayController.trigger ? Color.CYAN : Color.NAVY);
-		String message2 = "____________";
-		canvas.drawText(message2, displayFont, gameplayController.lane * canvas.getWidth()/4f, canvas.getHeight()/3f);
-
-
-//		if(gameplayController.isAlive()){
-//			if(gameplayController.getPlayer().isInvincible()){
-//				displayFont.setColor(Color.BLUE);
-//				String message2 = "You are INVINCIBLE!!";
-//				canvas.drawText(message2, displayFont, COUNTER_OFFSET, canvas.getHeight()-COUNTER_OFFSET*45);
-//			}
-//			displayFont.setColor(Color.RED);
-//			String message2 = "Current Points: "+gameplayController.getPlayer().getPoints();
-//			canvas.drawText(message2, displayFont, COUNTER_OFFSET, canvas.getHeight()-COUNTER_OFFSET*15);
-//			displayFont.setColor(Color.RED);
-//			String message3 = "Current High Score: "+ gameplayController.gethighscore();
-//			canvas.drawText(message3, displayFont, COUNTER_OFFSET, canvas.getHeight()-COUNTER_OFFSET*30);
-//
-//		}
-
-
-
+		String indicator = "____________";
+		canvas.drawText(indicator, displayFont, gameplayController.lane * canvas.getWidth()/4f, canvas.getHeight()/3f);
 
 		if (gameState == GameState.OVER) {
 			canvas.drawTextCentered("Game Over!",displayFont, GAME_OVER_OFFSET);
 			canvas.drawTextCentered("Press R to Restart", displayFont, 0);
-			if(gameplayController.newhsreached()){
-				canvas.drawTextCentered("New High Score: " + gameplayController.gethighscore(), displayFont, 100);
-			}
 		}
 
 		// Flush information to the graphic buffer.
