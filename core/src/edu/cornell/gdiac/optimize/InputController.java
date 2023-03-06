@@ -157,7 +157,7 @@ public class InputController {
 		// Give priority to gamepad results
 		resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.R));
 
-		boolean triggerPress = Gdx.input.isKeyPressed(Input.Keys.J) || Gdx.input.isKeyPressed(Input.Keys.K);
+		boolean triggerPress = Gdx.input.isKeyPressed(Input.Keys.J) || Gdx.input.isKeyPressed(Input.Keys.K) || Gdx.input.isKeyPressed(Input.Keys.SPACE);
 		boolean leftSwitchPress = Gdx.input.isKeyPressed(Input.Keys.LEFT);
 		boolean rightSwitchPress = Gdx.input.isKeyPressed(Input.Keys.RIGHT);
 		trigger = !triggerLast && triggerPress;

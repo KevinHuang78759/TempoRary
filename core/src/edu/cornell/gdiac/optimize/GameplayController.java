@@ -74,7 +74,7 @@ public class GameplayController {
 	private static final int STRONG_HIT_HEALTH = 2;
 
 	/** The amount of health lost when missing a note */
-	private static final int MISS_HIT_HEALTH = 0;
+	private static final int MISS_HIT_HEALTH = 1;
 
 	/** Maximum amount of health */
 	private static final int MAX_HEALTH = 20;
