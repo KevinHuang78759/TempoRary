@@ -91,7 +91,7 @@ public class GameMode implements Screen {
 
 		// Create the controllers.
 		inputController = new InputController();
-		gameplayController = new GameplayController();
+		gameplayController = new GameplayController(true);
 		// YOU WILL NEED TO MODIFY THIS NEXT LINE
 
 		/*
@@ -152,7 +152,7 @@ public class GameMode implements Screen {
 		case INTRO:
 			gameState = GameState.PLAY;
 			gameplayController.start(canvas.getWidth() / 2.0f, physicsController.getFloorLedge(),
-					canvas.getWidth(), canvas.getHeight());
+					canvas.getWidth(), canvas.getHeight(), inputController.rKey);
 			break;
 		case OVER:
 			if (inputController.didReset()) {
@@ -160,7 +160,7 @@ public class GameMode implements Screen {
 				gameState = GameState.PLAY;
 				gameplayController.reset();
 				gameplayController.start(canvas.getWidth() / 2.0f, physicsController.getFloorLedge(),
-						canvas.getWidth(), canvas.getHeight());
+						canvas.getWidth(), canvas.getHeight(), inputController.rKey);
 			} else {
 				play(delta);
 			}
@@ -220,28 +220,38 @@ public class GameMode implements Screen {
 		float offset = -((totalTime * TIME_MODIFIER) % canvas.getWidth());
 		canvas.begin();
 		canvas.drawBackground(background,offset,-100);
-		// Draw the game objects
-		for (GameObject o : gameplayController.getObjects()) {
-			o.draw(canvas);
-		}
-
-		int[] health = gameplayController.getHealth();
-		for(int i = 0; i < health.length; ++i){
-			String hp = "Health: " + health[i];
-			canvas.drawText(hp, displayFont, i * canvas.getWidth()/(float)health.length, canvas.getHeight() - COUNTER_OFFSET - 30);
-		}
-
-		String Time = "Time: " + ticks;
-		canvas.drawText(Time, displayFont, COUNTER_OFFSET + 300, canvas.getHeight()-COUNTER_OFFSET);
-		displayFont.setColor(gameplayController.trigger ? Color.CYAN : Color.NAVY);
-		String indicator = "____________";
-		canvas.drawText(indicator, displayFont, gameplayController.lane * canvas.getWidth()/4f, canvas.getHeight()/3f);
-
 		if (gameState == GameState.OVER) {
+			displayFont.setColor(Color.NAVY);
 			canvas.drawTextCentered("Game Over!",displayFont, GAME_OVER_OFFSET);
+			displayFont.setColor(Color.NAVY);
 			canvas.drawTextCentered("Press R to Restart", displayFont, 0);
 		}
+		else{
+			// Draw the game objects
+			for (GameObject o : gameplayController.getObjects()) {
+				o.draw(canvas);
+			}
 
+
+			int[] health = gameplayController.getHealth();
+			for(int i = 0; i < health.length; ++i){
+				displayFont.setColor(Color.MAROON);
+				String hp = "Health: " + health[i];
+				canvas.drawText(hp, displayFont, i * canvas.getWidth()/(float)health.length, canvas.getHeight() - COUNTER_OFFSET - 30);
+			}
+
+
+			displayFont.setColor(Color.NAVY);
+			String Time = "Time: " + ticks;
+			canvas.drawText(Time, displayFont, COUNTER_OFFSET + 300, canvas.getHeight()-COUNTER_OFFSET);
+			displayFont.setColor(gameplayController.trigger ? Color.CYAN : Color.NAVY);
+			String indicator = "____________";
+			canvas.drawText(indicator, displayFont, gameplayController.lane * canvas.getWidth()/4f, canvas.getHeight()/3f);
+
+
+
+
+		}
 		// Flush information to the graphic buffer.
 		canvas.end();
 	}

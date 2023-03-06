@@ -124,7 +124,8 @@ public class GameplayController {
 	/**
 	 * Creates a new GameplayController with no active elements.
 	 */
-	public GameplayController() {
+	public boolean randomnotes;
+	public GameplayController(boolean rn) {
 		shellCount = 0;
 		initializeHealth();
 		objects = new Array<GameObject>();
@@ -132,6 +133,7 @@ public class GameplayController {
 		highscore = 0;
 		hsflag = false;
 		lane = 0;
+		randomnotes = rn;
 	}
 
 	private void initializeHealth() {
@@ -246,7 +248,7 @@ public class GameplayController {
 	 * @param x Starting x-position for the player
 	 * @param y Starting y-position for the player
 	 */
-	public void start(float x, float y, int width, int height) {
+	public void start(float x, float y, int width, int height, boolean r) {
 		// Create the player's ship
 //		player = new Ship();
 //		player.setTexture(beetleTexture);
@@ -255,6 +257,7 @@ public class GameplayController {
 //		// Player must be in object list.
 //		objects.add(player);
 		setCoords(width, height);
+		randomnotes = r;
 	}
 
 	/**
@@ -279,17 +282,36 @@ public class GameplayController {
 	 * @param height Current game height
 	 */
 	public void addShell(float width, float height, int frame) {
-		Shell s = noteCoords.get(frame);
-		if (s != null) {
+		if(!randomnotes){
+			//add notes in fixed pattern
+			Shell s = noteCoords.get(frame);
+			if (s != null) {
 //			s.setDestroyed(false);
-			objects.add(s);
-			shellCount++;
+				objects.add(s);
+				shellCount++;
 
-			if (shellCount == NUM_NOTES) {
-				setCoords(width, height);
-				shellCount = 0;
+				if (shellCount == NUM_NOTES) {
+					setCoords(width, height);
+					shellCount = 0;
+				}
+			}
+		}else{
+			//add notes randomly - to a random lane with fixed probability
+			if(frame%25 == 0){
+				int det = RandomController.rollInt(0,4);
+				if(det < 4){
+					Shell s = new Shell(det);
+					s.setX(width/8 + det * width/4);
+					s.setTexture(redTexture);
+					s.setY(height);
+					s.setVX(0);
+					s.setVY(-5f);
+					objects.add(s);
+					++shellCount;
+				}
 			}
 		}
+
 	}
 
 	/**
