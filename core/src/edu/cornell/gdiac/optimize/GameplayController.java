@@ -280,29 +280,8 @@ public class GameplayController {
 	 * @param height Current game height
 	 */
 	public void addShell(float width, float height, int frame) {
-
-//		if(shellCount > 4){
-//			return;
-//		}
-//		int lane = RandomController.rollInt(0,3);
-
-		Shell b;
-
-		b = noteCoords.get(frame);
-
-//		b = new Shell(lane);
-//		b.setX(width/8 + lane * width/4);
-//		// Add a new shell
-//		if (RandomController.rollInt(0,1) == 0) {
-//			b.setTexture(redTexture);
-//		} else {
-//			b.setTexture(greenTexture);
-//		}
-
-		// Position the shella
-//		b.setY(height);
-//		b.setVX(0);
-//		b.setVY(-5f);
+		Shell b = noteCoords.get(frame);
+		System.out.println("frame " + frame);
 		if (b != null) {
 			objects.add(b);
 			shellCount++;

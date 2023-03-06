@@ -16,11 +16,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.optimize.entity.Shell;
 import edu.cornell.gdiac.util.*;
-
-import javax.annotation.processing.SupportedSourceVersion;
-import java.util.HashMap;
 
 /**
  * The primary controller class for the game.
@@ -78,7 +74,7 @@ public class GameMode implements Screen {
 	private ScreenListener listener;
 
 	/** Amount of game ticks which have gone by */
-	private int tick;
+	private int ticks;
 
 	/**
 	 * Creates a new game with the given drawing context.
@@ -89,7 +85,7 @@ public class GameMode implements Screen {
 	public GameMode(GameCanvas canvas) {
 		this.canvas = canvas;
 		active = false;
-		tick = 0;
+		ticks = 0;
 		// Null out all pointers, 0 out all ints, etc.
 		gameState = GameState.INTRO;
 
@@ -147,51 +143,36 @@ public class GameMode implements Screen {
 	 * @param delta Number of seconds since last animation frame
 	 */
 
-	int fp = 1;
-	int counter = 0;
 	private void update(float delta) {
-
-//		int nfp = (int) (1f/delta);
-//
-//		if(nfp - fp > 2 || fp - nfp > 2){
-//			System.out.println(fp + " " + nfp);
-//			fp = nfp;
-//			System.out.println(counter);
-//			counter = 0;
-//		}
-//
-//		++counter;
-
 		// Process the game input
 		inputController.readInput();
-
-
 
 		// Test whether to reset the game.
 		switch (gameState) {
 		case INTRO:
 			gameState = GameState.PLAY;
-			gameplayController.start(canvas.getWidth() / 2.0f, physicsController.getFloorLedge(), canvas.getWidth(), canvas.getHeight());
+			gameplayController.start(canvas.getWidth() / 2.0f, physicsController.getFloorLedge(),
+					canvas.getWidth(), canvas.getHeight());
 			break;
 		case OVER:
 			if (inputController.didReset()) {
-				tick = 0;
+				ticks = 0;
 				gameState = GameState.PLAY;
 				gameplayController.reset();
-				gameplayController.start(canvas.getWidth() / 2.0f, physicsController.getFloorLedge(), canvas.getWidth(), canvas.getHeight());
+				gameplayController.start(canvas.getWidth() / 2.0f, physicsController.getFloorLedge(),
+						canvas.getWidth(), canvas.getHeight());
 			} else {
 				play(delta);
 			}
 			break;
 		case PLAY:
 			play(delta);
-			tick++;
+			ticks++;
 			break;
 		default:
 			break;
 		}
 	}
-	int done = 0;
 
 	/**
 	 * This method processes a single step in the game loop.
@@ -199,29 +180,21 @@ public class GameMode implements Screen {
 	 * @param delta Number of seconds since last animation frame
 	 */
 	protected void play(float delta) {
-		// if no player is alive, declare game over
-//		if (!gameplayController.isAlive()) {
-//			gameState = GameState.OVER;
-//		}
-		// Add a new shell if time.
-
 		// create some kind of data structure for coordinates of notes
 		// hm {frame : notes}
+		int currTick = ticks % 1800;
+		gameplayController.addShell(canvas.getWidth(), canvas.getHeight(), currTick);
 
-		gameplayController.addShell(canvas.getWidth(), canvas.getHeight(), ticks);
-
-		ticks = (ticks + 1) % 1800;
-		// TODO: FINISH THIS
-
-		if (tick % 120 == 0){
+		if (ticks % 120 == 0){
 			for (int i = 0; i < gameplayController.lineAmount(); i++) {
 				gameplayController.setHealth(-1, i);
 			}
 		}
 
 		for (int health : gameplayController.getHealth()) {
-			if (health == 0){
+			if (health == 0) {
 				gameState = GameState.OVER;
+				break;
 			}
 		}
 		// Update objects.
@@ -258,7 +231,7 @@ public class GameMode implements Screen {
 			canvas.drawText(hp, displayFont, i * canvas.getWidth()/(float)health.length, canvas.getHeight() - COUNTER_OFFSET - 30);
 		}
 
-		String Time = "Time: " + tick;
+		String Time = "Time: " + ticks;
 		canvas.drawText(Time, displayFont, COUNTER_OFFSET + 300, canvas.getHeight()-COUNTER_OFFSET);
 		displayFont.setColor(gameplayController.trigger ? Color.CYAN : Color.NAVY);
 		String indicator = "____________";
