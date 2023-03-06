@@ -144,48 +144,40 @@ public class InputController {
 	 */
 	private boolean trigger;
 
-	private boolean lswitch;
-	private boolean rswitch;
-	private boolean allswitch;
+	private boolean leftSwitch;
+	private boolean rightSwitch;
 
 	private boolean hold;
 
-	private boolean tlast = false;
-	private boolean lslast = false;
-	private boolean rslast = false;
-	private boolean aslast = false;
+	private boolean triggerLast = false;
+	private boolean leftSwitchLast = false;
+	private boolean rightSwitchLast = false;
 
 	private void readKeyboard(boolean secondary) {
 		// Give priority to gamepad results
 		resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.R));
-		floodPressed = (secondary && floodPressed) || (Gdx.input.isKeyPressed(Input.Keys.F));
-		exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
 
-		offset = (secondary ? offset : 0.0f);
-		if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-			offset += 1.0f;
-		}
-		if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-			offset -= 1.0f;
-		}
+		boolean triggerPress = Gdx.input.isKeyPressed(Input.Keys.J) || Gdx.input.isKeyPressed(Input.Keys.K);
+		boolean leftSwitchPress = Gdx.input.isKeyPressed(Input.Keys.LEFT);
+		boolean rightSwitchPress = Gdx.input.isKeyPressed(Input.Keys.RIGHT);
+		trigger = !triggerLast && triggerPress;
+		leftSwitch = !leftSwitchLast && leftSwitchPress;
+		rightSwitch = !rightSwitchLast && rightSwitchPress;
 
-		boolean tpress = Gdx.input.isKeyPressed(Input.Keys.SPACE);
-		boolean rspress = Gdx.input.isKeyPressed(Input.Keys.PERIOD);
-		boolean lspress = Gdx.input.isKeyPressed(Input.Keys.COMMA);
-		trigger = !tlast && tpress;
-		lswitch = !lslast && lspress;
-		rswitch = !rslast && rspress;
-
-		tlast = tpress;
-		rslast = rspress;
-		lslast = lspress;
-
-		//firePressed =  (secondary && firePressed) || Gdx.input.isKeyPressed(Input.Keys.SPACE);
+		triggerLast = triggerPress;
+		rightSwitchLast = rightSwitchPress;
+		leftSwitchLast = leftSwitchPress;
 	}
+
+	/*
+	 * Returns an array that represents the if left switch or right switch key are being pressed
+	 */
 	public boolean[] switches(){
-		return new boolean[]{allswitch, lswitch, rswitch};
+		return new boolean[]{leftSwitch, rightSwitch};
 	}
-	public boolean isTrigger(){
+
+	public boolean didTrigger(){
 		return trigger;
 	}
+
 }

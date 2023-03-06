@@ -58,15 +58,6 @@ public class Shell extends GameObject {
 	/** The backup texture to use if we are damaged */
 	private Texture dmgTexture;
 
-	//#region REMOVE ME
-	// Used to create shooter shells
-	/** Whether this shell can shoot */
-	private boolean shooter;
-	/** Whether this shell is actively firing */
-	private boolean firing;
-	/** Cooldown time until we shoot again */
-	private int cooldown;
-	//#endregion
 	public int hitStatus;
 
 	/** line the note is one */
@@ -82,15 +73,6 @@ public class Shell extends GameObject {
 	public ObjectType getType() {
 		return ObjectType.SHELL;
 	}
-
-	/**
-	 * Returns the friction value for collisions
-	 *
-	 * @return the friction value for collisions
-	 */
-//	public float getFriction() {
-//		return friction;
-//	}
 
 	/**
 	 * Returns the minimum y-velocity on a bounce
@@ -117,58 +99,23 @@ public class Shell extends GameObject {
 		destroyed = true;
 	}
 	
-	//#region REMOVE ME
-	/**
-	 * Initializes a shell as a shooter.
-	 */
-	public void initShooter() {
-		damaged = true; // Only needs to be shot once
-		shooter = true;
-		cooldown = 0;
-	}
-	
-	/**
-	 * Returns true if this shell is equipped with weapons.
-	 *
-	 * @return true if this shell is equipped with weapons.
-	 */
-	public boolean isShooter() {
-		return shooter;
-	}
-
-	/**
-	 * Returns true if this shell is currently firing.
-	 *
-	 * @return true if this shell is currently firing.
-	 */
-	public boolean isFiring() {
-		return shooter && firing;
-	}
-	
-	/**
-	 * Resets the cooldown for a shooter that just fired.
-	 */
-	public void resetCooldown() {
-		cooldown = 50;
-	}
-	//#endregion
-	
 	/**
 	 * Initialize shell with trivial starting position.
 	 */
 	public Shell(int line) {
-		// Set friction multiplier for this shell
-		//friction = RandomController.rollFloat(MIN_FRICTION_MULT, MAX_FRICTION_MULT);
 		// Set minimum Y velocity for this shell
 		this.line = line;
 		minvelocy = -2f;
 		hitStatus = 0;
 		animeframe = 0.0f;
 	}
+
 	public int getHitVal(){
 		return hitStatus;
 	}
+
 	public int getLine() { return line;}
+
 	public void setTexture(Texture texture) {
 		animator = new FilmStrip(texture,1,NUM_ANIM_FRAMES,NUM_ANIM_FRAMES);
 		origin = new Vector2(animator.getRegionWidth()/2.0f, animator.getRegionHeight()/2.0f);
@@ -182,7 +129,6 @@ public class Shell extends GameObject {
 	public Texture getDamagedTexture() {
 		return dmgTexture;
 	}
-
 	
 	/**
 	 * Updates the animation frame and velocity of this shell.
@@ -198,15 +144,6 @@ public class Shell extends GameObject {
 		if (animeframe >= NUM_ANIM_FRAMES) {
 			animeframe -= NUM_ANIM_FRAMES;
 		}
-
-		// Gravity affects the shell
-		//no it doesnt because  its just a note now
-		//velocity.y -= GRAVITY;
-		
-		//#region REMOVE ME
-
-		//#endregion
-		
 	}
 
 	/**

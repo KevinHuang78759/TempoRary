@@ -73,8 +73,14 @@ public class GameplayController {
 	/** The amount of health gained when hitting a note strongly */
 	private static final int STRONG_HIT_HEALTH = 2;
 
-	/** THe amount of health lost when missing a note */
-	private static final int MISS_HIT_HEALTH = 3;
+	/** The amount of health lost when missing a note */
+	private static final int MISS_HIT_HEALTH = 0;
+
+	/** Maximum amount of health */
+	private static final int MAX_HEALTH = 20;
+
+	/** Maximum amount of health */
+	private static final int NUM_LANES = 4;
 
 	/** Reference to player (need to change to allow multiple players) */
 	//private Ship player;
@@ -120,16 +126,19 @@ public class GameplayController {
 	public GameplayController() {
 		//player = null;
 		shellCount = 0;
-		health = new int[4];
-		health[0] = 100;
-		health[1] = 100;
-		health[2] = 100;
-		health[3] = 100;
+		initializeHealth();
 		objects = new Array<GameObject>();
 		backing = new Array<GameObject>();
 		highscore = 0;
 		hsflag = false;
 		lane = 0;
+	}
+
+	private void initializeHealth() {
+		health = new int[NUM_LANES];
+		for (int i = 0; i < NUM_LANES; i++) {
+			health[i] = MAX_HEALTH;
+		}
 	}
 
 	/**
@@ -200,6 +209,29 @@ public class GameplayController {
 	 */
 	public int[] getHealth() {return health;}
 
+	/**
+	 * Changes health of all lines by a certain amount
+	 *
+	 * @param amount The amount health changes by
+	 */
+	public void setHealth(int amount, int line) {
+		if (health[line] + amount <= MAX_HEALTH){
+			health[line] += amount;
+		}
+		else {
+			health[line] = MAX_HEALTH;
+		}
+	}
+
+	/**
+	 * Returns the amount of lines.
+	 *
+	 * @return The amount of lines.
+	 */
+	public int lineAmount(){
+		return health.length;
+	}
+
 	public boolean newhsreached(){
 		return hsflag;
 	}
@@ -234,6 +266,7 @@ public class GameplayController {
 		shellCount = 0;
 		objects.clear();
 		hsflag = false;
+		initializeHealth();
 	}
 
 	/**
@@ -319,9 +352,8 @@ public class GameplayController {
 				break;
 			case SHELL:
 				// Create some stars if hit on beat - more stars if more accurate
-
 				if(((Shell) o).getHitVal() == 1){
-					health[((Shell) o).getLine()] += WEAK_HIT_HEALTH;
+					setHealth(WEAK_HIT_HEALTH, ((Shell) o).getLine());
 					for (int j = 0; j < 3; j++) {
 						Star s = new Star();
 						s.setTexture(starTexture);
@@ -335,7 +367,7 @@ public class GameplayController {
 					}
 				}
 				else if(((Shell) o).getHitVal() == 2) {
-					health[((Shell) o).getLine()] += STRONG_HIT_HEALTH;
+					setHealth(STRONG_HIT_HEALTH, ((Shell) o).getLine());
 					for (int j = 0; j < 9; j++) {
 						Star s = new Star();
 						s.setTexture(starTexture);
@@ -349,7 +381,7 @@ public class GameplayController {
 					}
 				}
 				else if(((Shell) o).getHitVal() == 0) {
-					health[((Shell) o).getLine()] -= MISS_HIT_HEALTH;
+					setHealth(-MISS_HIT_HEALTH, ((Shell) o).getLine());
 				}
 
 				shellCount--;
@@ -378,10 +410,8 @@ public class GameplayController {
 //			}
 //		}
 		boolean[] switches = input.switches();
-
-		lane = Math.max(Math.min(3, lane + (switches[2] ? 1 : 0) - (switches[1] ? 1 : 0)), 0);
-
-		trigger = input.isTrigger();
+		lane = Math.max(Math.min(3, lane + (switches[1] ? 1 : 0) - (switches[0] ? 1 : 0)), 0);
+		trigger = input.didTrigger();
 
 		// Process the other (non-ship) objects.
 		for (GameObject o : objects) {
@@ -407,7 +437,6 @@ public class GameplayController {
 					}
 				}
 			}
-
 		}
 	}
 
