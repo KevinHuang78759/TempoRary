@@ -106,7 +106,6 @@ public class GameplayController {
 			b.setVY(-5f);
 			noteCoords.put(i * 30, b);
 		}
-
 	}
 
 
