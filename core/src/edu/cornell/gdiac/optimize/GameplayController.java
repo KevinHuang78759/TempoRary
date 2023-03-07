@@ -419,12 +419,13 @@ public class GameplayController {
 						System.out.println("Good hit");
 						((Shell) o).hitStatus = 2;
 						o.setDestroyed(true);
+						return;
 
 					} else if (o.getY() <= (height/3f + o.getRadius()/3f) && o.getY() >= (height/3f - 7*o.getRadius()/3f)) {
 						System.out.println("hit");
 						((Shell) o).hitStatus = 1;
 						o.setDestroyed(true);
-
+						return;
 					}
 					else {
 						System.out.println("miss");
