@@ -371,7 +371,7 @@ public class GameplayController {
 				}
 				else if(((Note) o).getHitVal() == 2) {
 					setHealth(STRONG_HIT_HEALTH, ((Note) o).getLine());
-					for (int j = 0; j < 9; j++) {
+					for (int j = 0; j < 45; j++) {
 						Star s = new Star();
 						s.setTexture(starTexture);
 						s.getPosition().set(o.getPosition());
