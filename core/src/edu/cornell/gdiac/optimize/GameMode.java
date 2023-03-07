@@ -166,7 +166,15 @@ public class GameMode implements Screen {
 			}
 			break;
 		case PLAY:
-			play(delta);
+			if (inputController.didReset()) {
+				ticks = 0;
+				gameState = GameState.PLAY;
+				gameplayController.reset();
+				gameplayController.start(canvas.getWidth() / 2.0f, physicsController.getFloorLedge(),
+						canvas.getWidth(), canvas.getHeight(), inputController.rKey);
+			} else {
+				play(delta);
+			}
 			ticks++;
 			break;
 		default:
