@@ -1,5 +1,5 @@
 /*
- * Shell.java
+ * Note.java
  *
  * This is a passive model, and this model does very little by itself.  
  * All of its work is done by the CollisionController or the 
@@ -27,7 +27,7 @@ import com.badlogic.gdx.graphics.*;
 /**
  * Model class for enemy shells.
  */
-public class Shell extends GameObject {
+public class Note extends GameObject {
 	// Physics constants
 	/** Maximum friction multiplier for collisions */
 	private static final float MAX_FRICTION_MULT = 0.95f;
@@ -71,7 +71,7 @@ public class Shell extends GameObject {
 	 * @return the type of this object.
 	 */
 	public ObjectType getType() {
-		return ObjectType.SHELL;
+		return ObjectType.NOTE;
 	}
 
 	/**
@@ -102,7 +102,7 @@ public class Shell extends GameObject {
 	/**
 	 * Initialize shell with trivial starting position.
 	 */
-	public Shell(int line) {
+	public Note(int line) {
 		// Set minimum Y velocity for this shell
 		this.line = line;
 		minvelocy = -2f;
@@ -162,7 +162,7 @@ public class Shell extends GameObject {
 
 	@Override
 	public String toString() {
-		return "Shell{" +
+		return "Note{" +
 				"position=" + position +
 				", velocity=" + velocity +
 				", origin=" + origin +

@@ -27,8 +27,6 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.optimize.entity.*;
 import edu.cornell.gdiac.optimize.GameObject.ObjectType;
 
-import java.util.Random;
-
 import java.util.HashMap;
 
 /**
@@ -87,7 +85,7 @@ public class GameplayController {
 
 	/** Reference to player (need to change to allow multiple players) */
 	//private Ship player;
-	/** Shell count for the display in window corner */
+	/** Note count for the display in window corner */
 	private int shellCount;
 
 	/** health of lines */
@@ -99,14 +97,14 @@ public class GameplayController {
 	/** The backing set for garbage collection */
 	private Array<GameObject> backing;
 
-	HashMap<Integer, Shell> noteCoords = new HashMap<>();
+	HashMap<Integer, Note> noteCoords = new HashMap<>();
 
 	private void setCoords(float width, float height) {
 		// note appears every two seconds if we have a 30 second loop
 
 		// 1800
 		for (int i = 0; i < NUM_NOTES; i++) {
-			Shell s = new Shell (i%4);
+			Note s = new Note(i%4);
 			s.setX(width/8 + (i % 4) * width/4);
 			s.setTexture(redTexture);
 			s.setY(height);
@@ -284,7 +282,7 @@ public class GameplayController {
 	public void addShell(float width, float height, int frame) {
 		if(!randomnotes){
 			//add notes in fixed pattern
-			Shell s = noteCoords.get(frame);
+			Note s = noteCoords.get(frame);
 			if (s != null) {
 //			s.setDestroyed(false);
 				objects.add(s);
@@ -300,7 +298,7 @@ public class GameplayController {
 			if(frame%25 == 0){
 				int det = RandomController.rollInt(0,4);
 				if(det < 4){
-					Shell s = new Shell(det);
+					Note s = new Note(det);
 					s.setX(width/8 + det * width/4);
 					s.setTexture(redTexture);
 					s.setY(height);
@@ -355,10 +353,10 @@ public class GameplayController {
 			case SHIP:
 				//player = null;
 				break;
-			case SHELL:
+			case NOTE:
 				// Create some stars if hit on beat - more stars if more accurate
-				if(((Shell) o).getHitVal() == 1){
-					setHealth(WEAK_HIT_HEALTH, ((Shell) o).getLine());
+				if(((Note) o).getHitVal() == 1){
+					setHealth(WEAK_HIT_HEALTH, ((Note) o).getLine());
 					for (int j = 0; j < 3; j++) {
 						Star s = new Star();
 						s.setTexture(starTexture);
@@ -371,8 +369,8 @@ public class GameplayController {
 						backing.add(s);
 					}
 				}
-				else if(((Shell) o).getHitVal() == 2) {
-					setHealth(STRONG_HIT_HEALTH, ((Shell) o).getLine());
+				else if(((Note) o).getHitVal() == 2) {
+					setHealth(STRONG_HIT_HEALTH, ((Note) o).getLine());
 					for (int j = 0; j < 9; j++) {
 						Star s = new Star();
 						s.setTexture(starTexture);
@@ -385,8 +383,8 @@ public class GameplayController {
 						backing.add(s);
 					}
 				}
-				else if(((Shell) o).getHitVal() == 0) {
-					setHealth(-MISS_HIT_HEALTH, ((Shell) o).getLine());
+				else if(((Note) o).getHitVal() == 0) {
+					setHealth(-MISS_HIT_HEALTH, ((Note) o).getLine());
 				}
 				break;
 			default:
@@ -411,25 +409,25 @@ public class GameplayController {
 		// Process the other (non-ship) objects.
 		for (GameObject o : objects) {
 			o.update(delta);
-			if(o.getType() == ObjectType.SHELL){
-				if(trigger && lane == ((Shell)o).getLine()){
+			if(o.getType() == ObjectType.NOTE){
+				if(trigger && lane == ((Note)o).getLine()){
 					System.out.println(height/3f + " " + o.getY() + " " + o.getRadius());
 
 					if(o.getY() <= (height/3f - o.getRadius()/4f) && o.getY() >= (height/3f - 3*o.getRadius()/4f)){
 						System.out.println("Good hit");
-						((Shell) o).hitStatus = 2;
+						((Note) o).hitStatus = 2;
 						o.setDestroyed(true);
 						return;
 
 					} else if (o.getY() <= (height/3f + o.getRadius()/3f) && o.getY() >= (height/3f - 7*o.getRadius()/3f)) {
 						System.out.println("hit");
-						((Shell) o).hitStatus = 1;
+						((Note) o).hitStatus = 1;
 						o.setDestroyed(true);
 						return;
 					}
 					else {
 						System.out.println("miss");
-						((Shell) o).hitStatus = 0;
+						((Note) o).hitStatus = 0;
 					}
 				}
 			}

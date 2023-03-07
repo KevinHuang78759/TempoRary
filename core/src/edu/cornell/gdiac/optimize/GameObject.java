@@ -45,7 +45,7 @@ public abstract class GameObject {
 	 */
 	public enum ObjectType {
 		/** A shell, which lives until it is destroyed by a star or bullet */
-		SHELL,
+		NOTE,
 		/** A ship, which lives until it is destroyed by a shell */
 		SHIP,
 		/** A bullet, which is fired from the ship */

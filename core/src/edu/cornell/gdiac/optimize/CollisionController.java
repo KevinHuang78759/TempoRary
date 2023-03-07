@@ -19,16 +19,12 @@
  */
 package edu.cornell.gdiac.optimize;
 
-import com.badlogic.gdx.Game;
-import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.math.*;
 import edu.cornell.gdiac.optimize.entity.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
 
 /**
  * Controller implementing simple game physics.
@@ -511,9 +507,9 @@ public class CollisionController {
 	private void processBounds(GameObject o, int offset) {
 		// Dispatch the appropriate helper for each type
 		switch (o.getType()) {
-		case SHELL:
+		case NOTE:
 			// Only shells care about the offset
-			handleBounds((Shell)o, offset);
+			handleBounds((Note)o, offset);
 			break;
 		case STAR:
 			handleBounds((Star)o);
@@ -535,10 +531,10 @@ public class CollisionController {
 	 * Obviously an shell off-screen is out of bounds.  In addition, shells cannot
 	 * penetrate the box and bump.
 	 *
-	 * @param sh     Shell to check 
+	 * @param sh     Note to check
 	 * @param offset Offset of the box and bump 
 	 */
-	private void handleBounds(Shell sh, int offset) {
+	private void handleBounds(Note sh, int offset) {
 		// Hit the rectangular step 
 		// (done three times to account for the fact that it could be on the right 
 		// side of the screen but also appearing on the left due to scrolling, or 
@@ -662,19 +658,19 @@ public class CollisionController {
 	private void processCollision(GameObject o1, GameObject o2) {
 		// Dispatch the appropriate helper for each type
 		switch (o1.getType()) {
-		case SHELL:
+		case NOTE:
 			switch (o2.getType()) {
-			case SHELL:
-				handleCollision((Shell)o1, (Shell)o2);
+			case NOTE:
+				handleCollision((Note)o1, (Note)o2);
 				break;
 			case STAR:
-				handleCollision((Shell)o1, (Star)o2);
+				handleCollision((Note)o1, (Star)o2);
 				break;
 			case BULLET:
-				handleCollision((Shell)o1, (Bullet)o2);
+				handleCollision((Note)o1, (Bullet)o2);
 				break;
 			case SHIP:
-				handleCollision((Shell)o1, (Ship)o2);
+				handleCollision((Note)o1, (Ship)o2);
 				break;
 			default:
 				break;
@@ -682,9 +678,9 @@ public class CollisionController {
 			break;
 		case STAR:
 			switch (o2.getType()) {
-			case SHELL:
+			case NOTE:
 				// Reuse shell helper
-				handleCollision((Shell)o2, (Star)o1);
+				handleCollision((Note)o2, (Star)o1);
 				break;
 			case STAR:
 				handleCollision((Star)o1, (Star)o2);
@@ -701,9 +697,9 @@ public class CollisionController {
 			break;
 		case BULLET:
 			switch (o2.getType()) {
-			case SHELL:
+			case NOTE:
 				// Reuse shell helper
-				handleCollision((Shell)o2, (Bullet)o1);
+				handleCollision((Note)o2, (Bullet)o1);
 				break;
 			case STAR:
 				// Reuse star helper
@@ -721,9 +717,9 @@ public class CollisionController {
 			break;
 		case SHIP:
 			switch (o2.getType()) {
-			case SHELL:
+			case NOTE:
 				// Reuse shell helper
-				handleCollision((Shell)o2, (Ship)o1);
+				handleCollision((Note)o2, (Ship)o1);
 				break;
 			case STAR:
 				// Reuse star helper
@@ -751,7 +747,7 @@ public class CollisionController {
 	 * @param s1 First shell 
 	 * @param s2 Second shell 
 	 */
-	private void handleCollision(Shell s1, Shell s2) {
+	private void handleCollision(Note s1, Note s2) {
 		if (s1.isDestroyed() || s2.isDestroyed()) {
 			return;
 		}
@@ -796,7 +792,7 @@ public class CollisionController {
 	 * @param se The shell 
 	 * @param st The star 
 	 */
-	private void handleCollision(Shell se, Star st) {
+	private void handleCollision(Note se, Star st) {
 		if (se.isDestroyed() || st.isDestroyed()) {
 			return;
 		}
@@ -826,7 +822,7 @@ public class CollisionController {
 	 * @param se The shell 
 	 * @param bu The bullet 
 	 */
-	private void handleCollision(Shell se, Bullet bu) {
+	private void handleCollision(Note se, Bullet bu) {
 		if (se.isDestroyed() || bu.isDestroyed()) {
 			return;
 		}
@@ -860,7 +856,7 @@ public class CollisionController {
 	 * @param se The shell 
 	 * @param sh The ship 
 	 */
-	private void handleCollision(Shell se, Ship sh) {
+	private void handleCollision(Note se, Ship sh) {
 		if (se.isDestroyed() || sh.isDestroyed()) {
 			return;
 		}
