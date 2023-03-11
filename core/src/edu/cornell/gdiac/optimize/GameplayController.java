@@ -505,6 +505,7 @@ public class GameplayController {
 
 						} else if (o.getY() <= (hitbarY + o.getRadius()) && o.getY() >= (hitbarY - o.getRadius())) {
 							System.out.println("hit");
+							((Note) o).hitStatus = 1;
 							health[currentLane] += ((Note) o).hitStatus*recovery;
 							health[currentLane] = Math.min(MAX_HEALTH, health[currentLane]);
 							o.setDestroyed(true);
@@ -522,6 +523,12 @@ public class GameplayController {
 		}
 		else{
 			++t_progress;
+			for (GameObject o : objects) {
+				if (o.destroyed) {
+					continue;
+				}
+				o.update(delta);
+			}
 		}
 
 	}
