@@ -181,6 +181,7 @@ public class GameMode implements Screen {
 			break;
 		}
 	}
+	int currTick;
 
 	/**
 	 * This method processes a single step in the game loop.
@@ -190,8 +191,11 @@ public class GameMode implements Screen {
 	protected void play(float delta) {
 		// create some kind of data structure for coordinates of notes
 		// hm {frame : notes}
-		int currTick = ticks % 1800;
+		currTick = ticks % 1800;
 		gameplayController.addShell(canvas.getHeight(), currTick);
+		if(gameplayController.checkHealth(currTick%150==0)){
+			gameState = GameState.OVER;
+		}
 //
 //		if (ticks % 120 == 0){
 //			for (int i = 0; i < gameplayController.lineAmount(); i++) {
@@ -199,12 +203,7 @@ public class GameMode implements Screen {
 //			}
 //		}
 
-		for (int health : gameplayController.getHealth()) {
-			if (health == 0) {
-				gameState = GameState.OVER;
-				break;
-			}
-		}
+
 		// Update objects.
 		gameplayController.resolvePhase(inputController, delta);
 		gameplayController.resolveActions(inputController,delta);
@@ -233,11 +232,9 @@ public class GameMode implements Screen {
 			displayFont.setColor(Color.NAVY);
 			canvas.drawTextCentered("Game Over!",displayFont, GAME_OVER_OFFSET+50);
 			displayFont.setColor(Color.NAVY);
-			canvas.drawTextCentered("Press R to Restart", displayFont, 0);
+			canvas.drawTextCentered("Press T to Restart", displayFont, 0);
 			displayFont.setColor(Color.NAVY);
 			canvas.drawTextCentered("(Hold H at the same time to change to random notes)", displayFont, -50);
-			// Flush information to the graphic buffer.
-			canvas.end();
 		}
 		else{
 
@@ -246,13 +243,11 @@ public class GameMode implements Screen {
 				o.draw(canvas);
 			}
 
-
-			int[] health = gameplayController.getHealth();
-
 			Color bkgC = new Color(237f/255f, 224f/255f, 1f, 1.0f);
 			canvas.drawRect(gameplayController.LEFTBOUND, gameplayController.TOPBOUND, gameplayController.RIGHTBOUND, canvas.getHeight(), bkgC, true);
 			canvas.drawRect(gameplayController.LEFTBOUND, 0, gameplayController.RIGHTBOUND, gameplayController.BOTTOMBOUND, bkgC, true);
 			float[] curWidths = new float[4];
+			float[] links = new float[16];
 			float curHeight = gameplayController.TOPBOUND - gameplayController.BOTTOMBOUND;
 			for(int i = 0; i < 4; ++i){
 				if(gameplayController.curP == GameplayController.play_phase.NOTES){
@@ -296,12 +291,28 @@ public class GameMode implements Screen {
 						}
 
 					}
+
 				}
 				else{
 					canvas.drawLine(Xcoor, gameplayController.hitbarY, Xcoor + curWidths[i], gameplayController.hitbarY, 3, Color.NAVY);
 				}
+				links[2*i] = Xcoor + curWidths[i]/2;
+				links[2*i+1] = gameplayController.BOTTOMBOUND;
 				Xcoor += curWidths[i];
 				Xcoor += gameplayController.inBetweenWidth;
+			}
+			Xcoor = gameplayController.LEFTBOUND;
+			int[] hp = gameplayController.getHealth();
+			for(int i =0; i < hp.length; ++i){
+				canvas.drawRect(Xcoor+1, gameplayController.BOTTOMBOUND/5+1, Xcoor + (gameplayController.hpwidth *((float)hp[i]/(float)gameplayController.MAX_HEALTH))-1, gameplayController.BOTTOMBOUND*2f/5f-1,hp[i] < gameplayController.MAX_HEALTH/4? Color.RED : Color.GREEN,true);
+
+				canvas.drawRect(Xcoor, gameplayController.BOTTOMBOUND/5, Xcoor + gameplayController.hpwidth, gameplayController.BOTTOMBOUND*2f/5f,Color.BLACK,false);
+				links[8 + 2*i] = Xcoor + gameplayController.hpwidth/2;
+				links[8 + 2*i + 1] = gameplayController.BOTTOMBOUND*2f/5f;
+				Xcoor += gameplayController.hpwidth + gameplayController.hpbet;
+			}
+			for(int i = 0; i < 4; ++i){
+				canvas.drawLine(links[2*i],links[2*i+1],links[8+2*i],links[8+2*i+1],2,Color.BLACK);
 			}
 //			for(int i = 0; i < health.length; ++i){
 //				displayFont.setColor(Color.MAROON);

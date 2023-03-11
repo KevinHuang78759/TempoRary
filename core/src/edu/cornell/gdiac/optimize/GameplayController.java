@@ -76,10 +76,10 @@ public class GameplayController {
 	private static final int STRONG_HIT_HEALTH = 2;
 
 	/** The amount of health lost when missing a note */
-	private static final int MISS_HIT_HEALTH = 1;
+	private static final int MISS_HIT_HEALTH = 2;
 
 	/** Maximum amount of health */
-	private static final int MAX_HEALTH = 20;
+	final int MAX_HEALTH = 30;
 
 	/** Maximum amount of health */
 	private static final int NUM_LANES = 4;
@@ -104,6 +104,8 @@ public class GameplayController {
 	HashMap<Integer, Note> noteCoords = new HashMap<>();
 
 	int currentLane;
+
+	final int recovery = 3;
 
 //	private void setCoords(float width, float height) {
 //		// note appears every two seconds if we have a 30 second loop
@@ -148,6 +150,8 @@ public class GameplayController {
 
 	float hitbarY;
 
+	float hpwidth;
+	float hpbet;
 	public GameplayController(boolean rn, float width, float height){
 		shellCount = 0;
 		initializeHealth();
@@ -160,10 +164,12 @@ public class GameplayController {
 		TOPBOUND = 19f*height/20f;
 		BOTTOMBOUND = height/5f;
 		smallwidth = width/15;
-		inBetweenWidth = smallwidth/4;
+		inBetweenWidth = smallwidth/4f;
 		largewidth = 8f*width/10f - 3*(smallwidth + inBetweenWidth);
 		currentLane = 0;
 		hitbarY = BOTTOMBOUND + 3*height/20f;
+		hpwidth = (RIGHTBOUND - LEFTBOUND)*4/19;
+		hpbet = (RIGHTBOUND - LEFTBOUND - 4*hpwidth)/3f;
 	}
 
 	private void initializeHealth() {
@@ -171,6 +177,20 @@ public class GameplayController {
 		for (int i = 0; i < NUM_LANES; i++) {
 			health[i] = MAX_HEALTH;
 		}
+	}
+
+	public boolean checkHealth(boolean dec) {
+		for (int i = 0; i < NUM_LANES; i++) {
+			health[i] = Math.min(MAX_HEALTH, health[i]);
+			if(dec){
+				--health[i];
+			}
+
+			if(health[i] <= 0){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -241,19 +261,6 @@ public class GameplayController {
 	 */
 	public int[] getHealth() {return health;}
 
-	/**
-	 * Changes health of all lines by a certain amount
-	 *
-	 * @param amount The amount health changes by
-	 */
-	public void setHealth(int amount, int line) {
-		if (health[line] + amount <= MAX_HEALTH){
-			health[line] += amount;
-		}
-		else {
-			health[line] = MAX_HEALTH;
-		}
-	}
 
 	/**
 	 * Returns the amount of lines.
@@ -312,7 +319,6 @@ public class GameplayController {
 	public void addShell(float height, int frame) {
 		if(randomnotes){
 			if(frame%45 == 0 && curP == play_phase.NOTES){
-				System.out.println("called");
 				int det = RandomController.rollInt(0,4);
 				if(det < 4){
 					Note s = new Note(det, Note.NType.BEAT);
@@ -402,7 +408,6 @@ public class GameplayController {
 			case NOTE:
 				// Create some stars if hit on beat - more stars if more accurate
 				if(((Note) o).getHitVal() == 1){
-					setHealth(WEAK_HIT_HEALTH, ((Note) o).getLine());
 					for (int j = 0; j < 3; j++) {
 						Star s = new Star();
 						s.setTexture(starTexture);
@@ -416,7 +421,6 @@ public class GameplayController {
 					}
 				}
 				else if(((Note) o).getHitVal() == 2) {
-					setHealth(STRONG_HIT_HEALTH, ((Note) o).getLine());
 					for (int j = 0; j < 45; j++) {
 						Star s = new Star();
 						s.setTexture(starTexture);
@@ -428,9 +432,6 @@ public class GameplayController {
 						s.getVelocity().set(vx, vy);
 						backing.add(s);
 					}
-				}
-				else if(((Note) o).getHitVal() == 0) {
-					setHealth(-MISS_HIT_HEALTH, ((Note) o).getLine());
 				}
 				break;
 			default:
@@ -497,18 +498,23 @@ public class GameplayController {
 						if(o.getY() <= (hitbarY + o.getRadius()/4f) && o.getY() >= (hitbarY - o.getRadius()/4f)){
 							System.out.println("Good hit");
 							((Note) o).hitStatus = 2;
+							health[currentLane] += ((Note) o).hitStatus*recovery;
+							health[currentLane] = Math.min(MAX_HEALTH, health[currentLane]);
 							o.setDestroyed(true);
 							return;
 
 						} else if (o.getY() <= (hitbarY + o.getRadius()) && o.getY() >= (hitbarY - o.getRadius())) {
 							System.out.println("hit");
-							((Note) o).hitStatus = 1;
+							health[currentLane] += ((Note) o).hitStatus*recovery;
+							health[currentLane] = Math.min(MAX_HEALTH, health[currentLane]);
 							o.setDestroyed(true);
 							return;
 						}
 						else {
 							System.out.println("miss");
 							((Note) o).hitStatus = 0;
+							health[currentLane] -= MISS_HIT_HEALTH;
+							health[currentLane] = Math.max(0, health[currentLane]);
 						}
 					}
 				}
