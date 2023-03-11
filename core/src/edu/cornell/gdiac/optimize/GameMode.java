@@ -91,7 +91,7 @@ public class GameMode implements Screen {
 
 		// Create the controllers.
 		inputController = new InputController();
-		gameplayController = new GameplayController(false,canvas.getWidth(),canvas.getHeight());
+		gameplayController = new GameplayController(true,canvas.getWidth(),canvas.getHeight());
 		// YOU WILL NEED TO MODIFY THIS NEXT LINE
 
 		/*
