@@ -158,7 +158,7 @@ public class GameplayController {
 		objects = new Array<GameObject>();
 		backing = new Array<GameObject>();
 		hsflag = false;
-		randomnotes = rn;
+		randomnotes = true;
 		LEFTBOUND = width/10f;
 		RIGHTBOUND = 9*width/10f;
 		TOPBOUND = 19f*height/20f;
@@ -317,7 +317,9 @@ public class GameplayController {
 	 * @param height Current game height
 	 */
 	public void addShell(float height, int frame) {
+		randomnotes = true;
 		if(randomnotes){
+
 			if(frame%45 == 0 && curP == play_phase.NOTES){
 				int det = RandomController.rollInt(0,4);
 				if(det < 4){
