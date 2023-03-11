@@ -435,6 +435,10 @@ public class GameplayController {
 						backing.add(s);
 					}
 				}
+
+				health[currentLane] += ((Note) o).hitStatus*recovery;
+				health[currentLane] = Math.min(MAX_HEALTH, health[currentLane]);
+				health[currentLane] = Math.max(0, health[currentLane]);
 				break;
 			default:
 				break;
@@ -500,24 +504,20 @@ public class GameplayController {
 						if(o.getY() <= (hitbarY + o.getRadius()/4f) && o.getY() >= (hitbarY - o.getRadius()/4f)){
 							System.out.println("Good hit");
 							((Note) o).hitStatus = 2;
-							health[currentLane] += ((Note) o).hitStatus*recovery;
-							health[currentLane] = Math.min(MAX_HEALTH, health[currentLane]);
+
 							o.setDestroyed(true);
 							return;
 
 						} else if (o.getY() <= (hitbarY + o.getRadius()) && o.getY() >= (hitbarY - o.getRadius())) {
 							System.out.println("hit");
 							((Note) o).hitStatus = 1;
-							health[currentLane] += ((Note) o).hitStatus*recovery;
-							health[currentLane] = Math.min(MAX_HEALTH, health[currentLane]);
+
 							o.setDestroyed(true);
 							return;
 						}
 						else {
 							System.out.println("miss");
 							((Note) o).hitStatus = 0;
-							health[currentLane] -= MISS_HIT_HEALTH;
-							health[currentLane] = Math.max(0, health[currentLane]);
 						}
 					}
 				}

@@ -564,7 +564,9 @@ public class CollisionController {
 		// Check for in bounds on bottom
 		if (sh.getY()-sh.getRadius() < -30) {
 			// Set within bounds on bottom and swap velocity
+			sh.hitStatus = -1;
 			sh.setDestroyed(true);
+
 
 			// Constrict velocity
 			//sh.setVY((float)Math.max(sh.getMinVY(), sh.getVY() * sh.getFriction()));
