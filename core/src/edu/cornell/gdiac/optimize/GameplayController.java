@@ -48,6 +48,10 @@ public class GameplayController {
 	/** Texture for red shells, as they look the same */
 	private Texture redTexture;
 
+
+
+
+
 	/** The minimum x-velocity of a newly generated shell */
 	private static final float MIN_SHELL_VX = 3;
 	/** The maximum y-velocity of a newly generated shell */
@@ -99,26 +103,26 @@ public class GameplayController {
 
 	HashMap<Integer, Note> noteCoords = new HashMap<>();
 
-	private void setCoords(float width, float height) {
-		// note appears every two seconds if we have a 30 second loop
+	int currentLane;
 
-		// 1800
-		for (int i = 0; i < NUM_NOTES; i++) {
-			Note s = new Note(i%4);
-			s.setX(width/8 + (i % 4) * width/4);
-			s.setTexture(redTexture);
-			s.setY(height);
-			s.setVX(0);
-			s.setVY(-5f);
-			noteCoords.put(i * 30, s);
-		}
-	}
-
-	private int highscore;
+//	private void setCoords(float width, float height) {
+//		// note appears every two seconds if we have a 30 second loop
+//
+//		// 1800
+//		for (int i = 0; i < NUM_NOTES; i++) {
+//			Note s = new Note(i%4, Note.NType.BEAT);
+//			s.setX(width/8 + (i % 4) * width/4);
+//			s.setTexture(redTexture);
+//			s.setY(height);
+//			s.setVX(0);
+//			s.setVY(-5f);
+//			noteCoords.put(i * 30, s);
+//		}
+//	}
+//
 
 	private boolean hsflag;
 
-	public int lane;
 	/**
 	 * Creates a new GameplayController with no active elements.
 	 */
@@ -128,10 +132,38 @@ public class GameplayController {
 		initializeHealth();
 		objects = new Array<GameObject>();
 		backing = new Array<GameObject>();
-		highscore = 0;
 		hsflag = false;
-		lane = 0;
+		currentLane = 0;
 		randomnotes = rn;
+	}
+
+	 float LEFTBOUND;
+	 float RIGHTBOUND;
+	 float TOPBOUND;
+	 float BOTTOMBOUND;
+
+	 float smallwidth;
+	 float largewidth;
+	 float inBetweenWidth;
+
+	float hitbarY;
+
+	public GameplayController(boolean rn, float width, float height){
+		shellCount = 0;
+		initializeHealth();
+		objects = new Array<GameObject>();
+		backing = new Array<GameObject>();
+		hsflag = false;
+		randomnotes = rn;
+		LEFTBOUND = width/10f;
+		RIGHTBOUND = 9*width/10f;
+		TOPBOUND = 19f*height/20f;
+		BOTTOMBOUND = height/5f;
+		smallwidth = width/15;
+		inBetweenWidth = smallwidth/4;
+		largewidth = 8f*width/10f - 3*(smallwidth + inBetweenWidth);
+		currentLane = 0;
+		hitbarY = BOTTOMBOUND + 3*height/20f;
 	}
 
 	private void initializeHealth() {
@@ -235,9 +267,7 @@ public class GameplayController {
 	public boolean newhsreached(){
 		return hsflag;
 	}
-	public int gethighscore(){
-		return highscore;
-	}
+
 	/**
 	 * Starts a new game.
 	 *
@@ -254,8 +284,10 @@ public class GameplayController {
 //
 //		// Player must be in object list.
 //		objects.add(player);
-		setCoords(width, height);
+	//	setCoords(width, height);
 		randomnotes = r;
+
+
 	}
 
 	/**
@@ -265,7 +297,6 @@ public class GameplayController {
 		//player = null;
 		shellCount = 0;
 		objects.clear();
-		hsflag = false;
 		initializeHealth();
 	}
 
@@ -276,30 +307,16 @@ public class GameplayController {
 	 * this allocates memory to the heap.  If we were REALLY worried about performance,
 	 * we would use a memory pool here.
 	 *
-	 * @param width  Current game width
 	 * @param height Current game height
 	 */
-	public void addShell(float width, float height, int frame) {
-		if(!randomnotes){
-			//add notes in fixed pattern
-			Note s = noteCoords.get(frame);
-			if (s != null) {
-//			s.setDestroyed(false);
-				objects.add(s);
-				shellCount++;
-
-				if (shellCount == NUM_NOTES) {
-					setCoords(width, height);
-					shellCount = 0;
-				}
-			}
-		}else{
-			//add notes randomly - to a random lane with fixed probability
-			if(frame%25 == 0){
+	public void addShell(float height, int frame) {
+		if(randomnotes){
+			if(frame%45 == 0 && curP == play_phase.NOTES){
+				System.out.println("called");
 				int det = RandomController.rollInt(0,4);
 				if(det < 4){
-					Note s = new Note(det);
-					s.setX(width/8 + det * width/4);
+					Note s = new Note(det, Note.NType.BEAT);
+					s.setX(LEFTBOUND + currentLane*(inBetweenWidth + smallwidth) + largewidth/8f + det*(largewidth/4f));
 					s.setTexture(redTexture);
 					s.setY(height);
 					s.setVX(0);
@@ -309,6 +326,35 @@ public class GameplayController {
 				}
 			}
 		}
+//		if(!randomnotes){
+//			//add notes in fixed pattern
+//			Note s = noteCoords.get(frame);
+//			if (s != null) {
+////			s.setDestroyed(false);
+//				objects.add(s);
+//				shellCount++;
+//
+//				if (shellCount == NUM_NOTES) {
+//					setCoords(width, height);
+//					shellCount = 0;
+//				}
+//			}
+//		}else{
+//			//add notes randomly - to a random lane with fixed probability
+//			if(frame%25 == 0){
+//				int det = RandomController.rollInt(0,4);
+//				if(det < 4){
+//					Note s = new Note(det);
+//					s.setX(width/8 + det * width/4);
+//					s.setTexture(redTexture);
+//					s.setY(height);
+//					s.setVX(0);
+//					s.setVY(-5f);
+//					objects.add(s);
+//					++shellCount;
+//				}
+//			}
+//		}
 
 	}
 
@@ -392,6 +438,13 @@ public class GameplayController {
 		}
 	}
 
+	public enum play_phase{
+		NOTES,
+		TRANSITION
+	}
+	play_phase curP = play_phase.NOTES;
+	int T_SwitchPhases = 20;
+	int goal;
 	/**
 	 * Resolve the actions of all game objects (player and shells)
 	 *
@@ -400,37 +453,69 @@ public class GameplayController {
 	 * @param input  Reference to the input controller
 	 * @param delta  Number of seconds since last animation frame
 	 */
-	boolean trigger;
-	public void resolveActions(InputController input, float delta, float width, float height) {
-		boolean[] switches = input.switches();
-		lane = Math.max(Math.min(3, lane + (switches[1] ? 1 : 0) - (switches[0] ? 1 : 0)), 0);
-		trigger = input.didTrigger();
+	boolean[] triggers = new boolean[4];
 
-		// Process the other (non-ship) objects.
-		for (GameObject o : objects) {
-			o.update(delta);
-			if(o.getType() == ObjectType.NOTE){
-				if(trigger && lane == ((Note)o).getLine()){
-					System.out.println(height/3f + " " + o.getY() + " " + o.getRadius());
-
-					if(o.getY() <= (height/3f - o.getRadius()/4f) && o.getY() >= (height/3f - 3*o.getRadius()/4f)){
-						System.out.println("Good hit");
-						((Note) o).hitStatus = 2;
-						o.setDestroyed(true);
-						return;
-
-					} else if (o.getY() <= (height/3f + o.getRadius()/3f) && o.getY() >= (height/3f - 7*o.getRadius()/3f)) {
-						System.out.println("hit");
-						((Note) o).hitStatus = 1;
-						o.setDestroyed(true);
-						return;
+	int t_progress;
+	public void resolvePhase(InputController input, float delta){
+		if(curP == play_phase.NOTES){
+			boolean[] switches = input.switches();
+			for(int i = 0; i < switches.length; ++i){
+				if(switches[i] && i != currentLane){
+					goal = i;
+					curP = play_phase.TRANSITION;
+					t_progress = 0;
+					for(GameObject o : objects){
+						if(o.getType() == ObjectType.NOTE){
+							o.setDestroyed(true);
+						}
 					}
-					else {
-						System.out.println("miss");
-						((Note) o).hitStatus = 0;
+					break;
+				}
+			}
+		}
+		else{
+			if (t_progress == T_SwitchPhases){
+				currentLane = goal;
+				curP = play_phase.NOTES;
+			}
+		}
+	}
+
+	public void resolveActions(InputController input, float delta) {
+		if(curP == play_phase.NOTES){
+			triggers = input.didTrigger();
+			// Process the objects.
+			for (GameObject o : objects) {
+				if(o.destroyed){
+					continue;
+				}
+				o.update(delta);
+				if(o.getType() == ObjectType.NOTE){
+					if(triggers[((Note)o).getLine()]){
+						System.out.println(hitbarY + " " + o.getY() + " " + o.getRadius());
+
+						if(o.getY() <= (hitbarY + o.getRadius()/4f) && o.getY() >= (hitbarY - o.getRadius()/4f)){
+							System.out.println("Good hit");
+							((Note) o).hitStatus = 2;
+							o.setDestroyed(true);
+							return;
+
+						} else if (o.getY() <= (hitbarY + o.getRadius()) && o.getY() >= (hitbarY - o.getRadius())) {
+							System.out.println("hit");
+							((Note) o).hitStatus = 1;
+							o.setDestroyed(true);
+							return;
+						}
+						else {
+							System.out.println("miss");
+							((Note) o).hitStatus = 0;
+						}
 					}
 				}
 			}
+		}
+		else{
+			++t_progress;
 		}
 
 	}

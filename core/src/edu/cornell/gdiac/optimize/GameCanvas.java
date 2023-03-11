@@ -18,9 +18,13 @@
 package edu.cornell.gdiac.optimize;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
+
+import java.util.ArrayList;
+
 
 /**
  * Primary view class for the game, abstracting the basic graphics calls.
@@ -30,7 +34,9 @@ import com.badlogic.gdx.graphics.g2d.*;
  * in future labs.
  */
 public class GameCanvas {
+
 	/** While we are not drawing polygons (yet), this spritebatch is more reliable */
+
 	private PolygonSpriteBatch spriteBatch;
 	
 	/** Track whether or not we are active (for error checking) */
@@ -49,7 +55,9 @@ public class GameCanvas {
 	private Affine2 local;
 	/** Cache object to unify everything under a master draw method */
 	private TextureRegion holder;
-
+	Pixmap pixel;
+	ArrayList<Texture> disp;
+	Texture t;
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.
 	 * 
@@ -60,13 +68,15 @@ public class GameCanvas {
 	public GameCanvas() {
 		active = false;
 		spriteBatch = new PolygonSpriteBatch();
-		
 		// Set the projection matrix (for proper scaling)
 		spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, getWidth(), getHeight());
-		
 		// Initialize the cache objects
 		holder = new TextureRegion();
 		local  = new Affine2();
+		pixel = new Pixmap(1,1,Pixmap.Format.RGB888);
+		pixel.setColor(Color.WHITE);
+		pixel.fill();
+		t = new Texture(pixel);
 	}
 		
     /**
@@ -77,7 +87,11 @@ public class GameCanvas {
 			Gdx.app.error("GameCanvas", "Cannot dispose while drawing active", new IllegalStateException());
 			return;
 		}
+		pixel.dispose();
 		spriteBatch.dispose();
+		t.dispose();
+		PRG = null;
+		pixel = null;
     	spriteBatch = null;
     	local  = null;
     	holder = null;
@@ -196,8 +210,6 @@ public class GameCanvas {
 	 * This method raises an IllegalStateException if called while drawing is
 	 * active (e.g. in-between a begin-end pair).
 	 *
-	 * @param fullscreen Whether this canvas should change to fullscreen.
-	 * @param desktop 	 Whether to use the current desktop resolution
 	 */	 
 	public void setFullscreen(boolean value) {
 		if (active) {
@@ -251,6 +263,7 @@ public class GameCanvas {
 		switch (state) {
 		case NO_PREMULT:
 			spriteBatch.setBlendFunction(GL20.GL_SRC_ALPHA,GL20.GL_ONE_MINUS_SRC_ALPHA);
+
 			break;
 		case ALPHA_BLEND:
 			spriteBatch.setBlendFunction(GL20.GL_ONE,GL20.GL_ONE_MINUS_SRC_ALPHA);
@@ -271,9 +284,11 @@ public class GameCanvas {
 	 * Nothing is flushed to the graphics card until the method end() is called.
 	 */
     public void begin() {
+		unitPerp = new Vector2();
     	spriteBatch.begin();
+		disp = new ArrayList<>();
     	active = true;
-    	
+
     	// Clear the screen
 		Gdx.gl.glClearColor(0.39f, 0.58f, 0.93f, 1.0f);  // Homage to the XNA years
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -283,9 +298,11 @@ public class GameCanvas {
 	 * Ends a drawing sequence, flushing textures to the graphics card.
 	 */
     public void end() {
+		spriteBatch.setColor(Color.WHITE);
     	spriteBatch.end();
     	active = false;
     }
+
     
 	/**
      * Draw the seamless background image.
@@ -311,6 +328,61 @@ public class GameCanvas {
         spriteBatch.draw(image, x+w, y);
     }
 
+	Vector2 unitPerp;
+
+	public void drawLine(float x1, float y1, float x2, float y2, int thickness, Color c){
+
+		float dist = (float) Math.sqrt((x2 - x1)*(x2-x1) + (y2 - y1)*(y2-y1));
+		unitPerp.set((y2-y1)/dist, (x1-x2)/dist);
+
+		float[] coors = new float[]{x1 + (thickness/2f)*unitPerp.x,y1 + (thickness/2f)*unitPerp.y,
+									x1 - (thickness/2f)*unitPerp.x,y1 - (thickness/2f)*unitPerp.y,
+									x2 + (thickness/2f)*unitPerp.x,y2 + (thickness/2f)*unitPerp.y,
+									x2 - (thickness/2f)*unitPerp.x,y2 - (thickness/2f)*unitPerp.y};
+
+
+		short[] triangles = new short[]{0, 1, 2, 1, 2, 3};
+		PolygonRegion PRG = new PolygonRegion(new TextureRegion(t), coors, triangles);
+		Color tint = new Color(c.r, c.g,c.b,1f);
+
+		spriteBatch.setColor(tint);
+		spriteBatch.draw(PRG, 0, 0);
+
+	}
+
+	PolygonRegion PRG;
+	public void drawRect(float x1, float y1, float x2, float y2, Color c, boolean filled){
+
+		if(filled){
+			float[] coors = new float[]{x1,y1,
+										x1,y2,
+										x2,y1,
+										x2,y2};
+
+
+			short[] triangles = new short[]{0, 1, 2, 1, 3, 2};
+			TextureRegion tr = new TextureRegion(t);
+
+			PRG = new PolygonRegion(new TextureRegion(t), coors, triangles);
+			Color tint = new Color(c.r, c.g,c.b,1f);
+			spriteBatch.setColor(tint);
+			spriteBatch.draw(PRG, 0, 0);
+		}
+		else{
+			drawLine(x1,y1,x1,y2,3, c);
+			drawLine(x1,y1,x2,y1,3, c);
+			drawLine(x2,y1,x2,y2,3, c);
+			drawLine(x1,y2,x2,y2,3, c);
+		}
+
+
+	}
+
+
+	public void drawRect(Vector2 BL, float w, float h, Color c, boolean filled){
+		drawRect(BL.x, BL.y, BL.x + w, BL.y + h, c, filled);
+	}
+
 	/**
 	 * Draws the tinted texture at the given position.
 	 *
@@ -322,7 +394,6 @@ public class GameCanvas {
 	 * at the given coordinates.
 	 *
 	 * @param image The texture to draw
-	 * @param tint  The color tint
 	 * @param x 	The x-coordinate of the bottom left corner
 	 * @param y 	The y-coordinate of the bottom left corner
 	 */
@@ -396,8 +467,6 @@ public class GameCanvas {
 	 * the texture will be unscaled.  The bottom left of the texture will be positioned
 	 * at the given coordinates.
 	 *
-	 * @param image The texture to draw
-	 * @param tint  The color tint
 	 * @param x 	The x-coordinate of the bottom left corner
 	 * @param y 	The y-coordinate of the bottom left corner
 	 */
@@ -441,7 +510,6 @@ public class GameCanvas {
 	 * The local transformations in this method are applied in the following order: 
 	 * scaling, then rotation, then translation (e.g. placement at (sx,sy)).
 	 *
-	 * @param image The texture to draw
 	 * @param tint  The color tint
 	 * @param ox 	The x-coordinate of texture origin (in pixels)
 	 * @param oy 	The y-coordinate of texture origin (in pixels)

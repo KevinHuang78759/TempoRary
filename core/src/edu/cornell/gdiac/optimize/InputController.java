@@ -104,6 +104,10 @@ public class InputController {
 		} else {
 			xbox = null;
 		}
+		triggerLast = new boolean[4];
+		switchesLast = new boolean[4];
+		triggers = new boolean[4];
+		switches = new boolean[4];
 	}
 
 	/**
@@ -142,44 +146,44 @@ public class InputController {
 	 *
 	 * @param secondary true if the keyboard should give priority to a gamepad
 	 */
-	private boolean trigger;
-
-	private boolean leftSwitch;
-	private boolean rightSwitch;
-
-	private boolean hold;
-
-	private boolean triggerLast = false;
-	private boolean leftSwitchLast = false;
-	private boolean rightSwitchLast = false;
-
+	private boolean[] triggers;
+	private boolean[] triggerLast;
+	private boolean[] switches;
+	private boolean[] switchesLast;
 	boolean rKey = false;
 	private void readKeyboard(boolean secondary) {
 		// Give priority to gamepad results
-		resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.R));
+		resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.T));
 		rKey = resetPressed && Gdx.input.isKeyPressed(Input.Keys.H);
 
-		boolean triggerPress = Gdx.input.isKeyPressed(Input.Keys.J) || Gdx.input.isKeyPressed(Input.Keys.K) || Gdx.input.isKeyPressed(Input.Keys.SPACE);
-		boolean leftSwitchPress = Gdx.input.isKeyPressed(Input.Keys.LEFT);
-		boolean rightSwitchPress = Gdx.input.isKeyPressed(Input.Keys.RIGHT);
-		trigger = !triggerLast && triggerPress;
-		leftSwitch = !leftSwitchLast && leftSwitchPress;
-		rightSwitch = !rightSwitchLast && rightSwitchPress;
+		boolean[] triggerPress = new boolean[]{ Gdx.input.isKeyPressed(Input.Keys.D),
+												Gdx.input.isKeyPressed(Input.Keys.F),
+												Gdx.input.isKeyPressed(Input.Keys.J),
+												Gdx.input.isKeyPressed(Input.Keys.K)};
 
-		triggerLast = triggerPress;
-		rightSwitchLast = rightSwitchPress;
-		leftSwitchLast = leftSwitchPress;
+		boolean[] switchesPress = new boolean[]{ Gdx.input.isKeyPressed(Input.Keys.E),
+												 Gdx.input.isKeyPressed(Input.Keys.R),
+												 Gdx.input.isKeyPressed(Input.Keys.U),
+												 Gdx.input.isKeyPressed(Input.Keys.I)};
+
+		for(int i = 0; i < 4; ++i){
+			triggers[i] = !triggerLast[i] && triggerPress[i];
+			switches[i] = !switchesLast[i] && switchesPress[i];
+			triggerLast[i] = triggerPress[i];
+			switchesLast[i] = switchesPress[i];
+
+		}
 	}
 
 	/*
 	 * Returns an array that represents the if left switch or right switch key are being pressed
 	 */
 	public boolean[] switches(){
-		return new boolean[]{leftSwitch, rightSwitch};
+		return switches;
 	}
 
-	public boolean didTrigger(){
-		return trigger;
+	public boolean[] didTrigger(){
+		return triggers;
 	}
 
 }

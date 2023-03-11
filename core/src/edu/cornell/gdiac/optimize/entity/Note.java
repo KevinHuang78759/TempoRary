@@ -40,7 +40,7 @@ public class Note extends GameObject {
 	/** The effects of gravity on this shell */
 	private static final float GRAVITY = 0.5f;
 	/** Rescale the size of a shell */
-	private static final float SHELL_SIZE_MULTIPLE = 5.0f;
+	private static final float SHELL_SIZE_MULTIPLE = 4.0f;
 	/** How fast we change frames (one frame per 4 calls to update) */
 	private static final float ANIMATION_SPEED = 0.25f;
 	/** The number of animation frames in our filmstrip */
@@ -62,6 +62,13 @@ public class Note extends GameObject {
 
 	/** line the note is one */
 	public int line;
+
+	public enum NType{
+		SWITCH,
+		BEAT
+	}
+
+	NType nt;
 
 	/**
 	 * Returns the type of this object.
@@ -102,12 +109,13 @@ public class Note extends GameObject {
 	/**
 	 * Initialize shell with trivial starting position.
 	 */
-	public Note(int line) {
+	public Note(int line, NType n) {
 		// Set minimum Y velocity for this shell
 		this.line = line;
 		minvelocy = -2f;
 		hitStatus = 0;
 		animeframe = 0.0f;
+		nt = n;
 	}
 
 	public int getHitVal(){
