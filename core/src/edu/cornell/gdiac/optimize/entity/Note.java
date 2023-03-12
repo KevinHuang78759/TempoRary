@@ -65,6 +65,7 @@ public class Note extends GameObject {
 
 	public enum NType{
 		SWITCH,
+		HELD,
 		BEAT
 	}
 
@@ -112,7 +113,7 @@ public class Note extends GameObject {
 	public Note(int line, NType n) {
 		// Set minimum Y velocity for this shell
 		this.line = line;
-		minvelocy = -2f;
+		minvelocy = 0f;
 		hitStatus = 0;
 		animeframe = 0.0f;
 		nt = n;
@@ -133,7 +134,15 @@ public class Note extends GameObject {
 	public void setDamagedTexture(Texture texture) {
 		dmgTexture = texture;
 	}
-	
+
+	public float bx;
+	public float by;
+
+	public float bvy;
+
+	public void setbVy(float vy){
+		bvy = vy;
+	}
 	public Texture getDamagedTexture() {
 		return dmgTexture;
 	}
@@ -146,6 +155,10 @@ public class Note extends GameObject {
 	public void update(float delta) {
 		// Call superclass's run
 		super.update(delta);
+
+		if(nt == NType.HELD){
+			by += bvy;
+		}
 
 		// Increase animation frame
 		animeframe += ANIMATION_SPEED;
@@ -163,9 +176,19 @@ public class Note extends GameObject {
 	 * @param canvas The drawing context
 	 */
 	public void draw(GameCanvas canvas) {
-		animator.setFrame((int)animeframe);
-		canvas.draw(animator, Color.WHITE, origin.x, origin.y, position.x, position.y, 
+		if(nt == NType.HELD){
+			animator.setFrame((int)animeframe);
+			canvas.draw(animator, Color.WHITE, origin.x, origin.y, bx, by,
 					0.0f, SHELL_SIZE_MULTIPLE, SHELL_SIZE_MULTIPLE);
+			tail.setFrame((int)animeframe);
+			canvas.textureRect(tail, bx, by, position.x, position.y);
+		}
+		else{
+			animator.setFrame((int)animeframe);
+			canvas.draw(animator, Color.WHITE, origin.x, origin.y, position.x, position.y,
+					0.0f, SHELL_SIZE_MULTIPLE, SHELL_SIZE_MULTIPLE);
+		}
+
 	}
 
 	@Override

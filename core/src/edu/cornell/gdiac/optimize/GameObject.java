@@ -67,12 +67,18 @@ public abstract class GameObject {
 	protected boolean destroyed;
 	/** CURRENT image for this object. May change over time. */
 	protected FilmStrip animator;
+
+	protected FilmStrip tail;
 	
 	// ACCESSORS
 	public void setTexture(Texture texture) {
 		animator = new FilmStrip(texture,1,1,1);
 		radius = animator.getRegionHeight() / 2.0f;
 		origin = new Vector2(animator.getRegionWidth()/2.0f, animator.getRegionHeight()/2.0f);
+	}
+
+	public void setTailTexture(Texture texture) {
+		tail = new FilmStrip(texture,1,1,1);
 	}
 	
 	public Texture getTexture() {

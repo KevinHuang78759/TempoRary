@@ -20,6 +20,7 @@
  */
 package edu.cornell.gdiac.optimize;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.graphics.Texture;
 
@@ -423,26 +424,30 @@ public class GameplayController {
 				break;
 			case NOTE:
 				// Create some stars if hit on beat - more stars if more accurate
-				for(int i = 0; i < ((Note)o).hitStatus; ++i){
-					for (int j = 0; j < 5; j++) {
-						Star s = new Star();
-						s.setTexture(starTexture);
-						s.getPosition().set(o.getPosition());
-						float vx = o.getVX() * RandomController.rollFloat(MIN_STAR_FACTOR, MAX_STAR_FACTOR)
-								+ RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
-						float vy = o.getVY() * RandomController.rollFloat(MIN_STAR_FACTOR, MAX_STAR_FACTOR)
-								+ RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
-						s.getVelocity().set(vx,vy);
-						backing.add(s);
-					}
-				}
-				int hpUpdate = ((Note) o).nt == Note.NType.BEAT ? currentLane : goal;
+				spawnStars(((Note)o).hitStatus, o.getX(), o.getY(), o.getVX(), o.getVY());
+				int hpUpdate = ((Note) o).nt == Note.NType.SWITCH ? goal : currentLane;
 				health[hpUpdate] += ((Note) o).hitStatus*recovery;
 				health[hpUpdate] = Math.min(MAX_HEALTH, health[hpUpdate]);
 				health[hpUpdate] = Math.max(0, health[hpUpdate]);
 				break;
 			default:
 				break;
+		}
+	}
+
+	public void spawnStars(int k, float x, float y, float vx0, float vy0){
+		for(int i = 0; i < k; ++i){
+			for (int j = 0; j < 5; j++) {
+				Star s = new Star();
+				s.setTexture(starTexture);
+				s.getPosition().set(x, y);
+				float vx = vx0 * RandomController.rollFloat(MIN_STAR_FACTOR, MAX_STAR_FACTOR)
+						+ RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
+				float vy = vy0 * RandomController.rollFloat(MIN_STAR_FACTOR, MAX_STAR_FACTOR)
+						+ RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
+				s.getVelocity().set(vx,vy);
+				backing.add(s);
+			}
 		}
 	}
 
@@ -546,6 +551,41 @@ public class GameplayController {
 								((Note) o).hitStatus = 0;
 							}
 						}
+					}
+					else if(((Note)o).nt == Note.NType.HELD){
+						if(triggers[((Note)o).line]){
+							if(((Note)o).by <= (hitbarY + o.getRadius()/4f) && o.getY() >= (hitbarY - o.getRadius()/4f)){
+								System.out.println("Good hold start");
+								spawnStars(3, ((Note)o).bx, ((Note)o).by, 0, ((Note)o).bvy);
+								return;
+
+							} else if (((Note)o).by <= (hitbarY + o.getRadius()) && o.getY() >= (hitbarY - o.getRadius())) {
+								System.out.println("hold start");
+								spawnStars(1, ((Note)o).bx, ((Note)o).by, 0, ((Note)o).bvy);
+								return;
+							}
+							else{
+								System.out.println("hold missed");
+								((Note)o).hitStatus = 0;
+							}
+						}
+						if(input.triggerLifted[((Note)o).line]){
+							if(o.getY() <= (hitbarY + o.getRadius()/4f) && o.getY() >= (hitbarY - o.getRadius()/4f)){
+								System.out.println("Good hold end");
+								spawnStars(3, o.getX(), o.getY(), 0, o.getVY());
+								return;
+							} else if (o.getY() <= (hitbarY + o.getRadius()) && o.getY() >= (hitbarY - o.getRadius())) {
+								System.out.println("hold end");
+								spawnStars(1, o.getX(), o.getY(), 0, o.getVY());
+								return;
+							}
+							else{
+								System.out.println("hold end missed");
+								((Note)o).hitStatus = 0;
+								o.setDestroyed(true);
+							}
+						}
+
 					}
 
 

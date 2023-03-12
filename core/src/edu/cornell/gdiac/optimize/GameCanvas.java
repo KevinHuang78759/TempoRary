@@ -22,6 +22,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
+import edu.cornell.gdiac.util.FilmStrip;
 
 import java.util.ArrayList;
 
@@ -374,7 +375,16 @@ public class GameCanvas {
 			drawLine(x2,y1,x2,y2,3, c);
 			drawLine(x1,y2,x2,y2,3, c);
 		}
+	}
 
+	public void textureRect(FilmStrip t, float x1, float y1, float x2, float y2){
+			float[] coors = new float[]{x1,y1,
+					x1,y2,
+					x2,y1,
+					x2,y2};
+			short[] triangles = new short[]{0, 1, 2, 1, 3, 2};
+			PRG = new PolygonRegion(t, coors, triangles);
+			spriteBatch.draw(PRG, 0, 0);
 
 	}
 
