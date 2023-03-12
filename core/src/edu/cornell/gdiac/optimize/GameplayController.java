@@ -333,6 +333,20 @@ public class GameplayController {
 					++shellCount;
 				}
 			}
+
+			if(frame%450 == 0 && curP == play_phase.NOTES){
+				int det = RandomController.rollInt(0,3);
+				if(det != currentLane){
+					Note s = new Note(det, Note.NType.SWITCH);
+					s.setX(LEFTBOUND + (det * (smallwidth + inBetweenWidth) + (det > currentLane ? largewidth - smallwidth : 0)) + smallwidth/2f);
+					s.setTexture(greenTexture);
+					s.setY(height);
+					s.setVX(0);
+					s.setVY(-5f);
+					objects.add(s);
+					++shellCount;
+				}
+			}
 		}
 //		if(!randomnotes){
 //			//add notes in fixed pattern
@@ -409,8 +423,8 @@ public class GameplayController {
 				break;
 			case NOTE:
 				// Create some stars if hit on beat - more stars if more accurate
-				if(((Note) o).getHitVal() == 1){
-					for (int j = 0; j < 3; j++) {
+				for(int i = 0; i < ((Note)o).hitStatus; ++i){
+					for (int j = 0; j < 5; j++) {
 						Star s = new Star();
 						s.setTexture(starTexture);
 						s.getPosition().set(o.getPosition());
@@ -422,23 +436,10 @@ public class GameplayController {
 						backing.add(s);
 					}
 				}
-				else if(((Note) o).getHitVal() == 2) {
-					for (int j = 0; j < 45; j++) {
-						Star s = new Star();
-						s.setTexture(starTexture);
-						s.getPosition().set(o.getPosition());
-						float vx = o.getVX() * RandomController.rollFloat(MIN_STAR_FACTOR, MAX_STAR_FACTOR)
-								+ RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
-						float vy = o.getVY() * RandomController.rollFloat(MIN_STAR_FACTOR, MAX_STAR_FACTOR)
-								+ RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
-						s.getVelocity().set(vx, vy);
-						backing.add(s);
-					}
-				}
-
-				health[currentLane] += ((Note) o).hitStatus*recovery;
-				health[currentLane] = Math.min(MAX_HEALTH, health[currentLane]);
-				health[currentLane] = Math.max(0, health[currentLane]);
+				int hpUpdate = ((Note) o).nt == Note.NType.BEAT ? currentLane : goal;
+				health[hpUpdate] += ((Note) o).hitStatus*recovery;
+				health[hpUpdate] = Math.min(MAX_HEALTH, health[hpUpdate]);
+				health[hpUpdate] = Math.max(0, health[hpUpdate]);
 				break;
 			default:
 				break;
@@ -463,9 +464,10 @@ public class GameplayController {
 	boolean[] triggers = new boolean[4];
 
 	int t_progress;
+	boolean[] switches;
 	public void resolvePhase(InputController input, float delta){
 		if(curP == play_phase.NOTES){
-			boolean[] switches = input.switches();
+			switches = input.switches();
 			for(int i = 0; i < switches.length; ++i){
 				if(switches[i] && i != currentLane){
 					goal = i;
@@ -473,7 +475,31 @@ public class GameplayController {
 					t_progress = 0;
 					for(GameObject o : objects){
 						if(o.getType() == ObjectType.NOTE){
-							o.setDestroyed(true);
+							boolean switchTog = false;
+							if(((Note)o).nt == Note.NType.SWITCH){
+								if(switches[((Note)o).line]){
+
+									if(o.getY() <= (hitbarY + o.getRadius()/4f) && o.getY() >= (hitbarY - o.getRadius()/4f)){
+										System.out.println("Good switch");
+										((Note) o).hitStatus = 4;
+										switchTog = true;
+										o.setDestroyed(true);
+
+									} else if (o.getY() <= (hitbarY + o.getRadius()) && o.getY() >= (hitbarY - o.getRadius())) {
+										System.out.println("switch");
+										((Note) o).hitStatus = 2;
+										switchTog = true;
+										o.setDestroyed(true);
+									}
+									else {
+										System.out.println("missed switch");
+										((Note) o).hitStatus = 0;
+									}
+								}
+							}
+							if(!switchTog){
+								o.setDestroyed(true);
+							}
 						}
 					}
 					break;
@@ -498,28 +524,31 @@ public class GameplayController {
 				}
 				o.update(delta);
 				if(o.getType() == ObjectType.NOTE){
-					if(triggers[((Note)o).getLine()]){
-						System.out.println(hitbarY + " " + o.getY() + " " + o.getRadius());
+					if(((Note)o).nt == Note.NType.BEAT){
+						if(triggers[((Note)o).getLine()]){
+							System.out.println(hitbarY + " " + o.getY() + " " + o.getRadius());
+							if(o.getY() <= (hitbarY + o.getRadius()/4f) && o.getY() >= (hitbarY - o.getRadius()/4f)){
+								System.out.println("Good hit");
+								((Note) o).hitStatus = 2;
 
-						if(o.getY() <= (hitbarY + o.getRadius()/4f) && o.getY() >= (hitbarY - o.getRadius()/4f)){
-							System.out.println("Good hit");
-							((Note) o).hitStatus = 2;
+								o.setDestroyed(true);
+								return;
 
-							o.setDestroyed(true);
-							return;
+							} else if (o.getY() <= (hitbarY + o.getRadius()) && o.getY() >= (hitbarY - o.getRadius())) {
+								System.out.println("hit");
+								((Note) o).hitStatus = 1;
 
-						} else if (o.getY() <= (hitbarY + o.getRadius()) && o.getY() >= (hitbarY - o.getRadius())) {
-							System.out.println("hit");
-							((Note) o).hitStatus = 1;
-
-							o.setDestroyed(true);
-							return;
-						}
-						else {
-							System.out.println("miss");
-							((Note) o).hitStatus = 0;
+								o.setDestroyed(true);
+								return;
+							}
+							else {
+								System.out.println("miss");
+								((Note) o).hitStatus = 0;
+							}
 						}
 					}
+
+
 				}
 			}
 		}
@@ -529,6 +558,7 @@ public class GameplayController {
 				if (o.destroyed) {
 					continue;
 				}
+
 				o.update(delta);
 			}
 		}

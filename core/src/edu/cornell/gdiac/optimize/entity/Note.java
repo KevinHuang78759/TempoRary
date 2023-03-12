@@ -68,7 +68,7 @@ public class Note extends GameObject {
 		BEAT
 	}
 
-	NType nt;
+	public NType nt;
 
 	/**
 	 * Returns the type of this object.
