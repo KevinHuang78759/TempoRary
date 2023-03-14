@@ -192,7 +192,7 @@ public class GameMode implements Screen {
 		// create some kind of data structure for coordinates of notes
 		// hm {frame : notes}
 		currTick = ticks % 1800;
-		gameplayController.addShell(canvas.getHeight(), currTick);
+		gameplayController.addShellRandom(canvas.getHeight(), currTick);
 		if(gameplayController.checkHealth(currTick%150==0)){
 			gameState = GameState.OVER;
 		}
@@ -206,7 +206,7 @@ public class GameMode implements Screen {
 
 		// Update objects.
 		gameplayController.resolvePhase(inputController, delta);
-		gameplayController.resolveActions(inputController,delta);
+		gameplayController.resolveActions(inputController,delta, currTick);
 
 		// Check for collisions
 		totalTime += (delta*1000); // Seconds to milliseconds
@@ -227,7 +227,7 @@ public class GameMode implements Screen {
 	private void draw(float delta) {
 		float offset = -((totalTime * TIME_MODIFIER) % canvas.getWidth());
 		canvas.begin();
-		canvas.drawBackground(background,offset,-100);
+		canvas.drawBackground(background,offset,0);
 		if (gameState == GameState.OVER) {
 			displayFont.setColor(Color.NAVY);
 			canvas.drawTextCentered("Game Over!",displayFont, GAME_OVER_OFFSET+50);

@@ -173,10 +173,11 @@ public class InputController {
 		for(int i = 0; i < 4; ++i){
 			triggers[i] = !triggerLast[i] && triggerPress[i];
 			switches[i] = !switchesLast[i] && switchesPress[i];
+			triggerLifted[i] = triggerLast[i] && !triggerPress[i];
 			triggerLast[i] = triggerPress[i];
 			switchesLast[i] = switchesPress[i];
 
-			triggerLifted[i] = triggerLast[i] && !triggerPress[i];
+
 		}
 	}
 
