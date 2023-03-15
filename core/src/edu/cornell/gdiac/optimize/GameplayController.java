@@ -181,6 +181,7 @@ public class GameplayController {
 		hpwidth = (RIGHTBOUND - LEFTBOUND)/(5f*NUM_LANES/4f - 0.25f);
 		hpbet = hpwidth/4f;
 		heldPresent = new boolean[NUM_LANES];
+		triggers = new boolean[NUM_LANES];
 	}
 
 	private void initializeHealth() {
@@ -330,7 +331,7 @@ public class GameplayController {
 	public void addShellRandom(float height, int frame) {
 		randomnotes = true;
 		if(randomnotes){
-			int lane = RandomController.rollInt(0,NUM_LANES-1);
+			int lane = RandomController.rollInt(0,3);
 			int dur = RandomController.rollInt(1, 3);
 			if(frame % 250 == 0&& curP == play_phase.NOTES && !heldPresent[lane]){
 
@@ -349,8 +350,8 @@ public class GameplayController {
 				++shellCount;
 			}
 			if(frame%45 == 0 && curP == play_phase.NOTES){
-				int det = RandomController.rollInt(0,NUM_LANES);
-				if(det < NUM_LANES && !heldPresent[det]){
+				int det = RandomController.rollInt(0,4);
+				if(det < 4 && !heldPresent[det]){
 					Note s = new Note(det, Note.NType.BEAT);
 					s.setX(LEFTBOUND + currentLane*(inBetweenWidth + smallwidth) + largewidth/8f + det*(largewidth/4f));
 					s.setTexture(redTexture);
@@ -497,13 +498,14 @@ public class GameplayController {
 	 * @param input  Reference to the input controller
 	 * @param delta  Number of seconds since last animation frame
 	 */
-	boolean[] triggers = new boolean[4];
+	boolean[] triggers;
 
 	int t_progress;
 	boolean[] switches;
 	public void resolvePhase(InputController input, float delta){
 		if(curP == play_phase.NOTES){
 			switches = input.switches();
+
 			for(int i = 0; i < switches.length; ++i){
 				if(switches[i] && i != currentLane){
 					goal = i;

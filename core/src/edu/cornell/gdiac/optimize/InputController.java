@@ -96,7 +96,7 @@ public class InputController {
 	 * The input controller attempts to connect to the X-Box controller at device 0,
 	 * if it exists.  Otherwise, it falls back to the keyboard control.
 	 */
-	public InputController() { 
+	public InputController(int lanes) {
 		// If we have a game-pad for id, then use it.
 		Array<XBoxController> controllers = Controllers.get().getXBoxControllers();
 		if (controllers.size > 0) {
@@ -105,9 +105,9 @@ public class InputController {
 			xbox = null;
 		}
 		triggerLast = new boolean[4];
-		switchesLast = new boolean[4];
+		switchesLast = new boolean[lanes];
 		triggers = new boolean[4];
-		switches = new boolean[4];
+		switches = new boolean[lanes];
 		triggerLifted = new boolean[4];
 	}
 
@@ -160,22 +160,37 @@ public class InputController {
 		resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.T));
 		rKey = resetPressed && Gdx.input.isKeyPressed(Input.Keys.H);
 
-		triggerPress = new boolean[]{ Gdx.input.isKeyPressed(Input.Keys.D),
-												Gdx.input.isKeyPressed(Input.Keys.F),
-												Gdx.input.isKeyPressed(Input.Keys.J),
-												Gdx.input.isKeyPressed(Input.Keys.K)};
+		triggerPress = new boolean[]{
+				Gdx.input.isKeyPressed(Input.Keys.E),
+				Gdx.input.isKeyPressed(Input.Keys.R),
+				Gdx.input.isKeyPressed(Input.Keys.U),
+				Gdx.input.isKeyPressed(Input.Keys.I),
+		};
 
-		boolean[] switchesPress = new boolean[]{ Gdx.input.isKeyPressed(Input.Keys.E),
-												 Gdx.input.isKeyPressed(Input.Keys.R),
-												 Gdx.input.isKeyPressed(Input.Keys.U),
-												 Gdx.input.isKeyPressed(Input.Keys.I)};
+		boolean[] switchesPress = new boolean[]{
+				Gdx.input.isKeyPressed(Input.Keys.NUM_1),
+				Gdx.input.isKeyPressed(Input.Keys.NUM_2),
+				Gdx.input.isKeyPressed(Input.Keys.NUM_3),
+				Gdx.input.isKeyPressed(Input.Keys.NUM_4),
+				Gdx.input.isKeyPressed(Input.Keys.NUM_5),
+				Gdx.input.isKeyPressed(Input.Keys.NUM_6),
+				Gdx.input.isKeyPressed(Input.Keys.NUM_7),
+				Gdx.input.isKeyPressed(Input.Keys.NUM_8),
+				Gdx.input.isKeyPressed(Input.Keys.NUM_9),
+				Gdx.input.isKeyPressed(Input.Keys.NUM_0)
+		};
 
-		for(int i = 0; i < 4; ++i){
-			triggers[i] = !triggerLast[i] && triggerPress[i];
-			switches[i] = !switchesLast[i] && switchesPress[i];
-			triggerLifted[i] = triggerLast[i] && !triggerPress[i];
-			triggerLast[i] = triggerPress[i];
-			switchesLast[i] = switchesPress[i];
+		for(int i = 0; i < Math.max(switchesPress.length, triggerPress.length); ++i){
+			if(i < triggerPress.length){
+				triggers[i] = !triggerLast[i] && triggerPress[i];
+				triggerLifted[i] = triggerLast[i] && !triggerPress[i];
+				triggerLast[i] = triggerPress[i];
+			}
+			if(i < switches.length){
+				switches[i] = !switchesLast[i] && switchesPress[i];
+				switchesLast[i] = switchesPress[i];
+			}
+
 
 
 		}

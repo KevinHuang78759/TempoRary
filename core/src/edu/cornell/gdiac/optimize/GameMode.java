@@ -93,7 +93,7 @@ public class GameMode implements Screen {
 		gameState = GameState.INTRO;
 
 		// Create the controllers.
-		inputController = new InputController();
+		inputController = new InputController(lanes);
 		gameplayController = new GameplayController(true,lanes,canvas.getWidth(),canvas.getHeight());
 		// YOU WILL NEED TO MODIFY THIS NEXT LINE
 
@@ -281,7 +281,7 @@ public class GameMode implements Screen {
 				Vector2 BL = new Vector2(Xcoor, gameplayController.BOTTOMBOUND);
 				canvas.drawRect(BL, curWidths[i], gameplayController.TOPBOUND - gameplayController.BOTTOMBOUND, cLanes, false);
 				if(gameplayController.currentLane == i || gameplayController.goal == i){
-					for(int j = 0; j < lanes; ++j){
+					for(int j = 0; j < 4; ++j){
 						float x2 = Xcoor + (j + 1) * curWidths[i] / 4f;
 						Color hc = (gameplayController.triggers[j] && i == gameplayController.currentLane)? Color.CYAN : Color.NAVY;
 						canvas.drawLine(Xcoor + j*curWidths[i]/4f, gameplayController.hitbarY, x2, gameplayController.hitbarY, 3, hc);
