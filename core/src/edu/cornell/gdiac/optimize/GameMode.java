@@ -227,7 +227,7 @@ public class GameMode implements Screen {
 	private void draw(float delta) {
 		float offset = -((totalTime * TIME_MODIFIER) % canvas.getWidth());
 		canvas.begin();
-		canvas.drawBackground(background,offset,0);
+		canvas.drawBackground(background,0,0);
 		if (gameState == GameState.OVER) {
 			displayFont.setColor(Color.NAVY);
 			canvas.drawTextCentered("Game Over!",displayFont, GAME_OVER_OFFSET+50);
