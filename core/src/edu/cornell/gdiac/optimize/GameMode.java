@@ -287,7 +287,7 @@ public class GameMode implements Screen {
 						canvas.drawLine(Xcoor + j*curWidths[i]/4f, gameplayController.hitbarY, x2, gameplayController.hitbarY, 3, hc);
 
 
-						if(j != lanes - 1){
+						if(j != 3){
 							if(gameplayController.currentLane == i){
 								canvas.drawLine(x2, gameplayController.TOPBOUND, x2, gameplayController.TOPBOUND - curHeight, 3, Color.BLACK);
 							}

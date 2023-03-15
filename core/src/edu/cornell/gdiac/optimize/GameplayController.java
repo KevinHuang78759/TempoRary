@@ -180,8 +180,8 @@ public class GameplayController {
 		//The width will then be 1/(5NUMLANES/4 - 1/4) of the total available width
 		hpwidth = (RIGHTBOUND - LEFTBOUND)/(5f*NUM_LANES/4f - 0.25f);
 		hpbet = hpwidth/4f;
-		heldPresent = new boolean[NUM_LANES];
-		triggers = new boolean[NUM_LANES];
+		heldPresent = new boolean[4];
+		triggers = new boolean[4];
 	}
 
 	private void initializeHealth() {

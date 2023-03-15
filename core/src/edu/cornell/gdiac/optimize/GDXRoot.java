@@ -63,7 +63,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	public void create() {
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("assets.json",canvas,1);
-		playing = new GameMode(canvas, 10);
+		playing = new GameMode(canvas, 4);
 		
 		loading.setScreenListener(this);
 		setScreen(loading);
