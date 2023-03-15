@@ -20,6 +20,7 @@
  */
 package edu.cornell.gdiac.optimize;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.graphics.Texture;
 
@@ -170,6 +171,7 @@ public class GameplayController {
 		hitbarY = BOTTOMBOUND + 3*height/20f;
 		hpwidth = (RIGHTBOUND - LEFTBOUND)*4/19;
 		hpbet = (RIGHTBOUND - LEFTBOUND - 4*hpwidth)/3f;
+		heldPresent = new boolean[4];
 	}
 
 	private void initializeHealth() {
@@ -306,7 +308,7 @@ public class GameplayController {
 		objects.clear();
 		initializeHealth();
 	}
-
+	boolean[] heldPresent;
 	/**
 	 * Adds a new shell to the game.
 	 *
@@ -316,19 +318,34 @@ public class GameplayController {
 	 *
 	 * @param height Current game height
 	 */
-	public void addShell(float height, int frame) {
+	public void addShellRandom(float height, int frame) {
 		randomnotes = true;
 		if(randomnotes){
-
+			if(frame % 250 == 0&& curP == play_phase.NOTES){
+				int lane = RandomController.rollInt(0,3);
+				int dur = RandomController.rollInt(1, 3);
+				Note h = new Note(lane, Note.NType.HELD);
+				heldPresent[lane] = true;
+				h.setX(LEFTBOUND + currentLane*(inBetweenWidth + smallwidth) + largewidth/8f + lane*(largewidth/4f));
+				h.bx = LEFTBOUND + currentLane*(inBetweenWidth + smallwidth) + largewidth/8f + lane*(largewidth/4f);
+				h.startFrame = frame;
+				h.holdFrame = 60 + (15 * dur);
+				h.setY(height);
+				h.by = height;
+				h.tail_thickness = 15f;
+				h.setTexture(greenTexture);
+				h.setTailTexture(redTexture);
+				objects.add(h);
+				++shellCount;
+			}
 			if(frame%45 == 0 && curP == play_phase.NOTES){
 				int det = RandomController.rollInt(0,4);
-				if(det < 4){
+				if(det < 4 && !heldPresent[det]){
 					Note s = new Note(det, Note.NType.BEAT);
 					s.setX(LEFTBOUND + currentLane*(inBetweenWidth + smallwidth) + largewidth/8f + det*(largewidth/4f));
 					s.setTexture(redTexture);
 					s.setY(height);
 					s.setVX(0);
-					s.setVY(-5f);
 					objects.add(s);
 					++shellCount;
 				}
@@ -342,11 +359,12 @@ public class GameplayController {
 					s.setTexture(greenTexture);
 					s.setY(height);
 					s.setVX(0);
-					s.setVY(-5f);
 					objects.add(s);
 					++shellCount;
 				}
 			}
+
+
 		}
 //		if(!randomnotes){
 //			//add notes in fixed pattern
@@ -423,26 +441,34 @@ public class GameplayController {
 				break;
 			case NOTE:
 				// Create some stars if hit on beat - more stars if more accurate
-				for(int i = 0; i < ((Note)o).hitStatus; ++i){
-					for (int j = 0; j < 5; j++) {
-						Star s = new Star();
-						s.setTexture(starTexture);
-						s.getPosition().set(o.getPosition());
-						float vx = o.getVX() * RandomController.rollFloat(MIN_STAR_FACTOR, MAX_STAR_FACTOR)
-								+ RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
-						float vy = o.getVY() * RandomController.rollFloat(MIN_STAR_FACTOR, MAX_STAR_FACTOR)
-								+ RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
-						s.getVelocity().set(vx,vy);
-						backing.add(s);
-					}
+				if(((Note)o).nt == Note.NType.HELD){
+					System.out.println("HELD NOTE DESTROYED");
+					heldPresent[((Note)o).line] = false;
 				}
-				int hpUpdate = ((Note) o).nt == Note.NType.BEAT ? currentLane : goal;
+				spawnStars(((Note)o).hitStatus, o.getX(), o.getY(), o.getVX(), o.getVY());
+				int hpUpdate = ((Note) o).nt == Note.NType.SWITCH ? goal : currentLane;
 				health[hpUpdate] += ((Note) o).hitStatus*recovery;
 				health[hpUpdate] = Math.min(MAX_HEALTH, health[hpUpdate]);
 				health[hpUpdate] = Math.max(0, health[hpUpdate]);
 				break;
 			default:
 				break;
+		}
+	}
+
+	public void spawnStars(int k, float x, float y, float vx0, float vy0){
+		for(int i = 0; i < k; ++i){
+			for (int j = 0; j < 5; j++) {
+				Star s = new Star();
+				s.setTexture(starTexture);
+				s.getPosition().set(x, y);
+				float vx = vx0 * RandomController.rollFloat(MIN_STAR_FACTOR, MAX_STAR_FACTOR)
+						+ RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
+				float vy = vy0 * RandomController.rollFloat(MIN_STAR_FACTOR, MAX_STAR_FACTOR)
+						+ RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
+				s.getVelocity().set(vx,vy);
+				backing.add(s);
+			}
 		}
 	}
 
@@ -480,19 +506,19 @@ public class GameplayController {
 								if(switches[((Note)o).line]){
 
 									if(o.getY() <= (hitbarY + o.getRadius()/4f) && o.getY() >= (hitbarY - o.getRadius()/4f)){
-										System.out.println("Good switch");
+										//System.out.println("Good switch");
 										((Note) o).hitStatus = 4;
 										switchTog = true;
 										o.setDestroyed(true);
 
 									} else if (o.getY() <= (hitbarY + o.getRadius()) && o.getY() >= (hitbarY - o.getRadius())) {
-										System.out.println("switch");
+										//System.out.println("switch");
 										((Note) o).hitStatus = 2;
 										switchTog = true;
 										o.setDestroyed(true);
 									}
 									else {
-										System.out.println("missed switch");
+										//System.out.println("missed switch");
 										((Note) o).hitStatus = 0;
 									}
 								}
@@ -514,7 +540,7 @@ public class GameplayController {
 		}
 	}
 
-	public void resolveActions(InputController input, float delta) {
+	public void resolveActions(InputController input, float delta, int frame) {
 		if(curP == play_phase.NOTES){
 			triggers = input.didTrigger();
 			// Process the objects.
@@ -522,33 +548,76 @@ public class GameplayController {
 				if(o.destroyed){
 					continue;
 				}
-				o.update(delta);
 				if(o.getType() == ObjectType.NOTE){
+					((Note)o).update(delta, frame);
 					if(((Note)o).nt == Note.NType.BEAT){
 						if(triggers[((Note)o).getLine()]){
-							System.out.println(hitbarY + " " + o.getY() + " " + o.getRadius());
+							//System.out.println(hitbarY + " " + o.getY() + " " + o.getRadius());
 							if(o.getY() <= (hitbarY + o.getRadius()/4f) && o.getY() >= (hitbarY - o.getRadius()/4f)){
-								System.out.println("Good hit");
+								//System.out.println("Good hit");
 								((Note) o).hitStatus = 2;
 
 								o.setDestroyed(true);
 								return;
 
 							} else if (o.getY() <= (hitbarY + o.getRadius()) && o.getY() >= (hitbarY - o.getRadius())) {
-								System.out.println("hit");
+								//System.out.println("hit");
 								((Note) o).hitStatus = 1;
 
 								o.setDestroyed(true);
 								return;
 							}
 							else {
-								System.out.println("miss");
+								//System.out.println("miss");
 								((Note) o).hitStatus = 0;
 							}
 						}
 					}
+					else if(((Note)o).nt == Note.NType.HELD){
+						if(triggers[((Note)o).line]){
+							if(((Note)o).by <= (hitbarY + o.getRadius()/4f) && o.getY() >= (hitbarY - o.getRadius()/4f)){
+								System.out.println("Good hold start");
+								spawnStars(3, ((Note)o).bx, ((Note)o).by, 0, Note.descentSpeed);
+								return;
+
+							} else if (((Note)o).by <= (hitbarY + o.getRadius()) && o.getY() >= (hitbarY - o.getRadius())) {
+								System.out.println("hold start");
+								spawnStars(1, ((Note)o).bx, ((Note)o).by, 0, Note.descentSpeed);
+								return;
+							}
+							else{
+								System.out.println("hold missed");
+								((Note)o).hitStatus = 0;
+							}
+						}
+
+						if(input.triggerLifted[((Note)o).line]){
+							System.out.println("let go");
+							if(o.getY() <= (hitbarY + o.getRadius()/4f) && o.getY() >= (hitbarY - o.getRadius()/4f)){
+								System.out.println("Good hold end");
+								((Note)o).hitStatus = 4;
+								o.setDestroyed(true);
+								return;
+							} else if (o.getY() <= (hitbarY + o.getRadius()) && o.getY() >= (hitbarY - o.getRadius())) {
+								System.out.println("hold end");
+
+								((Note)o).hitStatus = 2;
+								o.setDestroyed(true);
+
+								return;
+							}
+							else{
+								System.out.println("hold end missed");
+
+							}
+						}
+
+					}
 
 
+				}
+				else{
+					o.update(delta);
 				}
 			}
 		}

@@ -152,9 +152,9 @@ public class GameMode implements Screen {
 		int nfp = (int) (1f/delta);
 
 		if(nfp - fp > 2 || fp - nfp > 2){
-			System.out.println(fp + " " + nfp);
+			//System.out.println(fp + " " + nfp);
 			fp = nfp;
-			System.out.println(counter);
+			//System.out.println(counter);
 			counter = 0;
 		}
 

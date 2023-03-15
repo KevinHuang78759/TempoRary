@@ -28,17 +28,7 @@ import com.badlogic.gdx.graphics.*;
  * Model class for enemy shells.
  */
 public class Note extends GameObject {
-	// Physics constants
-	/** Maximum friction multiplier for collisions */
-	private static final float MAX_FRICTION_MULT = 0.95f;
-	/** Minimum friction multiplier for collisions */
-	private static final float MIN_FRICTION_MULT = 0.85f;
-	/** Maximum y-velocity on the bounce */
-	private static final float MAX_MIN_Y_VELOC   = 20.0f;
-	/** Minimum y-velocity on the bounce */
-	private static final float MIN_MIN_Y_VELOC   = 10.0f;
-	/** The effects of gravity on this shell */
-	private static final float GRAVITY = 0.5f;
+	public static final float descentSpeed = -3.5f;
 	/** Rescale the size of a shell */
 	private static final float SHELL_SIZE_MULTIPLE = 4.0f;
 	/** How fast we change frames (one frame per 4 calls to update) */
@@ -63,8 +53,12 @@ public class Note extends GameObject {
 	/** line the note is one */
 	public int line;
 
+	public int startFrame;
+	public int holdFrame;
+
 	public enum NType{
 		SWITCH,
+		HELD,
 		BEAT
 	}
 
@@ -81,14 +75,6 @@ public class Note extends GameObject {
 		return ObjectType.NOTE;
 	}
 
-	/**
-	 * Returns the minimum y-velocity on a bounce
-	 *
-	 * @return the minimum y-velocity on a bounce
-	 */
-	public float getMinVY() {
-		return minvelocy;
-	}
 
 	public float getRadius(){
 		return super.getRadius() * SHELL_SIZE_MULTIPLE;
@@ -112,10 +98,11 @@ public class Note extends GameObject {
 	public Note(int line, NType n) {
 		// Set minimum Y velocity for this shell
 		this.line = line;
-		minvelocy = -2f;
+		minvelocy = 0f;
 		hitStatus = 0;
 		animeframe = 0.0f;
 		nt = n;
+		setVY(n == NType.HELD? 0f : descentSpeed);
 	}
 
 	public int getHitVal(){
@@ -129,11 +116,9 @@ public class Note extends GameObject {
 		origin = new Vector2(animator.getRegionWidth()/2.0f, animator.getRegionHeight()/2.0f);
 		radius = animator.getRegionHeight() / 2.0f;
 	}
-	
-	public void setDamagedTexture(Texture texture) {
-		dmgTexture = texture;
-	}
-	
+
+	public float bx;
+	public float by;
 	public Texture getDamagedTexture() {
 		return dmgTexture;
 	}
@@ -143,9 +128,19 @@ public class Note extends GameObject {
 	 *
 	 * @param delta Number of seconds since last animation frame
 	 */
-	public void update(float delta) {
+
+
+	public void update(float delta, int frame) {
 		// Call superclass's run
 		super.update(delta);
+
+		if(nt == NType.HELD){
+			by += descentSpeed;
+			if(frame%1800 == (startFrame + holdFrame)%1800){
+				setVY(descentSpeed);
+			}
+
+		}
 
 		// Increase animation frame
 		animeframe += ANIMATION_SPEED;
@@ -154,6 +149,7 @@ public class Note extends GameObject {
 		}
 	}
 
+	public float tail_thickness = 0f;
 	/**
 	 * Draws this shell to the canvas
 	 *
@@ -163,9 +159,23 @@ public class Note extends GameObject {
 	 * @param canvas The drawing context
 	 */
 	public void draw(GameCanvas canvas) {
-		animator.setFrame((int)animeframe);
-		canvas.draw(animator, Color.WHITE, origin.x, origin.y, position.x, position.y, 
+		if(nt == NType.HELD){
+
+			tail.setFrame(0);
+			//System.out.println(bx + " " + by + " " + position.x + " " + position.y + " " + tail_thickness);
+			canvas.textureRect(tail, bx - tail_thickness/2, by, position.x + tail_thickness/2, position.y);
+			canvas.drawRect(bx - tail_thickness/2, by, position.x + tail_thickness/2, position.y, Color.BLUE, true);
+
+			animator.setFrame(0);
+			canvas.draw(animator, Color.WHITE, origin.x, origin.y, bx, by,
 					0.0f, SHELL_SIZE_MULTIPLE, SHELL_SIZE_MULTIPLE);
+		}
+		else{
+			animator.setFrame((int)animeframe);
+			canvas.draw(animator, Color.WHITE, origin.x, origin.y, position.x, position.y,
+					0.0f, SHELL_SIZE_MULTIPLE, SHELL_SIZE_MULTIPLE);
+		}
+
 	}
 
 	@Override

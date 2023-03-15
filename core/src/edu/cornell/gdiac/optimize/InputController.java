@@ -108,6 +108,7 @@ public class InputController {
 		switchesLast = new boolean[4];
 		triggers = new boolean[4];
 		switches = new boolean[4];
+		triggerLifted = new boolean[4];
 	}
 
 	/**
@@ -150,13 +151,16 @@ public class InputController {
 	private boolean[] triggerLast;
 	private boolean[] switches;
 	private boolean[] switchesLast;
+
+	boolean[] triggerPress;
+	boolean[] triggerLifted;
 	boolean rKey = false;
 	private void readKeyboard(boolean secondary) {
 		// Give priority to gamepad results
 		resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.T));
 		rKey = resetPressed && Gdx.input.isKeyPressed(Input.Keys.H);
 
-		boolean[] triggerPress = new boolean[]{ Gdx.input.isKeyPressed(Input.Keys.D),
+		triggerPress = new boolean[]{ Gdx.input.isKeyPressed(Input.Keys.D),
 												Gdx.input.isKeyPressed(Input.Keys.F),
 												Gdx.input.isKeyPressed(Input.Keys.J),
 												Gdx.input.isKeyPressed(Input.Keys.K)};
@@ -169,8 +173,10 @@ public class InputController {
 		for(int i = 0; i < 4; ++i){
 			triggers[i] = !triggerLast[i] && triggerPress[i];
 			switches[i] = !switchesLast[i] && switchesPress[i];
+			triggerLifted[i] = triggerLast[i] && !triggerPress[i];
 			triggerLast[i] = triggerPress[i];
 			switchesLast[i] = switchesPress[i];
+
 
 		}
 	}
