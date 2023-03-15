@@ -76,13 +76,16 @@ public class GameMode implements Screen {
 	/** Amount of game ticks which have gone by */
 	private int ticks;
 
+	int lanes;
+
 	/**
 	 * Creates a new game with the given drawing context.
 	 *
 	 * This constructor initializes the models and controllers for the game.  The
 	 * view has already been initialized by the root class.
 	 */
-	public GameMode(GameCanvas canvas) {
+	public GameMode(GameCanvas canvas,int lanes) {
+		this.lanes = lanes;
 		this.canvas = canvas;
 		active = false;
 		ticks = 0;
@@ -91,7 +94,7 @@ public class GameMode implements Screen {
 
 		// Create the controllers.
 		inputController = new InputController();
-		gameplayController = new GameplayController(true,canvas.getWidth(),canvas.getHeight());
+		gameplayController = new GameplayController(true,lanes,canvas.getWidth(),canvas.getHeight());
 		// YOU WILL NEED TO MODIFY THIS NEXT LINE
 
 		/*
@@ -225,7 +228,6 @@ public class GameMode implements Screen {
 	 * prefer this in lecture.
 	 */
 	private void draw(float delta) {
-		float offset = -((totalTime * TIME_MODIFIER) % canvas.getWidth());
 		canvas.begin();
 		canvas.drawBackground(background,0,0);
 		if (gameState == GameState.OVER) {
@@ -243,13 +245,18 @@ public class GameMode implements Screen {
 				o.draw(canvas);
 			}
 
+			//obtain background color
 			Color bkgC = new Color(237f/255f, 224f/255f, 1f, 1.0f);
-			canvas.drawRect(gameplayController.LEFTBOUND, gameplayController.TOPBOUND, gameplayController.RIGHTBOUND, canvas.getHeight(), bkgC, true);
-			canvas.drawRect(gameplayController.LEFTBOUND, 0, gameplayController.RIGHTBOUND, gameplayController.BOTTOMBOUND, bkgC, true);
-			float[] curWidths = new float[4];
-			float[] links = new float[16];
+			//draw two rectangles to cover up spawning/disappearing areas
+			canvas.drawRect(0, gameplayController.TOPBOUND, canvas.getWidth(), canvas.getHeight(), bkgC, true);
+			canvas.drawRect(0, 0, canvas.getWidth(), gameplayController.BOTTOMBOUND, bkgC, true);
+
+			//keep track of the current widths of each lane
+			float[] curWidths = new float[lanes];
+			//link each hp bar to a lane, even when it is small
+			float[] links = new float[4*lanes];
 			float curHeight = gameplayController.TOPBOUND - gameplayController.BOTTOMBOUND;
-			for(int i = 0; i < 4; ++i){
+			for(int i = 0; i < lanes; ++i){
 				if(gameplayController.curP == GameplayController.play_phase.NOTES){
 					curWidths[i] = gameplayController.currentLane == i ? gameplayController.largewidth : gameplayController.smallwidth;
 				}
@@ -269,18 +276,18 @@ public class GameMode implements Screen {
 			Color cLanes = gameplayController.curP == GameplayController.play_phase.TRANSITION ? Color.RED : Color.MAROON;
 
 			float Xcoor = gameplayController.LEFTBOUND;
-			for(int i = 0; i < 4; ++i){
+			for(int i = 0; i < lanes; ++i){
 
 				Vector2 BL = new Vector2(Xcoor, gameplayController.BOTTOMBOUND);
 				canvas.drawRect(BL, curWidths[i], gameplayController.TOPBOUND - gameplayController.BOTTOMBOUND, cLanes, false);
 				if(gameplayController.currentLane == i || gameplayController.goal == i){
-					for(int j = 0; j < gameplayController.triggers.length; ++j){
+					for(int j = 0; j < lanes; ++j){
 						float x2 = Xcoor + (j + 1) * curWidths[i] / 4f;
 						Color hc = (gameplayController.triggers[j] && i == gameplayController.currentLane)? Color.CYAN : Color.NAVY;
 						canvas.drawLine(Xcoor + j*curWidths[i]/4f, gameplayController.hitbarY, x2, gameplayController.hitbarY, 3, hc);
 
 
-						if(j != gameplayController.triggers.length - 1){
+						if(j != lanes - 1){
 							if(gameplayController.currentLane == i){
 								canvas.drawLine(x2, gameplayController.TOPBOUND, x2, gameplayController.TOPBOUND - curHeight, 3, Color.BLACK);
 							}
@@ -303,16 +310,16 @@ public class GameMode implements Screen {
 			}
 			Xcoor = gameplayController.LEFTBOUND;
 			int[] hp = gameplayController.getHealth();
-			for(int i =0; i < hp.length; ++i){
+			for(int i =0; i < lanes; ++i){
 				canvas.drawRect(Xcoor+1, gameplayController.BOTTOMBOUND/5+1, Xcoor + (gameplayController.hpwidth *((float)hp[i]/(float)gameplayController.MAX_HEALTH))-1, gameplayController.BOTTOMBOUND*2f/5f-1,hp[i] < gameplayController.MAX_HEALTH/4? Color.RED : Color.GREEN,true);
 
 				canvas.drawRect(Xcoor, gameplayController.BOTTOMBOUND/5, Xcoor + gameplayController.hpwidth, gameplayController.BOTTOMBOUND*2f/5f,Color.BLACK,false);
-				links[8 + 2*i] = Xcoor + gameplayController.hpwidth/2;
-				links[8 + 2*i + 1] = gameplayController.BOTTOMBOUND*2f/5f;
+				links[2*lanes + 2*i] = Xcoor + gameplayController.hpwidth/2;
+				links[2*lanes + 2*i + 1] = gameplayController.BOTTOMBOUND*2f/5f;
 				Xcoor += gameplayController.hpwidth + gameplayController.hpbet;
 			}
-			for(int i = 0; i < 4; ++i){
-				canvas.drawLine(links[2*i],links[2*i+1],links[8+2*i],links[8+2*i+1],2,Color.BLACK);
+			for(int i = 0; i < lanes; ++i){
+				canvas.drawLine(links[2*i],links[2*i+1],links[2*lanes+2*i],links[2*lanes+2*i+1],2,Color.BLACK);
 			}
 //			for(int i = 0; i < health.length; ++i){
 //				displayFont.setColor(Color.MAROON);

@@ -83,7 +83,7 @@ public class GameplayController {
 	final int MAX_HEALTH = 30;
 
 	/** Maximum amount of health */
-	private static final int NUM_LANES = 4;
+	int NUM_LANES;
 
 	/** Number of notes present in repeating rhythm */
 	private static final int NUM_NOTES = 60;
@@ -130,7 +130,8 @@ public class GameplayController {
 	 * Creates a new GameplayController with no active elements.
 	 */
 	public boolean randomnotes;
-	public GameplayController(boolean rn) {
+	public GameplayController(boolean rn, int lanes) {
+		NUM_LANES = lanes;
 		shellCount = 0;
 		initializeHealth();
 		objects = new Array<GameObject>();
@@ -153,7 +154,8 @@ public class GameplayController {
 
 	float hpwidth;
 	float hpbet;
-	public GameplayController(boolean rn, float width, float height){
+	public GameplayController(boolean rn, int lanes, float width, float height){
+		NUM_LANES = lanes;
 		shellCount = 0;
 		initializeHealth();
 		objects = new Array<GameObject>();
@@ -164,14 +166,21 @@ public class GameplayController {
 		RIGHTBOUND = 9*width/10f;
 		TOPBOUND = 19f*height/20f;
 		BOTTOMBOUND = height/5f;
-		smallwidth = width/15;
+		//The space in between two lanes is 1/4 the width of a small lane
+		//the width of the large lane is 10x the width of a small lane
+		//In total, we have NUM_LANES - 1 small lanes, 1 large lane, and n - 1 in between segments
+		//Therefore, the width of the small lane shall be 1/(5NUM_LANES/4 + 35/4) of the available total width
+		//NUM_LANES >= 2
+		smallwidth = (RIGHTBOUND - LEFTBOUND)/(5f * NUM_LANES/4f + 35f/4f);
 		inBetweenWidth = smallwidth/4f;
-		largewidth = 8f*width/10f - 3*(smallwidth + inBetweenWidth);
+		largewidth = 10f*smallwidth;
 		currentLane = 0;
 		hitbarY = BOTTOMBOUND + 3*height/20f;
-		hpwidth = (RIGHTBOUND - LEFTBOUND)*4/19;
-		hpbet = (RIGHTBOUND - LEFTBOUND - 4*hpwidth)/3f;
-		heldPresent = new boolean[4];
+		//There are NUM_LANES hp bars, and the width between each one shall be 1/4 their length
+		//The width will then be 1/(5NUMLANES/4 - 1/4) of the total available width
+		hpwidth = (RIGHTBOUND - LEFTBOUND)/(5f*NUM_LANES/4f - 0.25f);
+		hpbet = hpwidth/4f;
+		heldPresent = new boolean[NUM_LANES];
 	}
 
 	private void initializeHealth() {
@@ -321,9 +330,10 @@ public class GameplayController {
 	public void addShellRandom(float height, int frame) {
 		randomnotes = true;
 		if(randomnotes){
-			if(frame % 250 == 0&& curP == play_phase.NOTES){
-				int lane = RandomController.rollInt(0,3);
-				int dur = RandomController.rollInt(1, 3);
+			int lane = RandomController.rollInt(0,NUM_LANES-1);
+			int dur = RandomController.rollInt(1, 3);
+			if(frame % 250 == 0&& curP == play_phase.NOTES && !heldPresent[lane]){
+
 				Note h = new Note(lane, Note.NType.HELD);
 				heldPresent[lane] = true;
 				h.setX(LEFTBOUND + currentLane*(inBetweenWidth + smallwidth) + largewidth/8f + lane*(largewidth/4f));
@@ -339,8 +349,8 @@ public class GameplayController {
 				++shellCount;
 			}
 			if(frame%45 == 0 && curP == play_phase.NOTES){
-				int det = RandomController.rollInt(0,4);
-				if(det < 4 && !heldPresent[det]){
+				int det = RandomController.rollInt(0,NUM_LANES);
+				if(det < NUM_LANES && !heldPresent[det]){
 					Note s = new Note(det, Note.NType.BEAT);
 					s.setX(LEFTBOUND + currentLane*(inBetweenWidth + smallwidth) + largewidth/8f + det*(largewidth/4f));
 					s.setTexture(redTexture);
@@ -352,7 +362,7 @@ public class GameplayController {
 			}
 
 			if(frame%450 == 0 && curP == play_phase.NOTES){
-				int det = RandomController.rollInt(0,3);
+				int det = RandomController.rollInt(0,NUM_LANES - 1);
 				if(det != currentLane){
 					Note s = new Note(det, Note.NType.SWITCH);
 					s.setX(LEFTBOUND + (det * (smallwidth + inBetweenWidth) + (det > currentLane ? largewidth - smallwidth : 0)) + smallwidth/2f);
