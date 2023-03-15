@@ -154,7 +154,7 @@ public class GameplayController {
 
 	float hpwidth;
 	float hpbet;
-	public GameplayController(boolean rn, int lanes, float width, float height){
+	public GameplayController(boolean rn, int lanes, int linesPerLane, float width, float height){
 		NUM_LANES = lanes;
 		shellCount = 0;
 		initializeHealth();
@@ -180,8 +180,9 @@ public class GameplayController {
 		//The width will then be 1/(5NUMLANES/4 - 1/4) of the total available width
 		hpwidth = (RIGHTBOUND - LEFTBOUND)/(5f*NUM_LANES/4f - 0.25f);
 		hpbet = hpwidth/4f;
-		heldPresent = new boolean[4];
-		triggers = new boolean[4];
+		heldPresent = new boolean[linesPerLane];
+		triggers = new boolean[linesPerLane];
+		lpl = linesPerLane;
 	}
 
 	private void initializeHealth() {
@@ -319,6 +320,7 @@ public class GameplayController {
 		initializeHealth();
 	}
 	boolean[] heldPresent;
+	public int lpl;
 	/**
 	 * Adds a new shell to the game.
 	 *
@@ -331,14 +333,14 @@ public class GameplayController {
 	public void addShellRandom(float height, int frame) {
 		randomnotes = true;
 		if(randomnotes){
-			int lane = RandomController.rollInt(0,3);
+			int lane = RandomController.rollInt(0,lpl-1);
 			int dur = RandomController.rollInt(1, 3);
 			if(frame % 250 == 0&& curP == play_phase.NOTES && !heldPresent[lane]){
 
 				Note h = new Note(lane, Note.NType.HELD);
 				heldPresent[lane] = true;
-				h.setX(LEFTBOUND + currentLane*(inBetweenWidth + smallwidth) + largewidth/8f + lane*(largewidth/4f));
-				h.bx = LEFTBOUND + currentLane*(inBetweenWidth + smallwidth) + largewidth/8f + lane*(largewidth/4f);
+				h.setX(LEFTBOUND + currentLane*(inBetweenWidth + smallwidth) + largewidth/(2*lpl) + lane*(largewidth/lpl));
+				h.bx = LEFTBOUND + currentLane*(inBetweenWidth + smallwidth) + largewidth/(2*lpl) + lane*(largewidth/lpl);
 				h.startFrame = frame;
 				h.holdFrame = 60 + (15 * dur);
 				h.setY(height);
@@ -350,10 +352,10 @@ public class GameplayController {
 				++shellCount;
 			}
 			if(frame%45 == 0 && curP == play_phase.NOTES){
-				int det = RandomController.rollInt(0,4);
+				int det = RandomController.rollInt(0,lpl);
 				if(det < 4 && !heldPresent[det]){
 					Note s = new Note(det, Note.NType.BEAT);
-					s.setX(LEFTBOUND + currentLane*(inBetweenWidth + smallwidth) + largewidth/8f + det*(largewidth/4f));
+					s.setX(LEFTBOUND + currentLane*(inBetweenWidth + smallwidth) + largewidth/(2*lpl) + det*(largewidth/lpl));
 					s.setTexture(redTexture);
 					s.setY(height);
 					s.setVX(0);

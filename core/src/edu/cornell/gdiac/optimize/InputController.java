@@ -96,7 +96,7 @@ public class InputController {
 	 * The input controller attempts to connect to the X-Box controller at device 0,
 	 * if it exists.  Otherwise, it falls back to the keyboard control.
 	 */
-	public InputController(int lanes) {
+	public InputController(int lanes, int lpl) {
 		// If we have a game-pad for id, then use it.
 		Array<XBoxController> controllers = Controllers.get().getXBoxControllers();
 		if (controllers.size > 0) {
@@ -104,11 +104,11 @@ public class InputController {
 		} else {
 			xbox = null;
 		}
-		triggerLast = new boolean[4];
+		triggerLast = new boolean[lpl];
 		switchesLast = new boolean[lanes];
-		triggers = new boolean[4];
+		triggers = new boolean[lpl];
 		switches = new boolean[lanes];
-		triggerLifted = new boolean[4];
+		triggerLifted = new boolean[lpl];
 	}
 
 	/**
@@ -157,14 +157,20 @@ public class InputController {
 	boolean rKey = false;
 	private void readKeyboard(boolean secondary) {
 		// Give priority to gamepad results
-		resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.T));
+		resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.M));
 		rKey = resetPressed && Gdx.input.isKeyPressed(Input.Keys.H);
 
 		triggerPress = new boolean[]{
+				Gdx.input.isKeyPressed(Input.Keys.Q),
+				Gdx.input.isKeyPressed(Input.Keys.W),
 				Gdx.input.isKeyPressed(Input.Keys.E),
 				Gdx.input.isKeyPressed(Input.Keys.R),
+				Gdx.input.isKeyPressed(Input.Keys.T),
+				Gdx.input.isKeyPressed(Input.Keys.Y),
 				Gdx.input.isKeyPressed(Input.Keys.U),
 				Gdx.input.isKeyPressed(Input.Keys.I),
+				Gdx.input.isKeyPressed(Input.Keys.O),
+				Gdx.input.isKeyPressed(Input.Keys.P)
 		};
 
 		boolean[] switchesPress = new boolean[]{
@@ -181,7 +187,7 @@ public class InputController {
 		};
 
 		for(int i = 0; i < Math.max(switchesPress.length, triggerPress.length); ++i){
-			if(i < triggerPress.length){
+			if(i < triggers.length){
 				triggers[i] = !triggerLast[i] && triggerPress[i];
 				triggerLifted[i] = triggerLast[i] && !triggerPress[i];
 				triggerLast[i] = triggerPress[i];

@@ -84,7 +84,9 @@ public class GameMode implements Screen {
 	 * This constructor initializes the models and controllers for the game.  The
 	 * view has already been initialized by the root class.
 	 */
-	public GameMode(GameCanvas canvas,int lanes) {
+	int lpl;
+	public GameMode(GameCanvas canvas,int lanes, int linesperlane) {
+		lpl = linesperlane;
 		this.lanes = lanes;
 		this.canvas = canvas;
 		active = false;
@@ -93,8 +95,8 @@ public class GameMode implements Screen {
 		gameState = GameState.INTRO;
 
 		// Create the controllers.
-		inputController = new InputController(lanes);
-		gameplayController = new GameplayController(true,lanes,canvas.getWidth(),canvas.getHeight());
+		inputController = new InputController(lanes, lpl);
+		gameplayController = new GameplayController(true,lanes,lpl, canvas.getWidth(),canvas.getHeight());
 		// YOU WILL NEED TO MODIFY THIS NEXT LINE
 
 		/*
@@ -234,7 +236,7 @@ public class GameMode implements Screen {
 			displayFont.setColor(Color.NAVY);
 			canvas.drawTextCentered("Game Over!",displayFont, GAME_OVER_OFFSET+50);
 			displayFont.setColor(Color.NAVY);
-			canvas.drawTextCentered("Press T to Restart", displayFont, 0);
+			canvas.drawTextCentered("Press M to Restart", displayFont, 0);
 			displayFont.setColor(Color.NAVY);
 			canvas.drawTextCentered("(Hold H at the same time to change to random notes)", displayFont, -50);
 		}
@@ -281,13 +283,13 @@ public class GameMode implements Screen {
 				Vector2 BL = new Vector2(Xcoor, gameplayController.BOTTOMBOUND);
 				canvas.drawRect(BL, curWidths[i], gameplayController.TOPBOUND - gameplayController.BOTTOMBOUND, cLanes, false);
 				if(gameplayController.currentLane == i || gameplayController.goal == i){
-					for(int j = 0; j < 4; ++j){
-						float x2 = Xcoor + (j + 1) * curWidths[i] / 4f;
+					for(int j = 0; j < lpl; ++j){
+						float x2 = Xcoor + (j + 1) * curWidths[i] / lpl;
 						Color hc = (gameplayController.triggers[j] && i == gameplayController.currentLane)? Color.CYAN : Color.NAVY;
-						canvas.drawLine(Xcoor + j*curWidths[i]/4f, gameplayController.hitbarY, x2, gameplayController.hitbarY, 3, hc);
+						canvas.drawLine(Xcoor + j*curWidths[i]/lpl, gameplayController.hitbarY, x2, gameplayController.hitbarY, 3, hc);
 
 
-						if(j != 3){
+						if(j != lpl-1){
 							if(gameplayController.currentLane == i){
 								canvas.drawLine(x2, gameplayController.TOPBOUND, x2, gameplayController.TOPBOUND - curHeight, 3, Color.BLACK);
 							}
