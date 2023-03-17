@@ -23,6 +23,7 @@ package edu.cornell.gdiac.optimize;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.audio.Music;
 
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.optimize.entity.*;
@@ -49,9 +50,8 @@ public class GameplayController {
 	/** Texture for red shells, as they look the same */
 	private Texture redTexture;
 
-
-
-
+	/** Sound for hitting a note */
+	private Music music;
 
 	/** The minimum x-velocity of a newly generated shell */
 	private static final float MIN_SHELL_VX = 3;
@@ -107,22 +107,6 @@ public class GameplayController {
 	int currentLane;
 
 	final int recovery = 3;
-
-//	private void setCoords(float width, float height) {
-//		// note appears every two seconds if we have a 30 second loop
-//
-//		// 1800
-//		for (int i = 0; i < NUM_NOTES; i++) {
-//			Note s = new Note(i%4, Note.NType.BEAT);
-//			s.setX(width/8 + (i % 4) * width/4);
-//			s.setTexture(redTexture);
-//			s.setY(height);
-//			s.setVX(0);
-//			s.setVY(-5f);
-//			noteCoords.put(i * 30, s);
-//		}
-//	}
-//
 
 	private boolean hsflag;
 
@@ -204,12 +188,14 @@ public class GameplayController {
 	 *
 	 * @param directory 	Reference to the asset directory.
 	 */
-	public void populate(AssetDirectory directory) {
+	public void populate(AssetDirectory directory)
+	{
 		beetleTexture = directory.getEntry("beetle", Texture.class);
 		bulletTexture = directory.getEntry("bullet", Texture.class);
 		starTexture = directory.getEntry("star", Texture.class);
 		redTexture  = directory.getEntry("red", Texture.class);
 		greenTexture = directory.getEntry("green", Texture.class);
+		music = directory.getEntry("flagship", Music.class);
 	}
 
 	/**
@@ -225,36 +211,6 @@ public class GameplayController {
 		return objects;
 	}
 
-	/**
-	 * Returns a reference to the currently active player.
-	 *
-	 * This property needs to be modified if you want multiple players.
-	 *
-	 * @return a reference to the currently active player.
-	 */
-//	public Ship getPlayer() {
-//		return player;
-//	}
-
-	/**
-	 * Returns true if the currently active player is alive.
-	 *
-	 * This property needs to be modified if you want multiple players.
-	 *
-	 * @return true if the currently active player is alive.
-	 */
-	public boolean isAlive() {
-		return true;
-	}
-
-	/**
-	 * Returns the number of shells currently active on the screen.
-	 *
-	 * @return the number of shells currently active on the screen.
-	 */
-	public int getShellCount() {
-		return shellCount;
-	}
 
 	/**
 	 * Returns the line healths.
@@ -295,8 +251,7 @@ public class GameplayController {
 //		objects.add(player);
 	//	setCoords(width, height);
 		randomnotes = r;
-
-
+		music.play();
 	}
 
 	/**

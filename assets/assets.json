@@ -9,6 +9,9 @@
         "red":      "images/red.png",
         "star":     "images/star.png"
     },
+    "music" : {
+        "flagship": "audio/music/flagship.ogg"
+    },
     "fonts": {
         "lucida": {
             "file": "fonts/LucidaGrande.ttf",
