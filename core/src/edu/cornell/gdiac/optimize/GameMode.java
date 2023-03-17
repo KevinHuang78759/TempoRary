@@ -241,7 +241,6 @@ public class GameMode implements Screen {
 			canvas.drawTextCentered("(Hold H at the same time to change to random notes)", displayFont, -50);
 		}
 		else{
-
 			// Draw the game objects
 			for (GameObject o : gameplayController.getObjects()) {
 				o.draw(canvas);
