@@ -75,16 +75,21 @@ public class GameMode implements Screen {
 
 	/** Amount of game ticks which have gone by */
 	private int ticks;
+	/**
+	 * Number of band member lanes
+	 */
 
 	int lanes;
-
+	/**
+	 * Number of lines per lane
+	 */
+	int lpl;
 	/**
 	 * Creates a new game with the given drawing context.
 	 *
 	 * This constructor initializes the models and controllers for the game.  The
 	 * view has already been initialized by the root class.
 	 */
-	int lpl;
 	public GameMode(GameCanvas canvas,int lanes, int linesperlane) {
 		lpl = linesperlane;
 		this.lanes = lanes;
@@ -186,6 +191,10 @@ public class GameMode implements Screen {
 			break;
 		}
 	}
+
+	/**
+	 * current tick we are on
+	 */
 	int currTick;
 
 	/**
@@ -196,8 +205,11 @@ public class GameMode implements Screen {
 	protected void play(float delta) {
 		// create some kind of data structure for coordinates of notes
 		// hm {frame : notes}
+		//make sure currTick doesn't get too big
 		currTick = ticks % 1800;
+		//Add a random shell for now
 		gameplayController.addShellRandom(canvas.getHeight(), currTick);
+		//Every so often check our HP
 		if(gameplayController.checkHealth(currTick%150==0)){
 			gameState = GameState.OVER;
 		}
@@ -231,8 +243,10 @@ public class GameMode implements Screen {
 	 */
 	private void draw(float delta) {
 		canvas.begin();
+		//First draw the background
 		canvas.drawBackground(background,0,0);
 		if (gameState == GameState.OVER) {
+			//Draw game over text
 			displayFont.setColor(Color.NAVY);
 			canvas.drawTextCentered("Game Over!",displayFont, GAME_OVER_OFFSET+50);
 			displayFont.setColor(Color.NAVY);
@@ -248,51 +262,69 @@ public class GameMode implements Screen {
 
 			//obtain background color
 			Color bkgC = new Color(237f/255f, 224f/255f, 1f, 1.0f);
-			//draw two rectangles to cover up spawning/disappearing areas
+			//draw two rectangles to cover up spawning/disappearing areas of notes and switches
 			canvas.drawRect(0, gameplayController.TOPBOUND, canvas.getWidth(), canvas.getHeight(), bkgC, true);
 			canvas.drawRect(0, 0, canvas.getWidth(), gameplayController.BOTTOMBOUND, bkgC, true);
 
 			//keep track of the current widths of each lane
 			float[] curWidths = new float[lanes];
 			//link each hp bar to a lane, even when it is small
+			//(link[2i],link[2i+1]) is the starting coordinate of a link line i
+			//(links[2*lanes+2*i],links[2*lanes+2*i+1]) is the ending coordinate of link line i
 			float[] links = new float[4*lanes];
+			//The current height of the line bars within an active lane
 			float curHeight = gameplayController.TOPBOUND - gameplayController.BOTTOMBOUND;
 			for(int i = 0; i < lanes; ++i){
 				if(gameplayController.curP == GameplayController.play_phase.NOTES){
+					//If we are in a NOTES phase, all widths are small except for the active lane, which is large
 					curWidths[i] = gameplayController.currentLane == i ? gameplayController.largewidth : gameplayController.smallwidth;
 				}
 				else{
+					//Otherwise we must be transitioning.
 					if(i == gameplayController.currentLane){
+						//If this is the current active lane, make sure it shrinks, and decrease the height
 						curWidths[i] = gameplayController.largewidth + (float)(gameplayController.t_progress)*(gameplayController.smallwidth - gameplayController.largewidth)/(float)(gameplayController.T_SwitchPhases);
 						curHeight = (gameplayController.TOPBOUND - gameplayController.BOTTOMBOUND) * (float)(gameplayController.T_SwitchPhases-gameplayController.t_progress)/(float)(gameplayController.T_SwitchPhases);
 					}
 					else if(i == gameplayController.goal){
+						//If this is the goal lane we are trying to transitioning to, make sure it grows
 						curWidths[i] = gameplayController.smallwidth + (float)(gameplayController.t_progress)*(gameplayController.largewidth - gameplayController.smallwidth)/(float)(gameplayController.T_SwitchPhases);
 					}
 					else{
+						//Otherwise this lane should stay a small width
 						curWidths[i] = gameplayController.smallwidth;
 					}
 				}
 			}
+			//Change the color of the lanes' outline if we are transitioning
 			Color cLanes = gameplayController.curP == GameplayController.play_phase.TRANSITION ? Color.RED : Color.MAROON;
-
+			//Lanes and lines will be drawn sequentially from the left. This is our starting XCoordinate
 			float Xcoor = gameplayController.LEFTBOUND;
 			for(int i = 0; i < lanes; ++i){
-
+				//Find the bottom left of the lane
 				Vector2 BL = new Vector2(Xcoor, gameplayController.BOTTOMBOUND);
+				//Draw a rectangle from the bottom left using the total available height and the current width as a border
+				//for this lane
 				canvas.drawRect(BL, curWidths[i], gameplayController.TOPBOUND - gameplayController.BOTTOMBOUND, cLanes, false);
 				if(gameplayController.currentLane == i || gameplayController.goal == i){
+					//If we are in the active or the goal lane, we need to draw the lines
 					for(int j = 0; j < lpl; ++j){
+						//Calculate the x coordinate of this line using the bottom left x coordinate of this lane
 						float x2 = Xcoor + (j + 1) * curWidths[i] / lpl;
+
+						//We might as well also draw the hit bars here as well. Change their color if they are triggered
 						Color hc = (gameplayController.triggers[j] && i == gameplayController.currentLane)? Color.CYAN : Color.NAVY;
 						canvas.drawLine(Xcoor + j*curWidths[i]/lpl, gameplayController.hitbarY, x2, gameplayController.hitbarY, 3, hc);
 
-
+						//if we are not at the last line, draw a line to divide them from the other lines in this lane
 						if(j != lpl-1){
 							if(gameplayController.currentLane == i){
+								//If this is the current lane, draw from the top all the way to the current height
 								canvas.drawLine(x2, gameplayController.TOPBOUND, x2, gameplayController.TOPBOUND - curHeight, 3, Color.BLACK);
 							}
 							else{
+								//If it is not the current lane, it must be the goal lane, so draw from the bottom up to
+								//current height
 								canvas.drawLine(x2, gameplayController.TOPBOUND, x2, gameplayController.BOTTOMBOUND + curHeight, 3, Color.BLACK);
 
 							}
@@ -302,24 +334,35 @@ public class GameMode implements Screen {
 
 				}
 				else{
+					//If this is not the current or goal lane, just draw the hitbar
 					canvas.drawLine(Xcoor, gameplayController.hitbarY, Xcoor + curWidths[i], gameplayController.hitbarY, 3, Color.NAVY);
 				}
+				//calculate the link line coordinates for later
 				links[2*i] = Xcoor + curWidths[i]/2;
 				links[2*i+1] = gameplayController.BOTTOMBOUND;
+				//increment our X coordinate with the width of this lane, and the distance between each lane
 				Xcoor += curWidths[i];
 				Xcoor += gameplayController.inBetweenWidth;
 			}
+			//Now we need to draw the HP bars, which is done sequentially as well
+			//Start our X coordinate at the minimum x margin
 			Xcoor = gameplayController.LEFTBOUND;
+			//Get the current HP values
 			int[] hp = gameplayController.getHealth();
 			for(int i =0; i < lanes; ++i){
+				//Draw the filled in fraction of each HP bar with respect to current health. Change the color from green
+				//to red if it is low enough.
 				canvas.drawRect(Xcoor+1, gameplayController.BOTTOMBOUND/5+1, Xcoor + (gameplayController.hpwidth *((float)hp[i]/(float)gameplayController.MAX_HEALTH))-1, gameplayController.BOTTOMBOUND*2f/5f-1,hp[i] < gameplayController.MAX_HEALTH/4? Color.RED : Color.GREEN,true);
-
+				//Draw the outline over the actual filled in portion so we cover the edges
 				canvas.drawRect(Xcoor, gameplayController.BOTTOMBOUND/5, Xcoor + gameplayController.hpwidth, gameplayController.BOTTOMBOUND*2f/5f,Color.BLACK,false);
+				//Determine the other endpoints of the link lines
 				links[2*lanes + 2*i] = Xcoor + gameplayController.hpwidth/2;
 				links[2*lanes + 2*i + 1] = gameplayController.BOTTOMBOUND*2f/5f;
+				//increment out X coordinate
 				Xcoor += gameplayController.hpwidth + gameplayController.hpbet;
 			}
 			for(int i = 0; i < lanes; ++i){
+				//Draw the link lines
 				canvas.drawLine(links[2*i],links[2*i+1],links[2*lanes+2*i],links[2*lanes+2*i+1],2,Color.BLACK);
 			}
 //			for(int i = 0; i < health.length; ++i){

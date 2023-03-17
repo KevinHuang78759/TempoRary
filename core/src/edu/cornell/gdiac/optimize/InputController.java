@@ -147,6 +147,9 @@ public class InputController {
 	 *
 	 * @param secondary true if the keyboard should give priority to a gamepad
 	 */
+
+	//Arrays to registering switch and trigger presses
+			//We need to track their previous values so that we dont register a hold as repeated clicks
 	private boolean[] triggers;
 	private boolean[] triggerLast;
 	private boolean[] switches;
@@ -154,9 +157,12 @@ public class InputController {
 
 	boolean[] triggerPress;
 	boolean[] triggerLifted;
+	/**
+	 * Key for random indicator  on reset
+	 */
 	boolean rKey = false;
 	private void readKeyboard(boolean secondary) {
-		// Give priority to gamepad results
+		// Give priority to gamepad results, get input from keyboard
 		resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.M));
 		rKey = resetPressed && Gdx.input.isKeyPressed(Input.Keys.H);
 
@@ -186,6 +192,8 @@ public class InputController {
 				Gdx.input.isKeyPressed(Input.Keys.NUM_0)
 		};
 
+		//Compute actual values by comparing with previous value. We only register a click if the trigger or switch
+		// went from false to true. We only register a lift if the trigger went from true to false.
 		for(int i = 0; i < Math.max(switchesPress.length, triggerPress.length); ++i){
 			if(i < triggers.length){
 				triggers[i] = !triggerLast[i] && triggerPress[i];
