@@ -96,7 +96,7 @@ public class InputController {
 	 * The input controller attempts to connect to the X-Box controller at device 0,
 	 * if it exists.  Otherwise, it falls back to the keyboard control.
 	 */
-	public InputController() { 
+	public InputController(int lanes, int lpl) {
 		// If we have a game-pad for id, then use it.
 		Array<XBoxController> controllers = Controllers.get().getXBoxControllers();
 		if (controllers.size > 0) {
@@ -104,11 +104,11 @@ public class InputController {
 		} else {
 			xbox = null;
 		}
-		triggerLast = new boolean[4];
-		switchesLast = new boolean[4];
-		triggers = new boolean[4];
-		switches = new boolean[4];
-		triggerLifted = new boolean[4];
+		triggerLast = new boolean[lpl];
+		switchesLast = new boolean[lanes];
+		triggers = new boolean[lpl];
+		switches = new boolean[lanes];
+		triggerLifted = new boolean[lpl];
 	}
 
 	/**
@@ -147,6 +147,9 @@ public class InputController {
 	 *
 	 * @param secondary true if the keyboard should give priority to a gamepad
 	 */
+
+	//Arrays to registering switch and trigger presses
+			//We need to track their previous values so that we dont register a hold as repeated clicks
 	private boolean[] triggers;
 	private boolean[] triggerLast;
 	private boolean[] switches;
@@ -154,28 +157,42 @@ public class InputController {
 
 	boolean[] triggerPress;
 	boolean[] triggerLifted;
+	/**
+	 * Key for random indicator  on reset
+	 */
 	boolean rKey = false;
 	private void readKeyboard(boolean secondary) {
-		// Give priority to gamepad results
-		resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.T));
+		// Give priority to gamepad results, get input from keyboard
+		resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.M));
 		rKey = resetPressed && Gdx.input.isKeyPressed(Input.Keys.H);
 
-		triggerPress = new boolean[]{ Gdx.input.isKeyPressed(Input.Keys.D),
-												Gdx.input.isKeyPressed(Input.Keys.F),
-												Gdx.input.isKeyPressed(Input.Keys.J),
-												Gdx.input.isKeyPressed(Input.Keys.K)};
+		triggerPress = new boolean[]{
+				Gdx.input.isKeyPressed(Input.Keys.Q),
+				Gdx.input.isKeyPressed(Input.Keys.W),
+				Gdx.input.isKeyPressed(Input.Keys.E),
+				Gdx.input.isKeyPressed(Input.Keys.R)
+		};
 
-		boolean[] switchesPress = new boolean[]{ Gdx.input.isKeyPressed(Input.Keys.E),
-												 Gdx.input.isKeyPressed(Input.Keys.R),
-												 Gdx.input.isKeyPressed(Input.Keys.U),
-												 Gdx.input.isKeyPressed(Input.Keys.I)};
+		boolean[] switchesPress = new boolean[]{
+				Gdx.input.isKeyPressed(Input.Keys.NUM_1),
+				Gdx.input.isKeyPressed(Input.Keys.NUM_2),
+				Gdx.input.isKeyPressed(Input.Keys.NUM_3),
+				Gdx.input.isKeyPressed(Input.Keys.NUM_4),
+		};
 
-		for(int i = 0; i < 4; ++i){
-			triggers[i] = !triggerLast[i] && triggerPress[i];
-			switches[i] = !switchesLast[i] && switchesPress[i];
-			triggerLifted[i] = triggerLast[i] && !triggerPress[i];
-			triggerLast[i] = triggerPress[i];
-			switchesLast[i] = switchesPress[i];
+		//Compute actual values by comparing with previous value. We only register a click if the trigger or switch
+		// went from false to true. We only register a lift if the trigger went from true to false.
+		for(int i = 0; i < Math.max(switchesPress.length, triggerPress.length); ++i){
+			if(i < triggers.length){
+				triggers[i] = !triggerLast[i] && triggerPress[i];
+				triggerLifted[i] = triggerLast[i] && !triggerPress[i];
+				triggerLast[i] = triggerPress[i];
+			}
+			if(i < switches.length){
+				switches[i] = !switchesLast[i] && switchesPress[i];
+				switchesLast[i] = switchesPress[i];
+			}
+
 
 
 		}

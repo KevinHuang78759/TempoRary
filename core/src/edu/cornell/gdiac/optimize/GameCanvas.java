@@ -330,13 +330,27 @@ public class GameCanvas {
 
     }
 
+	/**
+	 * Pointer used to determine a unit vector in a certain direction for line drawing
+	 */
+
 	Vector2 unitPerp;
 
+	/**
+	 * Draw a line given the starting and ending coordinates
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @param thickness
+	 * @param c
+	 */
 	public void drawLine(float x1, float y1, float x2, float y2, int thickness, Color c){
 
+		//Calculate the distance and direction
 		float dist = (float) Math.sqrt((x2 - x1)*(x2-x1) + (y2 - y1)*(y2-y1));
 		unitPerp.set((y2-y1)/dist, (x1-x2)/dist);
-
+		//Form two triangles - we are essentially drawing a very thin rectangle
 		float[] coors = new float[]{x1 + (thickness/2f)*unitPerp.x,y1 + (thickness/2f)*unitPerp.y,
 									x1 - (thickness/2f)*unitPerp.x,y1 - (thickness/2f)*unitPerp.y,
 									x2 + (thickness/2f)*unitPerp.x,y2 + (thickness/2f)*unitPerp.y,
@@ -344,6 +358,7 @@ public class GameCanvas {
 
 
 		short[] triangles = new short[]{0, 1, 2, 1, 2, 3};
+		//Create the PolygonRegion and set the color, then draw it with no offset
 		PolygonRegion PRG = new PolygonRegion(new TextureRegion(t), coors, triangles);
 		Color tint = new Color(c.r, c.g,c.b,1f);
 
@@ -351,11 +366,22 @@ public class GameCanvas {
 		spriteBatch.draw(PRG, 0, 0);
 
 	}
-
+//PolygonRegion pointer used for drawing discrete lines and shapes
 	PolygonRegion PRG;
-	public void drawRect(float x1, float y1, float x2, float y2, Color c, boolean filled){
 
+	/**
+	 * Draw a rectangle given 2 coordinates
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @param c
+	 * @param filled
+	 */
+	public void drawRect(float x1, float y1, float x2, float y2, Color c, boolean filled){
+		//If its filled
 		if(filled){
+			//Set the triangle coordiantes to the 4 corners
 			float[] coors = new float[]{x1,y1,
 										x1,y2,
 										x2,y1,
@@ -363,14 +389,16 @@ public class GameCanvas {
 
 
 			short[] triangles = new short[]{0, 1, 2, 1, 3, 2};
-			TextureRegion tr = new TextureRegion(t);
-
+			//Generate a polyregion
 			PRG = new PolygonRegion(new TextureRegion(t), coors, triangles);
+			//set the color
 			Color tint = new Color(c.r, c.g,c.b,1f);
 			spriteBatch.setColor(tint);
+			//draw
 			spriteBatch.draw(PRG, 0, 0);
 		}
 		else{
+			//If not filled, draw 4 lines representing the boundaries
 			drawLine(x1,y1,x1,y2,3, c);
 			drawLine(x1,y1,x2,y1,3, c);
 			drawLine(x2,y1,x2,y2,3, c);
@@ -378,6 +406,14 @@ public class GameCanvas {
 		}
 	}
 
+	/**
+	 * Fills in a rectangle with a certain texture
+	 * @param t
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 */
 	public void textureRect(FilmStrip t, float x1, float y1, float x2, float y2){
 			float[] coors = new float[]{x1,y1,
 					x1,y2,
@@ -389,6 +425,14 @@ public class GameCanvas {
 
 	}
 
+	/**
+	 * Another method for drawing a rectangle when given the bottom left corner, width, and height
+	 * @param BL
+	 * @param w
+	 * @param h
+	 * @param c
+	 * @param filled
+	 */
 
 	public void drawRect(Vector2 BL, float w, float h, Color c, boolean filled){
 		drawRect(BL.x, BL.y, BL.x + w, BL.y + h, c, filled);
