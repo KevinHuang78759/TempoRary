@@ -49,10 +49,6 @@ public class GameplayController {
 	/** Texture for red shells, as they look the same */
 	private Texture redTexture;
 
-
-
-
-
 	/** The minimum x-velocity of a newly generated shell */
 	private static final float MIN_SHELL_VX = 3;
 	/** The maximum y-velocity of a newly generated shell */
@@ -69,30 +65,20 @@ public class GameplayController {
 	private static final float MIN_STAR_OFFSET = -3.0f;
 	/** The maximum velocity offset (+ shell velocity) of a newly created star */
 	private static final float MAX_STAR_OFFSET = 3.0f;
-
 	/** The amount of health gained when hitting a note weakly */
 	private static final int WEAK_HIT_HEALTH = 1;
-
 	/** The amount of health gained when hitting a note strongly */
 	private static final int STRONG_HIT_HEALTH = 2;
-
 	/** The amount of health lost when missing a note */
 	private static final int MISS_HIT_HEALTH = 2;
-
 	/** Maximum amount of health */
 	final int MAX_HEALTH = 30;
-
 	/** Maximum amount of health */
 	private static final int NUM_LANES = 4;
-
 	/** Number of notes present in repeating rhythm */
 	private static final int NUM_NOTES = 60;
-
-	/** Reference to player (need to change to allow multiple players) */
-	//private Ship player;
 	/** Note count for the display in window corner */
 	private int shellCount;
-
 	/** health of lines */
 	private int[] health;
 
@@ -108,57 +94,53 @@ public class GameplayController {
 
 	final int recovery = 3;
 
-//	private void setCoords(float width, float height) {
-//		// note appears every two seconds if we have a 30 second loop
-//
-//		// 1800
-//		for (int i = 0; i < NUM_NOTES; i++) {
-//			Note s = new Note(i%4, Note.NType.BEAT);
-//			s.setX(width/8 + (i % 4) * width/4);
-//			s.setTexture(redTexture);
-//			s.setY(height);
-//			s.setVX(0);
-//			s.setVY(-5f);
-//			noteCoords.put(i * 30, s);
-//		}
-//	}
-//
+	private void setCoords(float width, float height) {
+		// note appears every two seconds if we have a 30 second loop
+		// 1800
+		for (int i = 0; i < NUM_NOTES; i++) {
+			Note s = new Note(i%4, Note.NType.BEAT);
+			s.setX(width/8 + (i % 4) * width/4);
+			s.setTexture(redTexture);
+			s.setY(height);
+			s.setVX(0);
+			s.setVY(-5f);
+			noteCoords.put(i * 30, s);
+		}
+	}
 
-	private boolean hsflag;
+	public boolean randomnotes;
 
 	/**
 	 * Creates a new GameplayController with no active elements.
 	 */
-	public boolean randomnotes;
 	public GameplayController(boolean rn) {
 		shellCount = 0;
 		initializeHealth();
 		objects = new Array<GameObject>();
 		backing = new Array<GameObject>();
-		hsflag = false;
 		currentLane = 0;
 		randomnotes = rn;
 	}
 
-	 float LEFTBOUND;
-	 float RIGHTBOUND;
-	 float TOPBOUND;
-	 float BOTTOMBOUND;
+	float LEFTBOUND;
+	float RIGHTBOUND;
+	float TOPBOUND;
+	float BOTTOMBOUND;
 
-	 float smallwidth;
-	 float largewidth;
-	 float inBetweenWidth;
+	float smallwidth;
+	float largewidth;
+	float inBetweenWidth;
 
 	float hitbarY;
 
 	float hpwidth;
 	float hpbet;
+
 	public GameplayController(boolean rn, float width, float height){
 		shellCount = 0;
 		initializeHealth();
 		objects = new Array<GameObject>();
 		backing = new Array<GameObject>();
-		hsflag = false;
 		randomnotes = true;
 		LEFTBOUND = width/10f;
 		RIGHTBOUND = 9*width/10f;
@@ -226,17 +208,6 @@ public class GameplayController {
 	}
 
 	/**
-	 * Returns a reference to the currently active player.
-	 *
-	 * This property needs to be modified if you want multiple players.
-	 *
-	 * @return a reference to the currently active player.
-	 */
-//	public Ship getPlayer() {
-//		return player;
-//	}
-
-	/**
 	 * Returns true if the currently active player is alive.
 	 *
 	 * This property needs to be modified if you want multiple players.
@@ -273,10 +244,6 @@ public class GameplayController {
 		return health.length;
 	}
 
-	public boolean newhsreached(){
-		return hsflag;
-	}
-
 	/**
 	 * Starts a new game.
 	 *
@@ -286,17 +253,7 @@ public class GameplayController {
 	 * @param y Starting y-position for the player
 	 */
 	public void start(float x, float y, int width, int height, boolean r) {
-		// Create the player's ship
-//		player = new Ship();
-//		player.setTexture(beetleTexture);
-//		player.getPosition().set(x,y);
-//
-//		// Player must be in object list.
-//		objects.add(player);
-	//	setCoords(width, height);
 		randomnotes = r;
-
-
 	}
 
 	/**
