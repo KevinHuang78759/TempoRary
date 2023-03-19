@@ -50,7 +50,7 @@ public class GameplayController {
 	/** Texture for red shells, as they look the same */
 	private Texture redTexture;
 
-
+	public BandMember[] bms;
 
 
 
@@ -125,6 +125,7 @@ public class GameplayController {
 	 * Creates a new GameplayController with no active elements.
 	 */
 	public GameplayController(boolean rn, int lanes) {
+		bms = new BandMember[lanes];
 		curWidths = new float[lanes];
 		NUM_LANES = lanes;
 		shellCount = 0;
@@ -181,6 +182,7 @@ public class GameplayController {
 	float hpbet;
 	float curHeight;
 	public GameplayController(boolean rn, int lanes, int linesPerLane, float width, float height){
+		bms = new BandMember[lanes];
 		curWidths = new float[lanes];
 		NUM_LANES = lanes;
 		shellCount = 0;
@@ -217,28 +219,35 @@ public class GameplayController {
 		lpl = linesPerLane;
 	}
 
-	public void updateWidth(){
+	public void updateWidthAndBL(){
+		float Xcoord = LEFTBOUND;
 		for(int i = 0; i < NUM_LANES; ++i){
 			if(curP == GameplayController.play_phase.NOTES){
 				//If we are in a NOTES phase, all widths are small except for the active lane, which is large
-				curWidths[i] = currentLane == i ? largewidth : smallwidth;
-				curHeight = TOPBOUND - BOTTOMBOUND;
+				bms[i].width = bms[i].active ? largewidth : smallwidth;
+				bms[i].lineHeight = bms[i].active ? TOPBOUND - BOTTOMBOUND : 0;
+				bms[i].BL.x = Xcoord;
+				Xcoord += bms[i].width + inBetweenWidth;
 			}
 			else{
 				//Otherwise we must be transitioning.
-				if(i == currentLane){
+				if(bms[i].active){
 					//If this is the current active lane, make sure it shrinks, and decrease the height
-					curWidths[i] = largewidth + (float)(t_progress)*(smallwidth - largewidth)/(float)(T_SwitchPhases);
-					curHeight = (TOPBOUND - BOTTOMBOUND) * (float)(T_SwitchPhases-t_progress)/(float)(T_SwitchPhases);
+					bms[i].width = largewidth + (float)(t_progress)*(smallwidth - largewidth)/(float)(T_SwitchPhases);
+					bms[i].lineHeight = (TOPBOUND - BOTTOMBOUND) * (float)(T_SwitchPhases-t_progress)/(float)(T_SwitchPhases);
+
 				}
-				else if(i == goal){
+				else if(bms[i].goal){
 					//If this is the goal lane we are trying to transition to, make sure it grows
-					curWidths[i] = smallwidth + (float)(t_progress)*(largewidth - smallwidth)/(float)(T_SwitchPhases);
+					bms[i].width = smallwidth + (float)(t_progress)*(largewidth - smallwidth)/(float)(T_SwitchPhases);
+					bms[i].lineHeight = (TOPBOUND - BOTTOMBOUND) * (float)(t_progress)/(float)(T_SwitchPhases);
 				}
 				else{
 					//Otherwise this lane should stay a small width
 					curWidths[i] = smallwidth;
 				}
+				bms[i].BL.x = Xcoord;
+				Xcoord += bms[i].width + inBetweenWidth;
 			}
 		}
 	}
@@ -477,7 +486,7 @@ public class GameplayController {
 				float vy = vy0 * RandomController.rollFloat(MIN_STAR_FACTOR, MAX_STAR_FACTOR)
 						+ RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
 				s.getVelocity().set(vx,vy);
-				backing.add(s);
+				objects.add(s);
 			}
 		}
 	}
@@ -683,6 +692,7 @@ public class GameplayController {
 					}
 				}
 				else{
+					System.out.println("NOT NOTE");
 					o.update(delta);
 				}
 			}

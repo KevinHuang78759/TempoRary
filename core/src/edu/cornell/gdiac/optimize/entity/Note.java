@@ -30,7 +30,7 @@ import com.badlogic.gdx.graphics.*;
 public class Note extends GameObject {
 	public static final float descentSpeed = -3.5f;
 	/** Rescale the size of a shell */
-	private static final float SHELL_SIZE_MULTIPLE = 4.0f;
+	private static final float NOTE_SIZE_MULT = 4.0f;
 	/** How fast we change frames (one frame per 4 calls to update) */
 	private static final float ANIMATION_SPEED = 0.25f;
 	/** The number of animation frames in our filmstrip */
@@ -79,7 +79,7 @@ public class Note extends GameObject {
 
 
 	public float getRadius(){
-		return super.getRadius() * SHELL_SIZE_MULTIPLE;
+		return super.getRadius() * NOTE_SIZE_MULT;
 	}
 	
 	/**
@@ -160,22 +160,22 @@ public class Note extends GameObject {
 	 *
 	 * @param canvas The drawing context
 	 */
-	public void draw(GameCanvas canvas) {
+	public void draw(GameCanvas canvas, float scalingFactor) {
 		if(nt == NType.HELD){
 
 			tail.setFrame(0);
 			//System.out.println(bx + " " + by + " " + position.x + " " + position.y + " " + tail_thickness);
 			//canvas.textureRect(tail, bx - tail_thickness/2, by, position.x + tail_thickness/2, position.y);
-			canvas.drawRect(bx - tail_thickness/2, by, position.x + tail_thickness/2, position.y, Color.BLUE, true);
+			canvas.drawRect(bx - scalingFactor*tail_thickness/2, by, position.x + scalingFactor*tail_thickness/2, position.y, Color.BLUE, true);
 
 			animator.setFrame(0);
 			canvas.draw(animator, Color.WHITE, origin.x, origin.y, bx, by,
-					0.0f, SHELL_SIZE_MULTIPLE, SHELL_SIZE_MULTIPLE);
+					0.0f, scalingFactor*NOTE_SIZE_MULT, scalingFactor*NOTE_SIZE_MULT);
 		}
 		else{
 			animator.setFrame((int)animeframe);
 			canvas.draw(animator, Color.WHITE, origin.x, origin.y, position.x, position.y,
-					0.0f, SHELL_SIZE_MULTIPLE, SHELL_SIZE_MULTIPLE);
+					0.0f, scalingFactor*NOTE_SIZE_MULT, scalingFactor*NOTE_SIZE_MULT);
 		}
 
 	}

@@ -224,7 +224,7 @@ public class GameMode implements Screen {
 		// Update objects.
 		gameplayController.resolvePhase(inputController, delta);
 		gameplayController.resolveActions(inputController,delta, currTick);
-		gameplayController.updateWidth();
+		gameplayController.updateWidthAndBL();
 		// Check for collisions
 		totalTime += (delta*1000); // Seconds to milliseconds
 
@@ -256,111 +256,9 @@ public class GameMode implements Screen {
 		}
 		else{
 			// Draw the game objects
-			for (GameObject o : gameplayController.getObjects()) {
-				o.draw(canvas);
+			for(BandMember b : gameplayController.bms){
+				b.draw(canvas);
 			}
-
-			//obtain background color
-			Color bkgC = new Color(237f/255f, 224f/255f, 1f, 1.0f);
-			//draw two rectangles to cover up spawning/disappearing areas of notes and switches
-			canvas.drawRect(0, gameplayController.TOPBOUND, canvas.getWidth(), canvas.getHeight(), bkgC, true);
-			canvas.drawRect(0, 0, canvas.getWidth(), gameplayController.BOTTOMBOUND, bkgC, true);
-
-			//keep track of the current widths of each lane
-			float[] curWidths = gameplayController.curWidths;
-			//link each hp bar to a lane, even when it is small
-			//(link[2i],link[2i+1]) is the starting coordinate of a link line i
-			//(links[2*lanes+2*i],links[2*lanes+2*i+1]) is the ending coordinate of link line i
-			float[] links = new float[4*lanes];
-			//The current height of the line bars within an active lane
-			float curHeight = gameplayController.curHeight;
-
-			//Change the color of the lanes' outline if we are transitioning
-			Color cLanes = gameplayController.curP == GameplayController.play_phase.TRANSITION ? Color.RED : Color.MAROON;
-			//Lanes and lines will be drawn sequentially from the left. This is our starting XCoordinate
-			float Xcoor = gameplayController.LEFTBOUND;
-			for(int i = 0; i < lanes; ++i){
-				//Find the bottom left of the lane
-				Vector2 BL = new Vector2(Xcoor, gameplayController.BOTTOMBOUND);
-				//Draw a rectangle from the bottom left using the total available height and the current width as a border
-				//for this lane
-				canvas.drawRect(BL, curWidths[i], gameplayController.TOPBOUND - gameplayController.BOTTOMBOUND, cLanes, false);
-				if(gameplayController.currentLane == i || gameplayController.goal == i){
-					//If we are in the active or the goal lane, we need to draw the lines
-					for(int j = 0; j < lpl; ++j){
-						//Calculate the x coordinate of this line using the bottom left x coordinate of this lane
-						float x2 = Xcoor + (j + 1) * curWidths[i] / lpl;
-
-						//We might as well also draw the hit bars here as well. Change their color if they are triggered
-						Color hc = (gameplayController.triggers[j] && i == gameplayController.currentLane)? Color.CYAN : Color.NAVY;
-						canvas.drawLine(Xcoor + j*curWidths[i]/lpl, gameplayController.hitbarY, x2, gameplayController.hitbarY, 3, hc);
-
-						//if we are not at the last line, draw a line to divide them from the other lines in this lane
-						if(j != lpl-1){
-							if(gameplayController.currentLane == i){
-								//If this is the current lane, draw from the top all the way to the current height
-								canvas.drawLine(x2, gameplayController.TOPBOUND, x2, gameplayController.TOPBOUND - curHeight, 3, Color.BLACK);
-							}
-							else{
-								//If it is not the current lane, it must be the goal lane, so draw from the bottom up to
-								//current height
-								canvas.drawLine(x2, gameplayController.TOPBOUND, x2, gameplayController.BOTTOMBOUND + curHeight, 3, Color.BLACK);
-
-							}
-						}
-
-					}
-
-				}
-				else{
-					//If this is not the current or goal lane, just draw the hitbar
-					canvas.drawLine(Xcoor, gameplayController.hitbarY, Xcoor + curWidths[i], gameplayController.hitbarY, 3, Color.NAVY);
-				}
-				//calculate the link line coordinates for later
-				links[2*i] = Xcoor + curWidths[i]/2;
-				links[2*i+1] = gameplayController.BOTTOMBOUND;
-				//increment our X coordinate with the width of this lane, and the distance between each lane
-				Xcoor += curWidths[i];
-				Xcoor += gameplayController.inBetweenWidth;
-			}
-			//Now we need to draw the HP bars, which is done sequentially as well
-			//Start our X coordinate at the minimum x margin
-			Xcoor = gameplayController.LEFTBOUND;
-			//Get the current HP values
-			int[] hp = gameplayController.getHealth();
-			for(int i =0; i < lanes; ++i){
-				//Draw the filled in fraction of each HP bar with respect to current health. Change the color from green
-				//to red if it is low enough.
-				canvas.drawRect(Xcoor+1, gameplayController.BOTTOMBOUND/5+1, Xcoor + (gameplayController.hpwidth *((float)hp[i]/(float)gameplayController.MAX_HEALTH))-1, gameplayController.BOTTOMBOUND*2f/5f-1,hp[i] < gameplayController.MAX_HEALTH/4? Color.RED : Color.GREEN,true);
-				//Draw the outline over the actual filled in portion so we cover the edges
-				canvas.drawRect(Xcoor, gameplayController.BOTTOMBOUND/5, Xcoor + gameplayController.hpwidth, gameplayController.BOTTOMBOUND*2f/5f,Color.BLACK,false);
-				//Determine the other endpoints of the link lines
-				links[2*lanes + 2*i] = Xcoor + gameplayController.hpwidth/2;
-				links[2*lanes + 2*i + 1] = gameplayController.BOTTOMBOUND*2f/5f;
-				//increment out X coordinate
-				Xcoor += gameplayController.hpwidth + gameplayController.hpbet;
-			}
-			for(int i = 0; i < lanes; ++i){
-				//Draw the link lines
-				canvas.drawLine(links[2*i],links[2*i+1],links[2*lanes+2*i],links[2*lanes+2*i+1],2,Color.BLACK);
-			}
-//			for(int i = 0; i < health.length; ++i){
-//				displayFont.setColor(Color.MAROON);
-//				String hp = "Health: " + health[i];
-//				canvas.drawText(hp, displayFont, i * canvas.getWidth()/(float)health.length, canvas.getHeight() - COUNTER_OFFSET - 30);
-//			}
-//
-//
-//			displayFont.setColor(Color.NAVY);
-//			String Time = "Time: " + ticks;
-//			canvas.drawText(Time, displayFont, COUNTER_OFFSET + 300, canvas.getHeight()-COUNTER_OFFSET);
-			// Flush information to the graphic buffer.
-
-
-//			displayFont.setColor(gameplayController.trigger ? Color.CYAN : Color.NAVY);
-//			String indicator = "____________";
-//			canvas.drawText(indicator, displayFont, gameplayController.lane * canvas.getWidth()/4f, canvas.getHeight()/3f);
-
 
 		}
 		canvas.end();
