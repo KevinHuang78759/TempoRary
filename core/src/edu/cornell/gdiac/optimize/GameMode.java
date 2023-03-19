@@ -287,7 +287,7 @@ public class GameMode implements Screen {
 						curHeight = (gameplayController.TOPBOUND - gameplayController.BOTTOMBOUND) * (float)(gameplayController.T_SwitchPhases-gameplayController.t_progress)/(float)(gameplayController.T_SwitchPhases);
 					}
 					else if(i == gameplayController.goal){
-						//If this is the goal lane we are trying to transitioning to, make sure it grows
+						//If this is the goal lane we are trying to transition to, make sure it grows
 						curWidths[i] = gameplayController.smallwidth + (float)(gameplayController.t_progress)*(gameplayController.largewidth - gameplayController.smallwidth)/(float)(gameplayController.T_SwitchPhases);
 					}
 					else{

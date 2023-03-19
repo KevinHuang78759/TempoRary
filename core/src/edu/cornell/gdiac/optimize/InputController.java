@@ -170,13 +170,7 @@ public class InputController {
 				Gdx.input.isKeyPressed(Input.Keys.Q),
 				Gdx.input.isKeyPressed(Input.Keys.W),
 				Gdx.input.isKeyPressed(Input.Keys.E),
-				Gdx.input.isKeyPressed(Input.Keys.R),
-				Gdx.input.isKeyPressed(Input.Keys.T),
-				Gdx.input.isKeyPressed(Input.Keys.Y),
-				Gdx.input.isKeyPressed(Input.Keys.U),
-				Gdx.input.isKeyPressed(Input.Keys.I),
-				Gdx.input.isKeyPressed(Input.Keys.O),
-				Gdx.input.isKeyPressed(Input.Keys.P)
+				Gdx.input.isKeyPressed(Input.Keys.R)
 		};
 
 		boolean[] switchesPress = new boolean[]{
@@ -184,12 +178,6 @@ public class InputController {
 				Gdx.input.isKeyPressed(Input.Keys.NUM_2),
 				Gdx.input.isKeyPressed(Input.Keys.NUM_3),
 				Gdx.input.isKeyPressed(Input.Keys.NUM_4),
-				Gdx.input.isKeyPressed(Input.Keys.NUM_5),
-				Gdx.input.isKeyPressed(Input.Keys.NUM_6),
-				Gdx.input.isKeyPressed(Input.Keys.NUM_7),
-				Gdx.input.isKeyPressed(Input.Keys.NUM_8),
-				Gdx.input.isKeyPressed(Input.Keys.NUM_9),
-				Gdx.input.isKeyPressed(Input.Keys.NUM_0)
 		};
 
 		//Compute actual values by comparing with previous value. We only register a click if the trigger or switch
