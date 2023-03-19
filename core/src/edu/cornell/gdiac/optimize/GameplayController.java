@@ -28,6 +28,7 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.optimize.entity.*;
 import edu.cornell.gdiac.optimize.GameObject.ObjectType;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -82,6 +83,8 @@ public class GameplayController {
 	/** Maximum amount of health */
 	final int MAX_HEALTH = 30;
 
+	float[] curWidths;
+
 	/** Number of band member lanes */
 	int NUM_LANES;
 
@@ -114,22 +117,6 @@ public class GameplayController {
 	 */
 	final int recovery = 3;
 
-//	private void setCoords(float width, float height) {
-//		// note appears every two seconds if we have a 30 second loop
-//
-//		// 1800
-//		for (int i = 0; i < NUM_NOTES; i++) {
-//			Note s = new Note(i%4, Note.NType.BEAT);
-//			s.setX(width/8 + (i % 4) * width/4);
-//			s.setTexture(redTexture);
-//			s.setY(height);
-//			s.setVX(0);
-//			s.setVY(-5f);
-//			noteCoords.put(i * 30, s);
-//		}
-//	}
-//
-
 	/**
 	 * Indicates whether or not we want to use randomly generated notes
 	 */
@@ -138,6 +125,7 @@ public class GameplayController {
 	 * Creates a new GameplayController with no active elements.
 	 */
 	public GameplayController(boolean rn, int lanes) {
+		curWidths = new float[lanes];
 		NUM_LANES = lanes;
 		shellCount = 0;
 		initializeHealth();
@@ -191,7 +179,9 @@ public class GameplayController {
 	 * Width between each HP bar
 	 */
 	float hpbet;
+	float curHeight;
 	public GameplayController(boolean rn, int lanes, int linesPerLane, float width, float height){
+		curWidths = new float[lanes];
 		NUM_LANES = lanes;
 		shellCount = 0;
 		initializeHealth();
@@ -225,6 +215,32 @@ public class GameplayController {
 		heldPresent = new boolean[linesPerLane];
 		triggers = new boolean[linesPerLane];
 		lpl = linesPerLane;
+	}
+
+	public void updateWidth(){
+		for(int i = 0; i < NUM_LANES; ++i){
+			if(curP == GameplayController.play_phase.NOTES){
+				//If we are in a NOTES phase, all widths are small except for the active lane, which is large
+				curWidths[i] = currentLane == i ? largewidth : smallwidth;
+				curHeight = TOPBOUND - BOTTOMBOUND;
+			}
+			else{
+				//Otherwise we must be transitioning.
+				if(i == currentLane){
+					//If this is the current active lane, make sure it shrinks, and decrease the height
+					curWidths[i] = largewidth + (float)(t_progress)*(smallwidth - largewidth)/(float)(T_SwitchPhases);
+					curHeight = (TOPBOUND - BOTTOMBOUND) * (float)(T_SwitchPhases-t_progress)/(float)(T_SwitchPhases);
+				}
+				else if(i == goal){
+					//If this is the goal lane we are trying to transition to, make sure it grows
+					curWidths[i] = smallwidth + (float)(t_progress)*(largewidth - smallwidth)/(float)(T_SwitchPhases);
+				}
+				else{
+					//Otherwise this lane should stay a small width
+					curWidths[i] = smallwidth;
+				}
+			}
+		}
 	}
 
 	private void initializeHealth() {
@@ -276,37 +292,6 @@ public class GameplayController {
 	 */
 	public Array<GameObject> getObjects() {
 		return objects;
-	}
-
-	/**
-	 * Returns a reference to the currently active player.
-	 *
-	 * This property needs to be modified if you want multiple players.
-	 *
-	 * @return a reference to the currently active player.
-	 */
-//	public Ship getPlayer() {
-//		return player;
-//	}
-
-	/**
-	 * Returns true if the currently active player is alive.
-	 *
-	 * This property needs to be modified if you want multiple players.
-	 *
-	 * @return true if the currently active player is alive.
-	 */
-	public boolean isAlive() {
-		return true;
-	}
-
-	/**
-	 * Returns the number of shells currently active on the screen.
-	 *
-	 * @return the number of shells currently active on the screen.
-	 */
-	public int getShellCount() {
-		return shellCount;
 	}
 
 	/**
@@ -375,6 +360,7 @@ public class GameplayController {
 			if(frame % 250 == 0&& curP == play_phase.NOTES && !heldPresent[lane]){
 
 				Note h = new Note(lane, Note.NType.HELD);
+				h.lane = currentLane;
 				heldPresent[lane] = true;
 				h.setX(LEFTBOUND + currentLane*(inBetweenWidth + smallwidth) + largewidth/(2*lpl) + lane*(largewidth/lpl));
 				h.bx = LEFTBOUND + currentLane*(inBetweenWidth + smallwidth) + largewidth/(2*lpl) + lane*(largewidth/lpl);
@@ -392,6 +378,7 @@ public class GameplayController {
 				int det = RandomController.rollInt(0,lpl);
 				if(det < 4 && !heldPresent[det]){
 					Note s = new Note(det, Note.NType.BEAT);
+					s.lane = currentLane;
 					s.setX(LEFTBOUND + currentLane*(inBetweenWidth + smallwidth) + largewidth/(2*lpl) + det*(largewidth/lpl));
 					s.setTexture(redTexture);
 					s.setY(height);
@@ -405,6 +392,7 @@ public class GameplayController {
 				int det = RandomController.rollInt(0,NUM_LANES - 1);
 				if(det != currentLane){
 					Note s = new Note(det, Note.NType.SWITCH);
+					s.lane = det;
 					s.setX(LEFTBOUND + (det * (smallwidth + inBetweenWidth) + (det > currentLane ? largewidth - smallwidth : 0)) + smallwidth/2f);
 					s.setTexture(greenTexture);
 					s.setY(height);
@@ -413,38 +401,10 @@ public class GameplayController {
 					++shellCount;
 				}
 			}
-
-
 		}
-//		if(!randomnotes){
-//			//add notes in fixed pattern
-//			Note s = noteCoords.get(frame);
-//			if (s != null) {
-////			s.setDestroyed(false);
-//				objects.add(s);
-//				shellCount++;
-//
-//				if (shellCount == NUM_NOTES) {
-//					setCoords(width, height);
-//					shellCount = 0;
-//				}
-//			}
-//		}else{
-//			//add notes randomly - to a random lane with fixed probability
-//			if(frame%25 == 0){
-//				int det = RandomController.rollInt(0,4);
-//				if(det < 4){
-//					Note s = new Note(det);
-//					s.setX(width/8 + det * width/4);
-//					s.setTexture(redTexture);
-//					s.setY(height);
-//					s.setVX(0);
-//					s.setVY(-5f);
-//					objects.add(s);
-//					++shellCount;
-//				}
-//			}
-//		}
+	}
+
+	public void addShell(int lane,int line){
 
 	}
 
@@ -720,10 +680,7 @@ public class GameplayController {
 
 							}
 						}
-
 					}
-
-
 				}
 				else{
 					o.update(delta);

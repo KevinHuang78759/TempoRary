@@ -56,6 +56,8 @@ public class Note extends GameObject {
 	public int startFrame;
 	public int holdFrame;
 
+	public int lane;
+
 	public enum NType{
 		SWITCH,
 		HELD,
@@ -163,7 +165,7 @@ public class Note extends GameObject {
 
 			tail.setFrame(0);
 			//System.out.println(bx + " " + by + " " + position.x + " " + position.y + " " + tail_thickness);
-			canvas.textureRect(tail, bx - tail_thickness/2, by, position.x + tail_thickness/2, position.y);
+			//canvas.textureRect(tail, bx - tail_thickness/2, by, position.x + tail_thickness/2, position.y);
 			canvas.drawRect(bx - tail_thickness/2, by, position.x + tail_thickness/2, position.y, Color.BLUE, true);
 
 			animator.setFrame(0);

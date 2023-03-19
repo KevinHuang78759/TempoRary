@@ -224,7 +224,7 @@ public class GameMode implements Screen {
 		// Update objects.
 		gameplayController.resolvePhase(inputController, delta);
 		gameplayController.resolveActions(inputController,delta, currTick);
-
+		gameplayController.updateWidth();
 		// Check for collisions
 		totalTime += (delta*1000); // Seconds to milliseconds
 
@@ -267,35 +267,14 @@ public class GameMode implements Screen {
 			canvas.drawRect(0, 0, canvas.getWidth(), gameplayController.BOTTOMBOUND, bkgC, true);
 
 			//keep track of the current widths of each lane
-			float[] curWidths = new float[lanes];
+			float[] curWidths = gameplayController.curWidths;
 			//link each hp bar to a lane, even when it is small
 			//(link[2i],link[2i+1]) is the starting coordinate of a link line i
 			//(links[2*lanes+2*i],links[2*lanes+2*i+1]) is the ending coordinate of link line i
 			float[] links = new float[4*lanes];
 			//The current height of the line bars within an active lane
-			float curHeight = gameplayController.TOPBOUND - gameplayController.BOTTOMBOUND;
-			for(int i = 0; i < lanes; ++i){
-				if(gameplayController.curP == GameplayController.play_phase.NOTES){
-					//If we are in a NOTES phase, all widths are small except for the active lane, which is large
-					curWidths[i] = gameplayController.currentLane == i ? gameplayController.largewidth : gameplayController.smallwidth;
-				}
-				else{
-					//Otherwise we must be transitioning.
-					if(i == gameplayController.currentLane){
-						//If this is the current active lane, make sure it shrinks, and decrease the height
-						curWidths[i] = gameplayController.largewidth + (float)(gameplayController.t_progress)*(gameplayController.smallwidth - gameplayController.largewidth)/(float)(gameplayController.T_SwitchPhases);
-						curHeight = (gameplayController.TOPBOUND - gameplayController.BOTTOMBOUND) * (float)(gameplayController.T_SwitchPhases-gameplayController.t_progress)/(float)(gameplayController.T_SwitchPhases);
-					}
-					else if(i == gameplayController.goal){
-						//If this is the goal lane we are trying to transition to, make sure it grows
-						curWidths[i] = gameplayController.smallwidth + (float)(gameplayController.t_progress)*(gameplayController.largewidth - gameplayController.smallwidth)/(float)(gameplayController.T_SwitchPhases);
-					}
-					else{
-						//Otherwise this lane should stay a small width
-						curWidths[i] = gameplayController.smallwidth;
-					}
-				}
-			}
+			float curHeight = gameplayController.curHeight;
+
 			//Change the color of the lanes' outline if we are transitioning
 			Color cLanes = gameplayController.curP == GameplayController.play_phase.TRANSITION ? Color.RED : Color.MAROON;
 			//Lanes and lines will be drawn sequentially from the left. This is our starting XCoordinate
