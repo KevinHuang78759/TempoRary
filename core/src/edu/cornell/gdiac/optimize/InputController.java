@@ -32,36 +32,8 @@ public class InputController {
 	// Fields to manage game state
 	/** Whether the reset button was pressed. */
 	protected boolean resetPressed;
-	/** Whether the flood button was pressed. */
-	protected boolean floodPressed;
-	/** Whether the exit button was pressed. */
-	protected boolean exitPressed;
-	/** Whether the fire button was pressed. */
-	//private boolean firePressed;
-	/** How much did we move (left/right)? */
-	private float offset;
 	/** XBox Controller support */
 	private XBoxController xbox;
-	
-	/**
-	 * Returns the amount of sideways movement. 
-	 *
-	 * -1 = left, 1 = right, 0 = still
-	 *
-	 * @return the amount of sideways movement. 
-	 */
-	public float getMovement() {
-		return offset;
-	}
-
-	/**
-	 * Returns true if the fire button was pressed.
-	 *
-	 * @return true if the fire button was pressed.
-	 */
-//	public boolean didFire() {
-//		return firePressed;
-//	}
 
 	/**
 	 * Returns true if the reset button was pressed.
@@ -70,24 +42,6 @@ public class InputController {
 	 */
 	public boolean didReset() {
 		return resetPressed;
-	}
-
-	/**
-	 * Returns true if the player wants to flood shells.
-	 *
-	 * @return true if the player wants to flood shells.
-	 */
-	public boolean didFlood() {
-		return floodPressed;
-	}
-
-	/**
-	 * Returns true if the exit button was pressed.
-	 *
-	 * @return true if the exit button was pressed.
-	 */
-	public boolean didExit() {
-		return exitPressed;
 	}
 	
 	/**
@@ -128,14 +82,7 @@ public class InputController {
 	 * Reads input from an X-Box controller connected to this computer.
 	 */
 	private void readGamepad() {
-
 		resetPressed = xbox.getA();
-		floodPressed = xbox.getRBumper();
-		exitPressed  = xbox.getBack();
-
-		// Increase animation frame, but only if trying to move
-		offset = xbox.getLeftX();
-		//firePressed = xbox.getRightTrigger() > 0.6f;
 	}
 
 	/**
@@ -192,9 +139,6 @@ public class InputController {
 				switches[i] = !switchesLast[i] && switchesPress[i];
 				switchesLast[i] = switchesPress[i];
 			}
-
-
-
 		}
 	}
 
