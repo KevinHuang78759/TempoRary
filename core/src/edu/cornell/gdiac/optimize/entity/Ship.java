@@ -83,6 +83,44 @@ public class Ship extends GameObject {
 	}
 
 	/**
+	 * Resets the cooldown so that the weapon can fire again.
+	 *
+	 * Since weapon fire is managed externally, we need this method to
+	 * reset the weapon after use. Otherwise, the player can fire
+	 * a continuous stream of bullets.
+	 */
+	public void resetCooldown() {
+		cooldown = COOLDOWN_TIME;
+	}
+
+	//#region REMOVE ME
+	/**
+	 * Returns true if the powerup is active.
+	 *
+	 * @return true if the powerup is active.
+	 */
+	public boolean isPowered() {
+		return powered;
+	}
+
+	/**
+	 * Acknowledges a kill to earn power ups
+	 */
+	public void registerKill() {
+		if (!powered) {
+			killcount++;
+		}
+
+		// Magic Numbers
+		if (killcount == POWER_KILL) {
+			powertime = POWER_TIME;
+			powered   = true;
+			killcount = 0;
+		}
+	}
+	//#endregion
+	int invincibletime;
+	/**
 	 * Initialize a ship with trivial starting position.
 	 */
 	public Ship() {
@@ -90,8 +128,24 @@ public class Ship extends GameObject {
 		animeframe = 0.0f;
 		invincible = false;
 		points = 0;
+		invincibletime = 0;
 	}
 
+	public void addinvtime(int k){
+		invincibletime += k;
+	}
+
+	public void addpoints(){
+		++points;
+		if(points % 50 == 0){
+			addinvtime(600);
+			setInvincible(true);
+		}
+	}
+
+	public int getPoints(){
+		return points;
+	}
 	public boolean isInvincible(){
 		return invincible;
 	}
@@ -138,6 +192,14 @@ public class Ship extends GameObject {
 			cooldown -= COOLDOWN_BONUS;
 		}
 
+		//#region REMOVE ME
+		if (invincible) {
+			invincibletime--;
+			if (invincibletime == 0) {
+				invincible = false;
+			}
+		}
+		//#endregion
 	}
 
 	/**

@@ -50,17 +50,15 @@ public class GameplayController {
 	/** Texture for red shells, as they look the same */
 	private Texture redTexture;
 
-	/** Sound for hitting a note */
+	/** Song!!! music */
 	private Music music;
+	/** Reference to the current level */
+	private Level level;
+	/** Reference to the current level's bandMembers (just for ease of access lol) */
+	private BandMember[] bandMembers;
+	/** Time elapsed in song */
+	private float time;
 
-	/** The minimum x-velocity of a newly generated shell */
-	private static final float MIN_SHELL_VX = 3;
-	/** The maximum y-velocity of a newly generated shell */
-	private static final float MAX_SHELL_VX = 10;
-	/** The y-position offset of a newly generated bullet */
-	private static final float BULLET_OFFSET = 5.0f;
-	/** The vertical speed of a newly generated bullet */
-	private static final float BULLET_SPEED  = 10.0f;
 	/** The minimum velocity factor (x shell velocity) of a newly created star */
 	private static final float MIN_STAR_FACTOR = 0.1f;
 	/** The maximum velocity factor (x shell velocity) of a newly created star */
@@ -69,15 +67,6 @@ public class GameplayController {
 	private static final float MIN_STAR_OFFSET = -3.0f;
 	/** The maximum velocity offset (+ shell velocity) of a newly created star */
 	private static final float MAX_STAR_OFFSET = 3.0f;
-
-	/** The amount of health gained when hitting a note weakly */
-	private static final int WEAK_HIT_HEALTH = 1;
-
-	/** The amount of health gained when hitting a note strongly */
-	private static final int STRONG_HIT_HEALTH = 2;
-
-	/** The amount of health lost when missing a note */
-	private static final int MISS_HIT_HEALTH = 2;
 
 	/** Maximum amount of health */
 	final int MAX_HEALTH = 30;
@@ -196,6 +185,7 @@ public class GameplayController {
 		redTexture  = directory.getEntry("red", Texture.class);
 		greenTexture = directory.getEntry("green", Texture.class);
 		music = directory.getEntry("flagship", Music.class);
+
 	}
 
 	/**
@@ -251,6 +241,9 @@ public class GameplayController {
 //		objects.add(player);
 	//	setCoords(width, height);
 		randomnotes = r;
+
+		// Create all the notes
+
 		music.play();
 	}
 
@@ -496,6 +489,7 @@ public class GameplayController {
 	}
 
 	public void resolveActions(InputController input, float delta, int frame) {
+		System.out.println(music.getPosition());
 		if(curP == play_phase.NOTES){
 			triggers = input.didTrigger();
 			// Process the objects.
