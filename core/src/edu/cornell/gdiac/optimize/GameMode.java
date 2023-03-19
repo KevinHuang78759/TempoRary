@@ -92,8 +92,8 @@ public class GameMode implements Screen {
 	 * This constructor initializes the models and controllers for the game.  The
 	 * view has already been initialized by the root class.
 	 */
-	public GameMode(GameCanvas canvas,int lanes, int linesperlane) {
-		lpl = linesperlane;
+	public GameMode(GameCanvas canvas,int lanes, int linesPerLane) {
+		lpl = linesPerLane;
 		this.lanes = lanes;
 		this.canvas = canvas;
 		active = false;
@@ -345,24 +345,6 @@ public class GameMode implements Screen {
 				//Draw the link lines
 				canvas.drawLine(links[2*i],links[2*i+1],links[2*lanes+2*i],links[2*lanes+2*i+1],2,Color.BLACK);
 			}
-//			for(int i = 0; i < health.length; ++i){
-//				displayFont.setColor(Color.MAROON);
-//				String hp = "Health: " + health[i];
-//				canvas.drawText(hp, displayFont, i * canvas.getWidth()/(float)health.length, canvas.getHeight() - COUNTER_OFFSET - 30);
-//			}
-//
-//
-//			displayFont.setColor(Color.NAVY);
-//			String Time = "Time: " + ticks;
-//			canvas.drawText(Time, displayFont, COUNTER_OFFSET + 300, canvas.getHeight()-COUNTER_OFFSET);
-			// Flush information to the graphic buffer.
-
-
-//			displayFont.setColor(gameplayController.trigger ? Color.CYAN : Color.NAVY);
-//			String indicator = "____________";
-//			canvas.drawText(indicator, displayFont, gameplayController.lane * canvas.getWidth()/4f, canvas.getHeight()/3f);
-
-
 		}
 		canvas.end();
 	}

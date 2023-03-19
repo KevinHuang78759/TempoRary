@@ -516,7 +516,6 @@ public class GameplayController {
 		if(curP == play_phase.NOTES){
 			//If we are currently in a note phase, detect for switch presses
 			switches = input.switches();
-
 			for(int i = 0; i < switches.length; ++i){
 				//For each active switch, check if it is not the current active band member lane.
 				//If it is, do nothing
@@ -607,24 +606,18 @@ public class GameplayController {
 							//and award HP points.
 							//We need to return after each one so that we don't register 1 trigger click for two notes
 							//that spawned close together
-							//System.out.println(hitbarY + " " + o.getY() + " " + o.getRadius());
 							if(o.getY() <= (hitbarY + o.getRadius()/4f) && o.getY() >= (hitbarY - o.getRadius()/4f)){
-								//System.out.println("Good hit");
 								((Note) o).hitStatus = 2;
-
 								o.setDestroyed(true);
 								return;
 
 							} else if (o.getY() <= (hitbarY + o.getRadius()) && o.getY() >= (hitbarY - o.getRadius())) {
-								//System.out.println("hit");
 								((Note) o).hitStatus = 1;
-
 								o.setDestroyed(true);
 								return;
 							}
 							else {
-								//Otherwise set  its hit value to 0
-								//System.out.println("miss");
+								//Otherwise set its hit value to 0
 								((Note) o).hitStatus = 0;
 							}
 						}
@@ -650,6 +643,7 @@ public class GameplayController {
 							}
 						}
 						//Now detect if a trigger was lifted
+						// TODO: remove print statements
 						if(input.triggerLifted[((Note)o).line]){
 							System.out.println("let go");
 							//If the trigger was lifted when the tail of the held note is near the hitbarY value,
@@ -661,15 +655,12 @@ public class GameplayController {
 								return;
 							} else if (o.getY() <= (hitbarY + o.getRadius()) && o.getY() >= (hitbarY - o.getRadius())) {
 								System.out.println("hold end");
-
 								((Note)o).hitStatus = 2;
 								o.setDestroyed(true);
-
 								return;
 							}
 							else{
 								System.out.println("hold end missed");
-
 							}
 						}
 
