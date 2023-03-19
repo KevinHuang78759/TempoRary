@@ -104,20 +104,7 @@ public class GameMode implements Screen {
 		// Create the controllers.
 		inputController = new InputController(lanes, lpl);
 		gameplayController = new GameplayController(true,lanes,lpl, canvas.getWidth(),canvas.getHeight());
-		// YOU WILL NEED TO MODIFY THIS NEXT LINE
-
-		/*
-		 * Deciding a cell size:
-		 * Per each object, we must hedge the expected number of cells we check (which will decrease
-		 * as we increase the size of the cell) with the expected number of objects in each cell (which
-		 * will increase with cell size. The rigorous formula for this yielded no meaningful optimal result,
-		 * since the absolute minima expected value occurs for at a negative cell size
-		 *
-		 * Thus, we choose a cell size that is slightly larger than the largest object (the ship, which has radius 17.5)
-		 * to get rid of any possibility we need to check higher numbers of cells.
-		 */
 		physicsController = new CollisionController(canvas.getWidth(), canvas.getHeight(), 40.0f);
-
 	}
 
 	/**
@@ -222,8 +209,6 @@ public class GameMode implements Screen {
 
 		// Check for collisions
 		totalTime += (delta*1000); // Seconds to milliseconds
-
-		physicsController.processCollisions(gameplayController.getObjects(),0);
 
 		// Clean up destroyed objects
 		gameplayController.garbageCollect();
