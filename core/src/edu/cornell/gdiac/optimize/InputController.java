@@ -114,17 +114,17 @@ public class InputController {
 		rKey = resetPressed && Gdx.input.isKeyPressed(Input.Keys.H);
 
 		triggerPress = new boolean[]{
-				Gdx.input.isKeyPressed(Input.Keys.Q),
-				Gdx.input.isKeyPressed(Input.Keys.W),
-				Gdx.input.isKeyPressed(Input.Keys.E),
-				Gdx.input.isKeyPressed(Input.Keys.R)
+				Gdx.input.isKeyPressed(Input.Keys.D),
+				Gdx.input.isKeyPressed(Input.Keys.F),
+				Gdx.input.isKeyPressed(Input.Keys.J),
+				Gdx.input.isKeyPressed(Input.Keys.K)
 		};
 
 		boolean[] switchesPress = new boolean[]{
-				Gdx.input.isKeyPressed(Input.Keys.NUM_1),
-				Gdx.input.isKeyPressed(Input.Keys.NUM_2),
-				Gdx.input.isKeyPressed(Input.Keys.NUM_3),
-				Gdx.input.isKeyPressed(Input.Keys.NUM_4),
+				Gdx.input.isKeyPressed(Input.Keys.E),
+				Gdx.input.isKeyPressed(Input.Keys.R),
+				Gdx.input.isKeyPressed(Input.Keys.U),
+				Gdx.input.isKeyPressed(Input.Keys.I),
 		};
 
 		//Compute actual values by comparing with previous value. We only register a click if the trigger or switch

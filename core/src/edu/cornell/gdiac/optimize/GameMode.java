@@ -78,12 +78,13 @@ public class GameMode implements Screen {
 	/**
 	 * Number of band member lanes
 	 */
-
 	int lanes;
+
 	/**
 	 * Number of lines per lane
 	 */
 	int lpl;
+
 	/**
 	 * Creates a new game with the given drawing context.
 	 *
@@ -412,9 +413,9 @@ public class GameMode implements Screen {
 		if (active) {
 			update(delta);
 			draw(delta);
-			if (inputController.didExit() && listener != null) {
-				listener.exitScreen(this, 0);
-			}
+//			if (inputController.didExit() && listener != null) {
+//				listener.exitScreen(this, 0);
+//			}
 		}
 	}
 
