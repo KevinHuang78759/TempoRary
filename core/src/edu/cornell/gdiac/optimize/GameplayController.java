@@ -20,7 +20,6 @@
  */
 package edu.cornell.gdiac.optimize;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.graphics.Texture;
 
@@ -335,6 +334,7 @@ public class GameplayController {
 	 * The number of lines per lane
 	 */
 	public int lpl;
+
 	/**
 	 * Adds a new shell to the game.
 	 *
@@ -344,7 +344,7 @@ public class GameplayController {
 	 *
 	 * @param height Current game height
 	 */
-	public void addShellRandom(float height, int frame) {
+	public void addNote(float width, float height, int frame) {
 		randomnotes = true;
 		if(randomnotes){
 			int lane = RandomController.rollInt(0,lpl-1);
@@ -393,36 +393,19 @@ public class GameplayController {
 
 
 		}
-//		if(!randomnotes){
-//			//add notes in fixed pattern
-//			Note s = noteCoords.get(frame);
-//			if (s != null) {
-////			s.setDestroyed(false);
-//				objects.add(s);
-//				shellCount++;
-//
-//				if (shellCount == NUM_NOTES) {
-//					setCoords(width, height);
-//					shellCount = 0;
-//				}
-//			}
-//		}else{
-//			//add notes randomly - to a random lane with fixed probability
-//			if(frame%25 == 0){
-//				int det = RandomController.rollInt(0,4);
-//				if(det < 4){
-//					Note s = new Note(det);
-//					s.setX(width/8 + det * width/4);
-//					s.setTexture(redTexture);
-//					s.setY(height);
-//					s.setVX(0);
-//					s.setVY(-5f);
-//					objects.add(s);
-//					++shellCount;
-//				}
-//			}
-//		}
+		else{
+			//add notes in fixed pattern
+			Note s = noteCoords.get(frame);
+			if (s != null) {
+				objects.add(s);
+				shellCount++;
 
+				if (shellCount == NUM_NOTES) {
+					setCoords(width, height);
+					shellCount = 0;
+				}
+			}
+		}
 	}
 
 	/**
@@ -462,24 +445,16 @@ public class GameplayController {
 	 * @param o Object to destroy
 	 */
 	protected void destroy(GameObject o) {
-		switch(o.getType()) {
-			case SHIP:
-				//player = null;
-				break;
-			case NOTE:
-				// Create some stars if hit on beat - more stars if more accurate
-				if(((Note)o).nt == Note.NType.HELD){
-					System.out.println("HELD NOTE DESTROYED");
-					heldPresent[((Note)o).line] = false;
-				}
-				spawnStars(((Note)o).hitStatus, o.getX(), o.getY(), o.getVX(), o.getVY());
-				int hpUpdate = ((Note) o).nt == Note.NType.SWITCH ? goal : currentLane;
-				health[hpUpdate] += ((Note) o).hitStatus*recovery;
-				health[hpUpdate] = Math.min(MAX_HEALTH, health[hpUpdate]);
-				health[hpUpdate] = Math.max(0, health[hpUpdate]);
-				break;
-			default:
-				break;
+		if (o.getType() == ObjectType.NOTE) {// Create some stars if hit on beat - more stars if more accurate
+			if (((Note) o).nt == Note.NType.HELD) {
+				System.out.println("HELD NOTE DESTROYED");
+				heldPresent[((Note) o).line] = false;
+			}
+			spawnStars(((Note) o).hitStatus, o.getX(), o.getY(), o.getVX(), o.getVY());
+			int hpUpdate = ((Note) o).nt == Note.NType.SWITCH ? goal : currentLane;
+			health[hpUpdate] += ((Note) o).hitStatus * recovery;
+			health[hpUpdate] = Math.min(MAX_HEALTH, health[hpUpdate]);
+			health[hpUpdate] = Math.max(0, health[hpUpdate]);
 		}
 	}
 

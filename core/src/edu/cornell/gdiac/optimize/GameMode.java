@@ -75,6 +75,7 @@ public class GameMode implements Screen {
 
 	/** Amount of game ticks which have gone by */
 	private int ticks;
+
 	/**
 	 * Number of band member lanes
 	 */
@@ -209,18 +210,11 @@ public class GameMode implements Screen {
 		//make sure currTick doesn't get too big
 		currTick = ticks % 1800;
 		//Add a random shell for now
-		gameplayController.addShellRandom(canvas.getHeight(), currTick);
+		gameplayController.addNote(canvas.getWidth(), canvas.getHeight(), currTick);
 		//Every so often check our HP
 		if(gameplayController.checkHealth(currTick%150==0)){
 			gameState = GameState.OVER;
 		}
-//
-//		if (ticks % 120 == 0){
-//			for (int i = 0; i < gameplayController.lineAmount(); i++) {
-//				gameplayController.setHealth(-1, i);
-//			}
-//		}
-
 
 		// Update objects.
 		gameplayController.resolvePhase(inputController, delta);
