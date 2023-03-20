@@ -44,14 +44,6 @@ public class GameplayController {
 	/** Texture for red shells, as they look the same */
 	private Texture catNoteTexture;
 
-	/** The minimum x-velocity of a newly generated shell */
-	private static final float MIN_SHELL_VX = 3;
-	/** The maximum y-velocity of a newly generated shell */
-	private static final float MAX_SHELL_VX = 10;
-	/** The y-position offset of a newly generated bullet */
-	private static final float BULLET_OFFSET = 5.0f;
-	/** The vertical speed of a newly generated bullet */
-	private static final float BULLET_SPEED  = 10.0f;
 	/** The minimum velocity factor (x shell velocity) of a newly created star */
 	private static final float MIN_STAR_FACTOR = 0.1f;
 	/** The maximum velocity factor (x shell velocity) of a newly created star */
@@ -116,19 +108,6 @@ public class GameplayController {
 	 * Indicates whether or not we want to use randomly generated notes
 	 */
 	public boolean randomnotes;
-
-	/**
-	 * Creates a new GameplayController with no active elements.
-	 */
-	public GameplayController(boolean rn, int lanes) {
-		NUM_LANES = lanes;
-		shellCount = 0;
-		initializeHealth();
-		objects = new Array<GameObject>();
-		backing = new Array<GameObject>();
-		currentLane = 0;
-		randomnotes = rn;
-	}
 
 	/**
 	 * The minimum x value margin
@@ -261,32 +240,11 @@ public class GameplayController {
 	}
 
 	/**
-	 * Returns true if the currently active player is alive.
-	 *
-	 * This property needs to be modified if you want multiple players.
-	 *
-	 * @return true if the currently active player is alive.
-	 */
-	public boolean isAlive() {
-		return true;
-	}
-
-	/**
-	 * Returns the number of shells currently active on the screen.
-	 *
-	 * @return the number of shells currently active on the screen.
-	 */
-	public int getShellCount() {
-		return shellCount;
-	}
-
-	/**
 	 * Returns the line healths.
 	 *
 	 * @return the line healths.
 	 */
 	public int[] getHealth() {return health;}
-
 
 	/**
 	 * Returns the amount of lines.
@@ -302,10 +260,9 @@ public class GameplayController {
 	 *
 	 * This method creates a single player, but does nothing else.
 	 *
-	 * @param x Starting x-position for the player
-	 * @param y Starting y-position for the player
+	 * @param r Option to use random notes or not
 	 */
-	public void start(float x, float y, int width, int height, boolean r) {
+	public void start(boolean r) {
 		randomnotes = r;
 	}
 
@@ -505,7 +462,7 @@ public class GameplayController {
 	/**
 	 * Resolves state changes into and out of the TRANSITION phase
 	 */
-	public void resolvePhase(InputController input, float delta){
+	public void resolvePhase(InputController input){
 		//Currently, this method will destroy all notes on the screen
 		if(curP == play_phase.NOTES){
 			//If we are currently in a note phase, detect for switch presses
@@ -532,19 +489,15 @@ public class GameplayController {
 									//If there is a switch note on this line and within bounds, destroy it and reward HP points
 									//Also set the switchTog variable to true
 									if(o.getY() <= (hitbarY + o.getRadius()/4f) && o.getY() >= (hitbarY - o.getRadius()/4f)){
-										//System.out.println("Good switch");
 										((Note) o).hitStatus = 4;
 										switchTog = true;
 										o.setDestroyed(true);
-
 									} else if (o.getY() <= (hitbarY + o.getRadius()) && o.getY() >= (hitbarY - o.getRadius())) {
-										//System.out.println("switch");
 										((Note) o).hitStatus = 2;
 										switchTog = true;
 										o.setDestroyed(true);
 									}
 									else {
-										//System.out.println("missed switch");
 										((Note) o).hitStatus = 0;
 									}
 								}
@@ -578,7 +531,6 @@ public class GameplayController {
 	 * @param delta
 	 * @param frame
 	 */
-
 	public void resolveActions(InputController input, float delta, int frame) {
 		if(curP == play_phase.NOTES){
 			//If we are in the NOTES phase, get trigger input
@@ -659,8 +611,6 @@ public class GameplayController {
 						}
 
 					}
-
-
 				}
 				else{
 					o.update(delta);
@@ -676,10 +626,8 @@ public class GameplayController {
 				if (o.destroyed) {
 					continue;
 				}
-
 				o.update(delta);
 			}
 		}
-
 	}
 }
