@@ -15,10 +15,9 @@
  * Based on original Optimization Lab by Don Holden, 2007
  * LibGDX version, 2/2/2015
  */
-package edu.cornell.gdiac.optimize;
+package edu.cornell.gdiac.temporary;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;

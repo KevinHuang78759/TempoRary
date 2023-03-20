@@ -1,6 +1,6 @@
-package edu.cornell.gdiac.optimize.desktop;
+package edu.cornell.gdiac.temporary.desktop;
 
-import edu.cornell.gdiac.optimize.GDXRoot;
+import edu.cornell.gdiac.temporary.GDXRoot;
 import edu.cornell.gdiac.backend.GDXApp;
 import edu.cornell.gdiac.backend.GDXAppSettings;
 

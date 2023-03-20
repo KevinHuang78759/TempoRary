@@ -17,13 +17,13 @@
  * Based on original Optimization Lab by Don Holden, 2007
  * LibGDX version, 2/2/2015
  */
-package edu.cornell.gdiac.optimize;
+package edu.cornell.gdiac.temporary;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.math.*;
-import edu.cornell.gdiac.optimize.entity.*;
+import edu.cornell.gdiac.temporary.entity.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;

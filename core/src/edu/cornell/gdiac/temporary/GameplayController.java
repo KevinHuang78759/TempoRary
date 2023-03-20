@@ -18,21 +18,20 @@
  * Based on original Optimization Lab by Don Holden, 2007
  * LibGDX version, 2/2/2015
  */
-package edu.cornell.gdiac.optimize;
+package edu.cornell.gdiac.temporary;
 
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.graphics.Texture;
 
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.optimize.entity.*;
-import edu.cornell.gdiac.optimize.GameObject.ObjectType;
+import edu.cornell.gdiac.temporary.entity.*;
+import edu.cornell.gdiac.temporary.GameObject.ObjectType;
 
 import java.util.HashMap;
 
 /**
  * Controller to handle gameplay interactions.
- * </summary>
- * <remarks>
+ *
  * This controller also acts as the root class for all the models.
  */
 public class GameplayController {
