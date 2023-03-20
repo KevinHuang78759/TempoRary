@@ -121,7 +121,7 @@ public class InputController {
 	boolean rKey = false;
 	private void readKeyboard(boolean secondary) {
 		// Give priority to gamepad results, get input from keyboard
-		resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.M));
+		resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.ENTER));
 		exitPressed = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
 		rKey = resetPressed && Gdx.input.isKeyPressed(Input.Keys.H);
 

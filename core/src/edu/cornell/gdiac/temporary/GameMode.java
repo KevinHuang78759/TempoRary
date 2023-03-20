@@ -219,9 +219,7 @@ public class GameMode implements Screen {
 			displayFont.setColor(Color.NAVY);
 			canvas.drawTextCentered("Game Over!",displayFont, GAME_OVER_OFFSET+50);
 			displayFont.setColor(Color.NAVY);
-			canvas.drawTextCentered("Press M to Restart", displayFont, 0);
-			displayFont.setColor(Color.NAVY);
-			canvas.drawTextCentered("(Hold H at the same time to change to random notes)", displayFont, -50);
+			canvas.drawTextCentered("Press Enter to Restart", displayFont, 0);
 		}
 		else{
 			// Draw the game objects
