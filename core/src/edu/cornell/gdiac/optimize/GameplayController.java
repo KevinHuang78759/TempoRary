@@ -37,16 +37,12 @@ import java.util.HashMap;
  */
 public class GameplayController {
 	// Graphics assets for the entities
-	/** Texture for all ships, as they look the same */
-	private Texture beetleTexture;
 	/** Texture for all stars, as they look the same */
 	private Texture starTexture;
-	/** Texture for all bullets, as they look the same */
-	private Texture bulletTexture;
 	/** Texture for green shells, as they look the same */
 	private Texture greenTexture;
 	/** Texture for red shells, as they look the same */
-	private Texture redTexture;
+	private Texture catNoteTexture;
 
 	/** The minimum x-velocity of a newly generated shell */
 	private static final float MIN_SHELL_VX = 3;
@@ -108,7 +104,7 @@ public class GameplayController {
 		for (int i = 0; i < NUM_NOTES; i++) {
 			Note s = new Note(i%4, Note.NType.BEAT);
 			s.setX(width/8 + (i % 4) * width/4);
-			s.setTexture(redTexture);
+			s.setTexture(catNoteTexture);
 			s.setY(height);
 			s.setVX(0);
 			s.setVY(-5f);
@@ -246,10 +242,8 @@ public class GameplayController {
 	 * @param directory 	Reference to the asset directory.
 	 */
 	public void populate(AssetDirectory directory) {
-		beetleTexture = directory.getEntry("beetle", Texture.class);
-		bulletTexture = directory.getEntry("bullet", Texture.class);
 		starTexture = directory.getEntry("star", Texture.class);
-		redTexture  = directory.getEntry("red", Texture.class);
+		catNoteTexture = directory.getEntry("catnote", Texture.class);
 		greenTexture = directory.getEntry("green", Texture.class);
 	}
 
@@ -361,7 +355,7 @@ public class GameplayController {
 				h.by = height;
 				h.tail_thickness = 15f;
 				h.setTexture(greenTexture);
-				h.setTailTexture(redTexture);
+				h.setTailTexture(catNoteTexture);
 				objects.add(h);
 				++shellCount;
 			}
@@ -370,7 +364,7 @@ public class GameplayController {
 				if(det < 4 && !heldPresent[det]){
 					Note s = new Note(det, Note.NType.BEAT);
 					s.setX(LEFTBOUND + currentLane*(inBetweenWidth + smallwidth) + largewidth/(2*lpl) + det*(largewidth/lpl));
-					s.setTexture(redTexture);
+					s.setTexture(catNoteTexture);
 					s.setY(height);
 					s.setVX(0);
 					objects.add(s);

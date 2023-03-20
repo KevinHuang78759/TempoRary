@@ -104,7 +104,7 @@ public class GameMode implements Screen {
 		// Create the controllers.
 		inputController = new InputController(lanes, lpl);
 		gameplayController = new GameplayController(true,lanes,lpl, canvas.getWidth(),canvas.getHeight());
-		physicsController = new CollisionController(canvas.getWidth(), canvas.getHeight(), 40.0f);
+		physicsController = new CollisionController(canvas.getWidth(), canvas.getHeight());
 	}
 
 	/**

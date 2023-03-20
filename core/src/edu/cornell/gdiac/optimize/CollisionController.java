@@ -33,28 +33,9 @@ import java.util.HashMap;
  * how to make it more efficient.
  */
 public class CollisionController {
-
-	// 'Bounciness' constants
-	/** Restitution for colliding with the (hard coded) box */
-	protected static final float BOX_COEFF_REST   = 0.95f;
-	/** Restitution for colliding with the (hard coded) bump */
-	protected static final float BUMP_COEFF_REST  = 1.95f;
-	/** Dampening factor when colliding with floor or shell */
-	protected static final float DAMPENING_FACTOR = 0.95f;
-	
 	// Geometry of the background image
 	/** (Scaled) distance of the floor ledge from bottom */
 	protected static final float BOTTOM_OFFSET    = 0.075f;
-	/** (Scaled) position of the box center */
-	protected static final float BOX_X_POSITION   = 0.141f;
-	/** (Scaled) position of half the box width */
-	protected static final float BOX_HALF_WIDTH   = 0.133f;
-	/** (Scaled) position of the box height from bottom of screen */
-	protected static final float BOX_FULL_HEIGHT  = 0.2f;
-	/** (Scaled) position of the bump center */
-	protected static final float BUMP_X_POSITION  = 0.734f;
-	/** (Scaled) position of the bump radius */
-	protected static final float BUMP_RADIUS      = 0.11f;
 	
 	// These cannot be modified after the controller is constructed.
 	// If these change, make a new constructor.
@@ -62,13 +43,8 @@ public class CollisionController {
 	private float width;
 	/** Height of the collision geometry */
 	private float height;
-	
-	// Cache objects for collision calculations
-	private Vector2 temp1;
-	private Vector2 temp2;
 
 	/// ACCESSORS
-	
 	/**
 	 * Returns width of the game window (necessary to detect out of bounds)
 	 *
@@ -104,16 +80,10 @@ public class CollisionController {
 	 *
 	 * @param width   Width of the screen 
 	 * @param height  Height of the screen
-	 * @param collision_tolerance width of cell, INVARIANT: THIS MUST BE <br>
-	 *                            GREATER THAN OR EQUAL TO THE RADIUS OF THE LARGEST OBJECT <br>
-	 *                            IN ORDER FOR CORRECTNESS TO HOLD
 	 */
-	public CollisionController(float width, float height, float collision_tolerance/*, int cap*/) {
+	public CollisionController(float width, float height) {
 		this.width = width;
 		this.height = height;
-		// Initialize cache objects
-		temp1 = new Vector2();
-		temp2 = new Vector2();
 	}
 
 }
