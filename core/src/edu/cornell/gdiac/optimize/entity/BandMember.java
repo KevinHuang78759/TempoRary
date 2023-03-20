@@ -42,7 +42,7 @@ public class BandMember {
 
     public BandMember(int id){
         this.id = id;
-        this.competency = -1;
+        this.competency = 1;
         this.competencyLossRate = 0;
         this.state = BandMemberState.INACTIVE;
         //this.notes = new Fish[MAX_NOTES];

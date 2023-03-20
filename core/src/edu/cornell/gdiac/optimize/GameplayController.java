@@ -86,10 +86,6 @@ public class GameplayController {
 	/** Active lane currently */
 	int currentLane;
 
-	final int recovery = 3;
-
-	private boolean hsflag; // TODO : ??????????
-
 	/**
 	 * Creates a new GameplayController with no active elements.
 	 */
@@ -109,7 +105,7 @@ public class GameplayController {
 	float hpwidth;
 	float hpbet;
 	public GameplayController(boolean rn, float width, float height){
-		hsflag = false;
+		//hsflag = false;
 		objects = new Array<GameObject>();
 		backing = new Array<GameObject>();
 
@@ -119,7 +115,7 @@ public class GameplayController {
 		TOPBOUND = 19f*height/20f;
 		BOTTOMBOUND = height/5f;
 		smallwidth = width/15;
-		inBetweenWidth = smallwidth/4f;
+		inBetweenWidth = smallwidth/3f;
 		largewidth = 8f*width/10f - 3*(smallwidth + inBetweenWidth);
 
 		currentLane = 0;
@@ -168,17 +164,7 @@ public class GameplayController {
 		bandMembers = level.getBandMembers();
 		musicController = new MusicController(music, level, bandMembers);
 
-		//notes = new ArrayList<ArrayList<Fish>>();
-
-		/*for(BandMember bandMember : bandMembers){
-			notes.add(bandMember.getNotes());
-			for(Fish o : bandMember.getNotes()){
-				objects.add(o);
-			}
-		}*/
-
 		// TODO: THIS IS NOT EFFICIENT AT ALL LMAO
-		
 	}
 
 	/**
