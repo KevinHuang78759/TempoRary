@@ -52,15 +52,11 @@ public class InputController {
 	 * @return true if the exit button was pressed.
 	 */
 	public boolean didExit() { return exitPressed; }
-	
+
 	/**
-	 * Creates a new input controller
-	 * 
-	 * The input controller attempts to connect to the X-Box controller at device 0,
-	 * if it exists.  Otherwise, it falls back to the keyboard control.
+	 * General initialization of InputController
 	 */
-	public InputController(int lanes, int lpl) {
-		// If we have a game-pad for id, then use it.
+	private void initController(int lanes, int lpl) {
 		Array<XBoxController> controllers = Controllers.get().getXBoxControllers();
 		if (controllers.size > 0) {
 			xbox = controllers.get(0);
@@ -72,6 +68,24 @@ public class InputController {
 		triggers = new boolean[lpl];
 		switches = new boolean[lanes];
 		triggerLifted = new boolean[lpl];
+	}
+	
+	/**
+	 * Creates a new input controller
+	 * 
+	 * The input controller attempts to connect to the X-Box controller at device 0,
+	 * if it exists.  Otherwise, it falls back to the keyboard control.
+	 */
+	public InputController(int lanes, int lpl) {
+		// If we have a game-pad for id, then use it.
+		initController(lanes, lpl);
+	}
+
+	/*
+	 * Default constructure (lanes and lpl default to 4)
+	 */
+	public InputController() {
+		initController(4, 4);
 	}
 
 	/**

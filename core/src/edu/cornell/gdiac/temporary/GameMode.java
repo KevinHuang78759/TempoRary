@@ -86,7 +86,7 @@ public class GameMode implements Screen {
 	 * This constructor initializes the models and controllers for the game.  The
 	 * view has already been initialized by the root class.
 	 */
-	public GameMode(GameCanvas canvas,int lanes, int linesPerLane) {
+	public GameMode(GameCanvas canvas, int lanes, int linesPerLane) {
 		lpl = linesPerLane;
 		this.lanes = lanes;
 		this.canvas = canvas;
