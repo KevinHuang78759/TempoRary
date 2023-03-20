@@ -1,12 +1,8 @@
 {
 	"textures": {
         "background": "images/background.png",
-        "beam":     "images/beam.png",
-        "beetle":   "images/beetle.png",
-        "blue":     "images/blue.png",
-        "bullet":   "images/bullet.png",
         "green":    "images/green.png",
-        "red":      "images/red.png",
+        "catnote":      "images/catnote.png",
         "star":     "images/star.png"
     },
     "fonts": {
