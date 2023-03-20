@@ -30,13 +30,13 @@ public class Level {
     private BandMember[] bandMembers;
 
 
-    /**  */
+    /** Get bandmembers */
+    public BandMember[] getBandMembers(){ return bandMembers; }
 
     /**
      * Initialize a level with trivial information.
      * */
     public Level(JsonValue data) {
-
         this.title = data.getString("title");
         this.order = data.getInt("number");
         this.bpm = data.getInt("bpm");

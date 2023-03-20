@@ -17,6 +17,7 @@ import com.badlogic.gdx.graphics.g2d.*;
 
 import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.optimize.entity.BandMember;
 import edu.cornell.gdiac.util.*;
 
 /**
@@ -192,26 +193,17 @@ public class GameMode implements Screen {
 		// create some kind of data structure for coordinates of notes
 		// hm {frame : notes}
 		currTick = ticks % 1800;
-		gameplayController.addShellRandom(canvas.getHeight(), currTick);
-		if(gameplayController.checkHealth(currTick%150==0)){
+
+		// adding notes
+
+		if(gameplayController.checkAllCompetencies(currTick%150==0)){
 			gameState = GameState.OVER;
 		}
-//
-//		if (ticks % 120 == 0){
-//			for (int i = 0; i < gameplayController.lineAmount(); i++) {
-//				gameplayController.setHealth(-1, i);
-//			}
-//		}
 
 
 		// Update objects.
 		gameplayController.resolvePhase(inputController, delta);
 		gameplayController.resolveActions(inputController,delta, currTick);
-
-		// Check for collisions
-		totalTime += (delta*1000); // Seconds to milliseconds
-
-		physicsController.processCollisions(gameplayController.getObjects(),0);
 
 		// Clean up destroyed objects
 		gameplayController.garbageCollect();
@@ -243,6 +235,8 @@ public class GameMode implements Screen {
 				o.draw(canvas);
 			}
 
+			// TODO: WHAT ... IS GOING ON HERE
+
 			Color bkgC = new Color(237f/255f, 224f/255f, 1f, 1.0f);
 			canvas.drawRect(gameplayController.LEFTBOUND, gameplayController.TOPBOUND, gameplayController.RIGHTBOUND, canvas.getHeight(), bkgC, true);
 			canvas.drawRect(gameplayController.LEFTBOUND, 0, gameplayController.RIGHTBOUND, gameplayController.BOTTOMBOUND, bkgC, true);
@@ -250,7 +244,7 @@ public class GameMode implements Screen {
 			float[] links = new float[16];
 			float curHeight = gameplayController.TOPBOUND - gameplayController.BOTTOMBOUND;
 			for(int i = 0; i < 4; ++i){
-				if(gameplayController.curP == GameplayController.play_phase.NOTES){
+				if(gameplayController.currentPhase == GameplayController.playPhase.PLAYING){
 					curWidths[i] = gameplayController.currentLane == i ? gameplayController.largewidth : gameplayController.smallwidth;
 				}
 				else{
@@ -258,7 +252,7 @@ public class GameMode implements Screen {
 						curWidths[i] = gameplayController.largewidth + (float)(gameplayController.t_progress)*(gameplayController.smallwidth - gameplayController.largewidth)/(float)(gameplayController.T_SwitchPhases);
 						curHeight = (gameplayController.TOPBOUND - gameplayController.BOTTOMBOUND) * (float)(gameplayController.T_SwitchPhases-gameplayController.t_progress)/(float)(gameplayController.T_SwitchPhases);
 					}
-					else if(i == gameplayController.goal){
+					else if(i == gameplayController.goalLaine){
 						curWidths[i] = gameplayController.smallwidth + (float)(gameplayController.t_progress)*(gameplayController.largewidth - gameplayController.smallwidth)/(float)(gameplayController.T_SwitchPhases);
 					}
 					else{
@@ -266,14 +260,14 @@ public class GameMode implements Screen {
 					}
 				}
 			}
-			Color cLanes = gameplayController.curP == GameplayController.play_phase.TRANSITION ? Color.RED : Color.MAROON;
+			Color cLanes = gameplayController.currentPhase == GameplayController.playPhase.TRANSITION ? Color.RED : Color.MAROON;
 
 			float Xcoor = gameplayController.LEFTBOUND;
 			for(int i = 0; i < 4; ++i){
 
 				Vector2 BL = new Vector2(Xcoor, gameplayController.BOTTOMBOUND);
 				canvas.drawRect(BL, curWidths[i], gameplayController.TOPBOUND - gameplayController.BOTTOMBOUND, cLanes, false);
-				if(gameplayController.currentLane == i || gameplayController.goal == i){
+				if(gameplayController.currentLane == i || gameplayController.goalLaine == i){
 					for(int j = 0; j < gameplayController.triggers.length; ++j){
 						float x2 = Xcoor + (j + 1) * curWidths[i] / 4f;
 						Color hc = (gameplayController.triggers[j] && i == gameplayController.currentLane)? Color.CYAN : Color.NAVY;
@@ -301,12 +295,30 @@ public class GameMode implements Screen {
 				Xcoor += curWidths[i];
 				Xcoor += gameplayController.inBetweenWidth;
 			}
-			Xcoor = gameplayController.LEFTBOUND;
-			int[] hp = gameplayController.getHealth();
-			for(int i =0; i < hp.length; ++i){
-				canvas.drawRect(Xcoor+1, gameplayController.BOTTOMBOUND/5+1, Xcoor + (gameplayController.hpwidth *((float)hp[i]/(float)gameplayController.MAX_HEALTH))-1, gameplayController.BOTTOMBOUND*2f/5f-1,hp[i] < gameplayController.MAX_HEALTH/4? Color.RED : Color.GREEN,true);
 
-				canvas.drawRect(Xcoor, gameplayController.BOTTOMBOUND/5, Xcoor + gameplayController.hpwidth, gameplayController.BOTTOMBOUND*2f/5f,Color.BLACK,false);
+			// TODO: THESE SHOULD BE DRAWN IN GAMEPLAY CONTROLLER, right?
+			// Draw health bar
+			Xcoor = gameplayController.LEFTBOUND;
+			BandMember[] bandMembers = gameplayController.getBandMembers();
+
+			for(int i =0; i < bandMembers.length; ++i){
+				// draw filling
+				// TODO: REPLACE WITH ASSET
+				int hp = bandMembers[i].getCompetency();
+				canvas.drawRect(Xcoor+1,
+						gameplayController.BOTTOMBOUND/5+1,
+						Xcoor + (gameplayController.hpwidth *((float)hp/(float)gameplayController.MAX_HEALTH))-1,
+						gameplayController.BOTTOMBOUND*2f/5f-1,hp < gameplayController.MAX_HEALTH/4? Color.RED : Color.GREEN,
+						true);
+
+				// draw health bar outline
+				// TODO: REPLACE WITH ASSET
+				canvas.drawRect(Xcoor,
+						gameplayController.BOTTOMBOUND/5,
+						Xcoor + gameplayController.hpwidth,
+						gameplayController.BOTTOMBOUND*2f/5f,Color.BLACK,
+						false);
+
 				links[8 + 2*i] = Xcoor + gameplayController.hpwidth/2;
 				links[8 + 2*i + 1] = gameplayController.BOTTOMBOUND*2f/5f;
 				Xcoor += gameplayController.hpwidth + gameplayController.hpbet;
@@ -314,23 +326,6 @@ public class GameMode implements Screen {
 			for(int i = 0; i < 4; ++i){
 				canvas.drawLine(links[2*i],links[2*i+1],links[8+2*i],links[8+2*i+1],2,Color.BLACK);
 			}
-//			for(int i = 0; i < health.length; ++i){
-//				displayFont.setColor(Color.MAROON);
-//				String hp = "Health: " + health[i];
-//				canvas.drawText(hp, displayFont, i * canvas.getWidth()/(float)health.length, canvas.getHeight() - COUNTER_OFFSET - 30);
-//			}
-//
-//
-//			displayFont.setColor(Color.NAVY);
-//			String Time = "Time: " + ticks;
-//			canvas.drawText(Time, displayFont, COUNTER_OFFSET + 300, canvas.getHeight()-COUNTER_OFFSET);
-			// Flush information to the graphic buffer.
-
-
-//			displayFont.setColor(gameplayController.trigger ? Color.CYAN : Color.NAVY);
-//			String indicator = "____________";
-//			canvas.drawText(indicator, displayFont, gameplayController.lane * canvas.getWidth()/4f, canvas.getHeight()/3f);
-
 
 		}
 		canvas.end();

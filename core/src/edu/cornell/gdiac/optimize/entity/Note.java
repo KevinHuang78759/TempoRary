@@ -36,8 +36,6 @@ public class Note extends GameObject {
 	/** The number of animation frames in our filmstrip */
 	private static final int   NUM_ANIM_FRAMES = 4;
 
-	/** Friction multiplier for this shell */
-	//private float friction;
 	/** Minimum Y velocity for this sheall */
 	private float minvelocy;
 	/** Current animation frame for this shell */

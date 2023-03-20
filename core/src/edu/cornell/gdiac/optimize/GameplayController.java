@@ -20,7 +20,6 @@
  */
 package edu.cornell.gdiac.optimize;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.audio.Music;
@@ -29,7 +28,7 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.optimize.entity.*;
 import edu.cornell.gdiac.optimize.GameObject.ObjectType;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 /**
  * Controller to handle gameplay interactions.
@@ -49,6 +48,8 @@ public class GameplayController {
 	private Texture greenTexture;
 	/** Texture for red shells, as they look the same */
 	private Texture redTexture;
+	/** Data for level */
+	private JsonValue levelData;
 
 	/** Song!!! music */
 	private Music music;
@@ -56,6 +57,10 @@ public class GameplayController {
 	private Level level;
 	/** Reference to the current level's bandMembers (just for ease of access lol) */
 	private BandMember[] bandMembers;
+	/** Reference to the current Level's notes */
+	private ArrayList<ArrayList<Fish>> notes;
+
+
 	/** Time elapsed in song */
 	private float time;
 
@@ -71,47 +76,22 @@ public class GameplayController {
 	/** Maximum amount of health */
 	final int MAX_HEALTH = 30;
 
-	/** Maximum amount of health */
-	private static final int NUM_LANES = 4;
-
-	/** Number of notes present in repeating rhythm */
-	private static final int NUM_NOTES = 60;
-
-	/** Reference to player (need to change to allow multiple players) */
-	//private Ship player;
-	/** Note count for the display in window corner */
-	private int shellCount;
-
-	/** health of lines */
-	private int[] health;
-
 	// List of objects with the garbage collection set.
 	/** The currently active object */
 	private Array<GameObject> objects;
 	/** The backing set for garbage collection */
 	private Array<GameObject> backing;
-
-	HashMap<Integer, Note> noteCoords = new HashMap<>();
-
+	/** Active lane currently */
 	int currentLane;
 
 	final int recovery = 3;
 
-	private boolean hsflag;
+	private boolean hsflag; // TODO : ??????????
 
 	/**
 	 * Creates a new GameplayController with no active elements.
 	 */
 	public boolean randomnotes;
-	public GameplayController(boolean rn) {
-		shellCount = 0;
-		initializeHealth();
-		objects = new Array<GameObject>();
-		backing = new Array<GameObject>();
-		hsflag = false;
-		currentLane = 0;
-		randomnotes = rn;
-	}
 
 	 float LEFTBOUND;
 	 float RIGHTBOUND;
@@ -127,12 +107,11 @@ public class GameplayController {
 	float hpwidth;
 	float hpbet;
 	public GameplayController(boolean rn, float width, float height){
-		shellCount = 0;
-		initializeHealth();
+		hsflag = false;
 		objects = new Array<GameObject>();
 		backing = new Array<GameObject>();
-		hsflag = false;
-		randomnotes = true;
+
+		// TODO: WIDTHS???? DEFINE THESE PLS
 		LEFTBOUND = width/10f;
 		RIGHTBOUND = 9*width/10f;
 		TOPBOUND = 19f*height/20f;
@@ -140,32 +119,14 @@ public class GameplayController {
 		smallwidth = width/15;
 		inBetweenWidth = smallwidth/4f;
 		largewidth = 8f*width/10f - 3*(smallwidth + inBetweenWidth);
+
 		currentLane = 0;
+
 		hitbarY = BOTTOMBOUND + 3*height/20f;
+
 		hpwidth = (RIGHTBOUND - LEFTBOUND)*4/19;
 		hpbet = (RIGHTBOUND - LEFTBOUND - 4*hpwidth)/3f;
 		heldPresent = new boolean[4];
-	}
-
-	private void initializeHealth() {
-		health = new int[NUM_LANES];
-		for (int i = 0; i < NUM_LANES; i++) {
-			health[i] = MAX_HEALTH;
-		}
-	}
-
-	public boolean checkHealth(boolean dec) {
-		for (int i = 0; i < NUM_LANES; i++) {
-			health[i] = Math.min(MAX_HEALTH, health[i]);
-			if(dec){
-				--health[i];
-			}
-
-			if(health[i] <= 0){
-				return true;
-			}
-		}
-		return false;
 	}
 
 	/**
@@ -179,13 +140,33 @@ public class GameplayController {
 	 */
 	public void populate(AssetDirectory directory)
 	{
+		// gather assets
 		beetleTexture = directory.getEntry("beetle", Texture.class);
 		bulletTexture = directory.getEntry("bullet", Texture.class);
 		starTexture = directory.getEntry("star", Texture.class);
 		redTexture  = directory.getEntry("red", Texture.class);
 		greenTexture = directory.getEntry("green", Texture.class);
 		music = directory.getEntry("flagship", Music.class);
+		levelData = directory.getEntry("level_flagship", JsonValue.class);
+	}
 
+	/** Add object to list of objeccts */
+	public void addObject(GameObject obj){
+		objects.add(obj);
+	}
+
+	/***/
+	public void populateLevel(){
+		level = new Level(levelData);
+		bandMembers = level.getBandMembers();
+
+		notes = new ArrayList<ArrayList<Fish>>();
+		for(BandMember bandMember : bandMembers){
+			notes.add(bandMember.getNotes());
+		}
+
+		// TODO: THIS IS NOT EFFICIENT AT ALL LMAO
+		
 	}
 
 	/**
@@ -201,26 +182,9 @@ public class GameplayController {
 		return objects;
 	}
 
-
-	/**
-	 * Returns the line healths.
-	 *
-	 * @return the line healths.
-	 */
-	public int[] getHealth() {return health;}
-
-
-	/**
-	 * Returns the amount of lines.
-	 *
-	 * @return The amount of lines.
-	 */
-	public int lineAmount(){
-		return health.length;
-	}
-
-	public boolean newhsreached(){
-		return hsflag;
+	/** get bandMembers */
+	public BandMember[] getBandMembers() {
+		return bandMembers;
 	}
 
 	/**
@@ -232,29 +196,37 @@ public class GameplayController {
 	 * @param y Starting y-position for the player
 	 */
 	public void start(float x, float y, int width, int height, boolean r) {
-		// Create the player's ship
-//		player = new Ship();
-//		player.setTexture(beetleTexture);
-//		player.getPosition().set(x,y);
-//
-//		// Player must be in object list.
-//		objects.add(player);
-	//	setCoords(width, height);
-		randomnotes = r;
-
 		// Create all the notes
 
+
+		// play music
 		music.play();
 	}
 
+	/** Update competency of all band members.
+	 *
+	 * @return true if one of them died, false if not
+	 *
+	 * */
+	public boolean checkAllCompetencies(boolean decreasing){
+		for(BandMember bandMember : bandMembers){
+			if(bandMember.updateHealth(decreasing)){
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/**
-	 * Resets the game, deleting all objects.
+	 * Resets the game, deleting all objects and setting their parameters to their default values.
+	 * todo: RESET FUNCTIONS IN LEVEL, FISH, BAND MEMBER
+	 *
 	 */
 	public void reset() {
 		//player = null;
-		shellCount = 0;
+		//shellCount = 0;
 		objects.clear();
-		initializeHealth();
+		//initializeHealth();
 	}
 	boolean[] heldPresent;
 	/**
@@ -266,7 +238,7 @@ public class GameplayController {
 	 *
 	 * @param height Current game height
 	 */
-	public void addShellRandom(float height, int frame) {
+/**	public void addShellRandom(float height, int frame) {
 		randomnotes = true;
 		if(randomnotes){
 			if(frame % 250 == 0&& curP == play_phase.NOTES){
@@ -344,7 +316,7 @@ public class GameplayController {
 //			}
 //		}
 
-	}
+	}*/
 
 	/**
 	 * Garbage collects all deleted objects.
@@ -384,20 +356,18 @@ public class GameplayController {
 	 */
 	protected void destroy(GameObject o) {
 		switch(o.getType()) {
-			case SHIP:
-				//player = null;
-				break;
-			case NOTE:
+			case FISH:
 				// Create some stars if hit on beat - more stars if more accurate
-				if(((Note)o).nt == Note.NType.HELD){
+				/*if(((Fish)o).getNoteType() == Fish.NoteType.HELD){
 					System.out.println("HELD NOTE DESTROYED");
-					heldPresent[((Note)o).line] = false;
-				}
-				spawnStars(((Note)o).hitStatus, o.getX(), o.getY(), o.getVX(), o.getVY());
-				int hpUpdate = ((Note) o).nt == Note.NType.SWITCH ? goal : currentLane;
-				health[hpUpdate] += ((Note) o).hitStatus*recovery;
-				health[hpUpdate] = Math.min(MAX_HEALTH, health[hpUpdate]);
-				health[hpUpdate] = Math.max(0, health[hpUpdate]);
+					heldPresent[((Fish)o).line] = false;
+				}*/
+
+				spawnStars(((Fish)o).hitStatus, o.getX(), o.getY(), o.getVX(), o.getVY());
+
+				int hpUpdate = ((Fish) o).getNoteType() == Fish.NoteType.SWITCH ? goalLaine : currentLane;
+				if(hpUpdate == 1) {bandMembers[currentLane].addHealth();}
+
 				break;
 			default:
 				break;
@@ -420,13 +390,13 @@ public class GameplayController {
 		}
 	}
 
-	public enum play_phase{
-		NOTES,
+	public enum playPhase {
+		PLAYING,
 		TRANSITION
 	}
-	play_phase curP = play_phase.NOTES;
+	playPhase currentPhase = playPhase.PLAYING;
 	int T_SwitchPhases = 20;
-	int goal;
+	int goalLaine;
 	/**
 	 * Resolve the actions of all game objects (player and shells)
 	 *
@@ -439,39 +409,47 @@ public class GameplayController {
 
 	int t_progress;
 	boolean[] switches;
-	public void resolvePhase(InputController input, float delta){
-		if(curP == play_phase.NOTES){
-			switches = input.switches();
-			for(int i = 0; i < switches.length; ++i){
-				if(switches[i] && i != currentLane){
-					goal = i;
-					curP = play_phase.TRANSITION;
-					t_progress = 0;
-					for(GameObject o : objects){
-						if(o.getType() == ObjectType.NOTE){
-							boolean switchTog = false;
-							if(((Note)o).nt == Note.NType.SWITCH){
-								if(switches[((Note)o).line]){
 
+	/** Resolve what playPhase we are in. PLAYING or TRANSITIONING ?
+	 * TODO: is this description right, Kevin?
+	 * */
+	public void resolvePhase(InputController input, float delta){
+		if(currentPhase == playPhase.PLAYING){
+			switches = input.switches();
+			// If switch was made, check if there was a switch note present. this will increase health by a bit TODO
+			for(int i = 0; i < switches.length; ++i) {
+				if(switches[i] && i != currentLane){
+					goalLaine = i;
+					currentPhase = playPhase.TRANSITION;
+					t_progress = 0;
+
+					// Check switch notes amongst objects TODO is this the most efficient way to do this?
+					for(GameObject o : objects){
+						if(o.getType() == ObjectType.FISH){
+							boolean switchToggle = false;
+							// If a switch note type, determine accuracy of switch + update switchToggle
+							if(((Fish)o).getNoteType() == Fish.NoteType.SWITCH){
+								if(switches[((Fish)o).line]){
 									if(o.getY() <= (hitbarY + o.getRadius()/4f) && o.getY() >= (hitbarY - o.getRadius()/4f)){
 										//System.out.println("Good switch");
-										((Note) o).hitStatus = 4;
-										switchTog = true;
+										((Fish) o).hitStatus = 4;
+										switchToggle = true;
 										o.setDestroyed(true);
 
 									} else if (o.getY() <= (hitbarY + o.getRadius()) && o.getY() >= (hitbarY - o.getRadius())) {
 										//System.out.println("switch");
-										((Note) o).hitStatus = 2;
-										switchTog = true;
+										((Fish) o).hitStatus = 2;
+										switchToggle = true;
 										o.setDestroyed(true);
 									}
 									else {
 										//System.out.println("missed switch");
-										((Note) o).hitStatus = 0;
+										((Fish) o).hitStatus = 0;
 									}
 								}
 							}
-							if(!switchTog){
+							// if didn't switch, set note to be destroyed.
+							if(!switchToggle){
 								o.setDestroyed(true);
 							}
 						}
@@ -480,77 +458,77 @@ public class GameplayController {
 				}
 			}
 		}
-		else{
+		else {
 			if (t_progress == T_SwitchPhases){
-				currentLane = goal;
-				curP = play_phase.NOTES;
+				currentLane = goalLaine;
+				currentPhase = playPhase.PLAYING;
 			}
 		}
 	}
 
+
 	public void resolveActions(InputController input, float delta, int frame) {
-		System.out.println(music.getPosition());
-		if(curP == play_phase.NOTES){
+		if(currentPhase == playPhase.PLAYING){
 			triggers = input.didTrigger();
 			// Process the objects.
 			for (GameObject o : objects) {
 				if(o.destroyed){
 					continue;
 				}
-				if(o.getType() == ObjectType.NOTE){
-					((Note)o).update(delta, frame);
-					if(((Note)o).nt == Note.NType.BEAT){
-						if(triggers[((Note)o).getLine()]){
+				if(o.getType() == ObjectType.FISH){
+					((Fish)o).update(delta, frame);
+					if(((Fish)o).getNoteType() == Fish.NoteType.SINGLE){
+						if(triggers[((Fish)o).getLane()]){
 							//System.out.println(hitbarY + " " + o.getY() + " " + o.getRadius());
 							if(o.getY() <= (hitbarY + o.getRadius()/4f) && o.getY() >= (hitbarY - o.getRadius()/4f)){
 								//System.out.println("Good hit");
-								((Note) o).hitStatus = 2;
+								((Fish) o).hitStatus = 2;
 
 								o.setDestroyed(true);
 								return;
 
 							} else if (o.getY() <= (hitbarY + o.getRadius()) && o.getY() >= (hitbarY - o.getRadius())) {
 								//System.out.println("hit");
-								((Note) o).hitStatus = 1;
+								((Fish) o).hitStatus = 1;
 
 								o.setDestroyed(true);
 								return;
 							}
 							else {
 								//System.out.println("miss");
-								((Note) o).hitStatus = 0;
+								((Fish) o).hitStatus = 0;
 							}
 						}
 					}
-					else if(((Note)o).nt == Note.NType.HELD){
-						if(triggers[((Note)o).line]){
-							if(((Note)o).by <= (hitbarY + o.getRadius()/4f) && o.getY() >= (hitbarY - o.getRadius()/4f)){
+					else if(((Fish)o).getNoteType() == Fish.NoteType.HOLD){
+						/*if(triggers[((Fish)o).line]){
+							if(((Fish)o).by <= (hitbarY + o.getRadius()/4f) && o.getY() >= (hitbarY - o.getRadius()/4f)){
 								System.out.println("Good hold start");
-								spawnStars(3, ((Note)o).bx, ((Note)o).by, 0, Note.descentSpeed);
+								spawnStars(3, ((Fish)o).bx, ((Fish)o).by, 0, Fish.descentSpeed);
 								return;
 
-							} else if (((Note)o).by <= (hitbarY + o.getRadius()) && o.getY() >= (hitbarY - o.getRadius())) {
+							} else if (((Fish)o).by <= (hitbarY + o.getRadius()) && o.getY() >= (hitbarY - o.getRadius())) {
 								System.out.println("hold start");
-								spawnStars(1, ((Note)o).bx, ((Note)o).by, 0, Note.descentSpeed);
+								spawnStars(1, ((Fish)o).bx, ((Fish)o).by, 0, Fish.descentSpeed);
 								return;
 							}
 							else{
 								System.out.println("hold missed");
-								((Note)o).hitStatus = 0;
+								((Fish)o).hitStatus = 0;
 							}
 						}
 
-						if(input.triggerLifted[((Note)o).line]){
+						if(input.triggerLifted[((Fish)o).line]){
 							System.out.println("let go");
 							if(o.getY() <= (hitbarY + o.getRadius()/4f) && o.getY() >= (hitbarY - o.getRadius()/4f)){
 								System.out.println("Good hold end");
-								((Note)o).hitStatus = 4;
+								((Fish)o).hitStatus = 4;
 								o.setDestroyed(true);
 								return;
 							} else if (o.getY() <= (hitbarY + o.getRadius()) && o.getY() >= (hitbarY - o.getRadius())) {
 								System.out.println("hold end");
 
-								((Note)o).hitStatus = 2;
+								((Fish)o).hitStatus = 2;
 								o.setDestroyed(true);
 
 								return;
@@ -559,13 +537,11 @@ public class GameplayController {
 								System.out.println("hold end missed");
 
 							}
-						}
-
+						}*/
 					}
 
-
 				}
-				else{
+				else {
 					o.update(delta);
 				}
 			}

@@ -1,23 +1,156 @@
 package edu.cornell.gdiac.optimize.entity;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.JsonValue;
+import edu.cornell.gdiac.optimize.GameCanvas;
+import edu.cornell.gdiac.optimize.GameObject;
+import edu.cornell.gdiac.util.FilmStrip;
+
 /*
 * let's pretend a note is a fish
  */
-public class Fish {
+public class Fish extends GameObject {
     public enum NoteType {
-        SINGLE, HOLD, SWITCH
+        SINGLE, HOLD, SWITCH, DEAD
     }
 
-    private static final float NOTE_DRAW = 0.0f;
-    private int id;
+    // NOTE DETAILS
+    /** NOTE MOVEMENT DOWN IS CONSTANT. TODO: CHANGE??? */
+    private static final float NOTE_DRAW = 10f;
+    /** Note type. Single / Hold / Switch / Dead */
     private NoteType noteType;
+    /** beat number in the song */
     private int beat;
+    /** song position in milliseconds */
     private float songPosition;
+    /** beat number in the song held note starts */
     private int startBeat; // for held notes only
+    /** beat number in the song held note ends */
     private int endBeat; // for held notes only
+    /** lane 0/1/2/3 for instrument */
     private int lane;
-    private int timePoint;
+    /** visible? */
     private boolean visible;
+    protected Texture fishTexture;
+    // ANIMATION INFORMATION /////////////////////////////////////////////////////////////////////////////////
 
+    /** object position (centered on the texture middle) */
+    protected Vector2 position;
+    /** Reference to texture origin */
+    protected Vector2 origin;
+    /** Radius of the object (used for collisions) */
+    protected float radius;
+    /** Whether or not the object should be removed at next timestep. */
+    protected boolean destroyed;
+
+    /** Rescale the size of a note */
+    private static final float NOTE_MULTIPLIER = 4.0f;
+
+    /** CURRENT image for this object. May change over time. */
+    protected FilmStrip animator;
+
+    /** Current animation frame for this shell */
+    private float animFrame;
+    /** How fast we change frames (one frame per 4 calls to update) */
+    private static final float ANIMATION_SPEED = 0.25f;
+    /** The number of animation frames in our filmstrip */
+    private static final int NUM_ANIM_FRAMES = 4;
+
+    /** To measure if we are damaged */
+    private boolean damaged;
+    /** The backup texture to use if we are damaged */
+    private Texture dmgTexture;
+    /** are we hit? */
+    public int hitStatus;
+
+    /** line the note is one */
+    public int line;
+    /** ??? */
+    public int startFrame;
+    /** ??? */
+    public int holdFrame;
+
+    /** Allocate space for a note. */
+    public Fish(){
+        this.noteType = NoteType.DEAD;
+        this.beat = -1;
+        this.songPosition = -1;
+        this.lane = -1;
+    }
+
+    /**
+     * Initialize a note given JSON data
+     * */
+    public Fish(JsonValue data){
+        String noteTypeData = data.getString("note");
+        if(noteTypeData == "Single"){
+            this.noteType = NoteType.SINGLE;
+            this.beat = data.getInt("beat");
+            this.lane = data.getInt("lane");
+        }
+        else if(noteTypeData == "Hold"){
+            //TODO: HELD NOTES
+        }
+        else if(noteTypeData == "Switch"){
+            //TODO: SWITCH NOTES
+            this.noteType = NoteType.SINGLE;
+            this.beat = data.getInt("beat");
+            this.lane = -1;
+        }
+    }
+
+    /** Set a note to be destroyed. */
+    public void setDestroyed(boolean value) { damaged = true; }
+
+    @Override
+    public ObjectType getType() {
+        return ObjectType.FISH;
+    }
+
+    /**Get NoteType*/
+    public NoteType getNoteType(){return noteType;}
+
+    /** Get lane */
+    public int getLane(){return lane;}
+
+    /** Set texture of note depending on note type.
+     *
+     * @param texture */
+    public void setTexture(Texture texture){
+        animator = new FilmStrip(texture, 1, NUM_ANIM_FRAMES, NUM_ANIM_FRAMES);
+        origin = new Vector2(animator.getRegionWidth()/2.0f, animator.getRegionHeight()/2.0f);
+        radius = animator.getRegionHeight() / 2.0f;
+    }
+
+    /** Update the animation and position of this note. */
+    public void update(float delta, int frame) {
+        // CHANGE POSITION. ie) position.add(velocity)
+        position.add(0, 10);
+
+        // TODO: HELD NOTE
+
+        // increase animation frame
+        animFrame += ANIMATION_SPEED;
+        if(animFrame >= NUM_ANIM_FRAMES){
+            animFrame -= NUM_ANIM_FRAMES;
+        }
+
+    }
+
+    /** Draw the note to the canvas.
+     *
+     * There is only one drawing pass in this application, so you can draw the objects in any order.
+     *
+     * @param canvas the drawing context*/
+    public void draw(GameCanvas canvas){
+
+        // TODO: HELD NODE if note is HELD do something else
+
+        animator.setFrame((int) animFrame);
+        canvas.draw(animator, Color.WHITE, origin.x, origin.y, position.x, position.y,
+                0.0f, NOTE_MULTIPLIER, NOTE_MULTIPLIER);
+    }
 
 }

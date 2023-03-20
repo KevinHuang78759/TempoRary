@@ -514,12 +514,6 @@ public class CollisionController {
 		case STAR:
 			handleBounds((Star)o);
 			break;
-		case BULLET:
-			handleBounds((Bullet)o);
-			break;
-		case SHIP:
-			handleBounds((Ship)o);
-			break;
 		default:
 			break;
 		}
@@ -588,12 +582,7 @@ public class CollisionController {
 	 *
 	 * @param bu Bullet to check 
 	 */
-	private void handleBounds(Bullet bu) {
-		// Destroy a bullet once off screen.
-		if (bu.getY() <= 0) {
-			bu.setDestroyed(true);
-		}
-	}
+
 
 	/**
 	 * Check a bullet for being out-of-bounds.
@@ -668,12 +657,6 @@ public class CollisionController {
 			case STAR:
 				handleCollision((Note)o1, (Star)o2);
 				break;
-			case BULLET:
-				handleCollision((Note)o1, (Bullet)o2);
-				break;
-			case SHIP:
-				handleCollision((Note)o1, (Ship)o2);
-				break;
 			default:
 				break;
 			}
@@ -687,57 +670,12 @@ public class CollisionController {
 			case STAR:
 				handleCollision((Star)o1, (Star)o2);
 				break;
-			case BULLET:
-				handleCollision((Star)o1, (Bullet)o2);
-				break;
-			case SHIP:
-				handleCollision((Star)o1, (Ship)o2);
-				break;
+
 			default:
 				break;
 			}
 			break;
-		case BULLET:
-			switch (o2.getType()) {
-			case NOTE:
-				// Reuse shell helper
-				handleCollision((Note)o2, (Bullet)o1);
-				break;
-			case STAR:
-				// Reuse star helper
-				handleCollision((Star)o2, (Bullet)o1);
-				break;
-			case BULLET:
-				handleCollision((Bullet)o1, (Bullet)o2);
-				break;
-			case SHIP:
-				handleCollision((Bullet)o1, (Ship)o2);
-				break;
-			default:
-				break;
-			}
-			break;
-		case SHIP:
-			switch (o2.getType()) {
-			case NOTE:
-				// Reuse shell helper
-				handleCollision((Note)o2, (Ship)o1);
-				break;
-			case STAR:
-				// Reuse star helper
-				handleCollision((Star)o2, (Ship)o1);
-				break;
-			case BULLET:
-				// Reuse bullet helper
-				handleCollision((Bullet)o2, (Ship)o1);
-				break;
-			case SHIP:
-				handleCollision((Ship)o1, (Ship)o2);
-				break;
-			default:
-				break;
-			}
-			break;	
+
 		default:
 			break;
 		}
@@ -818,39 +756,7 @@ public class CollisionController {
 		st.setDestroyed(true);
 	}
 
-	/**
-	 * Collide a shell with a bullet.
-	 *
-	 * @param se The shell 
-	 * @param bu The bullet 
-	 */
-	private void handleCollision(Note se, Bullet bu) {
-		if (se.isDestroyed() || bu.isDestroyed()) {
-			return;
-		}
 
-		temp1.set(se.getPosition()).sub(bu.getPosition());
-		float dist = temp1.len();
-
-		// Too far away
-		if (dist > se.getRadius() + bu.getRadius()) {
-			return;
-		}
-
-		// Knock back shell
-		temp1.nor();
-		float dot = temp1.dot(se.getVelocity());
-		temp1.scl(dot);
-		se.getVelocity().sub(temp1.scl(BUMP_COEFF_REST));
-
-		// Destroy objects
-		se.setDestroyed(true);
-		bu.setDestroyed(true);
-
-		if(bu.s != null && se.destroyed){
-			bu.s.addpoints();
-		}
-	}
 
 	/**
 	 * Collide a shell with a ship.
@@ -894,9 +800,7 @@ public class CollisionController {
 	 * @param st The star 
 	 * @param bu The bullet 
 	 */
-	private void handleCollision(Star st, Bullet bu) {
-		// Nothing happens!
-	}
+
 
 	/**
 	 * Collide a star with a ship.
@@ -914,9 +818,7 @@ public class CollisionController {
 	 * @param b1 First bullet 
 	 * @param b2 Second bullet 
 	 */
-	private void handleCollision(Bullet b1, Bullet b2) {
-		// Nothing happens!
-	}
+
 
 	/**
 	 * Collide a bullet with a ship.
@@ -924,9 +826,7 @@ public class CollisionController {
 	 * @param bu The bullet 
 	 * @param sh The ship 
 	 */
-	private void handleCollision(Bullet bu, Ship sh) {
-		// Nothing happens!
-	}
+
 
 	/**
 	 * Collide a ship with a ship (only useful if you add a 2nd ship)

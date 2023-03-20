@@ -44,14 +44,15 @@ public abstract class GameObject {
 	 * to this Enum as well.
 	 */
 	public enum ObjectType {
-		/** A shell, which lives until it is destroyed by a star or bullet */
-		NOTE,
-		/** A ship, which lives until it is destroyed by a shell */
 		SHIP,
-		/** A bullet, which is fired from the ship */
-		BULLET,
+		NOTE,
+		/** A note, that is going to be a fish */
+		FISH,
 		/** A star, which is created by a shell explosion */
 		STAR,
+		BULLET,
+		/** A band member, that is drawn onto the screen */
+		BANDMEMBER
 	}
 	
 	// Attributes for all game objects

@@ -21,5 +21,8 @@
             "file": "fonts/TimesRoman.ttf",
             "size": 32
         }
+    },
+    "jsons": {
+        "level_flagship" : "levels/level_flagship.json"
     }
 }

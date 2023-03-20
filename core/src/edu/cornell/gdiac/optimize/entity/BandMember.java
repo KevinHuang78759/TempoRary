@@ -2,11 +2,16 @@ package edu.cornell.gdiac.optimize.entity;
 
 import com.badlogic.gdx.utils.JsonValue;
 
+import java.util.ArrayList;
+
 public class BandMember {
     /** Denote player's band member possession **/
     public enum BandMemberState {
         ACTIVE, TRANSITIONING, INACTIVE
     }
+
+    /** uhhhhhh max number of notes go brr */
+    private static final int MAX_NOTES = 10000;
 
     /** IDentifier for band member **/
     private int id;
@@ -14,31 +19,80 @@ public class BandMember {
     private int competency;
     /** Rate competency loses health **/
     private int competencyLossRate;
+    /** Rate competency gains health per correct note */
+    // TODO: DIFFERENT ACCURACY GAINS DIFFERENT HEALTH. THIS IS SOMETHING LEVEL EDITOR NEEDS TO ACCOMODATE, NO?
+    private int competencyGainRate = 4;
+
+    /** Original competency - acts as a boundary */
+    private int maxCompetency = 100; // TODO: CHANGE - THIS IS JUST A PLACEHOLDER BC I AM WRITING QUICK CODE
+
     /** Current State **/
     private BandMemberState state;
     /** Notes for this band member **/
-    private Note[] notes;
+    private ArrayList<Fish> notes = new ArrayList<Fish>();
+
+    /**get notes */
+    public ArrayList<Fish> getNotes() { return notes; }
 
     public BandMember(int id){
         this.id = id;
         this.competency = -1;
         this.competencyLossRate = 0;
         this.state = BandMemberState.INACTIVE;
-        this.notes = new Note[] {};
+        this.notes = new ArrayList<Fish>();
     }
 
     public BandMember(int id, JsonValue data){
+        // init BandMember params
         this.id = id;
         this.competency = data.getInt("competency");
         this.competencyLossRate = data.getInt("competencyLossRate");
         this.state = BandMemberState.INACTIVE;
+
         if (data.getString("state")=="Active"){
             this.state = BandMemberState.ACTIVE;
+        } else {
+            this.state = BandMemberState.INACTIVE;
         }
 
-        this.notes = new Note[] {};
-
+        // init Notes
+        JsonValue noteData = data.get("notes");
+        this.notes = new ArrayList<Fish>();
+        for(JsonValue noteEntry : noteData){
+            Fish note = new Fish(noteEntry);
+            notes.add(note);
+        }
     }
+    /**
+     * Update competency such that it is continuously decreasing
+     * TODO: boolean dec = ????
+     * TODO: RANDOM HITS????
+     * @param decreasing = if yes we are decreasing from the competency. doesn't decreasae every tick!
+     * @return boolean true if die
+     * */
+    public boolean updateHealth(boolean decreasing) {
+        int temp  = Math.min(competency, maxCompetency);
+        if(decreasing){
+            competency -= competencyLossRate;
+        }
+
+        if(competency <= 0){
+            return true;
+        }
+        return false;
+    }
+
+    /** Increase competency by gain rate
+     * */
+    public boolean addHealth(){
+        competency += competencyGainRate;
+        competency = Math.min(competency, maxCompetency);
+        competency = Math.max(0, competency);
+        return true;
+    }
+
+    /** Get competency */
+    public int getCompetency(){return competency;}
 
     public void update(float delta){
 
