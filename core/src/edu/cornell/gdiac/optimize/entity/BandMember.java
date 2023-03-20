@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.optimize.entity;
 
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
 import java.util.ArrayList;
@@ -31,21 +32,26 @@ public class BandMember {
     /** Notes for this band member **/
     private ArrayList<Fish> notes = new ArrayList<Fish>();
 
+    /** Note Data for this band member */
+    private JsonValue notesData;
+
+
     /**get notes */
     public ArrayList<Fish> getNotes() { return notes; }
+    public JsonValue getNotesData() { return notesData; }
 
     public BandMember(int id){
         this.id = id;
         this.competency = -1;
         this.competencyLossRate = 0;
         this.state = BandMemberState.INACTIVE;
-        this.notes = new ArrayList<Fish>();
+        //this.notes = new Fish[MAX_NOTES];
     }
 
-    public BandMember(int id, JsonValue data){
+    public BandMember(int id, int maxCompetency, JsonValue data){
         // init BandMember params
         this.id = id;
-        this.competency = data.getInt("competency");
+        this.competency = maxCompetency;//data.getInt("maxCompetency");
         this.competencyLossRate = data.getInt("competencyLossRate");
         this.state = BandMemberState.INACTIVE;
 
@@ -57,11 +63,8 @@ public class BandMember {
 
         // init Notes
         JsonValue noteData = data.get("notes");
-        this.notes = new ArrayList<Fish>();
-        for(JsonValue noteEntry : noteData){
-            Fish note = new Fish(noteEntry);
-            notes.add(note);
-        }
+        this.notesData = noteData;
+
     }
     /**
      * Update competency such that it is continuously decreasing

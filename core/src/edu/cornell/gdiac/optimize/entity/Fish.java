@@ -23,8 +23,13 @@ public class Fish extends GameObject {
     private NoteType noteType;
     /** beat number in the song */
     private int beat;
-    /** song position in milliseconds */
-    private float songPosition;
+
+    /** Spawn position */
+    private Vector2 spawnPosition;
+
+    /** Leave position */
+    private Vector2 exitPosition;
+
     /** beat number in the song held note starts */
     private int startBeat; // for held notes only
     /** beat number in the song held note ends */
@@ -32,8 +37,6 @@ public class Fish extends GameObject {
     /** lane 0/1/2/3 for instrument */
     private int lane;
     /** visible? */
-    private boolean visible;
-    protected Texture fishTexture;
     // ANIMATION INFORMATION /////////////////////////////////////////////////////////////////////////////////
 
     /** object position (centered on the texture middle) */
@@ -76,7 +79,6 @@ public class Fish extends GameObject {
     public Fish(){
         this.noteType = NoteType.DEAD;
         this.beat = -1;
-        this.songPosition = -1;
         this.lane = -1;
     }
 
@@ -108,12 +110,9 @@ public class Fish extends GameObject {
     public ObjectType getType() {
         return ObjectType.FISH;
     }
-
-    /**Get NoteType*/
     public NoteType getNoteType(){return noteType;}
-
-    /** Get lane */
     public int getLane(){return lane;}
+    public int getBeat(){return beat;}
 
     /** Set texture of note depending on note type.
      *
@@ -127,7 +126,8 @@ public class Fish extends GameObject {
     /** Update the animation and position of this note. */
     public void update(float delta, int frame) {
         // CHANGE POSITION. ie) position.add(velocity)
-        position.add(0, 10);
+        //transform.position = Vector2.Lerp(transform.position, destination, Time.deltaTime);
+        position = spawnPosition.lerp(exitPosition, delta);
 
         // TODO: HELD NOTE
 
@@ -136,7 +136,18 @@ public class Fish extends GameObject {
         if(animFrame >= NUM_ANIM_FRAMES){
             animFrame -= NUM_ANIM_FRAMES;
         }
+    }
 
+    /** Initialize note position in the lane and height */
+    public void setPosition(float height, int bandMemberOrder, Texture texture, float smallwidth, float largewidth, float inBetweenWidth, float LEFTBOUND){
+        float x = LEFTBOUND + bandMemberOrder * (inBetweenWidth + smallwidth) + largewidth/8f + lane * (largewidth/4f);
+        float y = height;
+
+        this.setX(x);
+        this.setTexture(texture);
+        this.setY(y);
+
+        this.spawnPosition = new Vector2(x, y);
     }
 
     /** Draw the note to the canvas.

@@ -16,7 +16,7 @@ public class Level {
     /** Order in level progression **/
     private int order;
     /** fixed maximum number of instruments */
-    private static final int MAX_BANDMEMBERS = 4;
+    public static final int MAX_BANDMEMBERS = 4;
 
     /** Song asset associated with level **/
     private String songPath;
@@ -32,6 +32,8 @@ public class Level {
 
     /** Get bandmembers */
     public BandMember[] getBandMembers(){ return bandMembers; }
+
+    public int getBpm(){return bpm;}
 
     /**
      * Initialize a level with trivial information.
@@ -52,9 +54,9 @@ public class Level {
         }
 
         // add band member for level
-        for(int i = 0; i < data.get("bandMember").size(); i++){
-            JsonValue bandMemberData = data.get("bandMember").get(i);
-            bandMembers[i] = new BandMember(i, bandMemberData);
+        for(int i = 0; i < data.get("bandMembers").size(); i++){
+            JsonValue bandMemberData = data.get("bandMembers").get(i);
+            bandMembers[i] = new BandMember(i, maxCompetency, bandMemberData);
         }
     }
 

@@ -57,9 +57,11 @@ public class GameplayController {
 	private Level level;
 	/** Reference to the current level's bandMembers (just for ease of access lol) */
 	private BandMember[] bandMembers;
-	/** Reference to the current Level's notes */
-	private ArrayList<ArrayList<Fish>> notes;
+	/** Reference to the current Level's notes THAT ARE CURRENTLY ACTIVE, by BAND MEMBER */
+	private ArrayList<Fish> activeNotes;
 
+	/** Handle playing music and spawning notes */
+	private MusicController musicController;
 
 	/** Time elapsed in song */
 	private float time;
@@ -127,6 +129,8 @@ public class GameplayController {
 		hpwidth = (RIGHTBOUND - LEFTBOUND)*4/19;
 		hpbet = (RIGHTBOUND - LEFTBOUND - 4*hpwidth)/3f;
 		heldPresent = new boolean[4];
+
+		activeNotes = new ArrayList<Fish>();
 	}
 
 	/**
@@ -148,6 +152,9 @@ public class GameplayController {
 		greenTexture = directory.getEntry("green", Texture.class);
 		music = directory.getEntry("flagship", Music.class);
 		levelData = directory.getEntry("level_flagship", JsonValue.class);
+
+		// initialize objects
+		populateLevel();
 	}
 
 	/** Add object to list of objeccts */
@@ -155,15 +162,20 @@ public class GameplayController {
 		objects.add(obj);
 	}
 
-	/***/
+	/** Initialize level and band member data */
 	public void populateLevel(){
 		level = new Level(levelData);
 		bandMembers = level.getBandMembers();
+		musicController = new MusicController(music, level, bandMembers);
 
-		notes = new ArrayList<ArrayList<Fish>>();
-		for(BandMember bandMember : bandMembers){
+		//notes = new ArrayList<ArrayList<Fish>>();
+
+		/*for(BandMember bandMember : bandMembers){
 			notes.add(bandMember.getNotes());
-		}
+			for(Fish o : bandMember.getNotes()){
+				objects.add(o);
+			}
+		}*/
 
 		// TODO: THIS IS NOT EFFICIENT AT ALL LMAO
 		
@@ -196,11 +208,9 @@ public class GameplayController {
 	 * @param y Starting y-position for the player
 	 */
 	public void start(float x, float y, int width, int height, boolean r) {
-		// Create all the notes
-
 
 		// play music
-		music.play();
+		//music.play();
 	}
 
 	/** Update competency of all band members.
@@ -229,6 +239,27 @@ public class GameplayController {
 		//initializeHealth();
 	}
 	boolean[] heldPresent;
+
+	/** Add new notes to the game using MusicController
+	 *
+	 * @param height current game height
+	 * @param frame frame / tick?? idk actually lol*/
+	public void updateNotes(float delta, float height, int frame){
+
+		// check with music controller
+		ArrayList<Fish> newNotes = musicController.update(currentLane, delta);
+
+		if(newNotes.size() > 0){
+			for(Fish note : newNotes){
+				activeNotes.add(note);
+				note.setPosition(height, currentLane, redTexture, smallwidth, largewidth, inBetweenWidth, LEFTBOUND);
+				objects.add(note);
+			}
+		}
+
+	}
+
+
 	/**
 	 * Adds a new shell to the game.
 	 *
@@ -238,10 +269,10 @@ public class GameplayController {
 	 *
 	 * @param height Current game height
 	 */
-/**	public void addShellRandom(float height, int frame) {
+	public void addShellRandom(float height, int frame) {
 		randomnotes = true;
 		if(randomnotes){
-			if(frame % 250 == 0&& curP == play_phase.NOTES){
+			/*if(frame % 250 == 0&& curP == play_phase.NOTES){
 				int lane = RandomController.rollInt(0,3);
 				int dur = RandomController.rollInt(1, 3);
 				Note h = new Note(lane, Note.NType.HELD);
@@ -257,8 +288,8 @@ public class GameplayController {
 				h.setTailTexture(redTexture);
 				objects.add(h);
 				++shellCount;
-			}
-			if(frame%45 == 0 && curP == play_phase.NOTES){
+			}*/
+			/*if(frame%45 == 0 && curP == play_phase.NOTES){
 				int det = RandomController.rollInt(0,4);
 				if(det < 4 && !heldPresent[det]){
 					Note s = new Note(det, Note.NType.BEAT);
@@ -269,9 +300,8 @@ public class GameplayController {
 					objects.add(s);
 					++shellCount;
 				}
-			}
-
-			if(frame%450 == 0 && curP == play_phase.NOTES){
+			}*/
+			/*if(frame%450 == 0 && curP == play_phase.NOTES){
 				int det = RandomController.rollInt(0,3);
 				if(det != currentLane){
 					Note s = new Note(det, Note.NType.SWITCH);
@@ -282,7 +312,7 @@ public class GameplayController {
 					objects.add(s);
 					++shellCount;
 				}
-			}
+			}*/
 
 
 		}
@@ -316,7 +346,7 @@ public class GameplayController {
 //			}
 //		}
 
-	}*/
+	}
 
 	/**
 	 * Garbage collects all deleted objects.

@@ -12,6 +12,7 @@
 package edu.cornell.gdiac.optimize;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 
@@ -195,7 +196,9 @@ public class GameMode implements Screen {
 		currTick = ticks % 1800;
 
 		// adding notes
+		gameplayController.updateNotes(delta, canvas.getHeight(), currTick);
 
+		// every so often check our competencies
 		if(gameplayController.checkAllCompetencies(currTick%150==0)){
 			gameState = GameState.OVER;
 		}
