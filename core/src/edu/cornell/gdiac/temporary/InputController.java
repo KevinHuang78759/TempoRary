@@ -32,6 +32,8 @@ public class InputController {
 	// Fields to manage game state
 	/** Whether the reset button was pressed. */
 	protected boolean resetPressed;
+	/** Whether the exit button was pressed. */
+	protected boolean exitPressed;
 	/** XBox Controller support */
 	private XBoxController xbox;
 
@@ -43,6 +45,13 @@ public class InputController {
 	public boolean didReset() {
 		return resetPressed;
 	}
+
+	/**
+	 * Returns true if the exit button was pressed.
+	 *
+	 * @return true if the exit button was pressed.
+	 */
+	public boolean didExit() { return exitPressed; }
 	
 	/**
 	 * Creates a new input controller
@@ -82,7 +91,9 @@ public class InputController {
 	 * Reads input from an X-Box controller connected to this computer.
 	 */
 	private void readGamepad() {
+		// TODO: Map gamepad inputs
 		resetPressed = xbox.getA();
+		exitPressed  = xbox.getBack();
 	}
 
 	/**
@@ -96,7 +107,7 @@ public class InputController {
 	 */
 
 	//Arrays to registering switch and trigger presses
-			//We need to track their previous values so that we dont register a hold as repeated clicks
+	//We need to track their previous values so that we dont register a hold as repeated clicks
 	private boolean[] triggers;
 	private boolean[] triggerLast;
 	private boolean[] switches;
@@ -111,6 +122,7 @@ public class InputController {
 	private void readKeyboard(boolean secondary) {
 		// Give priority to gamepad results, get input from keyboard
 		resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.M));
+		exitPressed = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
 		rKey = resetPressed && Gdx.input.isKeyPressed(Input.Keys.H);
 
 		triggerPress = new boolean[]{
