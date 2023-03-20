@@ -86,6 +86,7 @@ public class Fish extends GameObject {
      * Initialize a note given JSON data
      * */
     public Fish(JsonValue data){
+        System.out.println("NOTE MADE");
         String noteTypeData = data.getString("note");
         if(noteTypeData == "Single"){
             this.noteType = NoteType.SINGLE;
@@ -127,7 +128,12 @@ public class Fish extends GameObject {
     public void update(float delta, int frame) {
         // CHANGE POSITION. ie) position.add(velocity)
         //transform.position = Vector2.Lerp(transform.position, destination, Time.deltaTime);
-        position = spawnPosition.lerp(exitPosition, delta);
+        position = position.lerp(exitPosition, delta);
+        System.out.println("position updated");
+
+        if(position == exitPosition){
+            this.setDestroyed(true);
+        }
 
         // TODO: HELD NOTE
 
@@ -143,11 +149,17 @@ public class Fish extends GameObject {
         float x = LEFTBOUND + bandMemberOrder * (inBetweenWidth + smallwidth) + largewidth/8f + lane * (largewidth/4f);
         float y = height;
 
+        float BOTTOMBOUND = height/5f;
+
         this.setX(x);
         this.setTexture(texture);
         this.setY(y);
 
         this.spawnPosition = new Vector2(x, y);
+        this.position = spawnPosition;
+        position.set(spawnPosition);
+        this.exitPosition = new Vector2(x, BOTTOMBOUND);
+        System.out.println("set position");
     }
 
     /** Draw the note to the canvas.

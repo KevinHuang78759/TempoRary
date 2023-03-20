@@ -96,16 +96,6 @@ public class GameMode implements Screen {
 		gameplayController = new GameplayController(true,canvas.getWidth(),canvas.getHeight());
 		// YOU WILL NEED TO MODIFY THIS NEXT LINE
 
-		/*
-		 * Deciding a cell size:
-		 * Per each object, we must hedge the expected number of cells we check (which will decrease
-		 * as we increase the size of the cell) with the expected number of objects in each cell (which
-		 * will increase with cell size. The rigorous formula for this yielded no meaningful optimal result,
-		 * since the absolute minima expected value occurs for at a negative cell size
-		 *
-		 * Thus, we choose a cell size that is slightly larger than the largest object (the ship, which has radius 17.5)
-		 * to get rid of any possibility we need to check higher numbers of cells.
-		 */
 		physicsController = new CollisionController(canvas.getWidth(), canvas.getHeight(), 40.0f);
 
 	}
@@ -157,6 +147,7 @@ public class GameMode implements Screen {
 					canvas.getWidth(), canvas.getHeight(), inputController.rKey);
 			break;
 		case OVER:
+			/*
 			if (inputController.didReset()) {
 				ticks = 0;
 				gameState = GameState.PLAY;
@@ -165,7 +156,7 @@ public class GameMode implements Screen {
 						canvas.getWidth(), canvas.getHeight(), inputController.rKey);
 			} else {
 				play(delta);
-			}
+			}*/
 			break;
 		case PLAY:
 			if (inputController.didReset()) {
@@ -223,7 +214,7 @@ public class GameMode implements Screen {
 		float offset = -((totalTime * TIME_MODIFIER) % canvas.getWidth());
 		canvas.begin();
 		canvas.drawBackground(background,0,0);
-		if (gameState == GameState.OVER) {
+		if (false) { //gameState == GameState.OVER
 			displayFont.setColor(Color.NAVY);
 			canvas.drawTextCentered("Game Over!",displayFont, GAME_OVER_OFFSET+50);
 			displayFont.setColor(Color.NAVY);

@@ -245,7 +245,6 @@ public class GameplayController {
 	 * @param height current game height
 	 * @param frame frame / tick?? idk actually lol*/
 	public void updateNotes(float delta, float height, int frame){
-
 		// check with music controller
 		ArrayList<Fish> newNotes = musicController.update(currentLane, delta);
 
@@ -257,6 +256,7 @@ public class GameplayController {
 			}
 		}
 
+		System.out.println(objects);
 	}
 
 
@@ -507,6 +507,7 @@ public class GameplayController {
 				}
 				if(o.getType() == ObjectType.FISH){
 					((Fish)o).update(delta, frame);
+
 					if(((Fish)o).getNoteType() == Fish.NoteType.SINGLE){
 						if(triggers[((Fish)o).getLane()]){
 							//System.out.println(hitbarY + " " + o.getY() + " " + o.getRadius());

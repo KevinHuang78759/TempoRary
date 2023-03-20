@@ -25,7 +25,7 @@ public class BandMember {
     private int competencyGainRate = 4;
 
     /** Original competency - acts as a boundary */
-    private int maxCompetency = 100; // TODO: CHANGE - THIS IS JUST A PLACEHOLDER BC I AM WRITING QUICK CODE
+    private int maxCompetency = 30; // TODO: CHANGE - THIS IS JUST A PLACEHOLDER BC I AM WRITING QUICK CODE
 
     /** Current State **/
     private BandMemberState state;

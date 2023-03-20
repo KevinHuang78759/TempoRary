@@ -83,10 +83,9 @@ public class MusicController {
         for(JsonValue noteData : notesData) {
             int currentNextNote = nextNotes[i];
 
-            System.out.println(noteData.get(0).get(0));
-            System.out.println("DONE");
-            JsonValue currentNoteData = noteData.get(nextNotes[i]);
+            if(noteData == null) {return newNotes;}
 
+            JsonValue currentNoteData = noteData.get(nextNotes[i]);
 
             int beat = currentNoteData.getInt("beat");
 
@@ -96,7 +95,6 @@ public class MusicController {
                     Fish note = new Fish(currentNoteData);
                     newNotes.add(note);
                     // add new note to newNotes
-
                 }
                 nextNotes[i]++;
             }
