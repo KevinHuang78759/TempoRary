@@ -275,7 +275,7 @@ public class GameMode implements Screen {
 			//The current height of the line bars within an active lane
 			float curHeight = gameplayController.TOPBOUND - gameplayController.BOTTOMBOUND;
 			for(int i = 0; i < lanes; ++i){
-				if(gameplayController.curP == GameplayController.play_phase.NOTES){
+				if(gameplayController.currentPhase == GameplayController.play_phase.NOTES){
 					//If we are in a NOTES phase, all widths are small except for the active lane, which is large
 					curWidths[i] = gameplayController.currentLane == i ? gameplayController.largewidth : gameplayController.smallwidth;
 				}
@@ -297,7 +297,7 @@ public class GameMode implements Screen {
 				}
 			}
 			//Change the color of the lanes' outline if we are transitioning
-			Color cLanes = gameplayController.curP == GameplayController.play_phase.TRANSITION ? Color.RED : Color.MAROON;
+			Color cLanes = gameplayController.currentPhase == GameplayController.play_phase.TRANSITION ? Color.RED : Color.MAROON;
 			//Lanes and lines will be drawn sequentially from the left. This is our starting XCoordinate
 			float Xcoor = gameplayController.LEFTBOUND;
 			for(int i = 0; i < lanes; ++i){

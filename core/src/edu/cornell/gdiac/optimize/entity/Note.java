@@ -62,7 +62,7 @@ public class Note extends GameObject {
 		BEAT
 	}
 
-	public NType nt;
+	public NType ntype;
 
 	/**
 	 * Returns the type of this object.
@@ -74,6 +74,8 @@ public class Note extends GameObject {
 	public ObjectType getType() {
 		return ObjectType.NOTE;
 	}
+
+	public NType getNType() { return ntype;}
 
 
 	public float getRadius(){
@@ -95,18 +97,22 @@ public class Note extends GameObject {
 	/**
 	 * Initialize shell with trivial starting position.
 	 */
-	public Note(int line, NType n) {
+	public Note(int line, NType ntype) {
 		// Set minimum Y velocity for this shell
 		this.line = line;
 		minvelocy = 0f;
 		hitStatus = 0;
 		animeframe = 0.0f;
-		nt = n;
-		setVY(n == NType.HELD? 0f : descentSpeed);
+		this.ntype = ntype;
+		setVY(ntype == NType.HELD? 0f : descentSpeed);
 	}
 
-	public int getHitVal(){
+	public int getHitStatus(){
 		return hitStatus;
+	}
+
+	public void setHitStatus(int status){
+		hitStatus = status;
 	}
 
 	public int getLine() { return line;}
@@ -119,6 +125,7 @@ public class Note extends GameObject {
 
 	public float bx;
 	public float by;
+
 	public Texture getDamagedTexture() {
 		return dmgTexture;
 	}
@@ -128,13 +135,11 @@ public class Note extends GameObject {
 	 *
 	 * @param delta Number of seconds since last animation frame
 	 */
-
-
 	public void update(float delta, int frame) {
 		// Call superclass's run
 		super.update(delta);
 
-		if(nt == NType.HELD){
+		if(ntype == NType.HELD){
 			by += descentSpeed;
 			if(frame%1800 == (startFrame + holdFrame)%1800){
 				setVY(descentSpeed);
@@ -150,6 +155,7 @@ public class Note extends GameObject {
 	}
 
 	public float tail_thickness = 0f;
+
 	/**
 	 * Draws this shell to the canvas
 	 *
@@ -159,7 +165,7 @@ public class Note extends GameObject {
 	 * @param canvas The drawing context
 	 */
 	public void draw(GameCanvas canvas) {
-		if(nt == NType.HELD){
+		if(ntype == NType.HELD){
 
 			tail.setFrame(0);
 			//System.out.println(bx + " " + by + " " + position.x + " " + position.y + " " + tail_thickness);

@@ -110,6 +110,11 @@ public class GameplayController {
 	int currentLane;
 
 	/**
+	 * initiate to NOTES phase
+	 */
+	play_phase currentPhase = play_phase.NOTES;
+
+	/**
 	 * The base hp increment. Hp will incrememnt on a destroyed note by the product of this value and its hit status
 	 */
 	final int recovery = 3;
@@ -279,37 +284,6 @@ public class GameplayController {
 	}
 
 	/**
-	 * Returns a reference to the currently active player.
-	 *
-	 * This property needs to be modified if you want multiple players.
-	 *
-	 * @return a reference to the currently active player.
-	 */
-//	public Ship getPlayer() {
-//		return player;
-//	}
-
-	/**
-	 * Returns true if the currently active player is alive.
-	 *
-	 * This property needs to be modified if you want multiple players.
-	 *
-	 * @return true if the currently active player is alive.
-	 */
-	public boolean isAlive() {
-		return true;
-	}
-
-	/**
-	 * Returns the number of shells currently active on the screen.
-	 *
-	 * @return the number of shells currently active on the screen.
-	 */
-	public int getShellCount() {
-		return shellCount;
-	}
-
-	/**
 	 * Returns the line healths.
 	 *
 	 * @return the line healths.
@@ -326,14 +300,6 @@ public class GameplayController {
 	 * @param y Starting y-position for the player
 	 */
 	public void start(float x, float y, int width, int height, boolean r) {
-		// Create the player's ship
-//		player = new Ship();
-//		player.setTexture(beetleTexture);
-//		player.getPosition().set(x,y);
-//
-//		// Player must be in object list.
-//		objects.add(player);
-	//	setCoords(width, height);
 		randomnotes = r;
 
 
@@ -351,13 +317,47 @@ public class GameplayController {
 
 	/**
 	 * Array to indicate whether or not a certain line of the active band member lane contains an active held note
-	 * We need this so that we do not spawn a  note in the middle of a held note if we are using random
+	 * We need this so that we do not spawn a note in the middle of a held note if we are using random
 	 */
 	boolean[] heldPresent;
+
 	/**
 	 * The number of lines per lane
 	 */
 	public int lpl;
+
+	/**
+	 * The horizontal location of the left edge of the lane.
+	 *
+	 * @param lane the band member lane
+	 * @return the horizontal location of the left edge of lane
+	 */
+	private float laneEdge(int lane){
+		if (lane <= currentLane) {
+			return LEFTBOUND + lane*(inBetweenWidth + smallwidth);
+		}
+		else {
+			return LEFTBOUND + (lane-1)*(inBetweenWidth + smallwidth) + (inBetweenWidth + largewidth);
+		}
+	}
+
+	/**
+	 * The spawning X location of a note on a lane. If the note is a Switch note [lane]
+	 * gives the band member lane. If the note is a Beat or Held note [lane] is the line.
+	 *
+	 * @param type Type of the note (Beat, Held, or Switch)
+	 * @param lane Lane of the note (Line if Beat or Held note, Band Member lane if Switch note)
+	 * @return The X location where we will spawn the note
+	 */
+	private float horizontalNoteLoc(Note.NType type, int lane){
+		if(type == Note.NType.SWITCH){
+			return laneEdge(lane) + smallwidth/2;
+		}
+		else {
+			return laneEdge(currentLane) + largewidth / (2 * lpl) + lane*(largewidth / lpl);
+		}
+	}
+
 	/**
 	 * Adds a new shell to the game.
 	 *
@@ -370,29 +370,34 @@ public class GameplayController {
 	public void addShellRandom(float height, int frame) {
 		randomnotes = true;
 		if(randomnotes){
-			int lane = RandomController.rollInt(0,lpl-1);
-			int dur = RandomController.rollInt(1, 3);
-			if(frame % 250 == 0&& curP == play_phase.NOTES && !heldPresent[lane]){
-
-				Note h = new Note(lane, Note.NType.HELD);
-				heldPresent[lane] = true;
-				h.setX(LEFTBOUND + currentLane*(inBetweenWidth + smallwidth) + largewidth/(2*lpl) + lane*(largewidth/lpl));
-				h.bx = LEFTBOUND + currentLane*(inBetweenWidth + smallwidth) + largewidth/(2*lpl) + lane*(largewidth/lpl);
-				h.startFrame = frame;
-				h.holdFrame = 60 + (15 * dur);
-				h.setY(height);
-				h.by = height;
-				h.tail_thickness = 15f;
-				h.setTexture(greenTexture);
-				h.setTailTexture(redTexture);
-				objects.add(h);
-				++shellCount;
+			//held notes
+			if(frame % 250 == 0&& currentPhase == play_phase.NOTES && false){
+				//turning held notes off for now
+				int lane = RandomController.rollInt(0,lpl-1);
+				int dur = RandomController.rollInt(1, 3);
+				if (!heldPresent[lane]) {
+					Note h = new Note(lane, Note.NType.HELD);
+					heldPresent[lane] = true;
+					h.setX(LEFTBOUND + currentLane * (inBetweenWidth + smallwidth) + largewidth / (2 * lpl) + lane * (largewidth / lpl));
+					h.bx = LEFTBOUND + currentLane * (inBetweenWidth + smallwidth) + largewidth / (2 * lpl) + lane * (largewidth / lpl);
+					h.startFrame = frame;
+					h.holdFrame = 60 + (15 * dur);
+					h.setY(height);
+					h.by = height;
+					h.tail_thickness = 15f;
+					h.setTexture(greenTexture);
+					h.setTailTexture(redTexture);
+					objects.add(h);
+					++shellCount;
+				}
 			}
-			if(frame%45 == 0 && curP == play_phase.NOTES){
+
+			//beat notes
+			if(frame%45 == 0 && currentPhase == play_phase.NOTES){
 				int det = RandomController.rollInt(0,lpl);
 				if(det < 4 && !heldPresent[det]){
 					Note s = new Note(det, Note.NType.BEAT);
-					s.setX(LEFTBOUND + currentLane*(inBetweenWidth + smallwidth) + largewidth/(2*lpl) + det*(largewidth/lpl));
+					s.setX(horizontalNoteLoc(Note.NType.BEAT, det));
 					s.setTexture(redTexture);
 					s.setY(height);
 					s.setVX(0);
@@ -401,11 +406,12 @@ public class GameplayController {
 				}
 			}
 
-			if(frame%450 == 0 && curP == play_phase.NOTES){
+			//switch notes
+			if(frame%135 == 0 && currentPhase == play_phase.NOTES){
 				int det = RandomController.rollInt(0,NUM_LANES - 1);
 				if(det != currentLane){
 					Note s = new Note(det, Note.NType.SWITCH);
-					s.setX(LEFTBOUND + (det * (smallwidth + inBetweenWidth) + (det > currentLane ? largewidth - smallwidth : 0)) + smallwidth/2f);
+					s.setX(horizontalNoteLoc(Note.NType.SWITCH, det));
 					s.setTexture(greenTexture);
 					s.setY(height);
 					s.setVX(0);
@@ -491,13 +497,13 @@ public class GameplayController {
 				break;
 			case NOTE:
 				// Create some stars if hit on beat - more stars if more accurate
-				if(((Note)o).nt == Note.NType.HELD){
+				if(((Note) o).getNType() == Note.NType.HELD){
 					System.out.println("HELD NOTE DESTROYED");
-					heldPresent[((Note)o).line] = false;
+					heldPresent[((Note)o).getLine()] = false;
 				}
-				spawnStars(((Note)o).hitStatus, o.getX(), o.getY(), o.getVX(), o.getVY());
-				int hpUpdate = ((Note) o).nt == Note.NType.SWITCH ? goal : currentLane;
-				health[hpUpdate] += ((Note) o).hitStatus*recovery;
+				spawnStars(((Note)o).getHitStatus(), o.getX(), o.getY(), o.getVX(), o.getVY());
+				int hpUpdate = ((Note) o).getNType() == Note.NType.SWITCH ? goal : currentLane;
+				health[hpUpdate] += ((Note) o).getHitStatus()*recovery;
 				health[hpUpdate] = Math.min(MAX_HEALTH, health[hpUpdate]);
 				health[hpUpdate] = Math.max(0, health[hpUpdate]);
 				break;
@@ -531,10 +537,6 @@ public class GameplayController {
 	}
 
 	/**
-	 * initiate to NOTES phase
-	 */
-	play_phase curP = play_phase.NOTES;
-	/**
 	 * Total progress needed before we declare ourselves fully transitioned
 	 */
 	int T_SwitchPhases = 20;
@@ -561,7 +563,7 @@ public class GameplayController {
 	 */
 	public void resolvePhase(InputController input, float delta){
 		//Currently, this method will destroy all notes on the screen
-		if(curP == play_phase.NOTES){
+		if(currentPhase == play_phase.NOTES){
 			//If we are currently in a note phase, detect for switch presses
 			switches = input.switches();
 
@@ -573,7 +575,7 @@ public class GameplayController {
 					//First set the goal band member to the detected switch
 					goal = i;
 					//Change the phase to TRANSITION
-					curP = play_phase.TRANSITION;
+					currentPhase = play_phase.TRANSITION;
 					//Start transition progress at 0
 					t_progress = 0;
 
@@ -582,19 +584,19 @@ public class GameplayController {
 							//For all NOTE objects, check for switch notes
 							//This variable is to make sure we do not attempt to destroy a switch note twice
 							boolean switchTog = false;
-							if(((Note)o).nt == Note.NType.SWITCH){
-								if(switches[((Note)o).line]){
+							if(((Note)o).getNType() == Note.NType.SWITCH){
+								if(switches[((Note)o).getLine()]){
 									//If there is a switch note on this line and within bounds, destroy it and reward HP points
 									//Also set the switchTog variable to true
 									if(o.getY() <= (hitbarY + o.getRadius()/4f) && o.getY() >= (hitbarY - o.getRadius()/4f)){
 										//System.out.println("Good switch");
-										((Note) o).hitStatus = 4;
+										((Note) o).setHitStatus(4);
 										switchTog = true;
 										o.setDestroyed(true);
 
 									} else if (o.getY() <= (hitbarY + o.getRadius()) && o.getY() >= (hitbarY - o.getRadius())) {
 										//System.out.println("switch");
-										((Note) o).hitStatus = 2;
+										((Note) o).setHitStatus(2);
 										switchTog = true;
 										o.setDestroyed(true);
 									}
@@ -622,7 +624,7 @@ public class GameplayController {
 				//If we are, set the currentLane to the previous goal lane
 				currentLane = goal;
 				//Change phase to NOTES phase
-				curP = play_phase.NOTES;
+				currentPhase = play_phase.NOTES;
 			}
 		}
 	}
@@ -635,7 +637,7 @@ public class GameplayController {
 	 */
 
 	public void resolveActions(InputController input, float delta, int frame) {
-		if(curP == play_phase.NOTES){
+		if(currentPhase == play_phase.NOTES){
 			//If we are in the NOTES phase, get trigger input
 			triggers = input.didTrigger();
 			// Process the objects.
@@ -649,7 +651,7 @@ public class GameplayController {
 					//If the object is a note, first update the note
 					((Note)o).update(delta, frame);
 					//If the note is a BEAT, detect whether we have a trigger pressed on its line
-					if(((Note)o).nt == Note.NType.BEAT){
+					if(((Note)o).getNType() == Note.NType.BEAT){
 						if(triggers[((Note)o).getLine()]){
 							//If the trigger is pressed while the BEAT is in appropriate bounds, destroy the note
 							//and award HP points.
@@ -658,14 +660,14 @@ public class GameplayController {
 							//System.out.println(hitbarY + " " + o.getY() + " " + o.getRadius());
 							if(o.getY() <= (hitbarY + o.getRadius()/4f) && o.getY() >= (hitbarY - o.getRadius()/4f)){
 								//System.out.println("Good hit");
-								((Note) o).hitStatus = 2;
+								((Note) o).setHitStatus(2);
 
 								o.setDestroyed(true);
 								return;
 
 							} else if (o.getY() <= (hitbarY + o.getRadius()) && o.getY() >= (hitbarY - o.getRadius())) {
 								//System.out.println("hit");
-								((Note) o).hitStatus = 1;
+								((Note) o).setHitStatus(1);
 
 								o.setDestroyed(true);
 								return;
@@ -673,13 +675,13 @@ public class GameplayController {
 							else {
 								//Otherwise set  its hit value to 0
 								//System.out.println("miss");
-								((Note) o).hitStatus = 0;
+								((Note) o).setHitStatus(0);
 							}
 						}
 					}
-					else if(((Note)o).nt == Note.NType.HELD){
+					else if(((Note)o).getNType() == Note.NType.HELD){
 						//If the note is a held note, detect if we have a trigger on its  line
-						if(triggers[((Note)o).line]){
+						if(triggers[((Note)o).getLine()]){
 							//If the bottom of the note is within bounds, spawn some stars
 							//We need to return again for similar reasons to the beat notes
 							if(((Note)o).by <= (hitbarY + o.getRadius()/4f) && o.getY() >= (hitbarY - o.getRadius()/4f)){
@@ -698,19 +700,19 @@ public class GameplayController {
 							}
 						}
 						//Now detect if a trigger was lifted
-						if(input.triggerLifted[((Note)o).line]){
+						if(input.triggerLifted[((Note)o).getLine()]){
 							System.out.println("let go");
 							//If the trigger was lifted when the tail of the held note is near the hitbarY value,
 							//destroy the note and reward some HP
 							if(o.getY() <= (hitbarY + o.getRadius()/4f) && o.getY() >= (hitbarY - o.getRadius()/4f)){
 								System.out.println("Good hold end");
-								((Note)o).hitStatus = 4;
+								((Note)o).setHitStatus(4);
 								o.setDestroyed(true);
 								return;
 							} else if (o.getY() <= (hitbarY + o.getRadius()) && o.getY() >= (hitbarY - o.getRadius())) {
 								System.out.println("hold end");
 
-								((Note)o).hitStatus = 2;
+								((Note)o).setHitStatus(2);
 								o.setDestroyed(true);
 
 								return;

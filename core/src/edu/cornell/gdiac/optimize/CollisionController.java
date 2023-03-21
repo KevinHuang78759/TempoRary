@@ -564,7 +564,7 @@ public class CollisionController {
 		// Check for in bounds on bottom
 		if (sh.getY()-sh.getRadius() < -30) {
 			// Set within bounds on bottom and swap velocity
-			sh.hitStatus = sh.nt == Note.NType.SWITCH ? 0 : -1;
+			sh.setHitStatus(sh.getNType() == Note.NType.SWITCH ? 0 : -1);
 			sh.setDestroyed(true);
 
 

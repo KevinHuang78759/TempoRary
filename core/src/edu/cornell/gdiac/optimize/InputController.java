@@ -163,14 +163,14 @@ public class InputController {
 	boolean rKey = false;
 	private void readKeyboard(boolean secondary) {
 		// Give priority to gamepad results, get input from keyboard
-		resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.M));
+		resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.R));
 		rKey = resetPressed && Gdx.input.isKeyPressed(Input.Keys.H);
 
 		triggerPress = new boolean[]{
-				Gdx.input.isKeyPressed(Input.Keys.Q),
-				Gdx.input.isKeyPressed(Input.Keys.W),
-				Gdx.input.isKeyPressed(Input.Keys.E),
-				Gdx.input.isKeyPressed(Input.Keys.R)
+				Gdx.input.isKeyPressed(Input.Keys.N),
+				Gdx.input.isKeyPressed(Input.Keys.M),
+				Gdx.input.isKeyPressed(Input.Keys.COMMA),
+				Gdx.input.isKeyPressed(Input.Keys.PERIOD)
 		};
 
 		boolean[] switchesPress = new boolean[]{
