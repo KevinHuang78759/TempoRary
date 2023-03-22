@@ -12,13 +12,12 @@
 package edu.cornell.gdiac.temporary;
 
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 
 import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.optimize.entity.BandMember;
+import edu.cornell.gdiac.temporary.entity.BandMember;
 import edu.cornell.gdiac.util.*;
 
 /**
@@ -258,7 +257,7 @@ public class GameMode implements Screen {
 						curWidths[i] = gameplayController.largewidth + (float)(gameplayController.t_progress)*(gameplayController.smallwidth - gameplayController.largewidth)/(float)(gameplayController.T_SwitchPhases);
 						curHeight = (gameplayController.TOPBOUND - gameplayController.BOTTOMBOUND) * (float)(gameplayController.T_SwitchPhases-gameplayController.t_progress)/(float)(gameplayController.T_SwitchPhases);
 					}
-					else if(i == gameplayController.goalLaine){
+					else if(i == gameplayController.goalLane){
 						//If this is the goal lane we are trying to transition to, make sure it grows
 						curWidths[i] = gameplayController.smallwidth + (float)(gameplayController.t_progress)*(gameplayController.largewidth - gameplayController.smallwidth)/(float)(gameplayController.T_SwitchPhases);
 					}
@@ -279,7 +278,7 @@ public class GameMode implements Screen {
 				//Draw a rectangle from the bottom left using the total available height and the current width as a border
 				//for this lane
 				canvas.drawRect(BL, curWidths[i], gameplayController.TOPBOUND - gameplayController.BOTTOMBOUND, cLanes, false);
-				if(gameplayController.currentLane == i || gameplayController.goalLaine == i){
+				if(gameplayController.currentLane == i || gameplayController.goalLane == i){
 					//If we are in the active or the goal lane, we need to draw the lines
 					for(int j = 0; j < lpl; ++j){
 						//Calculate the x coordinate of this line using the bottom left x coordinate of this lane

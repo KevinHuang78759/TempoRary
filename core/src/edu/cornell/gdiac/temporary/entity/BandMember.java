@@ -1,4 +1,4 @@
-package edu.cornell.gdiac.optimize.entity;
+package edu.cornell.gdiac.temporary.entity;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;

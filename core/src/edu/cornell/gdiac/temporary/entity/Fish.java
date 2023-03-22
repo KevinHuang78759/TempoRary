@@ -1,11 +1,11 @@
-package edu.cornell.gdiac.optimize.entity;
+package edu.cornell.gdiac.temporary.entity;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
-import edu.cornell.gdiac.optimize.GameCanvas;
-import edu.cornell.gdiac.optimize.GameObject;
+import edu.cornell.gdiac.temporary.GameCanvas;
+import edu.cornell.gdiac.temporary.GameObject;
 import edu.cornell.gdiac.util.FilmStrip;
 
 /*

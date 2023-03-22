@@ -25,11 +25,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.audio.Music;
 
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.optimize.entity.Fish;
 import edu.cornell.gdiac.temporary.entity.*;
 import edu.cornell.gdiac.temporary.GameObject.ObjectType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Controller to handle gameplay interactions.
@@ -323,13 +323,14 @@ public class GameplayController {
 	 * @return true if one of them died, false if not
 	 *
 	 * */
-	public boolean checkAllCompetencies(boolean decreasing){
-		for(BandMember bandMember : bandMembers){
-			if(bandMember.updateHealth(decreasing)){
+	public boolean checkAllCompetencies(boolean decreasing) {
+		for (BandMember bandMember : bandMembers) {
+			if (bandMember.updateHealth(decreasing)) {
 				return true;
 			}
 		}
 		return false;
+	}
 
 	/**
 	 * Resets the game, deleting all objects and setting their parameters to their default values.
@@ -364,7 +365,7 @@ public class GameplayController {
 		if(newNotes.size() > 0){
 			for(Fish note : newNotes){
 				activeNotes.add(note);
-				note.setPosition(height, currentLane, redTexture, smallwidth, largewidth, inBetweenWidth, LEFTBOUND);
+				note.setPosition(height, currentLane, catNoteTexture, smallwidth, largewidth, inBetweenWidth, LEFTBOUND);
 				objects.add(note);
 			}
 		}
@@ -487,7 +488,7 @@ public class GameplayController {
 //					heldPresent[((Fish) o).line] = false;
 //				}
 				spawnStars(((Fish) o).hitStatus, o.getX(), o.getY(), o.getVX(), o.getVY());
-				int hpUpdate = ((Fish) o).getNoteType() == Fish.NoteType.SWITCH ? goalLaine : currentLane;
+				int hpUpdate = ((Fish) o).getNoteType() == Fish.NoteType.SWITCH ? goalLane : currentLane;
 				if(hpUpdate == 1) {bandMembers[currentLane].addHealth();}
 //				health[hpUpdate] += ((Note) o).hitStatus * recovery;
 //				health[hpUpdate] = Math.min(MAX_HEALTH, health[hpUpdate]);
@@ -535,7 +536,7 @@ public class GameplayController {
 	/**
 	 * The band member lane index that we are trying to switch to
 	 */
-	int goalLaine;
+	int goalLane;
 
 	/**
 	 * Whether or not a trigger for a certain line was pressed
@@ -555,7 +556,7 @@ public class GameplayController {
 	/**
 	 * Resolves state changes into and out of the TRANSITION phase
 	 */
-	public void resolvePhase(InputController input, float delta){
+	public void resolvePhase(InputController input){
 		//If we are currently in a note phase, detect for switch presses
 		if(currentPhase == playPhase.PLAYING){
 			switches = input.switches();
@@ -566,7 +567,7 @@ public class GameplayController {
 				if(switches[i] && i != currentLane){
 					//If it is not, initiate change to TRANSITION phase
 					//First set the goal band member to the detected switch
-					goalLaine = i;
+					goalLane = i;
 					//Change the phase to TRANSITION
 					currentPhase = playPhase.TRANSITION;
 					//Start transition progress at 0
@@ -613,7 +614,7 @@ public class GameplayController {
 			//If we are already in the TRANSITION PHASE, check to see if we are done transitioning
 			if (t_progress == T_SwitchPhases){
 				//If we are, set the currentLane to the previous goal lane
-				currentLane = goalLaine;
+				currentLane = goalLane;
 				//Change phase to NOTES phase
 				currentPhase = playPhase.PLAYING;
 			}
@@ -703,7 +704,7 @@ public class GameplayController {
 //							else{
 //								System.out.println("hold end missed");
 //							}
-						}
+//						}
 					}
 				}
 				else {

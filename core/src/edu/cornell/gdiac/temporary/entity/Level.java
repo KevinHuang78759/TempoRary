@@ -4,11 +4,11 @@ Level.java
 This is a passive model that stores all level information that
 other classes reference. */
 
-package edu.cornell.gdiac.optimize.entity;
+package edu.cornell.gdiac.temporary.entity;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.optimize.GameCanvas;
+import edu.cornell.gdiac.temporary.GameCanvas;
 
 public class Level {
     /** Title of a Level (may not equal song title) **/
