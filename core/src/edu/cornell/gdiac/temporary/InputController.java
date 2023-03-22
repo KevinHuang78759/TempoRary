@@ -112,6 +112,7 @@ public class InputController {
 	private boolean[] triggerLast;
 	private boolean[] switches;
 	private boolean[] switchesLast;
+	private boolean[] moves;
 
 	boolean[] triggerPress;
 	boolean[] triggerLifted;
@@ -139,6 +140,13 @@ public class InputController {
 				Gdx.input.isKeyPressed(Input.Keys.I),
 		};
 
+		moves = new boolean[]{
+				Gdx.input.isKeyPressed(Input.Keys.UP),
+				Gdx.input.isKeyPressed(Input.Keys.DOWN),
+				Gdx.input.isKeyPressed(Input.Keys.LEFT),
+				Gdx.input.isKeyPressed(Input.Keys.RIGHT)
+		};
+
 		//Compute actual values by comparing with previous value. We only register a click if the trigger or switch
 		// went from false to true. We only register a lift if the trigger went from true to false.
 		for(int i = 0; i < Math.max(switchesPress.length, triggerPress.length); ++i){
@@ -152,6 +160,7 @@ public class InputController {
 				switchesLast[i] = switchesPress[i];
 			}
 		}
+
 	}
 
 	/*
@@ -163,6 +172,10 @@ public class InputController {
 
 	public boolean[] didTrigger(){
 		return triggers;
+	}
+
+	public boolean[] getMoves(){
+		return moves;
 	}
 
 }
