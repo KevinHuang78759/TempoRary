@@ -35,11 +35,15 @@ public class GDXRoot extends Game implements ScreenListener {
 	/** AssetManager to load game assets (textures, sounds, etc.) */
 	AssetDirectory directory;
 	/** Drawing context to display graphics (VIEW CLASS) */
-	private GameCanvas canvas; 
+	private GameCanvas canvas;
+
+	// SCREEN MODES
 	/** Player mode for the asset loading screen (CONTROLLER CLASS) */
 	private LoadingMode loading;
 	/** Player mode for the game proper (CONTROLLER CLASS) */
 	private GameMode playing;
+	/** Player mode for getting calibration (CONTROLLER CLASS) */
+	private CalibrationController calibration;
 	
 	/**
 	 * Creates a new game from the configuration settings.
@@ -57,8 +61,9 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public void create() {
 		canvas  = new GameCanvas();
-		loading = new LoadingMode("assets.json",canvas,1);
+		loading = new LoadingMode("assets.json", canvas,1);
 		playing = new GameMode(canvas, 4,4);
+		calibration = new CalibrationController(canvas);
 		
 		loading.setScreenListener(this);
 		setScreen(loading);
@@ -113,13 +118,19 @@ public class GDXRoot extends Game implements ScreenListener {
 			Gdx.app.error("GDXRoot", "Exit with error code "+exitCode, new RuntimeException());
 			Gdx.app.exit();
 		} else if (screen == loading) {
-			playing.setScreenListener(this);
-			directory = loading.getAssets();
-			playing.populate(directory);
-			setScreen(playing);
 
-			loading.dispose();
-			loading = null;
+			calibration.setScreenListener(this);
+			directory = loading.getAssets();
+			calibration.populate(directory);
+			setScreen(calibration);
+
+//			playing.setScreenListener(this);
+//			directory = loading.getAssets();
+//			playing.populate(directory);
+//			setScreen(playing);
+//
+//			loading.dispose();
+//			loading = null;
 		} else {
 			// We quit the main application
 			Gdx.app.exit();
