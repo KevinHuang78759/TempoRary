@@ -1,7 +1,12 @@
 package edu.cornell.gdiac.temporary.entity;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.Queue;
+import edu.cornell.gdiac.temporary.GameCanvas;
 
 import java.util.ArrayList;
 
@@ -11,13 +16,54 @@ public class BandMember {
         ACTIVE, TRANSITIONING, INACTIVE
     }
 
-    /** uhhhhhh max number of notes go brr */
-    private static final int MAX_NOTES = 10000;
+    /** Drawing details */
+    /** Bottom left corner */
+    public Vector2 bottomLeftCorner;
+
+    /**
+     * The height of separator lines from the top of the lane
+     */
+    public float lineHeight;
+    /**
+     * Width of the lane
+     */
+    public float width;
+
+    /**
+     * Total height
+     */
+    public float height;
+
+    /**
+     * Number of lines this band member has
+     */
+    public int numLines;
+
+    /**
+     * Active array of beat and held notes
+     */
+    public Array<Fish> hitNotes;
+
+    /**
+     * Active array of switch notes
+     */
+    public Array<Fish> switchNotes;
+
+    /**
+     * Queue to hold all the notes for this band member across the entire level
+     */
+    Queue<Fish> allNotes;
+
+    /**
+     * backing array used for garbage collection
+     */
+    Array<Fish> backing;
+
 
     /** IDentifier for band member **/
     private int id;
     /** Current competency bar **/
-    private int competency;
+    public int competency;
     /** Rate competency loses health **/
     private int competencyLossRate;
     /** Rate competency gains health per correct note */
@@ -25,7 +71,7 @@ public class BandMember {
     private int competencyGainRate = 4;
 
     /** Original competency - acts as a boundary */
-    private int maxCompetency = 30; // TODO: CHANGE - THIS IS JUST A PLACEHOLDER BC I AM WRITING QUICK CODE
+    public int maxCompetency = 30; // TODO: CHANGE - THIS IS JUST A PLACEHOLDER BC I AM WRITING QUICK CODE
 
     /** Current State **/
     private BandMemberState state;
@@ -40,12 +86,19 @@ public class BandMember {
     public ArrayList<Fish> getNotes() { return notes; }
     public JsonValue getNotesData() { return notesData; }
 
-    public BandMember(int id){
-        this.id = id;
+    /**
+     * Constructor that instantiates all class fields
+     * */
+    public BandMember(){
+        this.bottomLeftCorner = new Vector2();
+        this.id = -1;
         this.competency = 1;
         this.competencyLossRate = 0;
         this.state = BandMemberState.INACTIVE;
-        //this.notes = new Fish[MAX_NOTES];
+
+        this.hitNotes = new Array<>();
+        this.switchNotes = new Array<>();
+        this.allNotes = new Queue<>();
     }
 
     public BandMember(int id, int maxCompetency, JsonValue data){
@@ -73,16 +126,22 @@ public class BandMember {
      * @param decreasing = if yes we are decreasing from the competency. doesn't decreasae every tick!
      * @return boolean true if die
      * */
-    public boolean updateHealth(boolean decreasing) {
+    public void updateCompetency(boolean decreasing) {
         int temp  = Math.min(competency, maxCompetency);
         if(decreasing){
             competency -= competencyLossRate;
         }
+    }
 
-        if(competency <= 0){
-            return true;
-        }
-        return false;
+    /** Update competency by a specified amount (+-)
+     * Do not go below 0 or exceed maximum competency */
+    public void updateCompetency(int amount){
+        competency = Math.min(Math.max(0, competency + amount), maxCompetency);
+    }
+
+    /** Return true if competency <= 0, or the competency is below zero. */
+    public boolean isCaught(){
+        return (competency <= 0);
     }
 
     /** Increase competency by gain rate
@@ -101,8 +160,65 @@ public class BandMember {
 
     }
 
-    public void draw(float delta){
+    /** Draw switch notes */
+    public void drawSwitchNotes(GameCanvas canvas){
+        for(Fish n : switchNotes){
+            if(!n.isDestroyed()){
+                //Switch notes should just appear in the middle of the lane
+                n.setX(bottomLeftCorner.x + width/2);
+                //n,tail_thickness = width/(4f*numLines);
+                n.draw(canvas, width*(3/4), width*(3/4));
+            }
+        }
+    }
 
+    /** Draw held and beat notes. */
+    public void drawHitNotes(GameCanvas canvas){
+        for(Fish n : hitNotes){
+            if(!n.isDestroyed()){
+                // hit notes are based on what line we are
+                n.setX(bottomLeftCorner.x + width/(2*numLines) + n.getLane() * (width/numLines));
+                n.draw(canvas, (width/numLines)*(3/4), (width/numLines)*(3/4));
+            }
+        }
+    }
+
+    /** Draw border */
+    public void drawBorder(GameCanvas canvas){
+        // TODO CHANGE???
+        canvas.drawRect(bottomLeftCorner, width, height, Color.WHITE, false);
+    }
+
+    /**
+     * Draw separation lines to divide each line within this lane
+     */
+    public void drawLineSeps(GameCanvas canvas){
+        Color lColor = Color.BLACK;
+        for(int i = 1; i < numLines; ++i){
+            canvas.drawLine(bottomLeftCorner.x + i * (width/numLines), bottomLeftCorner.y + height, bottomLeftCorner.x + i * (width/numLines), bottomLeftCorner.y + height - lineHeight, 3, lColor);
+        }
+    }
+
+    /** Garbage collection for both switch and hit notes */
+    public void garbageCollect(){
+        // copy switch and hit notes (that haven't been destroyed) to backing
+        for(Fish n : switchNotes){
+            if(!n.destroyed){backing.add(n);}
+        }
+
+        Array<Fish> temp = backing;
+        backing = switchNotes;
+        switchNotes = temp;
+        backing.clear();
+
+        for(Fish n : hitNotes){
+            if(!n.destroyed){backing.add(n);}
+        }
+
+        temp = backing;
+        backing = hitNotes;
+        hitNotes = temp;
+        backing.clear();
     }
 
 }

@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.temporary.entity;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
@@ -132,7 +133,7 @@ public class Fish extends GameObject {
         //transform.position = Vector2.Lerp(transform.position, destination, Time.deltaTime);
         // (BeatsShownInAdvance - (beatOfThisNote - songPosInBeats)) / BeatsShownInAdvance
 
-        float timeMove = (beatsAhead - (this.beat - this.));
+        //float timeMove = (beatsAhead - (this.beat - this.));
 
         position = position.lerp(exitPosition, 0.042f);
 
@@ -184,6 +185,11 @@ public class Fish extends GameObject {
         animator.setFrame((int) animFrame);
         canvas.draw(animator, Color.WHITE, origin.x, origin.y, position.x, position.y,
                 0.0f, NOTE_MULTIPLIER, NOTE_MULTIPLIER);
+    }
+
+    /** Draw the note to the canvas given a width and height confinement */
+    public void draw(GameCanvas canvas, float widthConfine, float heightConfine){
+
     }
 
 }

@@ -50,7 +50,7 @@ public class Level {
         this.bandMembers = new BandMember[MAX_BANDMEMBERS];
 
         for(int i = 0; i < MAX_BANDMEMBERS; i++){
-            bandMembers[i] = new BandMember(i);
+            bandMembers[i] = new BandMember();
         }
 
         // add band member for level

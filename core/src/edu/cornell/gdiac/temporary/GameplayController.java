@@ -20,6 +20,8 @@
  */
 package edu.cornell.gdiac.temporary;
 
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.audio.Music;
@@ -101,7 +103,11 @@ public class GameplayController {
 	/**
 	 * Index of the currently active band member
 	 */
-	int currentLane;
+	int currentBandMember;
+
+	/** where notes are spawned and died */
+	public float noteSpawnY;
+	public float noteDieY;
 
 	/**
 	 * The base hp increment. Hp will incrememnt on a destroyed note by the product of this value and its hit status
@@ -172,13 +178,14 @@ public class GameplayController {
 	 */
 	public float hpbet;
 
-	public GameplayController(boolean rn, int lanes, int linesPerLane, float width, float height){
-		NUM_LANES = 1;
+	public GameplayController(int lanes, int linesPerLane, float width, float height){
+		NUM_LANES = lanes;
 		shellCount = 0;
 		//initializeHealth(); // HEALTH SHOULD BE INDEPENDENT AND HANDLED BY BAND MEMBERS. todo: delete?
 		//hsflag = false;
 		objects = new Array<GameObject>();
 		backing = new Array<GameObject>();
+		currentBandMember = 0; //default
 
 		//randomnotes = true;
 		//Set margins so there is a comfortable amount of space between play area and screen boundaries
@@ -196,7 +203,7 @@ public class GameplayController {
 		inBetweenWidth = smallwidth/4f;
 		largewidth = 10f*smallwidth;
 		//initiate default active band member to 0
-		currentLane = 0;
+		currentBandMember = 0;
 		//Have the y value be a bit above the bottom of the play area, but not too close
 		hitbarY = BOTTOMBOUND + 3*height/20f;
 		//There are NUM_LANES hp bars, and the width between each one shall be 1/4 their length
@@ -208,6 +215,10 @@ public class GameplayController {
 		heldPresent = new boolean[linesPerLane];
 		triggers = new boolean[linesPerLane];
 		lpl = 1;
+		noteSpawnY = TOPBOUND + smallwidth/2;
+		noteDieY = BOTTOMBOUND - smallwidth/2;
+		triggers = new boolean[linesPerLane];
+		switches = new boolean[lanes];
 
 		activeNotes = new ArrayList<Fish>();
 	}
@@ -260,11 +271,28 @@ public class GameplayController {
 
 	/** Initialize level and band member data */
 	public void populateLevel(){
-		level = new Level(levelData);
+		level = new Level(levelData); // initializes level AND BAND MEMBERS
 		bandMembers = level.getBandMembers();
 		musicController = new MusicController(music, level, bandMembers);
 
 		// TODO: THIS IS NOT EFFICIENT AT ALL LMAO
+	}
+
+	/** Initialize each band member's drawable location */
+	public void setupBandMembers(Color[] c){
+		float XCoor = LEFTBOUND;
+
+		for(int i = 0; i < NUM_LANES; i++){
+			bandMembers[i].bottomLeftCorner.x = XCoor;
+			bandMembers[i].bottomLeftCorner.y = BOTTOMBOUND;
+			bandMembers[i].width = i == 0 ? largewidth : smallwidth;
+			bandMembers[i].lineHeight = i == 0 ? TOPBOUND - BOTTOMBOUND : 0;
+			bandMembers[i].height = TOPBOUND - BOTTOMBOUND;
+			bandMembers[i].numLines = lpl;
+			bandMembers[i].maxCompetency = MAX_HEALTH;
+			bandMembers[i].competency = MAX_HEALTH;
+			XCoor += bandMembers[i].width + inBetweenWidth;
+		}
 	}
 
 	/**
@@ -308,11 +336,30 @@ public class GameplayController {
 	 *
 	 * @param r Option to use random notes or not
 	 */
-	public void start(boolean r) {
+	public void start() {
+
+		setupBandMembers(new Color[]{Color.BLUE, Color.GOLDENROD, Color.CORAL,Color.MAROON});
+		currentBandMember = 0;
+		//currentFrame = 0;
 
 		// play music
-		//music.play();
-		randomnotes = r;
+		music.play();
+		//randomnotes = r;
+	}
+
+	/***/
+	public void update(){
+		checkDeadNotes();
+
+		for(BandMember bandMember : bandMembers){
+			// update notes by current frame
+			// spawn notes by current frame
+			// if current frame % 120 == 1, update the competencies by -1
+		}
+		for(GameObject o : objects){
+			o.update(0f);
+		}
+		// currentFrame++
 	}
 
 	/** Update competency of all band members.
@@ -322,11 +369,53 @@ public class GameplayController {
 	 * */
 	public boolean checkAllCompetencies(boolean decreasing) {
 		for (BandMember bandMember : bandMembers) {
-			if (bandMember.updateHealth(decreasing)) {
+			bandMember.updateCompetency(decreasing);
+			if (bandMember.isCaught()) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	public void updateBandMemberCoords(){
+		if(currentPhase == playPhase.PLAYING){
+			//If we are in the notes phase, we set the width of the active lane to goal, and everything else to small
+			//We also set the line height of everything to 0 except for the active lane
+			float XCoord = LEFTBOUND;
+			for(int i = 0; i < bandMembers.length; ++i){
+				bandMembers[i].bottomLeftCorner.x = XCoord;
+				if(i == currentBandMember){
+					bandMembers[i].width = largewidth;
+					bandMembers[i].lineHeight = TOPBOUND - BOTTOMBOUND;
+				}
+				else{
+					bandMembers[i].width = smallwidth;
+					bandMembers[i].lineHeight = 0f;
+				}
+				XCoord += bandMembers[i].width + inBetweenWidth;
+			}
+		}
+		else{
+			//Otherwise we must be in transition
+			float progressFrac = t_progress/(float)T_SwitchPhases;
+			float XCoord = LEFTBOUND;
+			for(int i = 0; i < bandMembers.length; ++i){
+				bandMembers[i].bottomLeftCorner.x = XCoord;
+				if(i == currentBandMember){
+					bandMembers[i].width = (largewidth - smallwidth)*(1-progressFrac) + smallwidth;
+					bandMembers[i].lineHeight = (TOPBOUND - BOTTOMBOUND)*(1-progressFrac);
+				}
+				else if(i == goalBandMember){
+					bandMembers[i].width = (largewidth - smallwidth)*(progressFrac) + smallwidth;
+					bandMembers[i].lineHeight = (TOPBOUND - BOTTOMBOUND)*(progressFrac);
+				}
+				else{
+					bandMembers[i].width = smallwidth;
+					bandMembers[i].lineHeight = 0f;
+				}
+				XCoord += bandMembers[i].width + inBetweenWidth;
+			}
+		}
 	}
 
 	/**
@@ -334,7 +423,7 @@ public class GameplayController {
 	 * todo: RESET FUNCTIONS IN LEVEL, FISH, BAND MEMBER
 	 */
 	public void reset() {
-		//shellCount = 0;
+		//curframe = 0;
 		objects.clear();
 		//initializeHealth();
 	}
@@ -350,6 +439,23 @@ public class GameplayController {
 	 */
 	public int lpl;
 
+	/** TODO: WHAT */
+	public void checkDeadNotes(){
+		for(int i = 0; i < bandMembers.length; ++i){
+			for(Fish n : bandMembers[i].hitNotes){
+				if(n.getY() < noteDieY && n.hitStatus == 0){
+					n.hitStatus = -2;
+					n.setDestroyed(true);
+				}
+				if(n.isDestroyed()){
+					if(i == currentBandMember || i == goalBandMember){
+						bandMembers[i].updateCompetency(n.hitStatus);
+					}
+				}
+			}
+		}
+	}
+
 
 	/** Add new notes to the game using MusicController
 	 *
@@ -357,12 +463,12 @@ public class GameplayController {
 	 * @param frame frame / tick?? idk actually lol*/
 	public void updateNotes(float delta, float height, int frame){
 		// check with music controller
-		ArrayList<Fish> newNotes = musicController.update(currentLane, delta);
+		ArrayList<Fish> newNotes = musicController.update(currentBandMember, delta);
 
 		if(newNotes.size() > 0){
 			for(Fish note : newNotes){
 				activeNotes.add(note);
-				note.setPosition(height, currentLane, catNoteTexture, smallwidth, largewidth, inBetweenWidth, LEFTBOUND);
+				note.setPosition(height, currentBandMember, catNoteTexture, smallwidth, largewidth, inBetweenWidth, LEFTBOUND);
 				objects.add(note);
 			}
 		}
@@ -450,9 +556,7 @@ public class GameplayController {
 	public void garbageCollect() {
 		// INVARIANT: backing and objects are disjoint
 		for (GameObject o : objects) {
-			if (o.isDestroyed()) {
-				destroy(o);
-			} else {
+			if (!o.isDestroyed()) {
 				backing.add(o);
 			}
 		}
@@ -463,6 +567,9 @@ public class GameplayController {
 		backing = objects;
 		objects = tmp;
 		backing.clear();
+		for (BandMember bm : bandMembers) {
+			bm.garbageCollect();
+		}
 	}
 
 	/**
@@ -485,8 +592,8 @@ public class GameplayController {
 //					heldPresent[((Fish) o).line] = false;
 //				}
 				spawnStars(((Fish) o).hitStatus, o.getX(), o.getY(), o.getVX(), o.getVY());
-				int hpUpdate = ((Fish) o).getNoteType() == Fish.NoteType.SWITCH ? goalLane : currentLane;
-				if(hpUpdate == 1) {bandMembers[currentLane].addHealth();}
+				int hpUpdate = ((Fish) o).getNoteType() == Fish.NoteType.SWITCH ? goalBandMember : currentBandMember;
+				if(hpUpdate == 1) {bandMembers[currentBandMember].addHealth();}
 //				health[hpUpdate] += ((Note) o).hitStatus * recovery;
 //				health[hpUpdate] = Math.min(MAX_HEALTH, health[hpUpdate]);
 //				health[hpUpdate] = Math.max(0, health[hpUpdate]);
@@ -507,7 +614,7 @@ public class GameplayController {
 				float vy = vy0 * RandomController.rollFloat(MIN_STAR_FACTOR, MAX_STAR_FACTOR)
 						+ RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
 				s.getVelocity().set(vx,vy);
-				backing.add(s);
+				objects.add(s);
 			}
 		}
 	}
@@ -533,12 +640,12 @@ public class GameplayController {
 	/**
 	 * The band member lane index that we are trying to switch to
 	 */
-	int goalLane;
+	int goalBandMember;
 
 	/**
 	 * Whether or not a trigger for a certain line was pressed
 	 */
-	boolean[] triggers;
+	public boolean[] triggers;
 
 	/**
 	 * The current transition progress
@@ -548,7 +655,80 @@ public class GameplayController {
 	/**
 	 * Whether or not we have indicated we want to switch to a certain lane
 	 */
-	boolean[] switches;
+	public boolean[] switches;
+
+	public void handleActions(InputController input){
+		switches = input.switches();
+		triggers = input.didTrigger();
+		boolean[] lifted = input.triggerLifted;
+		//First handle the switches
+		if(currentPhase == playPhase.PLAYING){
+			for(int i = 0; i < switches.length; ++i){
+				if(switches[i] && i != currentBandMember){
+					for(Fish n : bandMembers[i].switchNotes){
+						float dist = Math.abs(hitbarY - n.getY())/n.h;
+						if(dist < 1.5){
+							n.hitStatus = dist < 0.75 ? 4 : 2;
+							spawnStars(n.hitStatus, n.x, n.y, 0, n.vy);
+							n.setDestroyed(true);
+						}
+					}
+					goalBandMember = i;
+					currentPhase = playPhase.TRANSITION;
+					t_progress = 0;
+					return;
+				}
+			}
+		}
+		else{
+			//Otherwise we must be in transition
+			++t_progress;
+
+			if(t_progress == T_SwitchPhases){
+				currentPhase = playPhase.PLAYING;
+				currentBandMember = goalBandMember;
+			}
+			updateBandMemberCoords();
+		}
+		//Now check for hit and held notes
+		//This array tells us if a hit has already been registered in this frame for the ith bm.
+		//We do not want one hit to count for two notes that are close together.
+		boolean[] hitReg = new boolean[triggers.length];
+		int checkBM = currentPhase == playPhase.PLAYING ? currentBandMember : goalBandMember;
+		for(Fish n : bandMembers[checkBM].hitNotes){
+			if(n.getNoteType() == Fish.NoteType.SINGLE){
+				if(triggers[n.line] && !hitReg[n.line]){
+					float dist = Math.abs(hitbarY - n.y)/n.h;
+					if(dist < 1.5){
+						n.hitStatus = dist < 0.75 ? 2 : 1;
+						spawnStars(n.hitStatus, n.x, n.y, 0, n.vy);
+						n.setDestroyed(true);
+						hitReg[n.line] = true;
+					}
+				}
+			}
+			else{
+				//If it's not a beat and its in the hitNotes its gotta be a hold note
+				if(triggers[n.line] && !hitReg[n.line]){
+					float dist = Math.abs(hitbarY - n.by)/n.h;
+					if(dist < 1.5){
+						n.hitStatus += dist < 0.75 ? 2 : 1;
+						spawnStars(n.hitStatus, n.x, n.y, 0, n.vy);
+						hitReg[n.line] = true;
+					}
+				}
+				if(lifted[n.line]){
+					float dist = Math.abs(hitbarY - n.y)/n.h;
+					if(dist < 1.5){
+						n.hitStatus += dist < 0.75 ? 3 : 1;
+						spawnStars(n.hitStatus, n.x, n.y, 0, n.vy);
+						n.setDestroyed(true);
+					}
+				}
+			}
+		}
+	}
+
 
 	/**
 	 * Resolves state changes into and out of the TRANSITION phase
@@ -561,10 +741,10 @@ public class GameplayController {
 			for(int i = 0; i < switches.length; ++i){
 				//For each active switch, check if it is not the current active band member lane.
 				//If it is, do nothing
-				if(switches[i] && i != currentLane){
+				if(switches[i] && i != currentBandMember){
 					//If it is not, initiate change to TRANSITION phase
 					//First set the goal band member to the detected switch
-					goalLane = i;
+					goalBandMember = i;
 					//Change the phase to TRANSITION
 					currentPhase = playPhase.TRANSITION;
 					//Start transition progress at 0
@@ -611,7 +791,7 @@ public class GameplayController {
 			//If we are already in the TRANSITION PHASE, check to see if we are done transitioning
 			if (t_progress == T_SwitchPhases){
 				//If we are, set the currentLane to the previous goal lane
-				currentLane = goalLane;
+				currentBandMember = goalBandMember;
 				//Change phase to NOTES phase
 				currentPhase = playPhase.PLAYING;
 			}
