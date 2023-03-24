@@ -95,7 +95,7 @@ public class Note{
 		}
 	}
 
-	public float tail_thickness = 0f;
+	public float tail_thickness = 5f;
 	/**
 	 * Draws this shell to the canvas
 	 *
@@ -106,10 +106,10 @@ public class Note{
 	 */
 	public void draw(GameCanvas canvas, float widthConfine, float heightconFine) {
 		if(nt == NType.HELD){
-			canvas.drawRect(bx - tail_thickness/2, by, x + tail_thickness/2, y, Color.BLUE, true);
+			canvas.drawRect(x - tail_thickness/2, by, x + tail_thickness/2, y, Color.BLUE, true);
 
 			animator.setFrame(0);
-			canvas.draw(animator, Color.WHITE, origin.x, origin.y, bx, by,
+			canvas.draw(animator, Color.WHITE, origin.x, origin.y, x, by,
 					0.0f, widthConfine/w, heightconFine/h);
 		}
 		else{

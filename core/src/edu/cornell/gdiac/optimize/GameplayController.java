@@ -51,18 +51,6 @@ public class GameplayController {
 	/** Texture for red shells, as they look the same */
 	private Texture redTexture;
 
-
-
-
-
-	/** The minimum x-velocity of a newly generated shell */
-	private static final float MIN_SHELL_VX = 3;
-	/** The maximum y-velocity of a newly generated shell */
-	private static final float MAX_SHELL_VX = 10;
-	/** The y-position offset of a newly generated bullet */
-	private static final float BULLET_OFFSET = 5.0f;
-	/** The vertical speed of a newly generated bullet */
-	private static final float BULLET_SPEED  = 10.0f;
 	/** The minimum velocity factor (x shell velocity) of a newly created star */
 	private static final float MIN_STAR_FACTOR = 0.1f;
 	/** The maximum velocity factor (x shell velocity) of a newly created star */
@@ -72,25 +60,12 @@ public class GameplayController {
 	/** The maximum velocity offset (+ shell velocity) of a newly created star */
 	private static final float MAX_STAR_OFFSET = 3.0f;
 
-	/** The amount of health gained when hitting a note weakly */
-	private static final int WEAK_HIT_HEALTH = 1;
-
-	/** The amount of health gained when hitting a note strongly */
-	private static final int STRONG_HIT_HEALTH = 2;
-
-	/** The amount of health lost when missing a note */
-	private static final int MISS_HIT_HEALTH = 2;
 
 	/** Maximum amount of health */
 	final int MAX_HEALTH = 30;
 
 	/** Number of band member lanes */
 	int NUM_LANES;
-
-	/** Reference to player (need to change to allow multiple players) */
-	//private Ship player;
-	/** Note count for the display in window corner */
-	private int shellCount;
 
 
 	// List of objects with the garbage collection set.
@@ -106,10 +81,8 @@ public class GameplayController {
 	int activeBM;
 
 	/**
-	 * The base hp increment. Hp will incrememnt on a destroyed note by the product of this value and its hit status
+	 * Array of bandmembers
 	 */
-	final int recovery = 3;
-
 	BandMember[] bms;
 
 	/**
@@ -117,7 +90,14 @@ public class GameplayController {
 	 */
 	public boolean randomnotes;
 
+	/**
+	 * The Y coordinate at which a note will spawn. Notes should spawn completely invisible.
+	 */
 	float noteSpawnY;
+	/**
+	 * The y coordinate at which notes are considered "out of bounds." By the time a note reaches this y value
+	 * it should already be completely invisible.
+	 */
 	float noteDieY;
 
 
@@ -166,9 +146,16 @@ public class GameplayController {
 	 * Width between each HP bar
 	 */
 	float hpbet;
+
+	/**
+	 * Create gameplaycontroler
+	 * @param lanes
+	 * @param linesPerLane
+	 * @param width
+	 * @param height
+	 */
 	public GameplayController(int lanes, int linesPerLane, float width, float height){
 		NUM_LANES = lanes;
-		shellCount = 0;
 		objects = new Array<GameObject>();
 		backing = new Array<GameObject>();
 		randomnotes = true;
@@ -206,6 +193,10 @@ public class GameplayController {
 		switches = new boolean[lanes];
 	}
 
+	/**
+	 * Sets up the colors, max competency, lines and other default values as well as creates each band member object
+	 * @param c
+	 */
 	public void setupBandMembers(Color[] c){
 
 		float XCoor = LEFTBOUND;
@@ -224,14 +215,23 @@ public class GameplayController {
 		}
 	}
 
+
+	/**
+	 * Check for dead notes and out of bounds notes. Competency incremeting due to
+	 * destroyed notes is also done in here.
+	 */
 	public void checkDeadNotes(){
 		for(int i = 0; i < bms.length; ++i){
 			for(Note n : bms[i].hitNotes){
+				//If a note is out of bounds and it has not been hit, we need to mark it destroyed and assign
+				//a negative hit status
 				if(n.y < noteDieY && n.hitStatus == 0){
 					n.hitStatus = -2;
 					n.destroyed = true;
 				}
 				if(n.destroyed){
+					//if this note is destroyed we need to increment the competency of the
+					//lane it was destroyed in by its hitstatus
 					if(i == activeBM || i == goalBM){
 						bms[i].compUpdate(n.hitStatus);
 					}
@@ -283,24 +283,37 @@ public class GameplayController {
 		curframe = 0;
 		addNoteRandom();
 	}
+
+	/**
+	 * Updates the state.
+	 *
+	 */
 	public void update(){
+		//First, check for dead notes and remove them from active arrays
 		checkDeadNotes();
+
+		//Then, update the notes for each band member and spawn new notes
 		for(BandMember bm : bms){
 			bm.updateNotes(curframe);
+			//Make sure to spawn new notes form the all queue
 			bm.spawnNotes(curframe);
+			//Occasionally decrease the competency
 			if(curframe%120 == 1){
 				bm.compUpdate(-1);
 			}
 		}
+		//Upate the objects of this class (mostly stars)
 		for(GameObject o : objects){
 			o.update(0f);
 		}
-
+		//increment the current frame.
 		++curframe;
 	}
 
 
-
+	/**
+	 * Update the coordinates
+	 */
 	public void updateBMCoords(){
 		if(curP == play_phase.NOTES){
 			//If we are in the notes phase, we set the width of the active lane to goal, and everything else to small
@@ -326,17 +339,21 @@ public class GameplayController {
 			for(int i = 0; i < bms.length; ++i){
 				bms[i].BL.x = XCoord;
 				if(i == activeBM){
+					//Make the lines of the active lane shrink
 					bms[i].width = (largewidth - smallwidth)*(1-progressFrac) + smallwidth;
 					bms[i].lineHeight = (TOPBOUND - BOTTOMBOUND)*(1-progressFrac);
 				}
 				else if(i == goalBM){
+					//make the lines of the goal lane grow
 					bms[i].width = (largewidth - smallwidth)*(progressFrac) + smallwidth;
 					bms[i].lineHeight = (TOPBOUND - BOTTOMBOUND)*(progressFrac);
 				}
 				else{
+					//otherwise there should be no lines
 					bms[i].width = smallwidth;
 					bms[i].lineHeight = 0f;
 				}
+				//increment the tracking coordinate
 				XCoord += bms[i].width + inBetweenWidth;
 			}
 		}
@@ -360,21 +377,45 @@ public class GameplayController {
 	 * The number of lines per lane
 	 */
 	public int lpl;
+
+
 	/**
-	 * Adds a new shell to the game
+	 * Randomly add notes to each queue
 	 */
 	public void addNoteRandom() {
 		//We need to decide which band member gets what type of note at what point in time
 		//For now, lets just do normal and switch notes
-		for(int frame = 50; frame < 5000; frame += 25){
+		//Only add ever 200 frames
+		for(int frame = 50; frame < 10000; frame += 200){
 			for(int i = 0; i < bms.length; ++i){
+				//Roll to see if we actually add a note
 				float det = RandomController.rollFloat(0f,1f);
+				//25% chance to add a beat note
 				if(det < 0.25){
 					//add a hit note
 					int l = RandomController.rollInt(0,lpl - 1);
 					Note n = new Note(l, Note.NType.BEAT,frame);
 					n.y = noteSpawnY;
 					n.setTexture(redTexture);
+					bms[i].allNotes.addLast(n);
+				}
+				//5% chance to add a switch note
+				else if(det < 0.30){
+					//add a switch note
+					Note n = new Note(0, Note.NType.SWITCH, frame);
+					n.y = noteSpawnY;
+					n.setTexture(greenTexture);
+					bms[i].allNotes.addLast(n);
+				}
+				//10% chance to add a hold note for duration 150.
+				else if(det < 0.45){
+					//add a held note of length 150 frames
+					int l = RandomController.rollInt(0,lpl - 1);
+					Note n = new Note(l, Note.NType.HELD, frame);
+					n.y = noteSpawnY;
+					n.by = noteSpawnY;
+					n.holdFrame = 150;
+					n.setTexture(greenTexture);
 					bms[i].allNotes.addLast(n);
 				}
 			}
@@ -385,9 +426,8 @@ public class GameplayController {
 	/**
 	 * Garbage collects all deleted objects.
 	 *
-	 * This method works on the principle that it is always cheaper to copy live objects
-	 * than to delete dead ones.  Deletion restructures the list and is O(n^2) if the
-	 * number of deletions is high.  Since Add() is O(1), copying is O(n).
+	 * First perform garbage collection on the objects in here. Then perform garbage
+	 * collection for each band member.
 	 */
 	public void garbageCollect() {
 		// INVARIANT: backing and objects are disjoint
@@ -408,6 +448,10 @@ public class GameplayController {
 	}
 
 
+	/**
+	 * Spawns stars at location x, y with center of mass velocity vx0 and vy0.
+	 * Directions are randomzed, and more stars are spawned with a higher value of k
+	 */
 	public void spawnStars(int k, float x, float y, float vx0, float vy0){
 		for(int i = 0; i < k; ++i){
 			for (int j = 0; j < 5; j++) {
@@ -450,10 +494,22 @@ public class GameplayController {
 	 * The current transition progress
 	 */
 	int t_progress;
+
+	/**
+	 * Switch inputs
+	 */
 	public boolean[] switches;
+	/**
+	 * Trigger inputs
+	 */
 	public boolean[] triggers;
 
+	/**
+	 * Handle transitions and inputs
+	 * @param input
+	 */
 	public void handleActions(InputController input){
+		//Read in inputs
 		switches = input.switches();
 		triggers = input.didTrigger();
 		boolean[] lifted = input.triggerLifted;
@@ -461,7 +517,10 @@ public class GameplayController {
 		if(curP == play_phase.NOTES){
 			for(int i = 0; i < switches.length; ++i){
 				if(switches[i] && i != activeBM){
+					//Check only the lanes that are not the current active lane
 					for(Note n : bms[i].switchNotes){
+						//Check for all the switch notes of this lane, if one is close enough destroy it and
+						//give it positive hit status
 						float dist = Math.abs(hitbarY - n.y)/n.h;
 						if(dist < 1.5){
 							n.hitStatus = dist < 0.75 ? 4 : 2;
@@ -469,8 +528,11 @@ public class GameplayController {
 							n.destroyed = true;
 						}
 					}
+					//set goalBM
 					goalBM = i;
+					//change phase
 					curP = play_phase.TRANSITION;
+					//reset progress
 					t_progress = 0;
 					return;
 				}
@@ -478,12 +540,16 @@ public class GameplayController {
 		}
 		else{
 			//Otherwise we must be in transition
+
+			//Increment progress
 			++t_progress;
 
+			//Check if we are done, if so set active BM and change phase
 			if(t_progress == T_SwitchPhases){
 				curP = play_phase.NOTES;
 				activeBM = goalBM;
 			}
+			//During this phase we need to change the BL and widths of each BM
 			updateBMCoords();
 		}
 		//Now check for hit and held notes
@@ -494,8 +560,13 @@ public class GameplayController {
 		for(Note n : bms[checkBM].hitNotes){
 			if(n.nt == Note.NType.BEAT){
 				if(triggers[n.line] && !hitReg[n.line]){
+					//Check for all the beats in this line and in the active band member
+					//See if any are close enough
 					float dist = Math.abs(hitbarY - n.y)/n.h;
 					if(dist < 1.5){
+						//If so, destroy the note and set a positive hit status. Also set that we
+						//have registered a hit for this line for this click. This ensures that
+						//We do not have a single hit count for two notes that are close together
 						n.hitStatus = dist < 0.75 ? 2 : 1;
 						spawnStars(n.hitStatus, n.x, n.y, 0, n.vy);
 						n.destroyed = true;
@@ -505,14 +576,18 @@ public class GameplayController {
 			}
 			else{
 				//If it's not a beat and its in the hitNotes its gotta be a hold note
+
+				//Check if we hit the trigger down close enough to the head
 				if(triggers[n.line] && !hitReg[n.line]){
 					float dist = Math.abs(hitbarY - n.by)/n.h;
 					if(dist < 1.5){
 						n.hitStatus += dist < 0.75 ? 2 : 1;
-						spawnStars(n.hitStatus, n.x, n.y, 0, n.vy);
+						spawnStars(n.hitStatus, n.x, n.by, 0, n.vy);
 						hitReg[n.line] = true;
 					}
 				}
+
+				//check if we lifted close to the end
 				if(lifted[n.line]){
 					float dist = Math.abs(hitbarY - n.y)/n.h;
 					if(dist < 1.5){
