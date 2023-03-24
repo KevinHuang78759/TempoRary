@@ -39,6 +39,7 @@ import java.util.HashMap;
  * This controller also acts as the root class for all the models.
  */
 public class GameplayController {
+	int currentFrame;
 	// Graphics assets for the entities
 	/** Texture for all stars, as they look the same */
 	private Texture starTexture;
@@ -340,7 +341,7 @@ public class GameplayController {
 
 		setupBandMembers(new Color[]{Color.BLUE, Color.GOLDENROD, Color.CORAL,Color.MAROON});
 		currentBandMember = 0;
-		//currentFrame = 0;
+		currentFrame = 0;
 
 		// play music
 		music.play();
@@ -353,13 +354,18 @@ public class GameplayController {
 
 		for(BandMember bandMember : bandMembers){
 			// update notes by current frame
+			// bandMember.updateNotes(currentFrame);
+
 			// spawn notes by current frame
-			// if current frame % 120 == 1, update the competencies by -1
+			// bandMember.spawnNotes(currentFrame);
+			if(currentFrame % 120 == 1){
+				bandMember.updateCompetency(-1);
+			}
 		}
 		for(GameObject o : objects){
 			o.update(0f);
 		}
-		// currentFrame++
+		currentFrame++;
 	}
 
 	/** Update competency of all band members.
@@ -423,7 +429,7 @@ public class GameplayController {
 	 * todo: RESET FUNCTIONS IN LEVEL, FISH, BAND MEMBER
 	 */
 	public void reset() {
-		//curframe = 0;
+		currentFrame = 0;
 		objects.clear();
 		//initializeHealth();
 	}
