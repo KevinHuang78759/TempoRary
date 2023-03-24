@@ -77,18 +77,23 @@ public class MusicController {
 
         ArrayList<Fish> newNotes = new ArrayList<Fish>();
 
-        int i = 0; // this is the current band member
+        // this is the current band member
+        int i = 0;
 
         // iterate through the band members and their note datas
         for(JsonValue noteData : notesData) {
             int currentNextNote = nextNotes[i];
 
+            // if there are no new notes, then stop
             if(noteData == null) {return newNotes;}
 
+            // (BeatsShownInAdvance - (beatOfThisNote - songPosInBeats)) / BeatsShownInAdvance
+
+            //float timeMove = (beatsAhead - (this.beat - this.));
+
+            // get new note data
             JsonValue currentNoteData = noteData.get(nextNotes[i]);
-
             int beat = currentNoteData.getInt("beat");
-
             if (nextNotes[i] < noteData.size() && beat < (songPositionBeat + beatsShownInAdvance)) {
                 if (i == currentBandMember) {
                     // initialize note
@@ -101,7 +106,7 @@ public class MusicController {
             i++;
         }
 
-        return newNotes;
+        return newNotes; // TODO THIS GOTTA BE DELETED SOMEWHERE TOO
     }
 
     public float getSongPositionBeat() {

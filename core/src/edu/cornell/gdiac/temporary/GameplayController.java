@@ -40,9 +40,7 @@ public class GameplayController {
 	// Graphics assets for the entities
 	/** Texture for all stars, as they look the same */
 	private Texture starTexture;
-	/** Texture for green shells, as they look the same */
-	private Texture greenTexture;
-	/** Texture for red shells, as they look the same */
+	/** Texture for cat note, as they look the same */
 	private Texture catNoteTexture;
 	/** Data for level */
 	private JsonValue levelData;
@@ -132,58 +130,57 @@ public class GameplayController {
 	/**
 	 * The minimum x value margin
 	 */
-	 float LEFTBOUND;
+	 public float LEFTBOUND;
 	/**
 	 * The maximum x value margin
 	 */
-	 float RIGHTBOUND;
+	public float RIGHTBOUND;
 	/**
 	 * The maximum y value margin
 	 */
-	float TOPBOUND;
+	public float TOPBOUND;
 	/**
 	 * The minimum y value margin
 	 */
-	float BOTTOMBOUND;
+	public float BOTTOMBOUND;
 	/**
 	 * Width of an inact band member's lane
 	 */
 
-	float smallwidth;
+	public float smallwidth;
 	/**
 	 * Width of an active band member's lane
 	 */
-	float largewidth;
+	public float largewidth;
 	/**
 	 * Width between each band member lane
 	 */
-	float inBetweenWidth;
+	public float inBetweenWidth;
 
 	/**
 	 * Y value of the hit bar
 	 */
-	float hitbarY;
+	public float hitbarY;
 
 	/**
 	 * Maximum width of an HP bar
 	 */
-	float hpwidth;
+	public float hpwidth;
 
 	/**
 	 * Width between each HP bar
 	 */
-	float hpbet;
+	public float hpbet;
 
 	public GameplayController(boolean rn, int lanes, int linesPerLane, float width, float height){
-		NUM_LANES = lanes;
+		NUM_LANES = 1;
 		shellCount = 0;
-		initializeHealth();
+		//initializeHealth(); // HEALTH SHOULD BE INDEPENDENT AND HANDLED BY BAND MEMBERS. todo: delete?
 		//hsflag = false;
 		objects = new Array<GameObject>();
 		backing = new Array<GameObject>();
 
-		// TODO: WIDTHS???? DEFINE THESE PLS
-		randomnotes = true;
+		//randomnotes = true;
 		//Set margins so there is a comfortable amount of space between play area and screen boundaries
 		//Values decided by pure look
 		LEFTBOUND = width/10f;
@@ -210,19 +207,20 @@ public class GameplayController {
 		//instantiate other variables
 		heldPresent = new boolean[linesPerLane];
 		triggers = new boolean[linesPerLane];
-		lpl = linesPerLane;
+		lpl = 1;
 
 		activeNotes = new ArrayList<Fish>();
 	}
 
-	private void initializeHealth() {
+	// TODO: DELETE?
+	/*private void initializeHealth() {
 		health = new int[NUM_LANES];
 		for (int i = 0; i < NUM_LANES; i++) {
 			health[i] = MAX_HEALTH;
 		}
-	}
+	}*/
 
-	public boolean checkHealth(boolean dec) {
+	/*public boolean checkHealth(boolean dec) {
 		for (int i = 0; i < NUM_LANES; i++) {
 			health[i] = Math.min(MAX_HEALTH, health[i]);
 			if(dec){
@@ -234,7 +232,7 @@ public class GameplayController {
 			}
 		}
 		return false;
-	}
+	}*/
 
 	/**
 	 * Populates this mode from the given the directory.
@@ -248,7 +246,6 @@ public class GameplayController {
 	public void populate(AssetDirectory directory) {
 		starTexture = directory.getEntry("star", Texture.class);
 		catNoteTexture = directory.getEntry("catnote", Texture.class);
-		greenTexture = directory.getEntry("green", Texture.class);
 		music = directory.getEntry("flagship", Music.class);
 		levelData = directory.getEntry("level_flagship", JsonValue.class);
 

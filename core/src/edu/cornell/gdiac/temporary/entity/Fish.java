@@ -21,6 +21,8 @@ public class Fish extends GameObject {
     private static final float NOTE_DRAW = 10f;
     /** Note type. Single / Hold / Switch / Dead */
     private NoteType noteType;
+    /** number of notes we show in advance */
+    private int beatsAhead = 5;
     /** beat number in the song */
     private int beat;
 
@@ -128,8 +130,11 @@ public class Fish extends GameObject {
     public void update(float delta, int frame) {
         // CHANGE POSITION. ie) position.add(velocity)
         //transform.position = Vector2.Lerp(transform.position, destination, Time.deltaTime);
-        position = position.lerp(exitPosition, delta);
-        System.out.println("position updated");
+        // (BeatsShownInAdvance - (beatOfThisNote - songPosInBeats)) / BeatsShownInAdvance
+
+        float timeMove = (beatsAhead - (this.beat - this.));
+
+        position = position.lerp(exitPosition, 0.042f);
 
         if(position == exitPosition){
             this.setDestroyed(true);
@@ -142,6 +147,11 @@ public class Fish extends GameObject {
         if(animFrame >= NUM_ANIM_FRAMES){
             animFrame -= NUM_ANIM_FRAMES;
         }
+    }
+
+    /** Update note position */
+    public void updatePosition(){
+
     }
 
     /** Initialize note position in the lane and height */

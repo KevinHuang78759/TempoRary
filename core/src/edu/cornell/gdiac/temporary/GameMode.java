@@ -146,7 +146,6 @@ public class GameMode implements Screen {
 			gameplayController.start(inputController.rKey);
 			break;
 		case OVER:
-			/*
 			if (inputController.didReset()) {
 				ticks = 0;
 				gameState = GameState.PLAY;
@@ -154,7 +153,7 @@ public class GameMode implements Screen {
 				gameplayController.start(inputController.rKey);
 			} else {
 				play(delta);
-			}*/
+			}
 			break;
 		case PLAY:
 			if (inputController.didReset()) {
