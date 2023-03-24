@@ -243,11 +243,6 @@ public abstract class GameObject {
 	/**
 	 * Updates the state of this object.
 	 *
-	 * This method only is only intended to update values that change local state in
-	 * well-defined ways, like position or a cooldown value.  It does not handle
-	 * collisions (which are determined by the CollisionController).  It is
-	 * not intended to interact with other objects in any way at all.
-	 *
 	 * @param delta Number of seconds since last animation frame
 	 */
 	public void update(float delta) {

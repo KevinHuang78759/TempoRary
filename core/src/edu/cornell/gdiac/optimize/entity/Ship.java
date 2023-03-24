@@ -1,9 +1,6 @@
 /*
  * Ship.java
  *
- * This is a passive model, and this model does very little by itself.  
- * All of its work is done by the CollisionController or the 
- * GameplayController. 
  * 
  * This separation is very important for this class because it has a lot 
  * of interactions with other classes.  When a ship fires, it creates  

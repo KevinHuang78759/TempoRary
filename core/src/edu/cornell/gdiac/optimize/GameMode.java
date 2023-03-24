@@ -58,8 +58,6 @@ public class GameMode implements Screen {
 
 	/** Reads input from keyboard or game pad (CONTROLLER CLASS) */
 	private InputController inputController;
-	/** Handle collision and physics (CONTROLLER CLASS) */
-	private CollisionController physicsController;
 	/** Constructs the game models and handle basic gameplay (CONTROLLER CLASS) */
 	private GameplayController gameplayController;
 
@@ -101,21 +99,7 @@ public class GameMode implements Screen {
 
 		// Create the controllers.
 		inputController = new InputController(lanes, lpl);
-		gameplayController = new GameplayController(true,lanes,lpl, canvas.getWidth(),canvas.getHeight());
-		// YOU WILL NEED TO MODIFY THIS NEXT LINE
-
-		/*
-		 * Deciding a cell size:
-		 * Per each object, we must hedge the expected number of cells we check (which will decrease
-		 * as we increase the size of the cell) with the expected number of objects in each cell (which
-		 * will increase with cell size. The rigorous formula for this yielded no meaningful optimal result,
-		 * since the absolute minima expected value occurs for at a negative cell size
-		 *
-		 * Thus, we choose a cell size that is slightly larger than the largest object (the ship, which has radius 17.5)
-		 * to get rid of any possibility we need to check higher numbers of cells.
-		 */
-		physicsController = new CollisionController(canvas.getWidth(), canvas.getHeight(), 40.0f);
-
+		gameplayController = new GameplayController(lanes,lpl, canvas.getWidth(),canvas.getHeight());
 	}
 
 	/**
@@ -124,7 +108,6 @@ public class GameMode implements Screen {
 	public void dispose() {
 		inputController = null;
 		gameplayController = null;
-		physicsController  = null;
 		canvas = null;
 	}
 
@@ -161,16 +144,14 @@ public class GameMode implements Screen {
 		switch (gameState) {
 		case INTRO:
 			gameState = GameState.PLAY;
-			gameplayController.start(canvas.getWidth() / 2.0f, physicsController.getFloorLedge(),
-					canvas.getWidth(), canvas.getHeight(), inputController.rKey);
+			gameplayController.start();
 			break;
 		case OVER:
 			if (inputController.didReset()) {
 				ticks = 0;
 				gameState = GameState.PLAY;
 				gameplayController.reset();
-				gameplayController.start(canvas.getWidth() / 2.0f, physicsController.getFloorLedge(),
-						canvas.getWidth(), canvas.getHeight(), inputController.rKey);
+				gameplayController.start();
 			} else {
 				play(delta);
 			}
@@ -180,8 +161,7 @@ public class GameMode implements Screen {
 				ticks = 0;
 				gameState = GameState.PLAY;
 				gameplayController.reset();
-				gameplayController.start(canvas.getWidth() / 2.0f, physicsController.getFloorLedge(),
-						canvas.getWidth(), canvas.getHeight(), inputController.rKey);
+				gameplayController.start();
 			} else {
 				play(delta);
 			}
@@ -205,14 +185,9 @@ public class GameMode implements Screen {
 	protected void play(float delta) {
 		// create some kind of data structure for coordinates of notes
 		// hm {frame : notes}
-		//make sure currTick doesn't get too big
-		currTick = ticks % 1800;
 		//Add a random shell for now
-		gameplayController.addShellRandom(canvas.getHeight(), currTick);
+		//gameplayController.addShellRandom(canvas.getHeight(), currTick);
 		//Every so often check our HP
-		if(gameplayController.checkHealth(currTick%150==0)){
-			gameState = GameState.OVER;
-		}
 //
 //		if (ticks % 120 == 0){
 //			for (int i = 0; i < gameplayController.lineAmount(); i++) {
@@ -222,14 +197,8 @@ public class GameMode implements Screen {
 
 
 		// Update objects.
-		gameplayController.resolvePhase(inputController, delta);
-		gameplayController.resolveActions(inputController,delta, currTick);
-
-		// Check for collisions
-		totalTime += (delta*1000); // Seconds to milliseconds
-
-		physicsController.processCollisions(gameplayController.getObjects(),0);
-
+		gameplayController.update();
+		gameplayController.handleActions(inputController);
 		// Clean up destroyed objects
 		gameplayController.garbageCollect();
 	}
@@ -262,127 +231,23 @@ public class GameMode implements Screen {
 
 			//obtain background color
 			Color bkgC = new Color(237f/255f, 224f/255f, 1f, 1.0f);
+
+			for(int i = 0; i < gameplayController.bms.length; ++i){
+				gameplayController.bms[i].drawBorder(canvas);
+				if(gameplayController.activeBM == i || gameplayController.goalBM == i){
+					gameplayController.bms[i].drawHitNotes(canvas);
+					gameplayController.bms[i].drawLineSeps(canvas);
+					gameplayController.bms[i].drawHitBar(canvas, gameplayController.hitbarY, Color.WHITE, gameplayController.triggers);
+				}
+				else{
+					gameplayController.bms[i].drawSwitchNotes(canvas);
+					gameplayController.bms[i].drawHitBar(canvas, gameplayController.hitbarY, Color.WHITE, gameplayController.switches[i]);
+
+				}
+			}
 			//draw two rectangles to cover up spawning/disappearing areas of notes and switches
 			canvas.drawRect(0, gameplayController.TOPBOUND, canvas.getWidth(), canvas.getHeight(), bkgC, true);
 			canvas.drawRect(0, 0, canvas.getWidth(), gameplayController.BOTTOMBOUND, bkgC, true);
-
-			//keep track of the current widths of each lane
-			float[] curWidths = new float[lanes];
-			//link each hp bar to a lane, even when it is small
-			//(link[2i],link[2i+1]) is the starting coordinate of a link line i
-			//(links[2*lanes+2*i],links[2*lanes+2*i+1]) is the ending coordinate of link line i
-			float[] links = new float[4*lanes];
-			//The current height of the line bars within an active lane
-			float curHeight = gameplayController.TOPBOUND - gameplayController.BOTTOMBOUND;
-			for(int i = 0; i < lanes; ++i){
-				if(gameplayController.curP == GameplayController.play_phase.NOTES){
-					//If we are in a NOTES phase, all widths are small except for the active lane, which is large
-					curWidths[i] = gameplayController.currentLane == i ? gameplayController.largewidth : gameplayController.smallwidth;
-				}
-				else{
-					//Otherwise we must be transitioning.
-					if(i == gameplayController.currentLane){
-						//If this is the current active lane, make sure it shrinks, and decrease the height
-						curWidths[i] = gameplayController.largewidth + (float)(gameplayController.t_progress)*(gameplayController.smallwidth - gameplayController.largewidth)/(float)(gameplayController.T_SwitchPhases);
-						curHeight = (gameplayController.TOPBOUND - gameplayController.BOTTOMBOUND) * (float)(gameplayController.T_SwitchPhases-gameplayController.t_progress)/(float)(gameplayController.T_SwitchPhases);
-					}
-					else if(i == gameplayController.goal){
-						//If this is the goal lane we are trying to transition to, make sure it grows
-						curWidths[i] = gameplayController.smallwidth + (float)(gameplayController.t_progress)*(gameplayController.largewidth - gameplayController.smallwidth)/(float)(gameplayController.T_SwitchPhases);
-					}
-					else{
-						//Otherwise this lane should stay a small width
-						curWidths[i] = gameplayController.smallwidth;
-					}
-				}
-			}
-			//Change the color of the lanes' outline if we are transitioning
-			Color cLanes = gameplayController.curP == GameplayController.play_phase.TRANSITION ? Color.RED : Color.MAROON;
-			//Lanes and lines will be drawn sequentially from the left. This is our starting XCoordinate
-			float Xcoor = gameplayController.LEFTBOUND;
-			for(int i = 0; i < lanes; ++i){
-				//Find the bottom left of the lane
-				Vector2 BL = new Vector2(Xcoor, gameplayController.BOTTOMBOUND);
-				//Draw a rectangle from the bottom left using the total available height and the current width as a border
-				//for this lane
-				canvas.drawRect(BL, curWidths[i], gameplayController.TOPBOUND - gameplayController.BOTTOMBOUND, cLanes, false);
-				if(gameplayController.currentLane == i || gameplayController.goal == i){
-					//If we are in the active or the goal lane, we need to draw the lines
-					for(int j = 0; j < lpl; ++j){
-						//Calculate the x coordinate of this line using the bottom left x coordinate of this lane
-						float x2 = Xcoor + (j + 1) * curWidths[i] / lpl;
-
-						//We might as well also draw the hit bars here as well. Change their color if they are triggered
-						Color hc = (gameplayController.triggers[j] && i == gameplayController.currentLane)? Color.CYAN : Color.NAVY;
-						canvas.drawLine(Xcoor + j*curWidths[i]/lpl, gameplayController.hitbarY, x2, gameplayController.hitbarY, 3, hc);
-
-						//if we are not at the last line, draw a line to divide them from the other lines in this lane
-						if(j != lpl-1){
-							if(gameplayController.currentLane == i){
-								//If this is the current lane, draw from the top all the way to the current height
-								canvas.drawLine(x2, gameplayController.TOPBOUND, x2, gameplayController.TOPBOUND - curHeight, 3, Color.BLACK);
-							}
-							else{
-								//If it is not the current lane, it must be the goal lane, so draw from the bottom up to
-								//current height
-								canvas.drawLine(x2, gameplayController.TOPBOUND, x2, gameplayController.BOTTOMBOUND + curHeight, 3, Color.BLACK);
-
-							}
-						}
-
-					}
-
-				}
-				else{
-					//If this is not the current or goal lane, just draw the hitbar
-					canvas.drawLine(Xcoor, gameplayController.hitbarY, Xcoor + curWidths[i], gameplayController.hitbarY, 3, Color.NAVY);
-				}
-				//calculate the link line coordinates for later
-				links[2*i] = Xcoor + curWidths[i]/2;
-				links[2*i+1] = gameplayController.BOTTOMBOUND;
-				//increment our X coordinate with the width of this lane, and the distance between each lane
-				Xcoor += curWidths[i];
-				Xcoor += gameplayController.inBetweenWidth;
-			}
-			//Now we need to draw the HP bars, which is done sequentially as well
-			//Start our X coordinate at the minimum x margin
-			Xcoor = gameplayController.LEFTBOUND;
-			//Get the current HP values
-			int[] hp = gameplayController.getHealth();
-			for(int i =0; i < lanes; ++i){
-				//Draw the filled in fraction of each HP bar with respect to current health. Change the color from green
-				//to red if it is low enough.
-				canvas.drawRect(Xcoor+1, gameplayController.BOTTOMBOUND/5+1, Xcoor + (gameplayController.hpwidth *((float)hp[i]/(float)gameplayController.MAX_HEALTH))-1, gameplayController.BOTTOMBOUND*2f/5f-1,hp[i] < gameplayController.MAX_HEALTH/4? Color.RED : Color.GREEN,true);
-				//Draw the outline over the actual filled in portion so we cover the edges
-				canvas.drawRect(Xcoor, gameplayController.BOTTOMBOUND/5, Xcoor + gameplayController.hpwidth, gameplayController.BOTTOMBOUND*2f/5f,Color.BLACK,false);
-				//Determine the other endpoints of the link lines
-				links[2*lanes + 2*i] = Xcoor + gameplayController.hpwidth/2;
-				links[2*lanes + 2*i + 1] = gameplayController.BOTTOMBOUND*2f/5f;
-				//increment out X coordinate
-				Xcoor += gameplayController.hpwidth + gameplayController.hpbet;
-			}
-			for(int i = 0; i < lanes; ++i){
-				//Draw the link lines
-				canvas.drawLine(links[2*i],links[2*i+1],links[2*lanes+2*i],links[2*lanes+2*i+1],2,Color.BLACK);
-			}
-//			for(int i = 0; i < health.length; ++i){
-//				displayFont.setColor(Color.MAROON);
-//				String hp = "Health: " + health[i];
-//				canvas.drawText(hp, displayFont, i * canvas.getWidth()/(float)health.length, canvas.getHeight() - COUNTER_OFFSET - 30);
-//			}
-//
-//
-//			displayFont.setColor(Color.NAVY);
-//			String Time = "Time: " + ticks;
-//			canvas.drawText(Time, displayFont, COUNTER_OFFSET + 300, canvas.getHeight()-COUNTER_OFFSET);
-			// Flush information to the graphic buffer.
-
-
-//			displayFont.setColor(gameplayController.trigger ? Color.CYAN : Color.NAVY);
-//			String indicator = "____________";
-//			canvas.drawText(indicator, displayFont, gameplayController.lane * canvas.getWidth()/4f, canvas.getHeight()/3f);
-
-
 		}
 		canvas.end();
 	}

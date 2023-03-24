@@ -1,9 +1,6 @@
 /*
  * Bullet.java
  *
- * This is a passive model, and this model does very little by itself.  
- * The CollisionController does most of the hard work.
- *
  * Author: Walker M. White
  * Based on original Optimization Lab by Don Holden, 2007
  * LibGDX version, 2/2/2015
