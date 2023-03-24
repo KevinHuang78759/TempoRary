@@ -26,6 +26,9 @@ public class Fish extends GameObject {
     private int beatsAhead = 5;
     /** beat number in the song */
     private int beat;
+    /***/
+    public int height;
+    private int width;
 
     /** Spawn position */
     private Vector2 spawnPosition;
@@ -125,6 +128,8 @@ public class Fish extends GameObject {
         animator = new FilmStrip(texture, 1, NUM_ANIM_FRAMES, NUM_ANIM_FRAMES);
         origin = new Vector2(animator.getRegionWidth()/2.0f, animator.getRegionHeight()/2.0f);
         radius = animator.getRegionHeight() / 2.0f;
+        height = animator.getRegionHeight();
+        width = animator.getRegionWidth();
     }
 
     /** Update the animation and position of this note. */

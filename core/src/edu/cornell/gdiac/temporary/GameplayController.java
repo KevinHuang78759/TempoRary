@@ -335,7 +335,6 @@ public class GameplayController {
 	 *
 	 * This method creates a single player, but does nothing else.
 	 *
-	 * @param r Option to use random notes or not
 	 */
 	public void start() {
 
@@ -359,7 +358,7 @@ public class GameplayController {
 			// spawn notes by current frame
 			// bandMember.spawnNotes(currentFrame);
 			if(currentFrame % 120 == 1){
-				bandMember.updateCompetency(-1);
+				bandMember.updateCompetency(true);
 			}
 		}
 		for(GameObject o : objects){
@@ -589,7 +588,7 @@ public class GameplayController {
 	 *
 	 * @param o Object to destroy
 	 */
-	protected void destroy(GameObject o) {
+	/*protected void destroy(GameObject o) {
 		switch (o.getType()) {
 			case FISH:
 				// Create some stars if hit on beat - more stars if more accurate
@@ -607,7 +606,7 @@ public class GameplayController {
 			default:
 				break;
 		}
-	}
+	}*/
 
 	public void spawnStars(int k, float x, float y, float vx0, float vy0){
 		for(int i = 0; i < k; ++i){
@@ -672,10 +671,10 @@ public class GameplayController {
 			for(int i = 0; i < switches.length; ++i){
 				if(switches[i] && i != currentBandMember){
 					for(Fish n : bandMembers[i].switchNotes){
-						float dist = Math.abs(hitbarY - n.getY())/n.h;
+						float dist = Math.abs(hitbarY - n.getY())/n.height;
 						if(dist < 1.5){
 							n.hitStatus = dist < 0.75 ? 4 : 2;
-							spawnStars(n.hitStatus, n.x, n.y, 0, n.vy);
+							spawnStars(n.hitStatus, n.getX(), n.getY(), 0, n.getVY());
 							n.setDestroyed(true);
 						}
 					}
@@ -704,17 +703,17 @@ public class GameplayController {
 		for(Fish n : bandMembers[checkBM].hitNotes){
 			if(n.getNoteType() == Fish.NoteType.SINGLE){
 				if(triggers[n.line] && !hitReg[n.line]){
-					float dist = Math.abs(hitbarY - n.y)/n.h;
+					float dist = Math.abs(hitbarY - n.getY())/n.height;
 					if(dist < 1.5){
 						n.hitStatus = dist < 0.75 ? 2 : 1;
-						spawnStars(n.hitStatus, n.x, n.y, 0, n.vy);
+						spawnStars(n.hitStatus, n.getX(), n.getY(), 0, n.getVY());
 						n.setDestroyed(true);
 						hitReg[n.line] = true;
 					}
 				}
 			}
 			else{
-				//If it's not a beat and its in the hitNotes its gotta be a hold note
+				/*//If it's not a beat and its in the hitNotes its gotta be a hold note
 				if(triggers[n.line] && !hitReg[n.line]){
 					float dist = Math.abs(hitbarY - n.by)/n.h;
 					if(dist < 1.5){
@@ -730,7 +729,7 @@ public class GameplayController {
 						spawnStars(n.hitStatus, n.x, n.y, 0, n.vy);
 						n.setDestroyed(true);
 					}
-				}
+				}*/
 			}
 		}
 	}

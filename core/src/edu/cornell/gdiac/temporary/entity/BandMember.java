@@ -16,56 +16,30 @@ public class BandMember {
         ACTIVE, TRANSITIONING, INACTIVE
     }
 
-    /** Drawing details */
     /** Bottom left corner */
     public Vector2 bottomLeftCorner;
-
-    /**
-     * The height of separator lines from the top of the lane
-     */
+    /** The height of separator lines from the top of the lane*/
     public float lineHeight;
-    /**
-     * Width of the lane
-     */
+    /** Width of the lane */
     public float width;
-
-    /**
-     * Total height
-     */
+    /** Total height */
     public float height;
-
-    /**
-     * Number of lines this band member has
-     */
+    /** Number of lines this band member has */
     public int numLines;
-
-    /**
-     * Active array of beat and held notes
-     */
+    /** Active array of beat and held notes */
     public Array<Fish> hitNotes;
-
-    /**
-     * Active array of switch notes
-     */
+    /** Active array of switch notes */
     public Array<Fish> switchNotes;
-
-    /**
-     * Queue to hold all the notes for this band member across the entire level
-     */
+    /** Queue to hold all the notes for this band member across the entire level */
     Queue<Fish> allNotes;
-
-    /**
-     * backing array used for garbage collection
-     */
+    /** backing array used for garbage collection */
     Array<Fish> backing;
-
-
     /** IDentifier for band member **/
-    private int id;
+    private final int id;
     /** Current competency bar **/
     public int competency;
     /** Rate competency loses health **/
-    private int competencyLossRate;
+    private final int competencyLossRate;
     /** Rate competency gains health per correct note */
     // TODO: DIFFERENT ACCURACY GAINS DIFFERENT HEALTH. THIS IS SOMETHING LEVEL EDITOR NEEDS TO ACCOMODATE, NO?
     private int competencyGainRate = 4;
@@ -85,10 +59,9 @@ public class BandMember {
     /**get notes */
     public ArrayList<Fish> getNotes() { return notes; }
     public JsonValue getNotesData() { return notesData; }
+    public int getCompetencyLossRate(){return competencyLossRate;}
 
-    /**
-     * Constructor that instantiates all class fields
-     * */
+    /** Constructor that instantiates all class fields*/
     public BandMember(){
         this.bottomLeftCorner = new Vector2();
         this.id = -1;
@@ -103,6 +76,7 @@ public class BandMember {
 
     public BandMember(int id, int maxCompetency, JsonValue data){
         // init BandMember params
+        this.bottomLeftCorner = new Vector2();
         this.id = id;
         this.competency = maxCompetency;//data.getInt("maxCompetency");
         this.competencyLossRate = data.getInt("competencyLossRate");
@@ -120,16 +94,16 @@ public class BandMember {
 
     }
     /**
-     * Update competency such that it is continuously decreasing
-     * TODO: boolean dec = ????
+     * Update competency by band member's specific competency loss or gain rate.
+     * This update function is *not* called every frame!
      * TODO: RANDOM HITS????
-     * @param decreasing = if yes we are decreasing from the competency. doesn't decreasae every tick!
-     * @return boolean true if die
+     * @param decreasing = true : competency -= lossRate. otherwise, competency += gainRate.
      * */
     public void updateCompetency(boolean decreasing) {
-        int temp  = Math.min(competency, maxCompetency);
         if(decreasing){
             competency -= competencyLossRate;
+        } else {
+            competency += competencyGainRate;
         }
     }
 
@@ -142,15 +116,6 @@ public class BandMember {
     /** Return true if competency <= 0, or the competency is below zero. */
     public boolean isCaught(){
         return (competency <= 0);
-    }
-
-    /** Increase competency by gain rate
-     * */
-    public boolean addHealth(){
-        competency += competencyGainRate;
-        competency = Math.min(competency, maxCompetency);
-        competency = Math.max(0, competency);
-        return true;
     }
 
     /** Get competency */
