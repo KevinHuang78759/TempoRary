@@ -32,7 +32,7 @@ public class Level {
     private Texture noteTexture;
 
 
-    /** Get bandmembers */
+    /** Get BandMembers */
     public BandMember[] getBandMembers(){ return bandMembers; }
 
     public int getBpm(){return bpm;}
@@ -50,7 +50,6 @@ public class Level {
 
         // preallocate band members
         this.bandMembers = new BandMember[MAX_BANDMEMBERS];
-
         for(int i = 0; i < MAX_BANDMEMBERS; i++){
             bandMembers[i] = new BandMember();
         }
@@ -60,15 +59,6 @@ public class Level {
             JsonValue bandMemberData = data.get("bandMembers").get(i);
             bandMembers[i] = new BandMember(i, maxCompetency, bandMemberData, noteTexture);
         }
-
-    }
-
-    public void update(float delta){
-
-    }
-
-    public void draw(GameCanvas canvas){
-
     }
 
 }

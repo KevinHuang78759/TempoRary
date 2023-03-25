@@ -141,32 +141,9 @@ public class Fish {
         // CHANGE POSITION. ie) position.add(velocity)
         // transform.position = Vector2.Lerp(transform.position, destination, Time.deltaTime);
         // (BeatsShownInAdvance - (beatOfThisNote - songPosInBeats)) / BeatsShownInAdvance
-        System.out.println(songBeat);
-        System.out.println(beat);
-        float timeLeft = this.beat - songBeat;
-        float progress = 1 - ((timeLeft) / MusicController.beatsShownInAdvance);
-
-        //System.out.println(timeLeft);
-
-        // distance to move icon from current position
-        float distance = Vector2.dst(position.x, position.y, exitPosition.x, exitPosition.y);
-        float distanceToMove = distance * (delta / timeLeft);
-
-        System.out.println(distance);
-        System.out.println("distance to move " + distanceToMove);
-
-        // update position: goal.position - current.position
-        Vector2 direction = new Vector2();
-        direction.set(position.x, exitPosition.y-position.y);
-
-        System.out.println("curr pos " + position);
-        System.out.println("direction " + direction);
-
-        position.y = (direction.nor().y * distanceToMove);
-        System.out.println("new pos " + position);
+        float progress = 1 - ((this.beat - songBeat) / MusicController.beatsShownInAdvance);
 
         position.y = spawnPosition.y - ((spawnPosition.y - exitPosition.y)*progress);
-
 
         if(position == exitPosition){
             this.setDestroyed(true);
@@ -175,7 +152,6 @@ public class Fish {
         System.out.println("note updated");
 
         // TODO: HELD NOTE
-
     }
 
 
@@ -185,6 +161,8 @@ public class Fish {
         float y = height;
 
         float BOTTOMBOUND = height/5f;
+
+        x = BOTTOMBOUND + width/(2*3) + lane*(width/3);
 
         //this.setTexture(texture);
         this.spawnPosition = new Vector2(x, y);
@@ -201,6 +179,8 @@ public class Fish {
         System.out.println("NOTE DRAWN");
         animator.setFrame(1);
         canvas.draw(animator, position.x, position.y);
+        canvas.draw(animator, Color.WHITE, origin.x, origin.y, position.x, position.y,
+                0.0f, widthConfine/width, heightConfine/height);
 
         //canvas.draw(getTexture(), Color.WHITE, origin.x, origin.y, 0, 0, 0.0f, widthConfine/width, heightConfine/height);
     }

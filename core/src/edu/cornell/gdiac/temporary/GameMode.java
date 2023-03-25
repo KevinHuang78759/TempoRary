@@ -181,9 +181,6 @@ public class GameMode implements Screen {
 		// make sure currTick doesn't get too big
 		currTick = ticks % 1800;
 
-		// update music controller
-		//gameplayController.musicController.update();
-
 		// adding notes
 		//gameplayController.updateNotes(delta, canvas.getHeight(), currTick);
 

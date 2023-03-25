@@ -40,9 +40,7 @@ public class MusicController {
 
     private ArrayList<JsonValue> notesData;
 
-
-    /** based off of bbb level editor hardcoded numbers */
-    public MusicController(Level level, BandMember[] bandMembers, Music music, Texture cat){
+    public MusicController(Level level, BandMember[] bandMembers, Music music){
         int bpm = level.getBpm();
         this.secondsPerBeat = 60f / bpm;
         this.timeStart = 0;
@@ -52,11 +50,6 @@ public class MusicController {
             notesData.add(bandMember.getNotesData());
         }
 
-        this.nextNotes = new int[Level.MAX_BANDMEMBERS];
-        Arrays.fill(nextNotes, 0);
-        this.catNoteTexture = cat;
-
-        this.lastBeat = 0;
         this.music = music;
         music.play();
     }
@@ -67,7 +60,6 @@ public class MusicController {
         // (AudioSettings.dspTime – dsptimesong) * song.pitch – offset;
         // this is not right at all
         songPositionSec = music.getPosition();
-
         //songPositionSec = currentPosition - timeStart;
         songPositionBeat = songPositionSec / secondsPerBeat;
     }

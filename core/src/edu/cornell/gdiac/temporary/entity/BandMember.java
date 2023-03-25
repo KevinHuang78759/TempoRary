@@ -64,12 +64,7 @@ public class BandMember {
     float inBetweenWidth;
     float LEFTBOUND;
 
-    public void initBoundaries(float smallwidth, float largewidth, float inBetweenWidth, float LEFTBOUND){
-        this.smallwidth = smallwidth;
-        this.largewidth = largewidth;
-        this.inBetweenWidth = inBetweenWidth;
-        this.LEFTBOUND = LEFTBOUND;
-    }
+
 
 
     /**get notes */
@@ -88,6 +83,8 @@ public class BandMember {
         this.hitNotes = new Array<>();
         this.switchNotes = new Array<>();
         this.allNotes = new Queue<>();
+
+        backing = new Array<>();
     }
 
     public BandMember(int id, int maxCompetency, JsonValue data, Texture noteTexture){
@@ -120,8 +117,6 @@ public class BandMember {
             Fish note = new Fish(noteData, noteTexture);
             allNotes.addLast(note);
         }
-        //System.out.println(allNotes.last().getBeat()); THIS IS THE LAST BEAT
-        //System.out.println(allNotes.first().getBeat()); THIS IS THE FIRST BEAT
     }
 
     /**
@@ -170,7 +165,6 @@ public class BandMember {
                 hitNotes.add(note);
             }
             else {
-                System.out.println("new note added");
                 hitNotes.add(note);
             }
         }

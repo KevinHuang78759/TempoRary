@@ -89,7 +89,7 @@ public class GameplayController {
 	/** The currently active object */
 	private Array<GameObject> objects;
 	/** The backing set for garbage collection */
-	private Array<GameObject> backing;
+	private Array<Fish> backing;
 	/** Active lane currently */
 
 	HashMap<Integer, Fish> noteCoords = new HashMap<>();
@@ -163,7 +163,7 @@ public class GameplayController {
 	public GameplayController(int lanes, int linesPerLane, float width, float height){
 		NUM_LANES = lanes;
 		objects = new Array<GameObject>();
-		backing = new Array<GameObject>();
+		backing = new Array<Fish>();
 
 		this.height = height;
 		//Set margins so there is a comfortable amount of space between play area and screen boundaries
@@ -197,7 +197,6 @@ public class GameplayController {
 		noteDieY = BOTTOMBOUND - smallwidth/2;
 		triggers = new boolean[linesPerLane];
 		switches = new boolean[lanes];
-		activeNotes = new ArrayList<Fish>();
 	}
 
 	// TODO: DELETE?
@@ -238,11 +237,6 @@ public class GameplayController {
 		levelData = directory.getEntry("level_flagship", JsonValue.class);
 
 		// initialize objects
-		populateLevel();
-	}
-
-	/** Initialize level and band member data */
-	public void populateLevel(){
 		level = new Level(levelData, catNoteTexture); // initializes level AND BAND MEMBERS
 		bandMembers = level.getBandMembers();
 	}
@@ -304,8 +298,7 @@ public class GameplayController {
 		currentFrame = 0;
 
 		// calculate secondsPerBeat --> record time when song starts --> start song
-		musicController = new MusicController(level, bandMembers, music, catNoteTexture);
-		//music.play();
+		musicController = new MusicController(level, bandMembers, music);
 	}
 
 	/**
@@ -416,7 +409,7 @@ public class GameplayController {
 	 */
 	public int lpl;
 
-	/** TODO: WHAT */
+	/** TODO: ??????? */
 	public void checkDeadNotes(){
 		for(int i = 0; i < bandMembers.length; ++i) {
 			for(Fish n : bandMembers[i].hitNotes){
@@ -432,8 +425,6 @@ public class GameplayController {
 			}
 		}
 	}
-
-
 
 	/**
 	 * Adds a new shell to the game.
@@ -513,7 +504,7 @@ public class GameplayController {
 	 */
 	public void garbageCollect() {
 		// INVARIANT: backing and objects are disjoint
-		for (GameObject o : objects) {
+		/*for (GameObject o : objects) {
 			if (!o.isDestroyed()) {
 				backing.add(o);
 			}
@@ -524,7 +515,7 @@ public class GameplayController {
 		Array<GameObject> tmp = backing;
 		backing = objects;
 		objects = tmp;
-		backing.clear();
+		backing.clear();*/
 		for (BandMember bm : bandMembers) {
 			bm.garbageCollect();
 		}
@@ -583,7 +574,7 @@ public class GameplayController {
 						float dist = Math.abs(hitbarY - n.getY())/n.height;
 						if(dist < 1.5){
 							n.hitStatus = dist < 0.75 ? 4 : 2;
-							//spawnStars(n.hitStatus, n.getX(), n.getY(), 0, n.getVY());
+							spawnStars(n.hitStatus, n.getX(), n.getY(), 0, 2);
 							n.setDestroyed(true);
 						}
 					}
@@ -615,7 +606,7 @@ public class GameplayController {
 					float dist = Math.abs(hitbarY - n.getY())/n.height;
 					if(dist < 1.5){
 						n.hitStatus = dist < 0.75 ? 2 : 1;
-						//spawnStars(n.hitStatus, n.getX(), n.getY(), 0, n.getVY());
+						spawnStars(n.hitStatus, n.getX(), n.getY(), 0, 2);
 						n.setDestroyed(true);
 						hitReg[n.line] = true;
 					}
