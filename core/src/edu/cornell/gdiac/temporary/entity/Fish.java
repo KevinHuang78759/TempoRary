@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.temporary.GameCanvas;
 import edu.cornell.gdiac.temporary.GameObject;
+import edu.cornell.gdiac.temporary.MusicController;
 import edu.cornell.gdiac.util.FilmStrip;
 
 /*
@@ -140,20 +141,32 @@ public class Fish {
         // CHANGE POSITION. ie) position.add(velocity)
         // transform.position = Vector2.Lerp(transform.position, destination, Time.deltaTime);
         // (BeatsShownInAdvance - (beatOfThisNote - songPosInBeats)) / BeatsShownInAdvance
-
-        //float timeMove = (beatsAhead - (this.beat - this.));
-
+        System.out.println(songBeat);
+        System.out.println(beat);
         float timeLeft = this.beat - songBeat;
+        float progress = 1 - ((timeLeft) / MusicController.beatsShownInAdvance);
+
+        //System.out.println(timeLeft);
 
         // distance to move icon from current position
-        float distance = Vector2.dst(position.x, exitPosition.y, position.x, position.y);
+        float distance = Vector2.dst(position.x, position.y, exitPosition.x, exitPosition.y);
         float distanceToMove = distance * (delta / timeLeft);
+
+        System.out.println(distance);
+        System.out.println("distance to move " + distanceToMove);
 
         // update position: goal.position - current.position
         Vector2 direction = new Vector2();
         direction.set(position.x, exitPosition.y-position.y);
 
-        position.x = (direction.nor().x * distanceToMove);
+        System.out.println("curr pos " + position);
+        System.out.println("direction " + direction);
+
+        position.y = (direction.nor().y * distanceToMove);
+        System.out.println("new pos " + position);
+
+        position.y = spawnPosition.y - ((spawnPosition.y - exitPosition.y)*progress);
+
 
         if(position == exitPosition){
             this.setDestroyed(true);
@@ -186,7 +199,9 @@ public class Fish {
     /** Draw the note to the canvas given a width and height confinement */
     public void draw(GameCanvas canvas, float widthConfine, float heightConfine){
         System.out.println("NOTE DRAWN");
-        canvas.draw(catTexture, position.x, position.y);
+        animator.setFrame(1);
+        canvas.draw(animator, position.x, position.y);
+
         //canvas.draw(getTexture(), Color.WHITE, origin.x, origin.y, 0, 0, 0.0f, widthConfine/width, heightConfine/height);
     }
 

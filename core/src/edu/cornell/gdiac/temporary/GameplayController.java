@@ -328,6 +328,7 @@ public class GameplayController {
 			if(currentFrame % 120 == 1){
 				bandMember.updateCompetency(true);
 			}
+			i++;
 		}
 
 		// update notes and their positions

@@ -120,8 +120,8 @@ public class BandMember {
             Fish note = new Fish(noteData, noteTexture);
             allNotes.addLast(note);
         }
-        System.out.println(allNotes.last().getBeat());
-        System.out.println(allNotes.first().getBeat());
+        //System.out.println(allNotes.last().getBeat()); THIS IS THE LAST BEAT
+        //System.out.println(allNotes.first().getBeat()); THIS IS THE FIRST BEAT
     }
 
     /**
@@ -159,18 +159,19 @@ public class BandMember {
     public void update(float delta, float beat, int order){
         //System.out.println("band update");
         // spawn new notes if necessary
+        //System.out.println(order);
         //System.out.println("!allNotes.empty() is " + !allNotes.isEmpty());
         //System.out.println("beats" + ((beat + MusicController.beatsShownInAdvance) > allNotes.last().getBeat()));
 
-        while(!allNotes.isEmpty() && (beat + MusicController.beatsShownInAdvance) > allNotes.last().getBeat() ){
-            //System.out.println("new note added");
-            Fish note = allNotes.removeLast();
+        while(!allNotes.isEmpty() && (beat + MusicController.beatsShownInAdvance) > allNotes.first().getBeat() ){
+            Fish note = allNotes.removeFirst();
             note.setPosition(height, order, noteTexture, smallwidth, largewidth, inBetweenWidth, LEFTBOUND);
             if(note.getNoteType() == Fish.NoteType.SINGLE){
                 hitNotes.add(note);
             }
             else {
-                switchNotes.add(note);
+                System.out.println("new note added");
+                hitNotes.add(note);
             }
         }
 
@@ -199,12 +200,9 @@ public class BandMember {
     /** Draw held and beat notes. */
     public void drawHitNotes(GameCanvas canvas){
         for(Fish n : hitNotes){
-            System.out.println("hitnotes is not empty");
-            n.draw(canvas, (width/numLines)*(3/4), (width/numLines)*(3/4));
             if(!n.isDestroyed()){
-                System.out.println("!nisdestroyed");
                 // hit notes are based on what line we are
-                //n.setX(bottomLeftCorner.x + width/(2*numLines) + n.getLane() * (width/numLines));
+                n.position.x = (bottomLeftCorner.x + width/(2*numLines) + n.getLane() * (width/numLines));
                 n.draw(canvas, (width/numLines)*(3/4), (width/numLines)*(3/4));
             }
         }
