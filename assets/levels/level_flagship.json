@@ -135,194 +135,194 @@
       "competencyLossRate": 10,
       "state": "Active",
       "notes": [{
-        "type": "Note", "beat": 19.75, "lane": 3, "note": "Single"},
+        "type": "Note", "beat": 19.75, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 20, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 20, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 20.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 20.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 20.75, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 20.75, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 21, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 21, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 21.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 21.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 21.75, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 21.75, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 22.5, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 22.5, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 23.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 23.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 24, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 24, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 24.5, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 24.5, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 25.75, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 25.75, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 27.75, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 27.75, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 28, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 28, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 28.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 28.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 28.75, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 28.75, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 29, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 29, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 29.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 29.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 29.75, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 29.75, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 30.5, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 30.5, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 31.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 31.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 32.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 32.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 32.75, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 32.75, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 33.75, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 33.75, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 35.75, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 35.75, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 36.75, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 36.75, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 37.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 37.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 38.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 38.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 39.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 39.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 40.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 40.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 41.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 41.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 42.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 42.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 59.5, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 59.5, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 59.75, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 59.75, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 60, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 60, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 60.5, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 60.5, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 60.75, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 60.75, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 61, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 61, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 61.5, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 61.5, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 62.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 62.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 63, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 63, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 75.5, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 75.5, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 76.5, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 76.5, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 77, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 77, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 78, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 78, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 79, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 79, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 80, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 80, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 81, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 81, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 82, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 82, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 83.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 83.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 84.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 84.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 84.75, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 84.75, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 86.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 86.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 87.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 87.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 88.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 88.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 88.75, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 88.75, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 91.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 91.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 91.75, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 91.75, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 93.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 93.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 93.75, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 93.75, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 95.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 95.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 95.75, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 95.75, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 97.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 97.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 99.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 99.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 100.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 100.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 100.75, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 100.75, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 102.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 102.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 103.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 103.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 104.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 104.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 104.75, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 104.75, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 107.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 107.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 109.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 109.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 111.25, "lane": 3, "note": "Single"},
+          "type": "Note", "beat": 111.25, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 113.25, "lane": 3, "note": "Single"}]
+          "type": "Note", "beat": 113.25, "lane": 1, "note": "Single"}]
     },
     {
       "competencyLossRate": 10,
       "state": "Active",
       "notes": [{
-        "type": "Note", "beat": 4, "lane": 5, "note": "Single"},
+        "type": "Note", "beat": 4, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 5, "lane": 5, "note": "Single"},
+          "type": "Note", "beat": 5, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 6, "lane": 5, "note": "Single"},
+          "type": "Note", "beat": 6, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 7, "lane": 5, "note": "Single"},
+          "type": "Note", "beat": 7, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 8, "lane": 5, "note": "Single"},
+          "type": "Note", "beat": 8, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 9, "lane": 5, "note": "Single"},
+          "type": "Note", "beat": 9, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 10, "lane": 5, "note": "Single"},
+          "type": "Note", "beat": 10, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 11, "lane": 5, "note": "Single"},
+          "type": "Note", "beat": 11, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 12, "lane": 5, "note": "Single"},
+          "type": "Note", "beat": 12, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 13, "lane": 5, "note": "Single"},
+          "type": "Note", "beat": 13, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 14, "lane": 5, "note": "Single"},
+          "type": "Note", "beat": 14, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 15, "lane": 5, "note": "Single"},
+          "type": "Note", "beat": 15, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 16, "lane": 5, "note": "Single"},
+          "type": "Note", "beat": 16, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 17, "lane": 5, "note": "Single"},
+          "type": "Note", "beat": 17, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 18.5, "lane": 5, "note": "Single"},
+          "type": "Note", "beat": 18.5, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 18.75, "lane": 5, "note": "Single"},
+          "type": "Note", "beat": 18.75, "lane": 1, "note": "Single"},
         {
-          "type": "Note", "beat": 20, "lane": 5, "note": "Single"},
+          "type": "Note", "beat": 20, "lane": 1, "note": "Single"},
         {
           "type": "Note",
-          "beat": 21.75, "lane": 5, "note": "Single"}]
+          "beat": 21.75, "lane": 1, "note": "Single"}]
     }
   ]
 }
