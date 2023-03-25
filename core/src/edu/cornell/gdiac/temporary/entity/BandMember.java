@@ -1,12 +1,14 @@
 package edu.cornell.gdiac.temporary.entity;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.temporary.GameCanvas;
+import edu.cornell.gdiac.temporary.MusicController;
 
 import java.util.ArrayList;
 
@@ -55,6 +57,20 @@ public class BandMember {
     /** Note Data for this band member */
     private JsonValue notesData;
 
+    public Texture noteTexture;
+
+    float smallwidth;
+    float largewidth;
+    float inBetweenWidth;
+    float LEFTBOUND;
+
+    public void initBoundaries(float smallwidth, float largewidth, float inBetweenWidth, float LEFTBOUND){
+        this.smallwidth = smallwidth;
+        this.largewidth = largewidth;
+        this.inBetweenWidth = inBetweenWidth;
+        this.LEFTBOUND = LEFTBOUND;
+    }
+
 
     /**get notes */
     public ArrayList<Fish> getNotes() { return notes; }
@@ -74,7 +90,7 @@ public class BandMember {
         this.allNotes = new Queue<>();
     }
 
-    public BandMember(int id, int maxCompetency, JsonValue data){
+    public BandMember(int id, int maxCompetency, JsonValue data, Texture noteTexture){
         // init BandMember params
         this.bottomLeftCorner = new Vector2();
         this.id = id;
@@ -88,13 +104,26 @@ public class BandMember {
             this.state = BandMemberState.INACTIVE;
         }
 
-        // init Notes
-        JsonValue noteData = data.get("notes");
-        this.notesData = noteData;
+        this.noteTexture = noteTexture;
 
+        // init Notes
         this.hitNotes = new Array<Fish>();
         this.switchNotes = new Array<Fish>();
+        this.allNotes = new Queue<Fish>();
+        initNotes(data.get("notes"));
+
     }
+
+    /** Initialize all the notes and add to allNotes queue. */
+    public void initNotes(JsonValue notesData){
+        for(JsonValue noteData : notesData){
+            Fish note = new Fish(noteData, noteTexture);
+            allNotes.addLast(note);
+        }
+        System.out.println(allNotes.last().getBeat());
+        System.out.println(allNotes.first().getBeat());
+    }
+
     /**
      * Update competency by band member's specific competency loss or gain rate.
      * This update function is *not* called every frame!
@@ -123,7 +152,35 @@ public class BandMember {
     /** Get competency */
     public int getCompetency(){return competency;}
 
-    public void update(float delta){
+    /** Update the notes for this BandMember.
+     *
+     * @param delta
+     * @param beat of the song currently */
+    public void update(float delta, float beat, int order){
+        //System.out.println("band update");
+        // spawn new notes if necessary
+        //System.out.println("!allNotes.empty() is " + !allNotes.isEmpty());
+        //System.out.println("beats" + ((beat + MusicController.beatsShownInAdvance) > allNotes.last().getBeat()));
+
+        while(!allNotes.isEmpty() && (beat + MusicController.beatsShownInAdvance) > allNotes.last().getBeat() ){
+            //System.out.println("new note added");
+            Fish note = allNotes.removeLast();
+            note.setPosition(height, order, noteTexture, smallwidth, largewidth, inBetweenWidth, LEFTBOUND);
+            if(note.getNoteType() == Fish.NoteType.SINGLE){
+                hitNotes.add(note);
+            }
+            else {
+                switchNotes.add(note);
+            }
+        }
+
+        // Update current notes
+        for(Fish note : hitNotes){
+            note.update(beat, delta);
+        }
+        /*for(Fish note : switchNotes) {
+        *   note.update(beat, delta);
+        * }*/
 
     }
 
@@ -132,7 +189,7 @@ public class BandMember {
         for(Fish n : switchNotes){
             if(!n.isDestroyed()){
                 //Switch notes should just appear in the middle of the lane
-                n.setX(bottomLeftCorner.x + width/2);
+                //n.setX(bottomLeftCorner.x + width/2);
                 //n,tail_thickness = width/(4f*numLines);
                 n.draw(canvas, width*(3/4), width*(3/4));
             }
@@ -142,9 +199,12 @@ public class BandMember {
     /** Draw held and beat notes. */
     public void drawHitNotes(GameCanvas canvas){
         for(Fish n : hitNotes){
+            System.out.println("hitnotes is not empty");
+            n.draw(canvas, (width/numLines)*(3/4), (width/numLines)*(3/4));
             if(!n.isDestroyed()){
+                System.out.println("!nisdestroyed");
                 // hit notes are based on what line we are
-                n.setX(bottomLeftCorner.x + width/(2*numLines) + n.getLane() * (width/numLines));
+                //n.setX(bottomLeftCorner.x + width/(2*numLines) + n.getLane() * (width/numLines));
                 n.draw(canvas, (width/numLines)*(3/4), (width/numLines)*(3/4));
             }
         }

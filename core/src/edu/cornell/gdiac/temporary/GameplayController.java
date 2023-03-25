@@ -241,18 +241,10 @@ public class GameplayController {
 		populateLevel();
 	}
 
-	/** Add object to list of objects */
-	public void addObject(GameObject obj){
-		objects.add(obj);
-	}
-
 	/** Initialize level and band member data */
 	public void populateLevel(){
-		level = new Level(levelData); // initializes level AND BAND MEMBERS
+		level = new Level(levelData, catNoteTexture); // initializes level AND BAND MEMBERS
 		bandMembers = level.getBandMembers();
-
-
-		// TODO: THIS IS NOT EFFICIENT AT ALL LMAO
 	}
 
 	/** Initialize each band member's drawable location
@@ -321,34 +313,18 @@ public class GameplayController {
 	 * Spawn notes as necessary.
 	 * Update competency of all band members.
 	 * */
-	public void update() {
+	public void update(float delta) {
 		musicController.update();
 		checkDeadNotes();
 
-		// update note positions
-
-
-		// add new notes as necessary
+		// update band members
 		int i = 0;
 		for(BandMember bandMember : bandMembers){
 
-			musicController.getNewNotes(i);
+			// update notes for this band member
+			bandMember.update(delta, musicController.getSongPositionBeat(), i);
 
-			// get new notes to be spawned by the music controller
-			ArrayList<Fish> newNotes = musicController.getNewNotes(currentBandMember);
-
-			if(newNotes.size() > 0){
-				for(Fish note : newNotes){
-					activeNotes.add(note);
-					note.setPosition(height, currentBandMember, catNoteTexture, smallwidth, largewidth, inBetweenWidth, LEFTBOUND);
-					bandMembers[currentBandMember].hitNotes.add(note);
-					objects.add(note);
-				}
-			}
-
-			// spawn notes by current frame
-			// bandMember.spawnNotes(currentFrame);
-
+			// update band member competency
 			if(currentFrame % 120 == 1){
 				bandMember.updateCompetency(true);
 			}
@@ -456,29 +432,6 @@ public class GameplayController {
 		}
 	}
 
-
-	/** Add new notes to the game using MusicController
-	 *
-	 * @param height current game height
-	 * @param frame frame / tick?? idk actually lol*/
-	public void updateNotes(float delta, float height, int frame){
-		// Move all currently active notes by space from music controller
-
-
-		// get new notes to be spawned by the music controller
-		ArrayList<Fish> newNotes = musicController.getNewNotes(currentBandMember);
-
-		if(newNotes.size() > 0){
-			for(Fish note : newNotes){
-				activeNotes.add(note);
-				note.setPosition(height, currentBandMember, catNoteTexture, smallwidth, largewidth, inBetweenWidth, LEFTBOUND);
-
-				objects.add(note);
-			}
-		}
-
-		//System.out.println(objects);
-	}
 
 
 	/**
@@ -629,7 +582,7 @@ public class GameplayController {
 						float dist = Math.abs(hitbarY - n.getY())/n.height;
 						if(dist < 1.5){
 							n.hitStatus = dist < 0.75 ? 4 : 2;
-							spawnStars(n.hitStatus, n.getX(), n.getY(), 0, n.getVY());
+							//spawnStars(n.hitStatus, n.getX(), n.getY(), 0, n.getVY());
 							n.setDestroyed(true);
 						}
 					}
@@ -661,7 +614,7 @@ public class GameplayController {
 					float dist = Math.abs(hitbarY - n.getY())/n.height;
 					if(dist < 1.5){
 						n.hitStatus = dist < 0.75 ? 2 : 1;
-						spawnStars(n.hitStatus, n.getX(), n.getY(), 0, n.getVY());
+						//spawnStars(n.hitStatus, n.getX(), n.getY(), 0, n.getVY());
 						n.setDestroyed(true);
 						hitReg[n.line] = true;
 					}
@@ -693,7 +646,7 @@ public class GameplayController {
 	/**
 	 * Resolves state changes into and out of the TRANSITION phase
 	 */
-	public void resolvePhase(InputController input){
+	/*public void resolvePhase(InputController input){
 		//If we are currently in a note phase, detect for switch presses
 		if(currentPhase == playPhase.PLAYING){
 			switches = input.switches();
@@ -756,7 +709,7 @@ public class GameplayController {
 				currentPhase = playPhase.PLAYING;
 			}
 		}
-	}
+	}*/
 
 	/**
 	 * Handle actions other than switching (mainly pressing and holding)
@@ -764,6 +717,7 @@ public class GameplayController {
 	 * @param delta
 	 * @param frame
 	 */
+	/*
 	public void resolveActions(InputController input, float delta, int frame) {
 		if(currentPhase == playPhase.PLAYING){
 			//If we are in the NOTES phase, get trigger input
@@ -862,4 +816,5 @@ public class GameplayController {
 			}
 		}
 	}
+	*/
 }

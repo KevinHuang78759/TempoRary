@@ -14,7 +14,7 @@ import java.util.Arrays;
 
 public class MusicController {
     /** Beats shown advance before it must be hit */
-    private int beatsShownInAdvance = 10;
+    public static int beatsShownInAdvance = 10;
 
     /** Reference to level BPM */
     private int bpm;
@@ -37,8 +37,6 @@ public class MusicController {
     public Music music;
 
     private Texture catNoteTexture;
-
-    /** Time to travel for each note */
 
     private ArrayList<JsonValue> notesData;
 
@@ -66,7 +64,6 @@ public class MusicController {
     /** Update the song position in both beats and seconds.
      * SHOULD BE DONE BY FRAME */
     public void update(){
-
         // (AudioSettings.dspTime – dsptimesong) * song.pitch – offset;
         // this is not right at all
         songPositionSec = music.getPosition();
@@ -79,43 +76,42 @@ public class MusicController {
 
     /** Based on current location in song, check if new notes should be spawned for
      * a given band member.
+     * If so, spawn note.
      * */
-    public ArrayList<Fish> getNewNotes(int currentBandMember){
+    /*public ArrayList<Fish> getNewNotes(int currentBandMember){
         ArrayList<Fish> newNotes = new ArrayList<Fish>();
 
         // this is the current band member
         int i = 0;
-
-        // iterate through the band members and their note datas
+        // iterate through the band members and get their noteData
         for(JsonValue noteData : notesData) {
 
             // if there are no new notes, then stop
             if(noteData == null) {return newNotes;}
 
             // (BeatsShownInAdvance - (beatOfThisNote - songPosInBeats)) / BeatsShownInAdvance
-
-            //float timeMove = (beatsAhead - (this.beat - this.));
-
             // get new note data
             JsonValue currentNoteData = noteData.get(nextNotes[i]);
             if(currentNoteData == null){
                 return newNotes;
             }
             int beat = currentNoteData.getInt("beat");
-            if (nextNotes[i] < noteData.size() && beat < (songPositionBeat + beatsShownInAdvance)) {
+
+            // if song position + beatsShownInAdvance > note beat, then spawn.
+            if (nextNotes[i] <= noteData.size() && beat < (songPositionBeat + beatsShownInAdvance)) {
                 if (i == currentBandMember) {
                     // initialize note
                     Fish note = new Fish(currentNoteData, catNoteTexture);
                     newNotes.add(note);
                     // add new note to newNotes
                 }
-                nextNotes[i]++;
+                nextNotes[i] = nextNotes[i]+1; //is this the same as nextNotes[i]++;?
             }
             i++;
         }
 
         return newNotes; // TODO THIS GOTTA BE DELETED SOMEWHERE TOO
-    }
+    }*/
 
     public float getSongPositionBeat() {
         return songPositionBeat;
@@ -128,13 +124,11 @@ public class MusicController {
 
     /** beat / bpm = minute */
     public float getTimeFromBeat(int beat, int bpm){
-
         return beat / bpm;
     }
 
     /** bpm * minute = beat */
     public int getBeatFromTime(float time, int bpm){
-
         return (int) (bpm * time);
     }
 }

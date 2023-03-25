@@ -12,28 +12,30 @@ import edu.cornell.gdiac.util.FilmStrip;
 /*
 * let's pretend a note is a fish
  */
-public class Fish extends GameObject {
+public class Fish {
+
+
+
+
     public enum NoteType {
         SINGLE, HOLD, SWITCH, DEAD
     }
 
     // NOTE DETAILS
-    /** NOTE MOVEMENT DOWN IS CONSTANT. TODO: CHANGE??? */
-    private static final float NOTE_DRAW = 10f;
     /** Note type. Single / Hold / Switch / Dead */
     private NoteType noteType;
-    /** number of notes we show in advance */
-    private int beatsAhead = 5;
+
     /** beat number in the song */
     private int beat;
-    /***/
+    /** height of the note texture */
     public int height;
+    /** width of the note texture */
     private int width;
 
     /** Spawn position */
     private Vector2 spawnPosition;
 
-    /** Leave position */
+    /** Exit position / point to be destroyed at*/
     private Vector2 exitPosition;
 
     /** beat number in the song held note starts */
@@ -43,7 +45,6 @@ public class Fish extends GameObject {
     /** lane 0/1/2/3 for instrument */
     private int lane;
     /** visible? */
-    // ANIMATION INFORMATION /////////////////////////////////////////////////////////////////////////////////
 
     /** object position (centered on the texture middle) */
     protected Vector2 position;
@@ -67,15 +68,12 @@ public class Fish extends GameObject {
     /** The number of animation frames in our filmstrip */
     private static final int NUM_ANIM_FRAMES = 4;
 
-    /** To measure if we are damaged */
-    private boolean damaged;
-    /** The backup texture to use if we are damaged */
-    private Texture dmgTexture;
+    /** The note texture */
     private Texture catTexture;
     /** are we hit? */
     public int hitStatus;
 
-    /** line the note is one */
+    /** line the note is on */
     public int line;
     /** ??? */
     public int startFrame;
@@ -93,8 +91,11 @@ public class Fish extends GameObject {
      * Initialize a note given JSON data
      * */
     public Fish(JsonValue data, Texture cat){
-        System.out.println("NOTE MADE");
+        //System.out.println("NOTE MADE");
         String noteTypeData = data.getString("note");
+
+        this.beat = data.getInt("beat");
+
         if(noteTypeData == "Single"){
             this.noteType = NoteType.SINGLE;
             this.beat = data.getInt("beat");
@@ -107,19 +108,15 @@ public class Fish extends GameObject {
             //TODO: SWITCH NOTES
             this.noteType = NoteType.SINGLE;
             this.beat = data.getInt("beat");
-            this.lane = -1;
+            this.lane = 0;
         }
-        this.catTexture = cat;
+
         this.setTexture(cat);
+        this.position = new Vector2();
     }
 
     /** Set a note to be destroyed. */
-    public void setDestroyed(boolean value) { damaged = true; }
-
-    @Override
-    public ObjectType getType() {
-        return ObjectType.FISH;
-    }
+    public void setDestroyed(boolean value) { destroyed = true; }
     public NoteType getNoteType(){return noteType;}
     public int getLane(){return lane;}
     public int getBeat(){return beat;}
@@ -135,10 +132,13 @@ public class Fish extends GameObject {
         width = animator.getRegionWidth();
     }
 
-    /** Update the animation and position of this note. */
-    public void update(int songBeat, float delta) {
+    /** Update the animation and position of this note based on the current beat of the song and delta.
+     *
+     * @param songBeat
+     * @param delta */
+    public void update(float songBeat, float delta) {
         // CHANGE POSITION. ie) position.add(velocity)
-        //transform.position = Vector2.Lerp(transform.position, destination, Time.deltaTime);
+        // transform.position = Vector2.Lerp(transform.position, destination, Time.deltaTime);
         // (BeatsShownInAdvance - (beatOfThisNote - songPosInBeats)) / BeatsShownInAdvance
 
         //float timeMove = (beatsAhead - (this.beat - this.));
@@ -146,32 +146,25 @@ public class Fish extends GameObject {
         float timeLeft = this.beat - songBeat;
 
         // distance to move icon from current position
-        float distance = Vector2.dst(getX(), exitPosition.y, getX(), getY());
+        float distance = Vector2.dst(position.x, exitPosition.y, position.x, position.y);
         float distanceToMove = distance * (delta / timeLeft);
 
         // update position: goal.position - current.position
         Vector2 direction = new Vector2();
-        direction.set(getX(), exitPosition.y-getY());
+        direction.set(position.x, exitPosition.y-position.y);
 
-        setX(direction.nor().x * distanceToMove);
+        position.x = (direction.nor().x * distanceToMove);
 
         if(position == exitPosition){
             this.setDestroyed(true);
         }
 
+        System.out.println("note updated");
+
         // TODO: HELD NOTE
 
-        // increase animation frame
-        animFrame += ANIMATION_SPEED;
-        if(animFrame >= NUM_ANIM_FRAMES){
-            animFrame -= NUM_ANIM_FRAMES;
-        }
     }
 
-    /** Update note position */
-    public void updatePosition(){
-
-    }
 
     /** Initialize note position in the lane and height */
     public void setPosition(float height, int bandMemberOrder, Texture texture, float smallwidth, float largewidth, float inBetweenWidth, float LEFTBOUND){
@@ -180,35 +173,27 @@ public class Fish extends GameObject {
 
         float BOTTOMBOUND = height/5f;
 
-        this.setX(x);
-        this.setTexture(texture);
-        this.setY(y);
-
+        //this.setTexture(texture);
         this.spawnPosition = new Vector2(x, y);
-        this.position = spawnPosition;
         position.set(spawnPosition);
         this.exitPosition = new Vector2(x, BOTTOMBOUND);
-        System.out.println("set position");
+        System.out.println(position);
+        System.out.println(exitPosition);
+        System.out.println("new");
     }
 
-    /** Draw the note to the canvas.
-     *
-     * There is only one drawing pass in this application, so you can draw the objects in any order.
-     *
-     * @param canvas the drawing context*/
-    public void draw(GameCanvas canvas){
-
-        // TODO: HELD NODE if note is HELD do something else
-
-        animator.setFrame((int) animFrame);
-        canvas.draw(animator, Color.WHITE, origin.x, origin.y, position.x, position.y,
-                0.0f, NOTE_MULTIPLIER, NOTE_MULTIPLIER);
-    }
 
     /** Draw the note to the canvas given a width and height confinement */
     public void draw(GameCanvas canvas, float widthConfine, float heightConfine){
-        canvas.draw(catTexture, getX(), getY());
+        System.out.println("NOTE DRAWN");
+        canvas.draw(catTexture, position.x, position.y);
         //canvas.draw(getTexture(), Color.WHITE, origin.x, origin.y, 0, 0, 0.0f, widthConfine/width, heightConfine/height);
     }
+
+    public boolean isDestroyed() {
+        return destroyed;
+    }
+    public float getY(){return position.y;}
+    public float getX(){return position.x;}
 
 }

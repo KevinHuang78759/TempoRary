@@ -193,7 +193,7 @@ public class GameMode implements Screen {
 		}
 
 		// Update objects.
-		gameplayController.update();
+		gameplayController.update(delta);
 		gameplayController.handleActions(inputController);
 		//gameplayController.resolvePhase(inputController);
 		//gameplayController.resolveActions(inputController, delta, currTick);

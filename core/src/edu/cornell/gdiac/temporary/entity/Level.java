@@ -6,6 +6,7 @@ other classes reference. */
 
 package edu.cornell.gdiac.temporary.entity;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.temporary.GameCanvas;
@@ -28,6 +29,7 @@ public class Level {
     private int maxCompetency;
     /** Array of all band members **/
     private BandMember[] bandMembers;
+    private Texture noteTexture;
 
 
     /** Get bandmembers */
@@ -38,7 +40,7 @@ public class Level {
     /**
      * Initialize a level with trivial information.
      * */
-    public Level(JsonValue data) {
+    public Level(JsonValue data, Texture noteTexture) {
         this.title = data.getString("title");
         this.order = data.getInt("number");
         this.bpm = data.getInt("bpm");
@@ -56,8 +58,9 @@ public class Level {
         // add band member for level
         for(int i = 0; i < data.get("bandMembers").size(); i++){
             JsonValue bandMemberData = data.get("bandMembers").get(i);
-            bandMembers[i] = new BandMember(i, maxCompetency, bandMemberData);
+            bandMembers[i] = new BandMember(i, maxCompetency, bandMemberData, noteTexture);
         }
+
     }
 
     public void update(float delta){
