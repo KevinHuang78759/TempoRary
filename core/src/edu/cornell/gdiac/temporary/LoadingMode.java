@@ -58,6 +58,10 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	/** Play button to display when done */
 	private Texture playButton;
 	/** Texture atlas to support a progress bar */
+
+	private Texture calibrationButton;
+	/** Texture atlas to support a calibration Button */
+
 	private Texture statusBar;
 	
 	// statusBar is a "texture atlas." Break it up into parts.
@@ -208,6 +212,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		background.setFilter( TextureFilter.Linear, TextureFilter.Linear );
 		statusBar = internal.getEntry( "progress", Texture.class );
 
+		calibrationButton = null;
+
 		// Break up the status bar texture into regions
 		statusBkgLeft = internal.getEntry( "progress.backleft", TextureRegion.class );
 		statusBkgRight = internal.getEntry( "progress.backright", TextureRegion.class );
@@ -258,6 +264,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			if (progress >= 1.0f) {
 				this.progress = 1.0f;
 				playButton = internal.getEntry("play",Texture.class);
+				calibrationButton = internal.getEntry("play",Texture.class);
 			}
 		}
 	}
@@ -278,7 +285,13 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			Color tint = (pressState == 1 ? Color.GRAY: Color.WHITE);
 			canvas.draw(playButton, tint, playButton.getWidth()/2, playButton.getHeight()/2 + 50,
 						centerX, centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+
+			//draw calibration button
+			Color tintCalibration = (pressState == 1 ? Color.BLUE: Color.RED);
+			canvas.draw(calibrationButton, tintCalibration, calibrationButton.getWidth()/4-calibrationButton.getWidth()*2, calibrationButton.getHeight()/2 + 50,
+					centerX, centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 		}
+
 		canvas.end();
 	}
 	
