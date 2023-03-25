@@ -39,6 +39,7 @@ import java.util.HashMap;
  * This controller also acts as the root class for all the models.
  */
 public class GameplayController {
+	/** Current frame in the game (?) */
 	int currentFrame;
 	// Graphics assets for the entities
 	/** Texture for all stars, as they look the same */
@@ -58,7 +59,7 @@ public class GameplayController {
 	private ArrayList<Fish> activeNotes;
 
 	/** Handle playing music and spawning notes */
-	private MusicController musicController;
+	MusicController musicController;
 
 	/** Time elapsed in song */
 	private float time;
@@ -84,14 +85,6 @@ public class GameplayController {
 	/** Number of band member lanes */
 	int NUM_LANES;
 
-	/** Number of notes present in repeating rhythm */
-	private static final int NUM_NOTES = 60;
-	/** Note count for the display in window corner */
-	private int shellCount;
-
-	/** health of each band member */
-	private int[] health;
-
 	// List of objects with the garbage collection set.
 	/** The currently active object */
 	private Array<GameObject> objects;
@@ -99,7 +92,7 @@ public class GameplayController {
 	private Array<GameObject> backing;
 	/** Active lane currently */
 
-	HashMap<Integer, Note> noteCoords = new HashMap<>();
+	HashMap<Integer, Fish> noteCoords = new HashMap<>();
 
 	/**
 	 * Index of the currently active band member
@@ -114,20 +107,6 @@ public class GameplayController {
 	 * The base hp increment. Hp will incrememnt on a destroyed note by the product of this value and its hit status
 	 */
 	final int recovery = 3;
-
-	private void setCoords(float width, float height) {
-		// note appears every two seconds if we have a 30 second loop
-		// 1800
-		for (int i = 0; i < NUM_NOTES; i++) {
-			Note s = new Note(i%4, Note.NType.BEAT);
-			s.setX(width/8 + (i % 4) * width/4);
-			s.setTexture(catNoteTexture);
-			s.setY(height);
-			s.setVX(0);
-			s.setVY(-5f);
-			noteCoords.put(i * 30, s);
-		}
-	}
 
 	/**
 	 * Indicates whether or not we want to use randomly generated notes
@@ -174,6 +153,8 @@ public class GameplayController {
 	 */
 	public float hpwidth;
 
+	public float height;
+
 	/**
 	 * Width between each HP bar
 	 */
@@ -181,14 +162,10 @@ public class GameplayController {
 
 	public GameplayController(int lanes, int linesPerLane, float width, float height){
 		NUM_LANES = lanes;
-		shellCount = 0;
-		//initializeHealth(); // HEALTH SHOULD BE INDEPENDENT AND HANDLED BY BAND MEMBERS. todo: delete?
-		//hsflag = false;
 		objects = new Array<GameObject>();
 		backing = new Array<GameObject>();
-		currentBandMember = 0; //default
 
-		//randomnotes = true;
+		this.height = height;
 		//Set margins so there is a comfortable amount of space between play area and screen boundaries
 		//Values decided by pure look
 		LEFTBOUND = width/10f;
@@ -215,12 +192,11 @@ public class GameplayController {
 		//instantiate other variables
 		heldPresent = new boolean[linesPerLane];
 		triggers = new boolean[linesPerLane];
-		lpl = 1;
+		lpl = linesPerLane;
 		noteSpawnY = TOPBOUND + smallwidth/2;
 		noteDieY = BOTTOMBOUND - smallwidth/2;
 		triggers = new boolean[linesPerLane];
 		switches = new boolean[lanes];
-
 		activeNotes = new ArrayList<Fish>();
 	}
 
@@ -265,7 +241,7 @@ public class GameplayController {
 		populateLevel();
 	}
 
-	/** Add object to list of objeccts */
+	/** Add object to list of objects */
 	public void addObject(GameObject obj){
 		objects.add(obj);
 	}
@@ -274,12 +250,13 @@ public class GameplayController {
 	public void populateLevel(){
 		level = new Level(levelData); // initializes level AND BAND MEMBERS
 		bandMembers = level.getBandMembers();
-		musicController = new MusicController(music, level, bandMembers);
+
 
 		// TODO: THIS IS NOT EFFICIENT AT ALL LMAO
 	}
 
-	/** Initialize each band member's drawable location */
+	/** Initialize each band member's drawable location
+	 * TODO: SHOULDN'T THIS BE IN THE BAND MEMBERS CLASS? WHY IS GAMEPLAY CONTROLLER HANDLING THIS...*/
 	public void setupBandMembers(Color[] c){
 		float XCoor = LEFTBOUND;
 
@@ -310,22 +287,15 @@ public class GameplayController {
 	}
 
 	/**
-	 * Returns the line healths.
+	 * Returns the number of band members (lanes).
 	 *
-	 * @return the line healths.
-	 */
-	public int[] getHealth() {return health;}
-
-	/**
-	 * Returns the amount of lines.
-	 *
-	 * @return The amount of lines.
+	 * @return The amount of lanes.
 	 */
 	public int lineAmount(){
-		return health.length;
+		return getBandMembers().length;
 	}
 
-	/** get bandMembers */
+	/** get Band members in the level */
 	public BandMember[] getBandMembers() {
 		return bandMembers;
 	}
@@ -333,41 +303,67 @@ public class GameplayController {
 	/**
 	 * Starts a new game.
 	 *
-	 * This method creates a single player, but does nothing else.
+	 * Initialize the currently active Band Member, start frame at 0, start playing music.
 	 *
 	 */
 	public void start() {
-
 		setupBandMembers(new Color[]{Color.BLUE, Color.GOLDENROD, Color.CORAL,Color.MAROON});
 		currentBandMember = 0;
 		currentFrame = 0;
 
-		// play music
-		music.play();
-		//randomnotes = r;
+		// calculate secondsPerBeat --> record time when song starts --> start song
+		musicController = new MusicController(level, bandMembers, music, catNoteTexture);
+		//music.play();
 	}
 
-	/***/
-	public void update(){
+	/**
+	 * Update the notes.
+	 * Spawn notes as necessary.
+	 * Update competency of all band members.
+	 * */
+	public void update() {
+		musicController.update();
 		checkDeadNotes();
 
+		// update note positions
+
+
+		// add new notes as necessary
+		int i = 0;
 		for(BandMember bandMember : bandMembers){
-			// update notes by current frame
-			// bandMember.updateNotes(currentFrame);
+
+			musicController.getNewNotes(i);
+
+			// get new notes to be spawned by the music controller
+			ArrayList<Fish> newNotes = musicController.getNewNotes(currentBandMember);
+
+			if(newNotes.size() > 0){
+				for(Fish note : newNotes){
+					activeNotes.add(note);
+					note.setPosition(height, currentBandMember, catNoteTexture, smallwidth, largewidth, inBetweenWidth, LEFTBOUND);
+					bandMembers[currentBandMember].hitNotes.add(note);
+					objects.add(note);
+				}
+			}
 
 			// spawn notes by current frame
 			// bandMember.spawnNotes(currentFrame);
+
 			if(currentFrame % 120 == 1){
 				bandMember.updateCompetency(true);
 			}
 		}
+
+		// update notes and their positions
 		for(GameObject o : objects){
 			o.update(0f);
 		}
+
 		currentFrame++;
+		musicController.update();
 	}
 
-	/** Update competency of all band members.
+	/** Check the competency of all band members.
 	 *
 	 * @return true if one of them died, false if not
 	 *
@@ -430,7 +426,6 @@ public class GameplayController {
 	public void reset() {
 		currentFrame = 0;
 		objects.clear();
-		//initializeHealth();
 	}
 
 	/**
@@ -446,7 +441,7 @@ public class GameplayController {
 
 	/** TODO: WHAT */
 	public void checkDeadNotes(){
-		for(int i = 0; i < bandMembers.length; ++i){
+		for(int i = 0; i < bandMembers.length; ++i) {
 			for(Fish n : bandMembers[i].hitNotes){
 				if(n.getY() < noteDieY && n.hitStatus == 0){
 					n.hitStatus = -2;
@@ -467,18 +462,22 @@ public class GameplayController {
 	 * @param height current game height
 	 * @param frame frame / tick?? idk actually lol*/
 	public void updateNotes(float delta, float height, int frame){
-		// check with music controller
-		ArrayList<Fish> newNotes = musicController.update(currentBandMember, delta);
+		// Move all currently active notes by space from music controller
+
+
+		// get new notes to be spawned by the music controller
+		ArrayList<Fish> newNotes = musicController.getNewNotes(currentBandMember);
 
 		if(newNotes.size() > 0){
 			for(Fish note : newNotes){
 				activeNotes.add(note);
 				note.setPosition(height, currentBandMember, catNoteTexture, smallwidth, largewidth, inBetweenWidth, LEFTBOUND);
+
 				objects.add(note);
 			}
 		}
 
-		System.out.println(objects);
+		//System.out.println(objects);
 	}
 
 
@@ -577,37 +576,7 @@ public class GameplayController {
 		}
 	}
 
-	/**
-	 * Process specialized destruction functionality
-	 *
-	 * Some objects do something special (e.g. explode) on destruction. That is handled
-	 * in this method.
-	 *
-	 * Notice that this allocates memory to the heap.  If we were REALLY worried about
-	 * performance, we would use a memory pool here.
-	 *
-	 * @param o Object to destroy
-	 */
-	/*protected void destroy(GameObject o) {
-		switch (o.getType()) {
-			case FISH:
-				// Create some stars if hit on beat - more stars if more accurate
-//				if (((Fish) o).getNoteType() == Fish.NoteType.HELD) {
-//					System.out.println("HELD NOTE DESTROYED");
-//					heldPresent[((Fish) o).line] = false;
-//				}
-				spawnStars(((Fish) o).hitStatus, o.getX(), o.getY(), o.getVX(), o.getVY());
-				int hpUpdate = ((Fish) o).getNoteType() == Fish.NoteType.SWITCH ? goalBandMember : currentBandMember;
-				if(hpUpdate == 1) {bandMembers[currentBandMember].addHealth();}
-//				health[hpUpdate] += ((Note) o).hitStatus * recovery;
-//				health[hpUpdate] = Math.min(MAX_HEALTH, health[hpUpdate]);
-//				health[hpUpdate] = Math.max(0, health[hpUpdate]);
-				break;
-			default:
-				break;
-		}
-	}*/
-
+	/** Spawn stars based on how accurate the notes are */
 	public void spawnStars(int k, float x, float y, float vx0, float vy0){
 		for(int i = 0; i < k; ++i){
 			for (int j = 0; j < 5; j++) {
@@ -624,42 +593,28 @@ public class GameplayController {
 		}
 	}
 
-	/**
-	 * Enum to determine whether or not we are in a phase of hitting notes or switching to another band member
-	 */
+	/** Enum to determine whether or not we are in a phase of hitting notes or switching to another band member*/
 	public enum playPhase {
 		PLAYING,
 		TRANSITION
 	}
 
-	/**
-	 * initiate to NOTES phase
-	 */
+	/*** initiate to NOTES phase*/
 	playPhase currentPhase = playPhase.PLAYING;
 
-	/**
-	 * Total progress needed before we declare ourselves fully transitioned
-	 */
+	/** Total progress needed before we declare ourselves fully transitioned */
 	int T_SwitchPhases = 20;
 
-	/**
-	 * The band member lane index that we are trying to switch to
-	 */
+	/** The band member lane index that we are trying to switch to*/
 	int goalBandMember;
 
-	/**
-	 * Whether or not a trigger for a certain line was pressed
-	 */
+	/** Whether or not a trigger for a certain line was pressed*/
 	public boolean[] triggers;
 
-	/**
-	 * The current transition progress
-	 */
+	/**The current transition progress*/
 	int t_progress;
 
-	/**
-	 * Whether or not we have indicated we want to switch to a certain lane
-	 */
+	/**Whether or not we have indicated we want to switch to a certain lane*/
 	public boolean[] switches;
 
 	public void handleActions(InputController input){
@@ -822,7 +777,7 @@ public class GameplayController {
 				}
 				if(o.getType() == ObjectType.FISH){
 					//If the object is a note, first update the note
-					((Fish)o).update(delta, frame);
+					((Fish)o).update(musicController.lastBeat, delta);
 					//If the note is a BEAT, detect whether we have a trigger pressed on its line
 					if(((Fish)o).getNoteType() == Fish.NoteType.SINGLE){
 						if(triggers[((Fish)o).getLane()]){

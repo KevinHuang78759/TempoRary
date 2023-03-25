@@ -2,6 +2,7 @@ package edu.cornell.gdiac.temporary;
 
 import com.badlogic.gdx.audio.Music;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.temporary.entity.BandMember;
 import edu.cornell.gdiac.temporary.entity.Fish;
@@ -15,23 +16,8 @@ public class MusicController {
     /** Beats shown advance before it must be hit */
     private int beatsShownInAdvance = 10;
 
-    /** 1/48- <offset> is the count of 1/48 quarter beat time to the timepoint */
-    private float levelOffset;
-
-    /** difference between the level offset and the time in the song */
-    private float songOffset;
-
-    /** drawing offset, in beats
-     * how early do we draw the note onto the screen before it scrolls down? */
-    private float drawOffset;
-
     /** Reference to level BPM */
     private int bpm;
-    /** Reference to array of notes */
-    private ArrayList<ArrayList<Fish>> notes;
-
-    /** Reference to note data */
-    private ArrayList<JsonValue> notesData;
 
     /** Array of the indices of next note to be played */
     private int[] nextNotes;
@@ -45,16 +31,23 @@ public class MusicController {
     /** Seconds before song started */
     private float timeStart;
 
-    /** Song */
-    private Music music;
+    /** This is the moving reference point */
+    public int lastBeat;
+
+    public Music music;
+
+    private Texture catNoteTexture;
+
+    /** Time to travel for each note */
+
+    private ArrayList<JsonValue> notesData;
 
 
     /** based off of bbb level editor hardcoded numbers */
-    public MusicController(Music music, Level level, BandMember[] bandMembers){
+    public MusicController(Level level, BandMember[] bandMembers, Music music, Texture cat){
         int bpm = level.getBpm();
         this.secondsPerBeat = 60f / bpm;
         this.timeStart = 0;
-        this.music = music;
         this.notesData = new ArrayList<JsonValue>();
 
         for(BandMember bandMember : bandMembers){
@@ -63,18 +56,31 @@ public class MusicController {
 
         this.nextNotes = new int[Level.MAX_BANDMEMBERS];
         Arrays.fill(nextNotes, 0);
+        this.catNoteTexture = cat;
 
-        this.music.play();
+        this.lastBeat = 0;
+        this.music = music;
+        music.play();
     }
 
-    /** Update the song position and song position in beats.
-     *  Initialize new notes as necessary.
-     *
-     * */
-    public ArrayList<Fish> update(int currentBandMember, float delta){
-        songPositionSec = delta - timeStart;
-        songPositionBeat = songPositionSec / secondsPerBeat;
+    /** Update the song position in both beats and seconds.
+     * SHOULD BE DONE BY FRAME */
+    public void update(){
 
+        // (AudioSettings.dspTime – dsptimesong) * song.pitch – offset;
+        // this is not right at all
+        songPositionSec = music.getPosition();
+
+        //songPositionSec = currentPosition - timeStart;
+        songPositionBeat = songPositionSec / secondsPerBeat;
+    }
+
+
+
+    /** Based on current location in song, check if new notes should be spawned for
+     * a given band member.
+     * */
+    public ArrayList<Fish> getNewNotes(int currentBandMember){
         ArrayList<Fish> newNotes = new ArrayList<Fish>();
 
         // this is the current band member
@@ -82,7 +88,6 @@ public class MusicController {
 
         // iterate through the band members and their note datas
         for(JsonValue noteData : notesData) {
-            int currentNextNote = nextNotes[i];
 
             // if there are no new notes, then stop
             if(noteData == null) {return newNotes;}
@@ -93,11 +98,14 @@ public class MusicController {
 
             // get new note data
             JsonValue currentNoteData = noteData.get(nextNotes[i]);
+            if(currentNoteData == null){
+                return newNotes;
+            }
             int beat = currentNoteData.getInt("beat");
             if (nextNotes[i] < noteData.size() && beat < (songPositionBeat + beatsShownInAdvance)) {
                 if (i == currentBandMember) {
                     // initialize note
-                    Fish note = new Fish(currentNoteData);
+                    Fish note = new Fish(currentNoteData, catNoteTexture);
                     newNotes.add(note);
                     // add new note to newNotes
                 }
@@ -117,16 +125,6 @@ public class MusicController {
         return songPositionSec;
     }
 
-    /** "offset" in json / 48 = beat */
-    public int getBeatFromLevelOffset(int levelOffset){
-        return (int) (levelOffset / this.levelOffset); //should be / 48
-    }
-
-    /** (offset/48) / bpm = time in song */
-    public float getTimeFromLevelOffset(int levelOffset, int bpm){
-        int beat = getBeatFromLevelOffset(levelOffset);
-        return getTimeFromBeat(beat, bpm);
-    }
 
     /** beat / bpm = minute */
     public float getTimeFromBeat(int beat, int bpm){

@@ -58,7 +58,8 @@ public class GDXRoot extends Game implements ScreenListener {
 	public void create() {
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("assets.json",canvas,1);
-		playing = new GameMode(canvas, 4,4);
+		// TODO : THE LANES AND LINES PER LANE SHOULD NOT BE DEFINED AT THE GDXROOT LEVEL!
+		playing = new GameMode(canvas, 3,1);
 		
 		loading.setScreenListener(this);
 		setScreen(loading);

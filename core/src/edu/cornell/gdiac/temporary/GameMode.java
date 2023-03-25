@@ -37,7 +37,7 @@ public class GameMode implements Screen {
 		INTRO,
 		/** While we are playing the game */
 		PLAY,
-		/** When the ships is dead (but shells still work) */
+		/** When you die, one of the competency bars hits zero */
 		OVER
 	}
 
@@ -60,8 +60,7 @@ public class GameMode implements Screen {
 
 	/** Variable to track the game state (SIMPLE FIELDS) */
 	private GameState gameState;
-	/** Variable to track total time played in milliseconds (SIMPLE FIELDS) */
-	private float totalTime = 0;
+
 	/** Whether or not this player mode is still active */
 	private boolean active;
 
@@ -76,9 +75,7 @@ public class GameMode implements Screen {
 	 */
 	int lanes;
 
-	/**
-	 * Number of lines per lane
-	 */
+	/** Number of lines per lane */
 	int lpl;
 
 	/**
@@ -88,6 +85,7 @@ public class GameMode implements Screen {
 	 * view has already been initialized by the root class.
 	 */
 	public GameMode(GameCanvas canvas,int lanes, int linesPerLane) {
+		// TODO: THIS NEEDS TO BE DECOUPLED FROM GAMEMODE! NEEDS TO COME FROM THE LEVEL!
 		lpl = linesPerLane;
 		this.lanes = lanes;
 		this.canvas = canvas;
@@ -98,7 +96,7 @@ public class GameMode implements Screen {
 
 		// Create the controllers.
 		inputController = new InputController(lanes, lpl);
-		gameplayController = new GameplayController(lanes,lpl, canvas.getWidth(),canvas.getHeight());
+		gameplayController = new GameplayController(lanes, lpl, canvas.getWidth(),canvas.getHeight());
 	}
 
 	/**
@@ -180,11 +178,14 @@ public class GameMode implements Screen {
 	protected void play(float delta) {
 		// create some kind of data structure for coordinates of notes
 		// hm {frame : notes}
-		//make sure currTick doesn't get too big
+		// make sure currTick doesn't get too big
 		currTick = ticks % 1800;
 
+		// update music controller
+		//gameplayController.musicController.update();
+
 		// adding notes
-		gameplayController.updateNotes(delta, canvas.getHeight(), currTick);
+		//gameplayController.updateNotes(delta, canvas.getHeight(), currTick);
 
 		// every so often check our competencies
 		if(gameplayController.checkAllCompetencies(currTick%150==0)){
@@ -197,11 +198,8 @@ public class GameMode implements Screen {
 		//gameplayController.resolvePhase(inputController);
 		//gameplayController.resolveActions(inputController, delta, currTick);
 
-		// Check for collisions
-		totalTime += (delta*1000); // Seconds to milliseconds
-
 		// Clean up destroyed objects
-		gameplayController.garbageCollect();
+		//gameplayController.garbageCollect();
 	}
 
 	/**
@@ -232,7 +230,7 @@ public class GameMode implements Screen {
 			for(int i = 0; i < gameplayController.getBandMembers().length; ++i){
 				//Draw the border of each band member
 				gameplayController.getBandMembers()[i].drawBorder(canvas);
-				//If we are the goal of the a active lane we need to draw separation lines and held/beat notes
+				//If we are the goal of the active lane we need to draw separation lines and held/beat notes
 				//We also need to draw a separate hit bar for each line
 				if(gameplayController.currentBandMember == i || gameplayController.goalBandMember == i){
 					gameplayController.getBandMembers()[i].drawHitNotes(canvas);
@@ -241,7 +239,7 @@ public class GameMode implements Screen {
 				}
 				//Otherwise just draw the switch notes, and we only have 1 hit bar to draw
 				else{
-					gameplayController.getBandMembers()[i].drawSwitchNotes(canvas);
+					//gameplayController.getBandMembers()[i].drawSwitchNotes(canvas);
 					//gameplayController.getBandMembers()[i].drawHitBar(canvas, gameplayController.hitbarY, Color.WHITE, gameplayController.switches[i]);
 				}
 			}

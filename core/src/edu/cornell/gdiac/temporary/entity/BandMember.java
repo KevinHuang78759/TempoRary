@@ -22,7 +22,7 @@ public class BandMember {
     public float lineHeight;
     /** Width of the lane */
     public float width;
-    /** Total height */
+    /** Total height (of the lane?) */
     public float height;
     /** Number of lines this band member has */
     public int numLines;
@@ -92,6 +92,8 @@ public class BandMember {
         JsonValue noteData = data.get("notes");
         this.notesData = noteData;
 
+        this.hitNotes = new Array<Fish>();
+        this.switchNotes = new Array<Fish>();
     }
     /**
      * Update competency by band member's specific competency loss or gain rate.
@@ -167,20 +169,20 @@ public class BandMember {
     /** Garbage collection for both switch and hit notes */
     public void garbageCollect(){
         // copy switch and hit notes (that haven't been destroyed) to backing
-        for(Fish n : switchNotes){
+        /*for(Fish n : switchNotes){
             if(!n.destroyed){backing.add(n);}
-        }
+        }*/
 
-        Array<Fish> temp = backing;
-        backing = switchNotes;
-        switchNotes = temp;
-        backing.clear();
+        //Array<Fish> temp = backing;
+        //backing = switchNotes;
+        //switchNotes = temp;
+        //backing.clear();
 
         for(Fish n : hitNotes){
             if(!n.destroyed){backing.add(n);}
         }
 
-        temp = backing;
+        Array<Fish> temp = backing;
         backing = hitNotes;
         hitNotes = temp;
         backing.clear();

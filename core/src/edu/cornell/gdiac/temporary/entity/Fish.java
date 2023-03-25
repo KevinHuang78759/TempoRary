@@ -71,6 +71,7 @@ public class Fish extends GameObject {
     private boolean damaged;
     /** The backup texture to use if we are damaged */
     private Texture dmgTexture;
+    private Texture catTexture;
     /** are we hit? */
     public int hitStatus;
 
@@ -91,7 +92,7 @@ public class Fish extends GameObject {
     /**
      * Initialize a note given JSON data
      * */
-    public Fish(JsonValue data){
+    public Fish(JsonValue data, Texture cat){
         System.out.println("NOTE MADE");
         String noteTypeData = data.getString("note");
         if(noteTypeData == "Single"){
@@ -108,6 +109,8 @@ public class Fish extends GameObject {
             this.beat = data.getInt("beat");
             this.lane = -1;
         }
+        this.catTexture = cat;
+        this.setTexture(cat);
     }
 
     /** Set a note to be destroyed. */
@@ -133,14 +136,24 @@ public class Fish extends GameObject {
     }
 
     /** Update the animation and position of this note. */
-    public void update(float delta, int frame) {
+    public void update(int songBeat, float delta) {
         // CHANGE POSITION. ie) position.add(velocity)
         //transform.position = Vector2.Lerp(transform.position, destination, Time.deltaTime);
         // (BeatsShownInAdvance - (beatOfThisNote - songPosInBeats)) / BeatsShownInAdvance
 
         //float timeMove = (beatsAhead - (this.beat - this.));
 
-        position = position.lerp(exitPosition, 0.042f);
+        float timeLeft = this.beat - songBeat;
+
+        // distance to move icon from current position
+        float distance = Vector2.dst(getX(), exitPosition.y, getX(), getY());
+        float distanceToMove = distance * (delta / timeLeft);
+
+        // update position: goal.position - current.position
+        Vector2 direction = new Vector2();
+        direction.set(getX(), exitPosition.y-getY());
+
+        setX(direction.nor().x * distanceToMove);
 
         if(position == exitPosition){
             this.setDestroyed(true);
@@ -194,7 +207,8 @@ public class Fish extends GameObject {
 
     /** Draw the note to the canvas given a width and height confinement */
     public void draw(GameCanvas canvas, float widthConfine, float heightConfine){
-
+        canvas.draw(catTexture, getX(), getY());
+        //canvas.draw(getTexture(), Color.WHITE, origin.x, origin.y, 0, 0, 0.0f, widthConfine/width, heightConfine/height);
     }
 
 }
