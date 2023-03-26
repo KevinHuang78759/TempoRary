@@ -115,7 +115,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	/** Current progress (0 to 1) of the asset manager */
 	private float progress;
 	/** The current state of the play button */
-	private int   pressState;
+	public int   pressState;
 	/** The amount of time to devote to loading assets (as opposed to on screen hints, etc.) */
 	private int   budget;
 
@@ -287,7 +287,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 						centerX, centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 
 			//draw calibration button
-			Color tintCalibration = (pressState == 1 ? Color.BLUE: Color.RED);
+			Color tintCalibration = (pressState == 4 ? Color.GRAY: Color.RED);
 			canvas.draw(calibrationButton, tintCalibration, calibrationButton.getWidth()/4-calibrationButton.getWidth()*2, calibrationButton.getHeight()/2 + 50,
 					centerX, centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 		}
@@ -434,6 +434,12 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		float dist = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
 		if (dist < radius*radius) {
 			pressState = 1;
+		}
+
+		float radiusCali = BUTTON_SCALE*scale*calibrationButton.getWidth()/2.0f;
+		float distCali = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
+		if (distCali < radius*radius) {
+			pressState = 4;
 		}
 		return false;
 	}
