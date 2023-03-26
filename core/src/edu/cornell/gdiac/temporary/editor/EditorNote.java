@@ -32,10 +32,10 @@ public class EditorNote{
 
 
     /** lane the note corresponds to */
-    private int line;
-
-    /** line the note corresponds to */
     private int lane;
+
+    /** line the note corresponds to (Switch notes MUST have line = -1) */
+    private int line;
 
     /** position in the song the note appears */
     private int songPos;
@@ -64,6 +64,9 @@ public class EditorNote{
     public EditorNote(NoteType type, int lane, int line, int songPos, int duration){
         this.lane = lane;
         this.line = line;
+        if (type == NoteType.SWITCH){
+            this.line = -1;
+        }
         this.songPos = songPos;
         this.type = type;
         this.duration = duration;
@@ -150,13 +153,22 @@ public class EditorNote{
         animator = new FilmStrip(texture, 1, 4,4);
         origin = new Vector2(animator.getRegionWidth()/2.0f, animator.getRegionHeight()/2.0f);
     }
-    public void draw(GameCanvas canvas, float zoom){
+    public void draw(GameCanvas canvas, float zoom, float laneEdge, float laneWidth){
         sizeMultiple = 3;
-        if (zoom < 1/2){
-            sizeMultiple = 3*(zoom + 1/2);
+        if (zoom < 1 / 2) {
+            sizeMultiple = 3 * (zoom + 1 / 2);
         }
-        animator.setFrame(0);
-        canvas.draw(animator, Color.WHITE, origin.x, origin.y, x, y, 0.0f, sizeMultiple, sizeMultiple);
+        if (type == NoteType.BEAT) {
+            animator.setFrame(0);
+            canvas.draw(animator, Color.WHITE, origin.x, origin.y, x, y, 0.0f, sizeMultiple, sizeMultiple);
+        }
+        if (type == NoteType.HELD) {
+            animator.setFrame(0);
+            canvas.draw(animator, Color.SALMON, origin.x, origin.y, x, y, 0.0f, sizeMultiple, sizeMultiple);
+        }
+        if (type == NoteType.SWITCH) {
+           canvas.drawLine(laneEdge, y, laneEdge + laneWidth, y, 4*((int) sizeMultiple), Color.LIME);
+        }
     }
 
 }

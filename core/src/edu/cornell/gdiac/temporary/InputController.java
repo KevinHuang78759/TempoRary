@@ -20,6 +20,8 @@ package edu.cornell.gdiac.temporary;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.utils.*;
 import edu.cornell.gdiac.util.*;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
 
 /**
  * Class for reading player input. 
@@ -36,6 +38,17 @@ public class InputController {
 	protected boolean exitPressed;
 	/** XBox Controller support */
 	private XBoxController xbox;
+
+	private Processor processor = new Processor();
+	public float mouseX;
+	public float mouseY;
+
+	public float mouseMoveX;
+
+	public boolean mouseMoved;
+
+	public float mouseMoveY;
+	public boolean mouseClicked;
 
 	/**
 	 * Returns true if the reset button was pressed.
@@ -67,6 +80,7 @@ public class InputController {
 		} else {
 			xbox = null;
 		}
+		clicking = false;
 		triggerLast = new boolean[lpl];
 		switchesLast = new boolean[lanes];
 		triggers = new boolean[lpl];
@@ -87,6 +101,53 @@ public class InputController {
 		}
 	}
 
+	private boolean clicking;
+
+	public class Processor implements InputProcessor {
+
+		public boolean keyDown (int keycode){
+			return false;
+		}
+
+		public boolean keyUp (int keycode){
+			return false;
+		}
+
+		public boolean keyTyped (char character){
+			return false;
+		}
+
+		public boolean touchDown (int x, int y, int pointer, int button){
+			mouseClicked = true;
+			mouseX = x;
+			mouseY = y;
+			return false;
+		}
+
+		public boolean touchUp (int x, int y, int pointer, int button){
+			clicking = false;
+			mouseClicked = false;
+			mouseX = x;
+			mouseY = y;
+			return false;
+		}
+
+		public boolean touchDragged (int x, int y, int pointer){
+			return false;
+		}
+
+		public boolean mouseMoved (int x, int y){
+			mouseMoveX = x;
+			mouseMoveY = y;
+			mouseMoved = true;
+			return false;
+		}
+
+		public boolean scrolled (float amountX, float amountY){
+			return false;
+		}
+	}
+
 	/**
 	 * Reads input from an X-Box controller connected to this computer.
 	 */
@@ -95,6 +156,7 @@ public class InputController {
 		resetPressed = xbox.getA();
 		exitPressed  = xbox.getBack();
 	}
+
 
 	/**
 	 * Reads input from the keyboard.
@@ -113,7 +175,25 @@ public class InputController {
 	private boolean[] switches;
 	private boolean[] switchesLast;
 	private boolean[] moves;
+	private boolean erased;
+	private boolean erasedPress;
+	private boolean erasedLast;
 
+	private boolean undid;
+	private boolean undidPress;
+	private boolean undidLast;
+
+	private boolean redid;
+	private boolean redidPress;
+	private boolean redidLast;
+
+	private boolean play;
+	private boolean playPress;
+	private boolean playLast;
+
+	private boolean track;
+	private boolean trackPress;
+	private boolean trackLast;
 	boolean[] triggerPress;
 	boolean[] triggerLifted;
 	/**
@@ -147,6 +227,16 @@ public class InputController {
 				Gdx.input.isKeyPressed(Input.Keys.RIGHT)
 		};
 
+		erasedPress = Gdx.input.isKeyPressed(Input.Keys.E);
+
+		undidPress = Gdx.input.isKeyPressed(Input.Keys.U);
+
+		redidPress = Gdx.input.isKeyPressed(Input.Keys.R);
+
+		playPress = Gdx.input.isKeyPressed(Input.Keys.SPACE);
+
+		trackPress = Gdx.input.isKeyPressed(Input.Keys.P) ;
+
 		//Compute actual values by comparing with previous value. We only register a click if the trigger or switch
 		// went from false to true. We only register a lift if the trigger went from true to false.
 		for(int i = 0; i < Math.max(switchesPress.length, triggerPress.length); ++i){
@@ -161,6 +251,20 @@ public class InputController {
 			}
 		}
 
+		erased = !erasedLast && erasedPress;
+		erasedLast = erasedPress;
+
+		undid = !undidLast && undidPress;
+		undidLast = undidPress;
+
+		redid = !redidLast && redidPress;
+		redidLast = redidPress;
+
+		play = !playLast && playPress;
+		playLast = playPress;
+
+		track = !trackLast && trackPress;
+		trackLast = trackPress;
 	}
 
 	/*
@@ -176,6 +280,51 @@ public class InputController {
 
 	public boolean[] getMoves(){
 		return moves;
+	}
+
+	public boolean didClick() {
+		if (!clicking && mouseClicked) {
+			clicking = true;
+			return true;
+		}
+		return false;
+	}
+
+	public float getMouseX() { return Gdx.input.getX(); }
+
+	public float getMouseY() { return Gdx.input.getY(); }
+
+
+	public boolean didMove() { return mouseMoved;}
+
+	public boolean didErase() {return erased;}
+
+	public boolean didSetQuarter() {return Gdx.input.isKeyPressed(Input.Keys.Q);}
+	public boolean didSetThird() {return Gdx.input.isKeyPressed(Input.Keys.T);}
+	public boolean didSetFree() {return Gdx.input.isKeyPressed(Input.Keys.F);}
+
+	public boolean didPrecision1() {return Gdx.input.isKeyPressed(Input.Keys.NUM_1);}
+	public boolean didPrecision2() {return Gdx.input.isKeyPressed(Input.Keys.NUM_2);}
+	public boolean didPrecision3() {return Gdx.input.isKeyPressed(Input.Keys.NUM_3);}
+
+	public boolean setSwitchNotes() {return Gdx.input.isKeyPressed(Input.Keys.S);}
+	public boolean setBeatNotes() {return Gdx.input.isKeyPressed(Input.Keys.B);}
+	public boolean setHeldNotes() {return Gdx.input.isKeyPressed(Input.Keys.H);}
+
+	public boolean didPressPlay() {return play;}
+
+	public boolean didPressTrack() {return track;}
+
+	public boolean didResetSong() {return Gdx.input.isKeyPressed(Input.Keys.R);}
+
+	public boolean didSpeedUp() {return Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT);}
+
+	public boolean didUndo() {return undid;}
+
+	public boolean didRedo() {return redid;}
+
+	public void setEditorProcessor() {
+		Gdx.input.setInputProcessor(processor);
 	}
 
 }
