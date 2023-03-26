@@ -47,7 +47,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	private CalibrationController calibration;
 
 	public boolean is_calibration_mode = true;
-	
+
 	/**
 	 * Creates a new game from the configuration settings.
 	 *
@@ -122,20 +122,21 @@ public class GDXRoot extends Game implements ScreenListener {
 			Gdx.app.error("GDXRoot", "Exit with error code "+exitCode, new RuntimeException());
 			Gdx.app.exit();
 		} else if (screen == loading ) {
-			playing.setScreenListener(this);
-			directory = loading.getAssets();
-			playing.populate(directory);
-			setScreen(playing);
-
-			loading.dispose();
-			loading = null;
-			if (loading.pressState == 4) {
+			if (loading.getPressState() == 4) {
 				calibration.setScreenListener(this);
 				directory = loading.getAssets();
 				calibration.populate(directory);
 				setScreen(calibration);
-
 			}
+			else {
+				playing.setScreenListener(this);
+				directory = loading.getAssets();
+				playing.populate(directory);
+				setScreen(playing);
+			}
+
+			loading.dispose();
+			loading = null;
 		}else {
 			// We quit the main application
 			Gdx.app.exit();
