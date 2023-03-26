@@ -82,6 +82,7 @@ public class MusicQueueParser implements AssetParser<MusicQueue> {
                 params.sources.add( sources.getString(ii));
             }
         }
+
         keymap.put(root.name(), root.name());
         manager.load( root.name(), MusicQueue.class, params );
         root = root.next();

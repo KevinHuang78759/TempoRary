@@ -14,5 +14,12 @@
             "file": "fonts/TimesRoman.ttf",
             "size": 32
         }
+    },
+    "soundtrack": {
+      "noedell": {
+        "sources": [
+          "music/noedell.ogg"
+        ]
+      }
     }
 }
