@@ -97,7 +97,7 @@ public class CalibrationController implements Screen {
     private void draw() {
         canvas.begin();
         displayFont.setColor(Color.NAVY);
-        canvas.drawTextCentered("Game Over!",displayFont, 50);
+        canvas.drawTextCentered("Calibration", displayFont,50);
         canvas.end();
     }
 

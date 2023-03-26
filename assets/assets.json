@@ -14,5 +14,12 @@
             "file": "fonts/TimesRoman.ttf",
             "size": 32
         }
+    },
+    "soundtracks": {
+        "calibration": {
+            "sources": [
+                "music/calibration.ogg"
+            ]
+        }
     }
 }
