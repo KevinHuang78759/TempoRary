@@ -420,7 +420,6 @@ public class GameplayController {
 				}
 			}
 		}
-
 	}
 
 	/**
