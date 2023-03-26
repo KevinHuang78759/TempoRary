@@ -115,7 +115,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	/** Current progress (0 to 1) of the asset manager */
 	private float progress;
 	/** The current state of the play button */
-	public int   pressState;
+	private int   pressState;
 	/** The amount of time to devote to loading assets (as opposed to on screen hints, etc.) */
 	private int   budget;
 
@@ -156,7 +156,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @return true if the player is ready to go
 	 */
 	public boolean isReady() {
-		return pressState == 2;
+		return pressState == 2 || pressState == 4;
 	}
 
 	/**
@@ -288,8 +288,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 			//draw calibration button
 			Color tintCalibration = (pressState == 4 ? Color.GRAY: Color.RED);
-			canvas.draw(calibrationButton, tintCalibration, calibrationButton.getWidth()/4-calibrationButton.getWidth()*2, calibrationButton.getHeight()/2 + 50,
-					centerX, centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+			canvas.draw(calibrationButton, tintCalibration, calibrationButton.getWidth()/2, calibrationButton.getHeight()/2 + 50,
+					centerX + calibrationButton.getWidth()*2 , centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 		}
 
 		canvas.end();
@@ -317,6 +317,10 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		} else {
 			canvas.draw(statusFrgRight,  centerX-width/2+scale*PROGRESS_CAP, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
 		}
+	}
+
+	public int getPressState() {
+		return pressState;
 	}
 
 	// ADDITIONAL SCREEN METHODS
@@ -437,8 +441,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		}
 
 		float radiusCali = BUTTON_SCALE*scale*calibrationButton.getWidth()/2.0f;
-		float distCali = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
-		if (distCali < radius*radius) {
+		float distCali = (screenX-(centerX + calibrationButton.getWidth()*2))*(screenX-(centerX + calibrationButton.getWidth()*2))+(screenY-centerY)*(screenY-centerY);
+		if (distCali < radiusCali*radiusCali) {
 			pressState = 4;
 		}
 		return false;
