@@ -59,6 +59,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private Texture playButton;
 	/** Texture atlas to support a progress bar */
 	private Texture statusBar;
+
+	private Texture levelEditorButton;
 	
 	// statusBar is a "texture atlas." Break it up into parts.
 	/** Left cap to the status background (grey region) */
@@ -152,7 +154,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @return true if the player is ready to go
 	 */
 	public boolean isReady() {
-		return pressState == 2;
+		return pressState == 2 || pressState == 4;
 	}
 
 	/**
@@ -204,6 +206,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 		// Load the next two images immediately.
 		playButton = null;
+		levelEditorButton = null;
 		background = internal.getEntry( "background", Texture.class );
 		background.setFilter( TextureFilter.Linear, TextureFilter.Linear );
 		statusBar = internal.getEntry( "progress", Texture.class );
@@ -233,6 +236,10 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		assets.loadAssets();
 		active = true;
 	}
+
+	public int getPressState() {
+		return pressState;
+	}
 	
 	/**
 	 * Called when this screen should release all resources.
@@ -258,6 +265,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			if (progress >= 1.0f) {
 				this.progress = 1.0f;
 				playButton = internal.getEntry("play",Texture.class);
+				levelEditorButton = internal.getEntry("play",Texture.class);
 			}
 		}
 	}
@@ -278,6 +286,10 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			Color tint = (pressState == 1 ? Color.GRAY: Color.WHITE);
 			canvas.draw(playButton, tint, playButton.getWidth()/2, playButton.getHeight()/2 + 50,
 						centerX, centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+
+			Color tintEditor = (pressState == 1 ? Color.GRAY: Color.GREEN);
+			canvas.draw(playButton, tintEditor, levelEditorButton.getWidth()/2, levelEditorButton.getHeight()/2 + 50,
+					centerX + levelEditorButton.getWidth() + 10, centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 		}
 		canvas.end();
 	}
@@ -421,6 +433,12 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		float dist = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
 		if (dist < radius*radius) {
 			pressState = 1;
+		}
+
+		float radiusEditor = BUTTON_SCALE*scale*levelEditorButton.getWidth()/2.0f;
+		float distEditor = (screenX-(centerX + levelEditorButton.getWidth() + 10))*(screenX-(centerX + levelEditorButton.getWidth() + 10))+(screenY-centerY)*(screenY-centerY);
+		if (distEditor < radiusEditor*radiusEditor) {
+			pressState = 4;
 		}
 		return false;
 	}

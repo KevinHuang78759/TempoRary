@@ -119,7 +119,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		if (exitCode != 0) {
 			Gdx.app.error("GDXRoot", "Exit with error code "+exitCode, new RuntimeException());
 			Gdx.app.exit();
-		} else if (screen == loading && !edit) {
+		} else if (screen == loading && loading.getPressState() == 2) {
 			playing.setScreenListener(this);
 			directory = loading.getAssets();
 			playing.populate(directory);
@@ -127,7 +127,7 @@ public class GDXRoot extends Game implements ScreenListener {
 
 			loading.dispose();
 			loading = null;
-		} else if (screen == loading && edit) {
+		} else if (screen == loading && loading.getPressState() == 4) {
 			editing.setScreenListener(this);
 			directory = loading.getAssets();
 			editing.populate(directory);
