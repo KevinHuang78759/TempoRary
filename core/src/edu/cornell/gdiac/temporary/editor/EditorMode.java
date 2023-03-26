@@ -52,11 +52,8 @@ public class EditorMode implements Screen {
     private Vector2 redoButtonLocation;
     private float undoButtonSize;
 
-    /** Music queue for the song */
-    private MusicQueue musicQueue;
-
     /** The song*/
-    private Music music;
+    private MusicQueue music;
 
     /** number of song samples per second*/
     private int sampleRate;
@@ -166,7 +163,7 @@ public class EditorMode implements Screen {
     /** Notes corresponding to the undone actions */
     private LinkedList<EditorNote> undoNotes;
 
-    /** Spacing between beat lines in the song*/
+    /** Spacing (in samples) between beat lines in the song*/
     private int beat;
 
     /** Amount of samples per frame */
@@ -307,12 +304,6 @@ public class EditorMode implements Screen {
         selectedNoteType = EditorNote.NoteType.BEAT;
         duration = 0;
 
-        sampleRate = 44000;
-        frameRate = 60;
-        defineSongCharacteristics();
-
-        selectedDuration = beat;
-        songPosition = (int) ((4/zoom)*beat);
         laneNumber = 4;
         lineNumber = 4;
         ticks = 0;
@@ -385,8 +376,13 @@ public class EditorMode implements Screen {
         animator = new FilmStrip(catNoteTexture, 1, 4,4);
         origin = new Vector2(animator.getRegionWidth()/2.0f, animator.getRegionHeight()/2.0f);
         displayFont = directory.getEntry("lucida", BitmapFont.class);
-        music = directory.getEntry("noedell", Music.class);
         inputController.setEditorProcessor();
+        music = directory.getEntry("noedell", MusicQueue.class);
+        sampleRate = music.getSampleRate();
+        frameRate = 60;
+        defineSongCharacteristics();
+        selectedDuration = beat;
+        songPosition = (int) ((4/zoom)*beat);
     }
 
     /**
@@ -638,8 +634,10 @@ public class EditorMode implements Screen {
     public void togglePlay(){
         if (playing){
             playing = false;
+            music.pause();
         } else {
             playing = true;
+            music.play();
         }
     }
 
