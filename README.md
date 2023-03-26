@@ -1,5 +1,7 @@
 # Tempo-Rary
 
+**Note: this release includes the level editor that is accessible by the green button and has a temporary music file.**
+
 ## Controls:
 
 press `E`, `R`, `U` or `I` to swap which lane you are playing on
