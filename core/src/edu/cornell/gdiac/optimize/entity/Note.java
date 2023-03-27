@@ -51,7 +51,6 @@ public class Note{
 	public float x;
 	public float y;
 	public float vy;
-	public float bx;
 	public float by;
 	public boolean destroyed;
 	FilmStrip animator;
