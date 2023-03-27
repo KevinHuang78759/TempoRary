@@ -386,36 +386,36 @@ public class GameplayController {
 		//For now, lets just do normal and switch notes
 		//Only add ever 200 frames
 		for(int frame = 50; frame < 10000; frame += 200){
-			for(int i = 0; i < bms.length; ++i){
+			for (BandMember bm : bms) {
 				//Roll to see if we actually add a note
-				float det = RandomController.rollFloat(0f,1f);
+				float det = RandomController.rollFloat(0f, 1f);
 				//25% chance to add a beat note
-				if(det < 0.25){
+				if (det < 0.25) {
 					//add a hit note
-					int l = RandomController.rollInt(0,lpl - 1);
-					Note n = new Note(l, Note.NType.BEAT,frame);
+					int l = RandomController.rollInt(0, lpl - 1);
+					Note n = new Note(l, Note.NType.BEAT, frame);
 					n.setY(noteSpawnY);
 					n.setTexture(redTexture);
-					bms[i].getAllNotes().addLast(n);
+					bm.getAllNotes().addLast(n);
 				}
 				//5% chance to add a switch note
-				else if(det < 0.30){
+				else if (det < 0.30) {
 					//add a switch note
 					Note n = new Note(0, Note.NType.SWITCH, frame);
 					n.setY(noteSpawnY);
 					n.setTexture(greenTexture);
-					bms[i].getAllNotes().addLast(n);
+					bm.getAllNotes().addLast(n);
 				}
 				//10% chance to add a hold note for duration 150.
-				else if(det < 0.45){
+				else if (det < 0.45) {
 					//add a held note of length 150 frames
-					int l = RandomController.rollInt(0,lpl - 1);
+					int l = RandomController.rollInt(0, lpl - 1);
 					Note n = new Note(l, Note.NType.HELD, frame);
 					n.setY(noteSpawnY);
 					n.setBottomY(noteSpawnY);
 					n.setHoldFrames(150);
 					n.setTexture(greenTexture);
-					bms[i].getAllNotes().addLast(n);
+					bm.getAllNotes().addLast(n);
 				}
 			}
 		}
