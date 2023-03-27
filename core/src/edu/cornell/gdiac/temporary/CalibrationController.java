@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.audio.MusicQueue;
 import edu.cornell.gdiac.util.ScreenListener;
 
 public class CalibrationController implements Screen {
@@ -12,8 +13,12 @@ public class CalibrationController implements Screen {
     /** Whether or not this player mode is still active */
     private boolean active;
 
+    // ASSETS
     /** The font for giving messages to the player */
     private BitmapFont displayFont;
+
+    /** The song */
+    private MusicQueue music;
 
     // View
     /** Reference to drawing context to display graphics (VIEW CLASS) */
@@ -51,6 +56,8 @@ public class CalibrationController implements Screen {
      */
     public void populate(AssetDirectory directory) {
         displayFont = directory.getEntry("times",BitmapFont.class);
+        music = directory.getEntry("calibration", MusicQueue.class);
+        music.setLooping(true);
     }
 
     @Override
@@ -66,11 +73,13 @@ public class CalibrationController implements Screen {
     @Override
     public void show() {
         active = true;
+        music.play();
     }
 
     @Override
     public void hide() {
         active = false;
+        music.pause();
     }
 
     @Override
