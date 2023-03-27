@@ -14,63 +14,138 @@ public class BandMember {
     /**
      * Bottom left corner
      */
-    Vector2 BL;
+    private Vector2 BL;
+
+    public void setBottomLeft(Vector2 V){
+        BL = V;
+    }
+
+    public Vector2 getBottomLeft(){
+        return BL;
+    }
 
     /**
      * The height of separator lines from the top of the lane
      */
-    float lineHeight;
+    private float lineHeight;
+
+    public void setLineHeight(float l){
+        lineHeight = l;
+    }
+
+    public float getLineHeight(){
+        return lineHeight;
+    }
     /**
      * Width of the lane
      */
-    float width;
+    private float width;
+    public void setWidth(float l){
+        width = l;
+    }
 
+    public float getWidth(){
+        return width;
+    }
     /**
      * Total height
      */
-    float height;
+    private float height;
+    public void setHeight(float l){
+        height = l;
+    }
+
+    public float getHeight(){
+        return height;
+    }
 
     /**
      * Number of lines this band member has
      */
-    int numLines;
+    private int numLines;
+
+    public void setNumLines(int l){
+        numLines = l;
+    }
+
+    public int getNumLines(){
+        return numLines;
+    }
 
     /**
      * The color of the border
      */
-    Color borderColor;
+    private Color borderColor;
+    public void setBColor(Color l){
+        borderColor = l;
+    }
 
+    public Color getBorderColor(){
+        return borderColor;
+    }
     /**
      * Active array of beat and held notes
      */
-    Array<Note> hitNotes;
+    private Array<Note> hitNotes;
+    public void setHitNotes(Array<Note> l){
+        hitNotes = l;
+    }
 
+    public Array<Note> getHitNotes(){
+        return hitNotes;
+    }
     /**
      * Active array of switch notes
      */
-    Array<Note> switchNotes;
+    private Array<Note> switchNotes;
+    public void setSwitchNotes(Array<Note> l){
+        switchNotes = l;
+    }
 
+    public Array<Note> getSwitchNotes(){
+        return switchNotes;
+    }
     /**
      * Queue to hold all the notes for this band member across the entire level
      */
-    Queue<Note> allNotes;
+    private Queue<Note> allNotes;
+
+    public void setAllNotes(Queue<Note> l){
+        allNotes = l;
+    }
+
+    public Queue<Note> getAllNotes(){
+        return allNotes;
+    }
 
     /**
      * backing array used for garbage collection
      */
-    Array<Note> backing;
+    private Array<Note> backing;
 
     /**
      * Maximum competency
      */
 
-    int maxComp;
+    private int maxComp;
+
+    public void setMaxComp(int p){
+        maxComp = p;
+    }
+    public int getMaxComp(){
+        return maxComp;
+    }
 
     /**
      * Current competency
      */
-    int curComp;
-
+    private int curComp;
+    public void setCurComp(int p){
+        curComp = p;
+    }
+    public int getCurComp(){
+        return curComp;
+    }
     /**
      * Constructor
      */
@@ -121,9 +196,9 @@ public class BandMember {
      */
     public void spawnNotes(int frame){
         //add everything at the front of the queue that's supposed to start on this frame
-        while(!allNotes.isEmpty() && allNotes.first().startFrame == frame){
+        while(!allNotes.isEmpty() && allNotes.first().getStartFrame() == frame){
             Note n = allNotes.removeFirst();
-            if(n.nt == Note.NType.SWITCH){
+            if(n.getNoteType() == Note.NType.SWITCH){
                 switchNotes.add(n);
             }
             else{
@@ -134,7 +209,7 @@ public class BandMember {
     public void garbageCollect(){
         //Stop and copy both the switch and hit notes
         for(Note n : switchNotes){
-            if(!n.destroyed){
+            if(!n.isDestroyed()){
                 backing.add(n);
             }
         }
@@ -144,7 +219,7 @@ public class BandMember {
         backing.clear();
 
         for(Note n : hitNotes){
-            if(!n.destroyed){
+            if(!n.isDestroyed()){
                 backing.add(n);
             }
         }
@@ -167,9 +242,9 @@ public class BandMember {
      */
     public void drawSwitchNotes(GameCanvas canvas){
         for(Note n : switchNotes){
-            if(!n.destroyed){
+            if(!n.isDestroyed()){
                 //Switch notes should just appear in the middle of the lane
-                n.x = BL.x + width/2;
+                n.setX(BL.x + width/2);
                 n.draw(canvas, 3*width/4, 3*width/4);
             }
         }
@@ -180,10 +255,10 @@ public class BandMember {
      */
     public void drawHitNotes(GameCanvas canvas){
         for(Note n : hitNotes){
-            if(!n.destroyed){
+            if(!n.isDestroyed()){
                 //Hitnotes will be based on what line we are on
-                n.x = BL.x + width/(2*numLines) + n.line*(width/numLines);
-                n.tail_thickness = width/(4f*numLines);
+                n.setX(BL.x + width/(2*numLines) + n.getLine()*(width/numLines));
+                n.setTail_thickness(width/(4f*numLines));
                 n.draw(canvas, 3*width/(4*numLines), 3*width/(4*numLines));
             }
 

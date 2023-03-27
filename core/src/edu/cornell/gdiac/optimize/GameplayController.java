@@ -202,16 +202,15 @@ public class GameplayController {
 		float XCoor = LEFTBOUND;
 		for(int i = 0; i < NUM_LANES; ++i){
 			bms[i] = new BandMember();
-			bms[i].borderColor = c[i];
-			bms[i].BL.x = XCoor;
-			bms[i].BL.y = BOTTOMBOUND;
-			bms[i].width = i == 0 ? largewidth : smallwidth;
-			bms[i].lineHeight = i == 0 ? TOPBOUND - BOTTOMBOUND : 0;
-			bms[i].height = TOPBOUND - BOTTOMBOUND;
-			bms[i].numLines = lpl;
-			bms[i].maxComp = MAX_HEALTH;
-			bms[i].curComp = MAX_HEALTH;
-			XCoor += bms[i].width + inBetweenWidth;
+			bms[i].setBColor(c[i]);
+			bms[i].setBottomLeft(new Vector2(XCoor, BOTTOMBOUND));
+			bms[i].setWidth(i == 0 ? largewidth : smallwidth);
+			bms[i].setLineHeight(i == 0 ? TOPBOUND - BOTTOMBOUND : 0);
+			bms[i].setHeight(TOPBOUND - BOTTOMBOUND);
+			bms[i].setNumLines(lpl);
+			bms[i].setMaxComp(MAX_HEALTH);
+			bms[i].setCurComp(MAX_HEALTH);
+			XCoor += bms[i].getWidth() + inBetweenWidth;
 		}
 	}
 
@@ -222,18 +221,18 @@ public class GameplayController {
 	 */
 	public void checkDeadNotes(){
 		for(int i = 0; i < bms.length; ++i){
-			for(Note n : bms[i].hitNotes){
+			for(Note n : bms[i].getHitNotes()){
 				//If a note is out of bounds and it has not been hit, we need to mark it destroyed and assign
 				//a negative hit status
-				if(n.y < noteDieY && n.hitStatus == 0){
-					n.hitStatus = -2;
-					n.destroyed = true;
+				if(n.getY() < noteDieY && n.getHitStatus() == 0){
+					n.setHitStatus(-2);
+					n.setDestroyed(true);
 				}
-				if(n.destroyed){
+				if(n.isDestroyed()){
 					//if this note is destroyed we need to increment the competency of the
 					//lane it was destroyed in by its hitstatus
 					if(i == activeBM || i == goalBM){
-						bms[i].compUpdate(n.hitStatus);
+						bms[i].compUpdate(n.getHitStatus());
 					}
 				}
 			}
@@ -320,16 +319,16 @@ public class GameplayController {
 			//We also set the line height of everything to 0 except for the active lane
 			float XCoord = LEFTBOUND;
 			for(int i = 0; i < bms.length; ++i){
-				bms[i].BL.x = XCoord;
+				bms[i].setBottomLeft(new Vector2(XCoord, BOTTOMBOUND));
 				if(i == activeBM){
-					bms[i].width = largewidth;
-					bms[i].lineHeight = TOPBOUND - BOTTOMBOUND;
+					bms[i].setWidth(largewidth);
+					bms[i].setLineHeight(TOPBOUND - BOTTOMBOUND);
 				}
 				else{
-					bms[i].width = smallwidth;
-					bms[i].lineHeight = 0f;
+					bms[i].setWidth(smallwidth);
+					bms[i].setLineHeight(0f);
 				}
-				XCoord += bms[i].width + inBetweenWidth;
+				XCoord += bms[i].getWidth() + inBetweenWidth;
 			}
 		}
 		else{
@@ -337,24 +336,24 @@ public class GameplayController {
 			float progressFrac = t_progress/(float)T_SwitchPhases;
 			float XCoord = LEFTBOUND;
 			for(int i = 0; i < bms.length; ++i){
-				bms[i].BL.x = XCoord;
+				bms[i].setBottomLeft(new Vector2(XCoord, BOTTOMBOUND));
 				if(i == activeBM){
 					//Make the lines of the active lane shrink
-					bms[i].width = (largewidth - smallwidth)*(1-progressFrac) + smallwidth;
-					bms[i].lineHeight = (TOPBOUND - BOTTOMBOUND)*(1-progressFrac);
+					bms[i].setWidth((largewidth - smallwidth)*(1-progressFrac) + smallwidth);
+					bms[i].setLineHeight((TOPBOUND - BOTTOMBOUND)*(1-progressFrac));
 				}
 				else if(i == goalBM){
 					//make the lines of the goal lane grow
-					bms[i].width = (largewidth - smallwidth)*(progressFrac) + smallwidth;
-					bms[i].lineHeight = (TOPBOUND - BOTTOMBOUND)*(progressFrac);
+					bms[i].setWidth((largewidth - smallwidth)*(progressFrac) + smallwidth);
+					bms[i].setLineHeight((TOPBOUND - BOTTOMBOUND)*(progressFrac));
 				}
 				else{
 					//otherwise there should be no lines
-					bms[i].width = smallwidth;
-					bms[i].lineHeight = 0f;
+					bms[i].setWidth(smallwidth);
+					bms[i].setLineHeight(0f);
 				}
 				//increment the tracking coordinate
-				XCoord += bms[i].width + inBetweenWidth;
+				XCoord += bms[i].getWidth() + inBetweenWidth;
 			}
 		}
 	}
@@ -395,28 +394,28 @@ public class GameplayController {
 					//add a hit note
 					int l = RandomController.rollInt(0,lpl - 1);
 					Note n = new Note(l, Note.NType.BEAT,frame);
-					n.y = noteSpawnY;
+					n.setY(noteSpawnY);
 					n.setTexture(redTexture);
-					bms[i].allNotes.addLast(n);
+					bms[i].getAllNotes().addLast(n);
 				}
 				//5% chance to add a switch note
 				else if(det < 0.30){
 					//add a switch note
 					Note n = new Note(0, Note.NType.SWITCH, frame);
-					n.y = noteSpawnY;
+					n.setY(noteSpawnY);
 					n.setTexture(greenTexture);
-					bms[i].allNotes.addLast(n);
+					bms[i].getAllNotes().addLast(n);
 				}
 				//10% chance to add a hold note for duration 150.
 				else if(det < 0.45){
 					//add a held note of length 150 frames
 					int l = RandomController.rollInt(0,lpl - 1);
 					Note n = new Note(l, Note.NType.HELD, frame);
-					n.y = noteSpawnY;
-					n.by = noteSpawnY;
-					n.holdFrame = 150;
+					n.setY(noteSpawnY);
+					n.setBottomY(noteSpawnY);
+					n.setHoldFrames(150);
 					n.setTexture(greenTexture);
-					bms[i].allNotes.addLast(n);
+					bms[i].getAllNotes().addLast(n);
 				}
 			}
 		}
@@ -517,14 +516,14 @@ public class GameplayController {
 			for(int i = 0; i < switches.length; ++i){
 				if(switches[i] && i != activeBM){
 					//Check only the lanes that are not the current active lane
-					for(Note n : bms[i].switchNotes){
+					for(Note n : bms[i].getSwitchNotes()){
 						//Check for all the switch notes of this lane, if one is close enough destroy it and
 						//give it positive hit status
-						float dist = Math.abs(hitbarY - n.y)/n.h;
+						float dist = Math.abs(hitbarY - n.getY())/n.getHeight();
 						if(dist < 1.5){
-							n.hitStatus = dist < 0.75 ? 4 : 2;
-							spawnStars(n.hitStatus, n.x, n.y, 0, n.vy);
-							n.destroyed = true;
+							n.setHitStatus(dist < 0.75 ? 4 : 2);
+							spawnStars(n.getHitStatus(), n.getX(), n.getY(), 0, n.getYVel());
+							n.setDestroyed(true);
 						}
 					}
 					//set goalBM
@@ -556,20 +555,20 @@ public class GameplayController {
 		//We do not want one hit to count for two notes that are close together.
 		boolean[] hitReg = new boolean[triggers.length];
 		int checkBM = curP == play_phase.NOTES ? activeBM : goalBM;
-		for(Note n : bms[checkBM].hitNotes){
-			if(n.nt == Note.NType.BEAT){
-				if(triggers[n.line] && !hitReg[n.line]){
+		for(Note n : bms[checkBM].getHitNotes()){
+			if(n.getNoteType() == Note.NType.BEAT){
+				if(triggers[n.getLine()] && !hitReg[n.getLine()]){
 					//Check for all the beats in this line and in the active band member
 					//See if any are close enough
-					float dist = Math.abs(hitbarY - n.y)/n.h;
+					float dist = Math.abs(hitbarY - n.getY())/n.getHeight();
 					if(dist < 1.5){
 						//If so, destroy the note and set a positive hit status. Also set that we
 						//have registered a hit for this line for this click. This ensures that
 						//We do not have a single hit count for two notes that are close together
-						n.hitStatus = dist < 0.75 ? 2 : 1;
-						spawnStars(n.hitStatus, n.x, n.y, 0, n.vy);
-						n.destroyed = true;
-						hitReg[n.line] = true;
+						n.setHitStatus(dist < 0.75 ? 2 : 1);
+						spawnStars(n.getHitStatus(), n.getX(), n.getY(), 0, n.getYVel());
+						n.setDestroyed(true);
+						hitReg[n.getLine()] = true;
 					}
 				}
 			}
@@ -577,22 +576,22 @@ public class GameplayController {
 				//If it's not a beat and its in the hitNotes its gotta be a hold note
 
 				//Check if we hit the trigger down close enough to the head
-				if(triggers[n.line] && !hitReg[n.line]){
-					float dist = Math.abs(hitbarY - n.by)/n.h;
+				if(triggers[n.getLine()] && !hitReg[n.getLine()]){
+					float dist = Math.abs(hitbarY - n.getBottomY())/n.getHeight();
 					if(dist < 1.5){
-						n.hitStatus += dist < 0.75 ? 2 : 1;
-						spawnStars(n.hitStatus, n.x, n.by, 0, n.vy);
-						hitReg[n.line] = true;
+						n.setHitStatus(dist < 0.75 ? 2 : 1);
+						spawnStars(n.getHitStatus(), n.getX(), n.getBottomY(), 0, n.getYVel());
+						hitReg[n.getLine()] = true;
 					}
 				}
 
 				//check if we lifted close to the end
-				if(lifted[n.line]){
-					float dist = Math.abs(hitbarY - n.y)/n.h;
+				if(lifted[n.getLine()]){
+					float dist = Math.abs(hitbarY - n.getY())/n.getHeight();
 					if(dist < 1.5){
-						n.hitStatus += dist < 0.75 ? 3 : 1;
-						spawnStars(n.hitStatus, n.x, n.y, 0, n.vy);
-						n.destroyed = true;
+						n.setHitStatus(n.getHitStatus() + dist < 0.75 ? 3 : 1);
+						spawnStars(n.getHitStatus(), n.getX(), n.getY(), 0, n.getYVel());
+						n.setDestroyed(true);
 					}
 				}
 			}

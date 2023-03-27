@@ -31,13 +31,38 @@ public class Note{
 	/** Current animation frame for this shell */
 	private float animeframe;
 
-	public int hitStatus;
+	private int hitStatus;
+
+	public int getHitStatus(){
+		return hitStatus;
+	}
+	public void setHitStatus(int t){
+		hitStatus = t;
+	}
 
 	/** line the note is one */
-	public int line;
+	private int line;
+	public int getLine(){
+		return line;
+	}
+	public void setLine(int t){
+		line = t;
+	}
+	private int startFrame;
+	public int getStartFrame(){
+		return startFrame;
+	}
+	public void setStartFrame(int t){
+		startFrame = t;
+	}
+	private int holdFrame;
 
-	public int startFrame;
-	public int holdFrame;
+	public int getHoldFrames(){
+		return holdFrame;
+	}
+	public void setHoldFrames(int t){
+		holdFrame = t;
+	}
 
 	public enum NType{
 		SWITCH,
@@ -45,14 +70,66 @@ public class Note{
 		BEAT
 	}
 
-	public NType nt;
-	public float w;
-	public float h;
-	public float x;
-	public float y;
-	public float vy;
-	public float by;
-	public boolean destroyed;
+	private NType nt;
+
+	public NType getNoteType(){
+		return nt;
+	}
+	public void setNoteType(NType t){
+		nt = t;
+	}
+	private float w;
+
+	public float getWidth(){
+		return w;
+	}
+	public void setWidth(float t){
+		w = t;
+	}
+	private float h;
+
+	public float getHeight(){
+		return h;
+	}
+	public void setHeight(float t){
+		h = t;
+	}
+	private float x;
+
+	public float getX(){
+		return x;
+	}
+	public void setX(float t){
+		x = t;
+	}
+	private float y;
+	public float getY(){
+		return y;
+	}
+	public void setY(float t){
+		y = t;
+	}
+	private float vy;
+	public float getYVel(){
+		return vy;
+	}
+	public void setYVel(float t){
+		vy = t;
+	}
+	private float by;
+	public float getBottomY(){
+		return by;
+	}
+	public void setBottomY(float y){
+		by = y;
+	}
+	private boolean destroyed;
+	public boolean isDestroyed(){
+		return destroyed;
+	}
+	public void setDestroyed(boolean d){
+		destroyed = d;
+	}
 	FilmStrip animator;
 	Vector2 origin;
 	
@@ -94,7 +171,14 @@ public class Note{
 		}
 	}
 
-	public float tail_thickness = 5f;
+	private float tail_thickness = 5f;
+
+	public float getTail_thickness(){
+		return tail_thickness;
+	}
+	public void setTail_thickness(float t){
+		tail_thickness = t;
+	}
 	/**
 	 * Draws this shell to the canvas
 	 *
