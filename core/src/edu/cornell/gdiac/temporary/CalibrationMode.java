@@ -2,42 +2,50 @@ package edu.cornell.gdiac.temporary;
 
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.MusicQueue;
+import edu.cornell.gdiac.temporary.entity.Note;
 import edu.cornell.gdiac.util.ScreenListener;
 
-public class CalibrationController implements Screen {
+public class CalibrationMode implements Screen {
 
-    /** Whether or not this player mode is still active */
+    /** Whether this player mode is still active */
     private boolean active;
 
     // ASSETS
     /** The font for giving messages to the player */
     private BitmapFont displayFont;
-
     /** The song */
     private MusicQueue music;
 
-    // View
     /** Reference to drawing context to display graphics (VIEW CLASS) */
     private GameCanvas canvas;
 
-    // Controllers
     /** Reads input from keyboard or game pad (CONTROLLER CLASS) */
     private InputController inputController;
 
     /** Listener that will update the player mode when we are done */
     private ScreenListener listener;
 
+    /** List of notes that are being used in calculation */
+    private Note[] noteList;
+
+    /** Current frame we're on */
+    private int frame;
+
+    /** Beats per minute (BPM) of the calibration beat */
+    private final int BPM = 90;
+
     /**
      * Constructs new CalibrationController
      * @param canvas
      */
-    public CalibrationController(GameCanvas canvas) {
+    public CalibrationMode(GameCanvas canvas) {
         inputController = new InputController();
         this.canvas = canvas;
+        this.frame = 0;
+        this.noteList = new Note[10];
     }
 
     // TODO: finish method
@@ -55,7 +63,7 @@ public class CalibrationController implements Screen {
      * @param directory 	Reference to the asset directory.
      */
     public void populate(AssetDirectory directory) {
-        displayFont = directory.getEntry("times",BitmapFont.class);
+        displayFont = directory.getEntry("times", BitmapFont.class);
         music = directory.getEntry("calibration", MusicQueue.class);
         music.setLooping(true);
     }
@@ -63,11 +71,39 @@ public class CalibrationController implements Screen {
     @Override
     public void render(float delta) {
         if (active) {
+            update();
             draw();
             if (inputController.didExit() && listener != null) {
                 listener.exitScreen(this, 0);
             }
         }
+    }
+
+    /** Draws elements to the screen */
+    private void draw() {
+        canvas.begin();
+        displayFont.setColor(Color.NAVY);
+        canvas.drawTextCentered("Calibration", displayFont,50);
+        canvas.end();
+    }
+
+    /** Updates the note states */
+    private void update() {
+        // Process the input into screen
+        inputController.readInput();
+
+        // update each of the notes
+        for (Note note : noteList) {
+            // TODO: update notes
+        }
+
+        // resolve inputs from the user
+        resolveInputs();
+    }
+
+    /** Resolves inputs from the input controller */
+    private void resolveInputs() {
+        // use space to take inputs
     }
 
     @Override
@@ -101,13 +137,6 @@ public class CalibrationController implements Screen {
     public void dispose() {
         inputController = null;
         canvas = null;
-    }
-
-    private void draw() {
-        canvas.begin();
-        displayFont.setColor(Color.NAVY);
-        canvas.drawTextCentered("Calibration", displayFont,50);
-        canvas.end();
     }
 
     /**

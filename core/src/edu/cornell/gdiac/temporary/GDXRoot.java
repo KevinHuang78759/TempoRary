@@ -41,12 +41,10 @@ public class GDXRoot extends Game implements ScreenListener {
 	/** Player mode for the asset loading screen (CONTROLLER CLASS) */
 	private LoadingMode loading;
 	/** Player mode for the game proper (CONTROLLER CLASS) */
-
 	private GameMode playing;
 	/** Player mode for getting calibration (CONTROLLER CLASS) */
-	private CalibrationController calibration;
+	private CalibrationMode calibration;
 
-	public boolean is_calibration_mode = true;
 
 	/**
 	 * Creates a new game from the configuration settings.
@@ -66,7 +64,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("assets.json", canvas,1);
 		playing = new GameMode(canvas, 4,4);
-		calibration = new CalibrationController(canvas);
+		calibration = new CalibrationMode(canvas);
 
 		calibration.setScreenListener(this);
 		loading.setScreenListener(this);
