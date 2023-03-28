@@ -31,8 +31,24 @@ public class CalibrationMode implements Screen {
     /** List of notes that are being used in calculation */
     private Note[] noteList;
 
+    // important music calculation things
     /** Current frame we're on */
     private int frame;
+
+    /** number of song samples per second*/
+    private int sampleRate;
+
+    /** number of frames per second */
+    private int frameRate;
+
+    /** Spacing (in samples) between beat lines in the song*/
+    private int beat;
+
+    /** Amount of samples per frame */
+    private int samplesPerFrame;
+
+    /** Position of the "music" */
+    private int musicPosition;
 
     /** Beats per minute (BPM) of the calibration beat */
     private final int BPM = 90;
@@ -45,6 +61,8 @@ public class CalibrationMode implements Screen {
         inputController = new InputController();
         this.canvas = canvas;
         this.frame = 0;
+        // TODO: change it so that this is not explicit
+        this.frameRate = 60;
         this.noteList = new Note[10];
     }
 
@@ -66,13 +84,17 @@ public class CalibrationMode implements Screen {
         displayFont = directory.getEntry("times", BitmapFont.class);
         music = directory.getEntry("calibration", MusicQueue.class);
         music.setLooping(true);
+        // define parts of the music
+        this.sampleRate = music.getSampleRate();
+        this.beat = (int) (((float) sampleRate)/(((float) BPM)/60f));
+        this.samplesPerFrame = sampleRate/frameRate;
     }
 
     @Override
     public void render(float delta) {
         if (active) {
-            update();
-            draw();
+            update(delta);
+            draw(delta);
             if (inputController.didExit() && listener != null) {
                 listener.exitScreen(this, 0);
             }
@@ -80,7 +102,7 @@ public class CalibrationMode implements Screen {
     }
 
     /** Draws elements to the screen */
-    private void draw() {
+    private void draw(float delta) {
         canvas.begin();
         displayFont.setColor(Color.NAVY);
         canvas.drawTextCentered("Calibration", displayFont,50);
@@ -88,7 +110,7 @@ public class CalibrationMode implements Screen {
     }
 
     /** Updates the note states */
-    private void update() {
+    private void update(float delta) {
         // Process the input into screen
         inputController.readInput();
 
@@ -96,7 +118,11 @@ public class CalibrationMode implements Screen {
         for (Note note : noteList) {
             // TODO: update notes
         }
+        musicPosition += samplesPerFrame;
 
+        if (musicPosition % beat == 0) {
+            System.out.println("beat " + musicPosition);
+        }
         // resolve inputs from the user
         resolveInputs();
     }
