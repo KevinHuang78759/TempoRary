@@ -231,7 +231,7 @@ public class BandMember {
     }
 
     /**
-     * Update competency by the specified amount but do not go below 0 or exceed the max
+     * Update competency by the specified amount but will not go below 0 or exceed the max
      */
 
     public void compUpdate(int amount){
