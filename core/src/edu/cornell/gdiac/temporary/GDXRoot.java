@@ -18,6 +18,7 @@
  */
 package edu.cornell.gdiac.temporary;
 import edu.cornell.gdiac.util.*;
+import edu.cornell.gdiac.temporary.editor.*;
 
 import com.badlogic.gdx.*;
 import edu.cornell.gdiac.assets.*;
@@ -42,6 +43,8 @@ public class GDXRoot extends Game implements ScreenListener {
 	private LoadingMode loading;
 	/** Player mode for the game proper (CONTROLLER CLASS) */
 	private GameMode playing;
+	/** Player mode for the level editor (CONTROLLER CLASS) */
+	private EditorMode editing;
 	/** Player mode for getting calibration (CONTROLLER CLASS) */
 	private CalibrationMode calibration;
 
@@ -64,6 +67,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("assets.json", canvas,1);
 		playing = new GameMode(canvas, 4,4);
+		editing = new EditorMode(canvas);
 		calibration = new CalibrationMode(canvas);
 
 		calibration.setScreenListener(this);
@@ -119,23 +123,28 @@ public class GDXRoot extends Game implements ScreenListener {
 		if (exitCode != 0) {
 			Gdx.app.error("GDXRoot", "Exit with error code "+exitCode, new RuntimeException());
 			Gdx.app.exit();
-		} else if (screen == loading ) {
+		} else if (screen == loading) {
+			directory = loading.getAssets();
+
 			if (loading.getPressState() == 4) {
 				calibration.setScreenListener(this);
-				directory = loading.getAssets();
 				calibration.populate(directory);
 				setScreen(calibration);
 			}
+			else if (loading.getPressState() == 5) {
+				editing.setScreenListener(this);
+				editing.populate(directory);
+				setScreen(editing);
+			}
 			else {
 				playing.setScreenListener(this);
-				directory = loading.getAssets();
 				playing.populate(directory);
 				setScreen(playing);
 			}
 
 			loading.dispose();
 			loading = null;
-		}else {
+		} else {
 			// We quit the main application
 			Gdx.app.exit();
 		}

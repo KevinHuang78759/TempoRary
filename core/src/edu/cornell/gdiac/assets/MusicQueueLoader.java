@@ -195,9 +195,7 @@ public class MusicQueueLoader extends AsynchronousAssetLoader<MusicQueue, MusicQ
      * @param fileName    Pointless
      */
     @Override
-    public FileHandle resolve (String fileName) {
-        return null;
-    }
+    public FileHandle resolve (String fileName) { return null;}
 
     /** 
      * Returns the other assets this asset requires to be loaded first. 

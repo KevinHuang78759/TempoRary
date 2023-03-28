@@ -20,6 +20,11 @@
             "sources": [
                 "music/calibration.ogg"
             ]
+        },
+        "noedell": {
+            "sources": [
+                "music/noedell.ogg"
+            ]
         }
     }
 }
