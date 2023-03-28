@@ -31,10 +31,10 @@ public class CalibrationMode implements Screen {
     /** List of notes that are being used in calculation */
     private Note[] noteList;
 
-    // important music calculation things
-    /** Current frame we're on */
-    private int frame;
+    /** Represents the base amount of leeway for hitting on the beat (in samples) */
+    private int baseOffset;
 
+    // important music calculation variables
     /** number of song samples per second*/
     private int sampleRate;
 
@@ -60,8 +60,8 @@ public class CalibrationMode implements Screen {
     public CalibrationMode(GameCanvas canvas) {
         inputController = new InputController();
         this.canvas = canvas;
-        this.frame = 0;
-        // TODO: change it so that this is not explicit
+        // TODO: change it so that this is not explicit?
+        // frame rate can be calculated by 1 / delta
         this.frameRate = 60;
         this.noteList = new Note[10];
     }
@@ -86,7 +86,7 @@ public class CalibrationMode implements Screen {
         music.setLooping(true);
         // define parts of the music
         this.sampleRate = music.getSampleRate();
-        this.beat = (int) (((float) sampleRate)/(((float) BPM)/60f));
+        this.beat = (int) (((float) sampleRate) / (((float) BPM) / frameRate));
         this.samplesPerFrame = sampleRate/frameRate;
     }
 
@@ -118,11 +118,12 @@ public class CalibrationMode implements Screen {
         for (Note note : noteList) {
             // TODO: update notes
         }
+
         musicPosition += samplesPerFrame;
 
-        if (musicPosition % beat == 0) {
-            System.out.println("beat " + musicPosition);
-        }
+//        if (musicPosition % beat == 0) {
+//            System.out.println("beat " + musicPosition);
+//        }
         // resolve inputs from the user
         resolveInputs();
     }
@@ -130,6 +131,17 @@ public class CalibrationMode implements Screen {
     /** Resolves inputs from the input controller */
     private void resolveInputs() {
         // use space to take inputs
+        boolean hitSpace = inputController.didPressPlay();
+        // essentially, resolve the current position at which you hit the space bar
+        // assign the beat it's at, and then determine how far off you are
+        if (hitSpace) {
+            int currentBeat = Math.round((float) musicPosition / beat);
+            System.out.println("hit at beat: " + musicPosition + " attempted beat hit: " + currentBeat * beat);
+        }
+    }
+
+    private void calcCurrentBeat() {
+
     }
 
     @Override
