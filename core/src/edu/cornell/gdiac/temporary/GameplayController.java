@@ -40,16 +40,12 @@ import java.util.HashMap;
 public class GameplayController {
 	int curframe;
 	// Graphics assets for the entities
-	/** Texture for all ships, as they look the same */
-	private Texture beetleTexture;
 	/** Texture for all stars, as they look the same */
 	private Texture starTexture;
-	/** Texture for all bullets, as they look the same */
-	private Texture bulletTexture;
 	/** Texture for green shells, as they look the same */
 	private Texture greenTexture;
 	/** Texture for red shells, as they look the same */
-	private Texture redTexture;
+	private Texture catNoteTexture;
 
 	/** The minimum velocity factor (x shell velocity) of a newly created star */
 	private static final float MIN_STAR_FACTOR = 0.1f;
@@ -251,10 +247,8 @@ public class GameplayController {
 	 * @param directory 	Reference to the asset directory.
 	 */
 	public void populate(AssetDirectory directory) {
-		beetleTexture = directory.getEntry("beetle", Texture.class);
-		bulletTexture = directory.getEntry("bullet", Texture.class);
 		starTexture = directory.getEntry("star", Texture.class);
-		redTexture  = directory.getEntry("red", Texture.class);
+		catNoteTexture = directory.getEntry("catnote", Texture.class);
 		greenTexture = directory.getEntry("green", Texture.class);
 	}
 
@@ -395,7 +389,7 @@ public class GameplayController {
 					int l = RandomController.rollInt(0, lpl - 1);
 					Note n = new Note(l, Note.NType.BEAT, frame);
 					n.setY(noteSpawnY);
-					n.setTexture(redTexture);
+					n.setTexture(catNoteTexture);
 					bm.getAllNotes().addLast(n);
 				}
 				//5% chance to add a switch note
