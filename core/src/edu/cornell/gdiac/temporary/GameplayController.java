@@ -27,9 +27,6 @@ import com.badlogic.gdx.graphics.Texture;
 
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.temporary.entity.*;
-import edu.cornell.gdiac.temporary.GameObject.ObjectType;
-
-import java.util.HashMap;
 
 /**
  * Controller to handle gameplay interactions.
@@ -79,7 +76,7 @@ public class GameplayController {
 	/**
 	 * Array of bandmembers
 	 */
-	BandMember[] bms;
+	BandMember[] bandMembers;
 
 	/**
 	 * Indicates whether or not we want to use randomly generated notes
@@ -184,7 +181,7 @@ public class GameplayController {
 		lpl = linesPerLane;
 		noteSpawnY = TOPBOUND + smallwidth/2;
 		noteDieY = BOTTOMBOUND - smallwidth/2;
-		bms = new BandMember[NUM_LANES];
+		bandMembers = new BandMember[NUM_LANES];
 		triggers = new boolean[linesPerLane];
 		switches = new boolean[lanes];
 	}
@@ -197,16 +194,16 @@ public class GameplayController {
 
 		float XCoor = LEFTBOUND;
 		for(int i = 0; i < NUM_LANES; ++i){
-			bms[i] = new BandMember();
-			bms[i].setBColor(c[i]);
-			bms[i].setBottomLeft(new Vector2(XCoor, BOTTOMBOUND));
-			bms[i].setWidth(i == 0 ? largewidth : smallwidth);
-			bms[i].setLineHeight(i == 0 ? TOPBOUND - BOTTOMBOUND : 0);
-			bms[i].setHeight(TOPBOUND - BOTTOMBOUND);
-			bms[i].setNumLines(lpl);
-			bms[i].setMaxComp(MAX_HEALTH);
-			bms[i].setCurComp(MAX_HEALTH);
-			XCoor += bms[i].getWidth() + inBetweenWidth;
+			bandMembers[i] = new BandMember();
+			bandMembers[i].setBColor(c[i]);
+			bandMembers[i].setBottomLeft(new Vector2(XCoor, BOTTOMBOUND));
+			bandMembers[i].setWidth(i == 0 ? largewidth : smallwidth);
+			bandMembers[i].setLineHeight(i == 0 ? TOPBOUND - BOTTOMBOUND : 0);
+			bandMembers[i].setHeight(TOPBOUND - BOTTOMBOUND);
+			bandMembers[i].setNumLines(lpl);
+			bandMembers[i].setMaxComp(MAX_HEALTH);
+			bandMembers[i].setCurComp(MAX_HEALTH);
+			XCoor += bandMembers[i].getWidth() + inBetweenWidth;
 		}
 	}
 
@@ -216,8 +213,8 @@ public class GameplayController {
 	 * destroyed notes is also done in here.
 	 */
 	public void checkDeadNotes(){
-		for(int i = 0; i < bms.length; ++i){
-			for(Note n : bms[i].getHitNotes()){
+		for(int i = 0; i < bandMembers.length; ++i){
+			for(Note n : bandMembers[i].getHitNotes()){
 				//If a note is out of bounds and it has not been hit, we need to mark it destroyed and assign
 				//a negative hit status
 				if(n.getY() < noteDieY && n.getHitStatus() == 0){
@@ -228,7 +225,7 @@ public class GameplayController {
 					//if this note is destroyed we need to increment the competency of the
 					//lane it was destroyed in by its hitstatus
 					if(i == activeBM || i == goalBM){
-						bms[i].compUpdate(n.getHitStatus());
+						bandMembers[i].compUpdate(n.getHitStatus());
 					}
 				}
 			}
@@ -273,6 +270,8 @@ public class GameplayController {
 	public void start() {
 		setupBandMembers(new Color[]{Color.BLUE, Color.GOLDENROD, Color.CORAL,Color.MAROON});
 		activeBM = 0;
+		goalBM = 0;
+		updateBMCoords();
 		curframe = 0;
 		addNoteRandom();
 	}
@@ -286,7 +285,7 @@ public class GameplayController {
 		checkDeadNotes();
 
 		//Then, update the notes for each band member and spawn new notes
-		for(BandMember bm : bms){
+		for(BandMember bm : bandMembers){
 			bm.updateNotes(curframe);
 			//Make sure to spawn new notes form the all queue
 			bm.spawnNotes(curframe);
@@ -312,42 +311,42 @@ public class GameplayController {
 			//If we are in the notes phase, we set the width of the active lane to goal, and everything else to small
 			//We also set the line height of everything to 0 except for the active lane
 			float XCoord = LEFTBOUND;
-			for(int i = 0; i < bms.length; ++i){
-				bms[i].setBottomLeft(new Vector2(XCoord, BOTTOMBOUND));
+			for(int i = 0; i < bandMembers.length; ++i){
+				bandMembers[i].setBottomLeft(new Vector2(XCoord, BOTTOMBOUND));
 				if(i == activeBM){
-					bms[i].setWidth(largewidth);
-					bms[i].setLineHeight(TOPBOUND - BOTTOMBOUND);
+					bandMembers[i].setWidth(largewidth);
+					bandMembers[i].setLineHeight(TOPBOUND - BOTTOMBOUND);
 				}
 				else{
-					bms[i].setWidth(smallwidth);
-					bms[i].setLineHeight(0f);
+					bandMembers[i].setWidth(smallwidth);
+					bandMembers[i].setLineHeight(0f);
 				}
-				XCoord += bms[i].getWidth() + inBetweenWidth;
+				XCoord += bandMembers[i].getWidth() + inBetweenWidth;
 			}
 		}
 		else{
 			//Otherwise we must be in transition
 			float progressFrac = t_progress/(float)T_SwitchPhases;
 			float XCoord = LEFTBOUND;
-			for(int i = 0; i < bms.length; ++i){
-				bms[i].setBottomLeft(new Vector2(XCoord, BOTTOMBOUND));
+			for(int i = 0; i < bandMembers.length; ++i){
+				bandMembers[i].setBottomLeft(new Vector2(XCoord, BOTTOMBOUND));
 				if(i == activeBM){
 					//Make the lines of the active lane shrink
-					bms[i].setWidth((largewidth - smallwidth)*(1-progressFrac) + smallwidth);
-					bms[i].setLineHeight((TOPBOUND - BOTTOMBOUND)*(1-progressFrac));
+					bandMembers[i].setWidth((largewidth - smallwidth)*(1-progressFrac) + smallwidth);
+					bandMembers[i].setLineHeight((TOPBOUND - BOTTOMBOUND)*(1-progressFrac));
 				}
 				else if(i == goalBM){
 					//make the lines of the goal lane grow
-					bms[i].setWidth((largewidth - smallwidth)*(progressFrac) + smallwidth);
-					bms[i].setLineHeight((TOPBOUND - BOTTOMBOUND)*(progressFrac));
+					bandMembers[i].setWidth((largewidth - smallwidth)*(progressFrac) + smallwidth);
+					bandMembers[i].setLineHeight((TOPBOUND - BOTTOMBOUND)*(progressFrac));
 				}
 				else{
 					//otherwise there should be no lines
-					bms[i].setWidth(smallwidth);
-					bms[i].setLineHeight(0f);
+					bandMembers[i].setWidth(smallwidth);
+					bandMembers[i].setLineHeight(0f);
 				}
 				//increment the tracking coordinate
-				XCoord += bms[i].getWidth() + inBetweenWidth;
+				XCoord += bandMembers[i].getWidth() + inBetweenWidth;
 			}
 		}
 	}
@@ -359,6 +358,7 @@ public class GameplayController {
 		//player = null;
 		curframe = 0;
 		objects.clear();
+		curP = play_phase.NOTES;
 	}
 
 	/**
@@ -380,7 +380,7 @@ public class GameplayController {
 		//For now, lets just do normal and switch notes
 		//Only add ever 200 frames
 		for(int frame = 50; frame < 10000; frame += 200){
-			for (BandMember bm : bms) {
+			for (BandMember bm : bandMembers) {
 				//Roll to see if we actually add a note
 				float det = RandomController.rollFloat(0f, 1f);
 				//25% chance to add a beat note
@@ -434,7 +434,7 @@ public class GameplayController {
 		backing = objects;
 		objects = tmp;
 		backing.clear();
-		for (BandMember bm : bms) {
+		for (BandMember bm : bandMembers) {
 			bm.garbageCollect();
 		}
 	}
@@ -510,7 +510,7 @@ public class GameplayController {
 			for(int i = 0; i < switches.length; ++i){
 				if(switches[i] && i != activeBM){
 					//Check only the lanes that are not the current active lane
-					for(Note n : bms[i].getSwitchNotes()){
+					for(Note n : bandMembers[i].getSwitchNotes()){
 						//Check for all the switch notes of this lane, if one is close enough destroy it and
 						//give it positive hit status
 						float dist = Math.abs(hitbarY - n.getY())/n.getHeight();
@@ -549,7 +549,7 @@ public class GameplayController {
 		//We do not want one hit to count for two notes that are close together.
 		boolean[] hitReg = new boolean[triggers.length];
 		int checkBM = curP == play_phase.NOTES ? activeBM : goalBM;
-		for(Note n : bms[checkBM].getHitNotes()){
+		for(Note n : bandMembers[checkBM].getHitNotes()){
 			if(n.getNoteType() == Note.NType.BEAT){
 				if(triggers[n.getLine()] && !hitReg[n.getLine()]){
 					//Check for all the beats in this line and in the active band member

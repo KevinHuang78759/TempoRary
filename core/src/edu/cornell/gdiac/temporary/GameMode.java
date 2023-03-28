@@ -228,20 +228,20 @@ public class GameMode implements Screen {
 			}
 
 
-			for(int i = 0; i < gameplayController.bms.length; ++i){
+			for(int i = 0; i < gameplayController.bandMembers.length; ++i){
 				//Draw the border of each band member
-				gameplayController.bms[i].drawBorder(canvas);
+				gameplayController.bandMembers[i].drawBorder(canvas);
 				//If we are the goal of the a active lane we need to draw separation lines and held/beat notes
 				//We also need to draw a separate hit bar for each line
 				if(gameplayController.activeBM == i || gameplayController.goalBM == i){
-					gameplayController.bms[i].drawHitNotes(canvas);
-					gameplayController.bms[i].drawLineSeps(canvas);
-					gameplayController.bms[i].drawHitBar(canvas, gameplayController.hitbarY, Color.WHITE, gameplayController.triggers);
+					gameplayController.bandMembers[i].drawHitNotes(canvas);
+					gameplayController.bandMembers[i].drawLineSeps(canvas);
+					gameplayController.bandMembers[i].drawHitBar(canvas, gameplayController.hitbarY, Color.WHITE, gameplayController.triggers);
 				}
 				//Otherwise just draw the switch notes, and we only have 1 hit bar to draw
 				else{
-					gameplayController.bms[i].drawSwitchNotes(canvas);
-					gameplayController.bms[i].drawHitBar(canvas, gameplayController.hitbarY, Color.WHITE, gameplayController.switches[i]);
+					gameplayController.bandMembers[i].drawSwitchNotes(canvas);
+					gameplayController.bandMembers[i].drawHitBar(canvas, gameplayController.hitbarY, Color.WHITE, gameplayController.switches[i]);
 
 				}
 			}
