@@ -31,8 +31,8 @@ public class CalibrationMode implements Screen {
     /** List of notes that are being used in calculation */
     private Note[] noteList;
 
-    /** Represents the base amount of leeway for hitting on the beat (in samples) */
-    private int baseOffset;
+//    /** Represents the base amount of leeway for hitting on the beat (in samples) */
+    public final int BASE_OFFSET = 6000;
 
     // important music calculation variables
     /** number of song samples per second*/
@@ -121,9 +121,6 @@ public class CalibrationMode implements Screen {
 
         musicPosition += samplesPerFrame;
 
-//        if (musicPosition % beat == 0) {
-//            System.out.println("beat " + musicPosition);
-//        }
         // resolve inputs from the user
         resolveInputs();
     }
@@ -136,12 +133,17 @@ public class CalibrationMode implements Screen {
         // assign the beat it's at, and then determine how far off you are
         if (hitSpace) {
             int currentBeat = Math.round((float) musicPosition / beat);
-            System.out.println("hit at beat: " + musicPosition + " attempted beat hit: " + currentBeat * beat);
+            int attemptedBeat = currentBeat * beat;
+            System.out.println(isOnBeat(attemptedBeat, musicPosition));
+//            System.out.println("hit at beat: " + musicPosition + " attempted beat hit: " + attemptedBeat + " diff: " + (musicPosition - attemptedBeat));
         }
     }
 
-    private void calcCurrentBeat() {
-
+    /** checks whether use is on beat or not */
+    private boolean isOnBeat(int hitPosition, int currPosition) {
+        int lowerRange = currPosition - BASE_OFFSET;
+        int higherRange = currPosition + BASE_OFFSET;
+        return hitPosition >= lowerRange && hitPosition <= higherRange;
     }
 
     @Override
