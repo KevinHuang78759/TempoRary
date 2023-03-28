@@ -126,16 +126,19 @@ public class GDXRoot extends Game implements ScreenListener {
 		} else if (screen == loading) {
 			directory = loading.getAssets();
 
+			// load calibration screen
 			if (loading.getPressState() == 4) {
 				calibration.setScreenListener(this);
 				calibration.populate(directory);
 				setScreen(calibration);
 			}
+			// load editing screen
 			else if (loading.getPressState() == 5) {
 				editing.setScreenListener(this);
 				editing.populate(directory);
 				setScreen(editing);
 			}
+			// load playing screen
 			else {
 				playing.setScreenListener(this);
 				playing.populate(directory);

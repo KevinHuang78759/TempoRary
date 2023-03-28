@@ -292,7 +292,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			canvas.draw(playButton, tint, playButton.getWidth()/2, playButton.getHeight()/2 + 50,
 						centerX, centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 
-			Color tintEditor = (pressState == 1 ? Color.GRAY: Color.GREEN);
+			Color tintEditor = (pressState == 5 ? Color.GRAY: Color.GREEN);
 			canvas.draw(playButton, tintEditor, levelEditorButton.getWidth()/2, levelEditorButton.getHeight()/2 + 50,
 					centerX + levelEditorButton.getWidth() + 10, centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 
@@ -430,7 +430,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @return whether to hand the event to other listeners. 
 	 */
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		if (playButton == null || pressState == 2) {
+		if (playButton == null || pressState == 2 || pressState == 4 || pressState == 5) {
 			return true;
 		}
 		
@@ -448,7 +448,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		float radiusEditor = BUTTON_SCALE*scale*levelEditorButton.getWidth()/2.0f;
 		float distEditor = (screenX-(centerX + levelEditorButton.getWidth() + 10))*(screenX-(centerX + levelEditorButton.getWidth() + 10))+(screenY-centerY)*(screenY-centerY);
 		if (distEditor < radiusEditor*radiusEditor) {
-			pressState = 4;
+			pressState = 5;
 		}
 
 		float radiusCali = BUTTON_SCALE*scale*calibrationButton.getWidth()/2.0f;
