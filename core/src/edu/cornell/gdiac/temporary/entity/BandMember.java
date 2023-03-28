@@ -233,7 +233,6 @@ public class BandMember {
     /**
      * Update competency by the specified amount but will not go below 0 or exceed the max
      */
-
     public void compUpdate(int amount){
         curComp = Math.min(Math.max(0, curComp + amount), maxComp);
     }
