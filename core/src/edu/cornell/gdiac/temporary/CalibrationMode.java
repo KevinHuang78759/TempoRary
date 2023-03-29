@@ -133,8 +133,6 @@ public class CalibrationMode implements Screen {
         // Process the input into screen
         inputController.readInput();
 
-        System.out.println();
-
         // update each of the notes
         for (CalibNote note : noteList) {
             // TODO: update notes
@@ -154,19 +152,28 @@ public class CalibrationMode implements Screen {
         // essentially, resolve the current position at which you hit the space bar
         // assign the beat it's at, and then determine how far off you are
         if (hitSpace) {
-            int tempBeat = Math.round(((float) sampleRate) / (((float) BPM) / (1 / delta)));
-            int currentBeat = Math.round((float) musicPosition / tempBeat);
-            int attemptedBeat = currentBeat * tempBeat;
-            onBeat = isOnBeat(attemptedBeat, musicPosition);
+            int currPosInMs = Math.round(music.getPosition() * 1000);
+            int tempBeat = (60000 / BPM);
+            // your beat that you hit the space bar at
+            int hitBeat = Math.round((float) currPosInMs / tempBeat);
+            // the beat we are actually at
+            int actualBeat = hitBeat * tempBeat ;
+//            int tempBeat = Math.round(((float) sampleRate) / (((float) BPM) / (1 / delta)));
+//            int currentBeat = Math.round((float) musicPosition / tempBeat);
+//            int attemptedBeat = currentBeat * tempBeat;
+//            onBeat = isOnBeat(attemptedBeat, musicPosition);
+            onBeat = isOnBeat(actualBeat, currPosInMs);
 //            System.out.println(isOnBeat(attemptedBeat, musicPosition));
 //            System.out.println("hit at beat: " + musicPosition + " attempted beat hit: " + attemptedBeat + " diff: " + (musicPosition - attemptedBeat));
+            System.out.println("hit at pos: " + currPosInMs + " attempted beat hit: " + actualBeat + " diff: " + (currPosInMs - actualBeat));
+
         }
     }
 
     /** checks whether use is on beat or not */
     private boolean isOnBeat(int hitPosition, int currPosition) {
-        int lowerRange = currPosition - BASE_OFFSET;
-        int higherRange = currPosition + BASE_OFFSET;
+        int lowerRange = currPosition - 70;
+        int higherRange = currPosition + 70;
         return hitPosition >= lowerRange && hitPosition <= higherRange;
     }
 
