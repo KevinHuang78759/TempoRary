@@ -3,11 +3,7 @@
  *
  *
  * This separation is very important for this class because it has a lot
- * of interactions with other classes.  When a shell dies, it emits stars.
- *
- * Author: Walker M. White
- * Based on original Optimization Lab by Don Holden, 2007
- * LibGDX version, 2/2/2015
+ * of interactions with other classes.  When a note is hit, it emits stars.
  */
 package edu.cornell.gdiac.temporary.entity;
 
@@ -18,7 +14,7 @@ import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 
 /**
- * Model class for enemy shells.
+ * Model class for Notes.
  */
 public class Note{
 	public static final float descentSpeed = -4.5f;
@@ -64,18 +60,18 @@ public class Note{
 		holdFrame = t;
 	}
 
-	public enum NType{
+	public enum NoteType {
 		SWITCH,
 		HELD,
 		BEAT
 	}
 
-	private NType nt;
+	private NoteType nt;
 
-	public NType getNoteType(){
+	public NoteType getNoteType(){
 		return nt;
 	}
-	public void setNoteType(NType t){
+	public void setNoteType(NoteType t){
 		nt = t;
 	}
 	private float w;
@@ -136,14 +132,18 @@ public class Note{
 	/**
 	 * Initialize shell with trivial starting position.
 	 */
-	public Note(int line, NType n, int frame) {
+	public Note(int line, NoteType n, int frame, Texture t) {
 		// Set minimum Y velocity for this shell
 		this.line = line;
 		hitStatus = 0;
 		animeframe = 0.0f;
 		nt = n;
-		vy = n == NType.HELD? 0f : descentSpeed;
+		vy = n == NoteType.HELD? 0f : descentSpeed;
 		startFrame = frame;
+		animator = new FilmStrip(t,1,NUM_ANIM_FRAMES,NUM_ANIM_FRAMES);
+		origin = new Vector2(animator.getRegionWidth()/2.0f, animator.getRegionHeight()/2.0f);
+		h = animator.getRegionHeight();
+		w = animator.getRegionWidth();
 	}
 
 	public void setTexture(Texture texture) {
@@ -156,7 +156,7 @@ public class Note{
 
 	public void update(int frame) {
 
-		if(nt == NType.HELD){
+		if(nt == NoteType.HELD){
 			by += descentSpeed;
 			if(frame == (startFrame + holdFrame)){
 				vy = descentSpeed;
@@ -187,18 +187,18 @@ public class Note{
 	 *
 	 * @param canvas The drawing context
 	 */
-	public void draw(GameCanvas canvas, float widthConfine, float heightconFine) {
-		if(nt == NType.HELD){
+	public void draw(GameCanvas canvas, float widthConfine, float heightConfine) {
+		if(nt == NoteType.HELD){
 			canvas.drawRect(x - tail_thickness/2, by, x + tail_thickness/2, y, Color.BLUE, true);
 
 			animator.setFrame(0);
 			canvas.draw(animator, Color.WHITE, origin.x, origin.y, x, by,
-					0.0f, widthConfine/w, heightconFine/h);
+					0.0f, widthConfine/w, heightConfine/h);
 		}
 		else{
 			animator.setFrame((int)animeframe);
 			canvas.draw(animator, Color.WHITE, origin.x, origin.y, x, y,
-					0.0f, widthConfine/w, heightconFine/h);
+					0.0f, widthConfine/w, heightConfine/h);
 		}
 
 	}

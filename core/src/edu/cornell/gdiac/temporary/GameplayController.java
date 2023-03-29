@@ -81,7 +81,7 @@ public class GameplayController {
 	/**
 	 * Indicates whether or not we want to use randomly generated notes
 	 */
-	public boolean randomnotes;
+	public boolean randomNotes;
 
 	/**
 	 * The Y coordinate at which a note will spawn. Notes should spawn completely invisible.
@@ -151,7 +151,7 @@ public class GameplayController {
 		NUM_LANES = lanes;
 		objects = new Array<GameObject>();
 		backing = new Array<GameObject>();
-		randomnotes = true;
+		randomNotes = true;
 		//Set margins so there is a comfortable amount of space between play area and screen boundaries
 		//Values decided by pure look
 		LEFTBOUND = width/10f;
@@ -387,28 +387,25 @@ public class GameplayController {
 				if (det < 0.25) {
 					//add a hit note
 					int l = RandomController.rollInt(0, lpl - 1);
-					Note n = new Note(l, Note.NType.BEAT, frame);
+					Note n = new Note(l, Note.NoteType.BEAT, frame, catNoteTexture);
 					n.setY(noteSpawnY);
-					n.setTexture(catNoteTexture);
 					bm.getAllNotes().addLast(n);
 				}
 				//5% chance to add a switch note
 				else if (det < 0.30) {
 					//add a switch note
-					Note n = new Note(0, Note.NType.SWITCH, frame);
+					Note n = new Note(0, Note.NoteType.SWITCH, frame, greenTexture);
 					n.setY(noteSpawnY);
-					n.setTexture(greenTexture);
 					bm.getAllNotes().addLast(n);
 				}
 				//10% chance to add a hold note for duration 150.
 				else if (det < 0.45) {
 					//add a held note of length 150 frames
 					int l = RandomController.rollInt(0, lpl - 1);
-					Note n = new Note(l, Note.NType.HELD, frame);
+					Note n = new Note(l, Note.NoteType.HELD, frame, greenTexture);
 					n.setY(noteSpawnY);
 					n.setBottomY(noteSpawnY);
 					n.setHoldFrames(150);
-					n.setTexture(greenTexture);
 					bm.getAllNotes().addLast(n);
 				}
 			}
@@ -550,7 +547,7 @@ public class GameplayController {
 		boolean[] hitReg = new boolean[triggers.length];
 		int checkBM = curP == play_phase.NOTES ? activeBM : goalBM;
 		for(Note n : bandMembers[checkBM].getHitNotes()){
-			if(n.getNoteType() == Note.NType.BEAT){
+			if(n.getNoteType() == Note.NoteType.BEAT){
 				if(triggers[n.getLine()] && !hitReg[n.getLine()]){
 					//Check for all the beats in this line and in the active band member
 					//See if any are close enough

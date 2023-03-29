@@ -181,17 +181,6 @@ public class GameMode implements Screen {
 	 * @param delta Number of seconds since last animation frame
 	 */
 	protected void play(float delta) {
-		// create some kind of data structure for coordinates of notes
-		// hm {frame : notes}
-		//Add a random shell for now
-		//gameplayController.addShellRandom(canvas.getHeight(), currTick);
-		//Every so often check our HP
-//
-//		if (ticks % 120 == 0){
-//			for (int i = 0; i < gameplayController.lineAmount(); i++) {
-//				gameplayController.setHealth(-1, i);
-//			}
-//		}
 
 
 		// Update objects.

@@ -5,8 +5,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.temporary.*;
-import edu.cornell.gdiac.temporary.entity.Note;
-
 
 
 public class BandMember {
@@ -199,7 +197,7 @@ public class BandMember {
         //add everything at the front of the queue that's supposed to start on this frame
         while(!allNotes.isEmpty() && allNotes.first().getStartFrame() == frame){
             Note n = allNotes.removeFirst();
-            if(n.getNoteType() == Note.NType.SWITCH){
+            if(n.getNoteType() == Note.NoteType.SWITCH){
                 switchNotes.add(n);
             }
             else{
