@@ -97,11 +97,15 @@ public class CalibrationMode implements Screen {
         for (int i = 0; i < noteList.length; i++) {
             CalibNote note = new CalibNote();
             noteList[i] = note;
-            note.setTexture(catNote);
             note.setX(canvas.getWidth()/2);
             note.setY(100+(i%10+1)*200);
-            note.setVY(5);
-// set velocity
+            note.setVY(-5);
+
+            // notes for initialization
+            // target is the line drawn for the hit (it's at 100 right now)
+            // the middle of the cat note itself should be at 100 every 666.666 milliseconds
+            // the above will determine where the initial y of the cat note is and the velocity of the note
+            // y should be the start position of the note
         }
         userHitBeats = new LinkedList<>();
         beforeOffset = afterOffset = 0;
@@ -132,6 +136,7 @@ public class CalibrationMode implements Screen {
         catNote = directory.getEntry("catnote", Texture.class);
         music = directory.getEntry("calibration", MusicQueue.class);
         background  = directory.getEntry("background",Texture.class); //calibration background?
+
 //        music.setLooping(true);
 //        music.getSource(0).getStream().getSampleOffset();
         // define parts of the music
@@ -160,23 +165,15 @@ public class CalibrationMode implements Screen {
         canvas.drawBackground(background,0,0);
         canvas.drawTextCentered("Calibration", displayFont,50);
 
-        //drawing a lane
+        // drawing a lane
         Vector2 bottomLeft = new Vector2(canvas.getWidth()/2-canvas.getWidth()/12, 40);
         canvas.drawRect(bottomLeft, canvas.getWidth()/6, canvas.getHeight()-80, Color.LIME, false);
-        //draw a hit bar
+        // draw a hit bar
         canvas.drawLine(canvas.getWidth()/2-canvas.getWidth()/12, 100, canvas.getWidth()/2-canvas.getWidth()/12+(canvas.getWidth()/6), 100, 3, Color.BLACK);
-        // add notes
-//        for (int i=0; i<100;i++){
-//            Note s = new Note(0, Note.NType.BEAT);
-//            s.setX(canvas.getWidth()/2);
-//            s.setTexture(catNote);
-//            s.setY(100+200*i);
-//            s.setVX(0);
-//            objects.add(s);
-//        }
-
+        // draw each note
         for (int i=0; i<noteList.length;i++) {
             CalibNote c = noteList[i];
+            c.setTexture(catNote);
             c.draw(canvas);
         }
 
@@ -277,7 +274,9 @@ public class CalibrationMode implements Screen {
         }
     }
 
-    /** checks whether use is on beat or not */
+    /** checks whether use is on beat or not
+     * TODO: move this someplace else
+     * */
     private boolean isOnBeat(int hitPosition, int currPosition) {
         int lowerRange = hitPosition - this.beforeOffset;
         int higherRange = hitPosition + this.afterOffset;
