@@ -7,8 +7,10 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.MusicQueue;
 import edu.cornell.gdiac.temporary.entity.CalibNote;
-import edu.cornell.gdiac.temporary.entity.Note;
 import edu.cornell.gdiac.util.ScreenListener;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class CalibrationMode implements Screen {
 
@@ -18,12 +20,13 @@ public class CalibrationMode implements Screen {
     // ASSETS
     /** The font for giving messages to the player */
     private BitmapFont displayFont;
+    /** The note texture */
+    private Texture catNote;
     /** The song */
     private MusicQueue music;
 
     /** Reference to drawing context to display graphics (VIEW CLASS) */
     private GameCanvas canvas;
-
     /** Reads input from keyboard or game pad (CONTROLLER CLASS) */
     private InputController inputController;
 
@@ -33,32 +36,47 @@ public class CalibrationMode implements Screen {
     /** List of notes that are being used in calculation */
     private CalibNote[] noteList;
 
-//    /** Represents the base amount of leeway for hitting on the beat (in samples) */
-    public final int BASE_OFFSET = 6000;
-
-    // important music calculation variables
+    // old code based on Sami's method
+    //    /** Represents the base amount of leeway for hitting on the beat (in samples) */
+//    public final int BASE_OFFSET = 6000;
     /** number of song samples per second*/
-    private int sampleRate;
+//    private int sampleRate;
+//    /** number of frames per second */
+//    private int frameRate;
+//    /** Spacing (in samples) between beat lines in the song*/
+//    private int beat;
+//    /** Amount of samples per frame */
+//    private int samplesPerFrame;
+//    /** Position of the "music" */
+//    private int musicPosition;
 
-    /** number of frames per second */
-    private int frameRate;
+    // new system (based on milliseconds)
+    /** Represents the base amount of leeway for hitting on the beat (in milliseconds) */
+    public final int BASE_OFFSET = 40;
+    /** Represents the start of the song, i.e. where the beats begin (in milliseconds) */
+//    public final int START_OFFSET = 30;
+//    /** List of the beats and their positions (based on ms) */
+//    private int[] beats;
+    /** List of beats that user has hit */
+    private List<Integer> userHitBeats;
 
-    /** Spacing (in samples) between beat lines in the song*/
-    private int beat;
+    /** offset when hitting early */
+    private int beforeOffset;
 
-    /** Amount of samples per frame */
-    private int samplesPerFrame;
+    /** offset for hitting late */
+    private int afterOffset;
 
-    /** Position of the "music" */
-    private int musicPosition;
+    /** whether we finished calibration */
+    private boolean isCalibrated;
 
-    private boolean onBeat;
-
-    private Texture catNoteTexture;
-
+    // new system (based on samples)
+    /** List of the beats and their positions (based on samples */
+    private int[] beatsSamples;
 
     /** Beats per minute (BPM) of the calibration beat */
-    private final int BPM = 89;
+    private final int BPM = 90;
+
+    private boolean onBeat;
 
     /**
      * Constructs new CalibrationController
@@ -67,14 +85,15 @@ public class CalibrationMode implements Screen {
     public CalibrationMode(GameCanvas canvas) {
         inputController = new InputController();
         this.canvas = canvas;
-        // TODO: change it so that this is not explicit?
         // frame rate can be calculated by 1 / delta
-        frameRate = 60;
+//        frameRate = 60;
         noteList = new CalibNote[10];
         for (int i = 0; i < noteList.length; i++) {
             noteList[i] = new CalibNote();
         }
-        musicPosition = 0;
+        userHitBeats = new LinkedList<>();
+        beforeOffset = afterOffset = 0;
+        isCalibrated = false;
     }
 
     // TODO: finish method
@@ -93,18 +112,17 @@ public class CalibrationMode implements Screen {
      */
     public void populate(AssetDirectory directory) {
         displayFont = directory.getEntry("times", BitmapFont.class);
-        catNoteTexture = directory.getEntry("catnote", Texture.class);
+        catNote = directory.getEntry("catnote", Texture.class);
         music = directory.getEntry("calibration", MusicQueue.class);
-        music.setLooping(true);
+//        music.setLooping(true);
+//        music.getSource(0).getStream().getSampleOffset();
         // define parts of the music
-        this.sampleRate = music.getSampleRate();
+//        this.sampleRate = music.getSampleRate();
         // sample / second / (beat / second * second / frame) -->
         // sample / second * (frame / beat) --> sample * frame / beat * second
         // distance between two beats
-        this.beat = Math.round(((float) sampleRate) / (((float) BPM) / frameRate));
-        this.samplesPerFrame = sampleRate / frameRate;
-
-        // time between beats is a lot of
+//        this.beat = Math.round(((float) sampleRate) / (((float) BPM) / frameRate));
+//        this.samplesPerFrame = sampleRate / frameRate;
     }
 
     @Override
@@ -123,8 +141,9 @@ public class CalibrationMode implements Screen {
         canvas.begin();
         displayFont.setColor(Color.NAVY);
         canvas.drawTextCentered("Calibration", displayFont,50);
-        canvas.drawTextCentered("" + Math.round(1 / delta), displayFont, 100);
-        canvas.drawTextCentered("" + onBeat, displayFont, 150);
+        if (isCalibrated) {
+            canvas.drawTextCentered("" + onBeat, displayFont, 150);
+        }
         canvas.end();
     }
 
@@ -139,30 +158,69 @@ public class CalibrationMode implements Screen {
         }
 
 //        musicPosition += samplesPerFrame;
-        musicPosition += sampleRate * delta;
+//        musicPosition += sampleRate * delta;
 
         // resolve inputs from the user
-        resolveInputs(delta);
+        resolveInputs();
+
+        if (!music.isPlaying() && !isCalibrated) {
+            if (userHitBeats.isEmpty()) {
+                beforeOffset = afterOffset = BASE_OFFSET;
+            }
+            else {
+                int before = 0, beforeCount = 0, after = 0, afterCount = 0;
+                for (Integer diff : userHitBeats) {
+                    if (diff < 0) {
+                        before += diff;
+                        beforeCount++;
+                    }
+                    else if (diff > 0) {
+                        after += diff;
+                        afterCount++;
+                    }
+                    else {
+                        beforeCount++;
+                        afterCount++;
+                    }
+                }
+                this.beforeOffset = Math.abs(before) / beforeCount + BASE_OFFSET;
+                this.afterOffset = after / afterCount + BASE_OFFSET;
+                isCalibrated = true;
+                System.out.println("before " + beforeOffset);
+                System.out.println("after " + afterOffset);
+            }
+        }
+
+        if (!music.isPlaying() && isCalibrated) {
+            music.setLooping(true);
+            music.play();
+        }
     }
 
     /** Resolves inputs from the input controller */
-    private void resolveInputs(float delta) {
+    private void resolveInputs() {
         // use space to take inputs
         boolean hitSpace = inputController.didPressPlay();
         // essentially, resolve the current position at which you hit the space bar
         // assign the beat it's at, and then determine how far off you are
         if (hitSpace) {
+            // TODO: rename all of these variables
             int currPosInMs = Math.round(music.getPosition() * 1000);
             int tempBeat = (60000 / BPM);
             // your beat that you hit the space bar at
-            int hitBeat = Math.round((float) currPosInMs / tempBeat);
+            int hitBeat = Math.round((float) (currPosInMs) / tempBeat);
             // the beat we are actually at
-            int actualBeat = hitBeat * tempBeat ;
+            int actualBeat = hitBeat * tempBeat;
 //            int tempBeat = Math.round(((float) sampleRate) / (((float) BPM) / (1 / delta)));
 //            int currentBeat = Math.round((float) musicPosition / tempBeat);
 //            int attemptedBeat = currentBeat * tempBeat;
+            if (isCalibrated) {
+                onBeat = isOnBeat(actualBeat, currPosInMs);
+            }
 //            onBeat = isOnBeat(attemptedBeat, musicPosition);
-            onBeat = isOnBeat(actualBeat, currPosInMs);
+            int diff = currPosInMs - actualBeat;
+            userHitBeats.add(diff);
+
 //            System.out.println(isOnBeat(attemptedBeat, musicPosition));
 //            System.out.println("hit at beat: " + musicPosition + " attempted beat hit: " + attemptedBeat + " diff: " + (musicPosition - attemptedBeat));
             System.out.println("hit at pos: " + currPosInMs + " attempted beat hit: " + actualBeat + " diff: " + (currPosInMs - actualBeat));
@@ -172,8 +230,8 @@ public class CalibrationMode implements Screen {
 
     /** checks whether use is on beat or not */
     private boolean isOnBeat(int hitPosition, int currPosition) {
-        int lowerRange = currPosition - 70;
-        int higherRange = currPosition + 70;
+        int lowerRange = currPosition - this.beforeOffset;
+        int higherRange = currPosition + this.afterOffset;
         return hitPosition >= lowerRange && hitPosition <= higherRange;
     }
 
