@@ -52,11 +52,22 @@ public class BandMember {
     private float height;
     public void setHeight(float l){
         height = l;
+        setHitY(BL.y + l/4);
     }
 
     public float getHeight(){
         return height;
     }
+
+    private float hitY;
+    public void setHitY(float t){
+        hitY = t;
+    }
+    public float getHitY(){
+        return hitY;
+    }
+
+
 
     /**
      * Number of lines this band member has
@@ -175,27 +186,27 @@ public class BandMember {
      * Draw the hit bar in a certain color according to if we triggered the line. Pass in an array for the active
      * lane
      */
-    public void drawHitBar(GameCanvas canvas, float yval, Color hitColor, boolean[] hits){
+    public void drawHitBar(GameCanvas canvas, Color hitColor, boolean[] hits){
         //If we get passed an array we must draw 4 hit bars
         for(int i = 0; i < numLines; ++i){
-            canvas.drawLine(BL.x + i * width/numLines, yval, BL.x +(i+1) * width/numLines, yval, 3, hits[i] ? hitColor : Color.BLACK);
+            canvas.drawLine(BL.x + i * width/numLines, hitY, BL.x +(i+1) * width/numLines, hitY, 3, hits[i] ? hitColor : Color.BLACK);
         }
     }
     /**
      * Draw the hit bar in a certain color according to if we triggered the line. Pass in a value for a switchable lane
      */
-    public void drawHitBar(GameCanvas canvas, float yval, Color hitColor, boolean hit){
+    public void drawHitBar(GameCanvas canvas, Color hitColor, boolean hit){
         //If we get passed a single value then we're in a switch lane
-        canvas.drawLine(BL.x, yval, BL.x + width, yval, 3, hit ? hitColor : Color.BLACK);
+        canvas.drawLine(BL.x, hitY, BL.x + width, hitY, 3, hit ? hitColor : Color.BLACK);
     }
 
     /**
      * Add notes from the queue to the correct active array
-     * @param frame
+     * @param currentSample
      */
-    public void spawnNotes(int frame){
+    public void spawnNotes(int currentSample){
         //add everything at the front of the queue that's supposed to start on this frame
-        while(!allNotes.isEmpty() && allNotes.first().getStartFrame() == frame){
+        while(!allNotes.isEmpty() && allNotes.first().getStartSample() <= currentSample){
             Note n = allNotes.removeFirst();
             if(n.getNoteType() == Note.NoteType.SWITCH){
                 switchNotes.add(n);
@@ -238,11 +249,16 @@ public class BandMember {
     /**
      * Draw the switch notes
      */
-    public void drawSwitchNotes(GameCanvas canvas){
+    public void drawSwitchNotes(GameCanvas canvas, int currentSample){
         for(Note n : switchNotes){
             if(!n.isDestroyed()){
                 //Switch notes should just appear in the middle of the lane
                 n.setX(BL.x + width/2);
+                //Set the Y coordinate according to sampleProgression
+                //Calculate the spawning y coordinate to be high enough such that none of the note is
+                //visible
+                float spawnY = BL.y + height + n.getHeight();
+                n.setY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample()) *(hitY - spawnY) );
                 n.draw(canvas, 3*width/4, 3*width/4);
             }
         }
@@ -251,7 +267,7 @@ public class BandMember {
     /**
      * Draw the held and beat notes
      */
-    public void drawHitNotes(GameCanvas canvas){
+    public void drawHitNotes(GameCanvas canvas, int currentSample){
         for(Note n : hitNotes){
             if(!n.isDestroyed()){
                 //Hitnotes will be based on what line we are on

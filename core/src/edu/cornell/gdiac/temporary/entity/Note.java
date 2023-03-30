@@ -17,7 +17,6 @@ import com.badlogic.gdx.graphics.*;
  * Model class for Notes.
  */
 public class Note{
-	public static final float descentSpeed = -4.5f;
 	/** Rescale the size of a shell */
 	private static final float SHELL_SIZE_MULTIPLE = 4.0f;
 	/** How fast we change frames (one frame per 4 calls to update) */
@@ -44,20 +43,32 @@ public class Note{
 	public void setLine(int t){
 		line = t;
 	}
-	private int startFrame;
-	public int getStartFrame(){
-		return startFrame;
+	private int startSample;
+	public int getStartSample(){
+		return startSample;
 	}
-	public void setStartFrame(int t){
-		startFrame = t;
+	public void setStartSample(int t){
+		startSample = t;
 	}
-	private int holdFrame;
 
-	public int getHoldFrames(){
-		return holdFrame;
+	private int hitSample;
+	public int getHitSample(){
+		return hitSample;
 	}
-	public void setHoldFrames(int t){
-		holdFrame = t;
+	public void setHitSample(int t){
+		hitSample = t;
+	}
+
+	/**
+	 * How many samples do we intend to hold the held note for?
+	 */
+	private int holdSamples;
+
+	public int getHoldSamples(){
+		return holdSamples;
+	}
+	public void setHoldSamples(int t){
+		holdSamples = t;
 	}
 
 	public enum NoteType {
@@ -105,13 +116,6 @@ public class Note{
 	public void setY(float t){
 		y = t;
 	}
-	private float vy;
-	public float getYVel(){
-		return vy;
-	}
-	public void setYVel(float t){
-		vy = t;
-	}
 	private float by;
 	public float getBottomY(){
 		return by;
@@ -132,14 +136,13 @@ public class Note{
 	/**
 	 * Initialize shell with trivial starting position.
 	 */
-	public Note(int line, NoteType n, int frame, Texture t) {
+	public Note(int line, NoteType n, int startSample, Texture t) {
 		// Set minimum Y velocity for this shell
 		this.line = line;
 		hitStatus = 0;
 		animeframe = 0.0f;
 		nt = n;
-		vy = n == NoteType.HELD? 0f : descentSpeed;
-		startFrame = frame;
+		this.startSample = startSample;
 		animator = new FilmStrip(t,1,NUM_ANIM_FRAMES,NUM_ANIM_FRAMES);
 		origin = new Vector2(animator.getRegionWidth()/2.0f, animator.getRegionHeight()/2.0f);
 		h = animator.getRegionHeight();
@@ -155,15 +158,6 @@ public class Note{
 
 
 	public void update(int frame) {
-
-		if(nt == NoteType.HELD){
-			by += descentSpeed;
-			if(frame == (startFrame + holdFrame)){
-				vy = descentSpeed;
-			}
-
-		}
-		y += vy;
 		// Increase animation frame
 		animeframe += ANIMATION_SPEED;
 		if (animeframe >= NUM_ANIM_FRAMES) {
