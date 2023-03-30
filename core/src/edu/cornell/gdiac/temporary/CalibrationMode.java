@@ -95,13 +95,18 @@ public class CalibrationMode implements Screen {
         this.canvas = canvas;
         noteList = new CalibNote[10];
         for (int i = 0; i < noteList.length; i++) {
-            noteList[i] = new CalibNote();
+            CalibNote note = new CalibNote();
+            noteList[i] = note;
+            note.setTexture(catNote);
+            note.setX(canvas.getWidth()/2);
+            note.setY(100+(i%10+1)*200);
+            note.setVY(5);
+// set velocity
         }
         userHitBeats = new LinkedList<>();
         beforeOffset = afterOffset = 0;
         isCalibrated = false;
 
-        objects = new Array<GameObject>();
     }
 
     /** gets offset for early notes */
@@ -161,17 +166,18 @@ public class CalibrationMode implements Screen {
         //draw a hit bar
         canvas.drawLine(canvas.getWidth()/2-canvas.getWidth()/12, 100, canvas.getWidth()/2-canvas.getWidth()/12+(canvas.getWidth()/6), 100, 3, Color.BLACK);
         // add notes
-        for (int i=0; i<100;i++){
-            Note s = new Note(0, Note.NType.BEAT);
-            s.setX(canvas.getWidth()/2);
-            s.setTexture(catNote);
-            s.setY(100+200*i);
-            s.setVX(0);
-            objects.add(s);
-        }
+//        for (int i=0; i<100;i++){
+//            Note s = new Note(0, Note.NType.BEAT);
+//            s.setX(canvas.getWidth()/2);
+//            s.setTexture(catNote);
+//            s.setY(100+200*i);
+//            s.setVX(0);
+//            objects.add(s);
+//        }
 
-        for (GameObject o : objects) {
-            o.draw(canvas);
+        for (int i=0; i<noteList.length;i++) {
+            CalibNote c = noteList[i];
+            c.draw(canvas);
         }
 
         if (isCalibrated) {
@@ -186,8 +192,15 @@ public class CalibrationMode implements Screen {
         inputController.readInput();
 
         // update each of the notes
-        for (CalibNote note : noteList) {
+        for (int i = 0; i < noteList.length; i++) {
             // TODO: update notes
+            CalibNote note = noteList[i];
+
+
+            // goal dest
+            note.setY(note.getY() + note.getVY());
+
+
         }
 
 //        musicPosition += samplesPerFrame;

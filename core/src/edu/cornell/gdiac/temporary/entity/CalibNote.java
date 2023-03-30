@@ -24,11 +24,15 @@ public class CalibNote {
     /** CURRENT image for this object. May change over time. */
     protected FilmStrip animator;
 
-    public CalibNote() {
 
+
+    public CalibNote() {
+        velocity=new Vector2(20,20);
+        position=new Vector2(0,0);
     }
 
     public void setTexture(Texture texture) {
+        System.out.println(texture);
         animator = new FilmStrip(texture,1,NUM_ANIM_FRAMES,NUM_ANIM_FRAMES);
         origin = new Vector2(animator.getRegionWidth()/2.0f, animator.getRegionHeight()/2.0f);
         radius = animator.getRegionHeight() / 2.0f;
@@ -84,6 +88,54 @@ public class CalibNote {
      */
     public void setY(float value) {
         position.y = value;
+    }
+
+    /**
+     * Returns the velocity of this object in pixels per animation frame.
+     *
+     * The value returned is a reference to the velocity vector, which may be
+     * modified freely.
+     *
+     * @return the velocity of this object
+     */
+    public Vector2 getVelocity() {
+        return velocity;
+    }
+
+    /**
+     * Returns the x-coordinate of the object velocity.
+     *
+     * @return the x-coordinate of the object velocity.
+     */
+    public float getVX() {
+        return velocity.x;
+    }
+
+    /**
+     * Sets the x-coordinate of the object velocity.
+     *
+     * @param value the x-coordinate of the object velocity.
+     */
+    public void setVX(float value) {
+        velocity.x = value;
+    }
+
+    /**
+     * Sets the y-coordinate of the object velocity.
+     *
+     * //@param value the y-coordinate of the object velocity.
+     */
+    public float getVY() {
+        return velocity.y;
+    }
+
+    /**
+     * Sets the y-coordinate of the object velocity.
+     *
+     * @param value the y-coordinate of the object velocity.
+     */
+    public void setVY(float value) {
+        velocity.y = value;
     }
 
     /**
