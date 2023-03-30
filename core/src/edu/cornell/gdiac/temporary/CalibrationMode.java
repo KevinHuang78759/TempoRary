@@ -4,6 +4,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.MusicQueue;
 import edu.cornell.gdiac.temporary.entity.CalibNote;
@@ -30,12 +32,16 @@ public class CalibrationMode implements Screen {
     /** Reads input from keyboard or game pad (CONTROLLER CLASS) */
     private InputController inputController;
 
+    private Array<GameObject> objects;
     /** Listener that will update the player mode when we are done */
     private ScreenListener listener;
 
     /** List of notes that are being used in calculation */
     private CalibNote[] noteList;
 
+    private Texture background;
+
+    // important music calculation variables
     // old code based on Sami's method
     //    /** Represents the base amount of leeway for hitting on the beat (in samples) */
 //    public final int BASE_OFFSET = 6000;
@@ -94,6 +100,8 @@ public class CalibrationMode implements Screen {
         userHitBeats = new LinkedList<>();
         beforeOffset = afterOffset = 0;
         isCalibrated = false;
+
+        objects = new Array<GameObject>();
     }
 
     // TODO: finish method
@@ -123,6 +131,10 @@ public class CalibrationMode implements Screen {
         // distance between two beats
 //        this.beat = Math.round(((float) sampleRate) / (((float) BPM) / frameRate));
 //        this.samplesPerFrame = sampleRate / frameRate;
+
+        background  = directory.getEntry("background",Texture.class); //calibration background?
+
+        // time between beats is a lot of
     }
 
     @Override
@@ -139,8 +151,32 @@ public class CalibrationMode implements Screen {
     /** Draws elements to the screen */
     private void draw(float delta) {
         canvas.begin();
-        displayFont.setColor(Color.NAVY);
+        canvas.drawBackground(background,0,0);
         canvas.drawTextCentered("Calibration", displayFont,50);
+        canvas.drawTextCentered("" + Math.round(1 / delta), displayFont, 100);
+        canvas.drawTextCentered("" + onBeat, displayFont, 150);
+
+        //drawing a lane
+        Vector2 bottomLeft = new Vector2(canvas.getWidth()/2-canvas.getWidth()/12, 40);
+        canvas.drawRect(bottomLeft, canvas.getWidth()/6, canvas.getHeight()-80, Color.LIME, false);
+        //draw a hit bar
+        canvas.drawLine(canvas.getWidth()/2-canvas.getWidth()/12, 100, canvas.getWidth()/2-canvas.getWidth()/12+(canvas.getWidth()/6), 100, 3, Color.BLACK);
+        // add notes
+
+
+        for (int i=0; i<100;i++){
+            Note s = new Note(0, Note.NType.BEAT);
+            s.setX(canvas.getWidth()/2);
+            s.setTexture(catNoteTexture);
+            s.setY(100+200*i);
+            s.setVX(0);
+            objects.add(s);
+        }
+
+        for (GameObject o : objects) {
+            o.draw(canvas);
+        }
+
         if (isCalibrated) {
             canvas.drawTextCentered("" + onBeat, displayFont, 150);
         }
