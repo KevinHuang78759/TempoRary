@@ -260,12 +260,15 @@ public class CalibrationMode implements Screen {
 //            int tempBeat = Math.round(((float) sampleRate) / (((float) BPM) / (1 / delta)));
 //            int currentBeat = Math.round((float) musicPosition / tempBeat);
 //            int attemptedBeat = currentBeat * tempBeat;
+            int diff = currPosInMs - actualBeat;
+
             if (isCalibrated) {
                 onBeat = isOnBeat(actualBeat, currPosInMs);
             }
+            else {
+                userHitBeats.add(diff);
+            }
 //            onBeat = isOnBeat(attemptedBeat, musicPosition);
-            int diff = currPosInMs - actualBeat;
-            userHitBeats.add(diff);
 
 //            System.out.println(isOnBeat(attemptedBeat, musicPosition));
 //            System.out.println("hit at beat: " + musicPosition + " attempted beat hit: " + attemptedBeat + " diff: " + (musicPosition - attemptedBeat));
@@ -276,9 +279,10 @@ public class CalibrationMode implements Screen {
 
     /** checks whether use is on beat or not */
     private boolean isOnBeat(int hitPosition, int currPosition) {
-        int lowerRange = currPosition - this.beforeOffset;
-        int higherRange = currPosition + this.afterOffset;
-        return hitPosition >= lowerRange && hitPosition <= higherRange;
+        int lowerRange = hitPosition - this.beforeOffset;
+        int higherRange = hitPosition + this.afterOffset;
+        System.out.println(lowerRange + " " + higherRange + "  " + currPosition +  " " + hitPosition + " " + (hitPosition >= lowerRange && hitPosition <= higherRange));
+        return currPosition >= lowerRange && currPosition <= higherRange;
     }
 
     @Override
