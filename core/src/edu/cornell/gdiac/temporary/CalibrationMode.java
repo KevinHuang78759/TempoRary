@@ -27,35 +27,18 @@ public class CalibrationMode implements Screen {
     private Texture catNote;
     /** The song */
     private MusicQueue music;
+    /** The background texture */
+    private Texture background;
 
     /** Reference to drawing context to display graphics (VIEW CLASS) */
     private GameCanvas canvas;
     /** Reads input from keyboard or game pad (CONTROLLER CLASS) */
     private InputController inputController;
-
-    private Array<GameObject> objects;
     /** Listener that will update the player mode when we are done */
     private ScreenListener listener;
 
     /** List of notes that are being used in calculation */
     private CalibNote[] noteList;
-
-    private Texture background;
-
-    // important music calculation variables
-    // old code based on Sami's method
-    //    /** Represents the base amount of leeway for hitting on the beat (in samples) */
-//    public final int BASE_OFFSET = 6000;
-    /** number of song samples per second*/
-//    private int sampleRate;
-//    /** number of frames per second */
-//    private int frameRate;
-//    /** Spacing (in samples) between beat lines in the song*/
-//    private int beat;
-//    /** Amount of samples per frame */
-//    private int samplesPerFrame;
-//    /** Position of the "music" */
-//    private int musicPosition;
 
     // new system (based on milliseconds)
     /** Represents the base amount of leeway for hitting on the beat (in milliseconds) */
@@ -83,6 +66,9 @@ public class CalibrationMode implements Screen {
     /** Beats per minute (BPM) of the calibration beat */
     private final int BPM = 90;
 
+    /** Position of hit line in the y position */
+    private final int lineY = 200;
+
     /** temp variable to draw whether the hit was on beat or not */
     private boolean onBeat;
 
@@ -99,6 +85,7 @@ public class CalibrationMode implements Screen {
             noteList[i] = note;
             note.setX(canvas.getWidth()/2);
             note.setY(100+(i%10+1)*200);
+            note.setVY(0);
             note.setVY(-5);
 
             // notes for initialization
@@ -110,7 +97,6 @@ public class CalibrationMode implements Screen {
         userHitBeats = new LinkedList<>();
         beforeOffset = afterOffset = 0;
         isCalibrated = false;
-
     }
 
     /** gets offset for early notes */
@@ -167,11 +153,14 @@ public class CalibrationMode implements Screen {
         // drawing a lane
         Vector2 bottomLeft = new Vector2(canvas.getWidth()/2-canvas.getWidth()/12, 40);
         canvas.drawRect(bottomLeft, canvas.getWidth()/6, canvas.getHeight()-80, Color.LIME, false);
+
         // draw a hit bar
-        canvas.drawLine(canvas.getWidth()/2-canvas.getWidth()/12, 100, canvas.getWidth()/2-canvas.getWidth()/12+(canvas.getWidth()/6), 100, 3, Color.BLACK);
+        // Change line color if it is triggered
+        Color lineColor = inputController.didPressPlay() ? Color.CYAN : Color.NAVY;
+        canvas.drawLine(canvas.getWidth()/2-canvas.getWidth()/12, lineY, canvas.getWidth()/2-canvas.getWidth()/12+(canvas.getWidth()/6), lineY, 3, lineColor);
+
         // draw each note
-        for (int i=0; i<noteList.length;i++) {
-            CalibNote c = noteList[i];
+        for (CalibNote c : noteList) {
             c.setTexture(catNote);
             c.draw(canvas);
         }
@@ -188,54 +177,51 @@ public class CalibrationMode implements Screen {
         inputController.readInput();
 
         // update each of the notes
-        for (int i = 0; i < noteList.length; i++) {
+        for (CalibNote note : noteList) {
             // TODO: update notes
-            CalibNote note = noteList[i];
-
+            note.update(delta);
 
             // goal dest
-            note.setY(note.getY() + note.getVY());
-
-
         }
-
-//        musicPosition += samplesPerFrame;
-//        musicPosition += sampleRate * delta;
 
         // resolve inputs from the user
         resolveInputs();
 
+        // check music and calibration states
         if (!music.isPlaying() && !isCalibrated) {
-            if (userHitBeats.isEmpty()) {
-                beforeOffset = afterOffset = BASE_OFFSET;
-            }
-            else {
-                int before = 0, beforeCount = 0, after = 0, afterCount = 0;
-                for (Integer diff : userHitBeats) {
-                    if (diff < 0) {
-                        before += diff;
-                        beforeCount++;
-                    }
-                    else if (diff > 0) {
-                        after += diff;
-                        afterCount++;
-                    }
-                    else {
-                        beforeCount++;
-                        afterCount++;
-                    }
-                }
-                this.beforeOffset = beforeCount > 0 ? Math.abs(before) / beforeCount + BASE_OFFSET : BASE_OFFSET;
-                this.afterOffset = afterOffset > 0 ? after / afterCount + BASE_OFFSET : BASE_OFFSET;
-                isCalibrated = true;
-                System.out.println("before " + beforeOffset);
-                System.out.println("after " + afterOffset);
-            }
+            setCalibration();
         }
-
-        if (!music.isPlaying() && isCalibrated) {
+        else if (!music.isPlaying() && isCalibrated) {
             music.setLooping(true);
             music.play();
+        }
+    }
+
+    private void setCalibration() {
+        if (userHitBeats.isEmpty()) {
+            beforeOffset = afterOffset = BASE_OFFSET;
+        }
+        else {
+            int before = 0, beforeCount = 0, after = 0, afterCount = 0;
+            for (Integer diff : userHitBeats) {
+                if (diff < 0) {
+                    before += diff;
+                    beforeCount++;
+                }
+                else if (diff > 0) {
+                    after += diff;
+                    afterCount++;
+                }
+                else {
+                    beforeCount++;
+                    afterCount++;
+                }
+            }
+            this.beforeOffset = beforeCount > 0 ? Math.abs(before) / beforeCount + BASE_OFFSET : BASE_OFFSET;
+            this.afterOffset = afterCount > 0 ? after / afterCount + BASE_OFFSET : BASE_OFFSET;
+            isCalibrated = true;
+            System.out.println("before " + beforeOffset);
+            System.out.println("after " + afterOffset);
         }
     }
 
@@ -279,7 +265,7 @@ public class CalibrationMode implements Screen {
     private boolean isOnBeat(int hitPosition, int currPosition) {
         int lowerRange = hitPosition - this.beforeOffset;
         int higherRange = hitPosition + this.afterOffset;
-        System.out.println(lowerRange + " " + higherRange + "  " + currPosition +  " " + hitPosition + " " + (hitPosition >= lowerRange && hitPosition <= higherRange));
+        System.out.println(lowerRange + " " + higherRange + "  " + currPosition +  " " + hitPosition + " " + (currPosition >= lowerRange && currPosition <= higherRange));
         return currPosition >= lowerRange && currPosition <= higherRange;
     }
 

@@ -28,16 +28,15 @@ public class CalibNote {
     private static final float SHELL_SIZE_MULTIPLE = 4.0f;
     /** How fast we change frames (one frame per 4 calls to update) */
 
-
-
-
+    /**
+     * Constructor for a new CalibNote
+     */
     public CalibNote() {
-        velocity=new Vector2(20,20);
-        position=new Vector2(0,0);
+        velocity = new Vector2();
+        position = new Vector2();
     }
 
     public void setTexture(Texture texture) {
-        System.out.println(texture);
         animator = new FilmStrip(texture,1,NUM_ANIM_FRAMES,NUM_ANIM_FRAMES);
         origin = new Vector2(animator.getRegionWidth()/2.0f, animator.getRegionHeight()/2.0f);
         radius = animator.getRegionHeight() /  2.0f;
@@ -162,6 +161,12 @@ public class CalibNote {
      */
     public void update(float delta) {
         position.add(velocity);
+
+        // Increase animation frame
+        animeframe += ANIMATION_SPEED;
+        if (animeframe >= NUM_ANIM_FRAMES) {
+            animeframe -= NUM_ANIM_FRAMES;
+        }
     }
 
     /**
