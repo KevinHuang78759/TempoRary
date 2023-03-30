@@ -75,7 +75,6 @@ public class Note extends GameObject {
 		return ObjectType.NOTE;
 	}
 
-
 	public float getRadius(){
 		return super.getRadius() * SHELL_SIZE_MULTIPLE;
 	}

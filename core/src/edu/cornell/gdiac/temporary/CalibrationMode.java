@@ -102,7 +102,7 @@ public class CalibrationMode implements Screen {
             note.setVY(-5);
 
             // notes for initialization
-            // target is the line drawn for the hit (it's at 100 right now)
+            // target is the line drawn for the hit (it's at y = 100 right now)
             // the middle of the cat note itself should be at 100 every 666.666 milliseconds
             // the above will determine where the initial y of the cat note is and the velocity of the note
             // y should be the start position of the note

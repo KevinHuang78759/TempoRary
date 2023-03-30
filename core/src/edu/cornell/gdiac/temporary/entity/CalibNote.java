@@ -12,6 +12,8 @@ public class CalibNote {
     private static final float ANIMATION_SPEED = 0.25f;
     /** The number of animation frames in our filmstrip */
     private static final int   NUM_ANIM_FRAMES = 4;
+    /** Current animation frame for this shell */
+    private float animeframe;
     // Attributes for all game objects
     /** Object position (centered on the texture middle) */
     protected Vector2 position;
@@ -23,6 +25,9 @@ public class CalibNote {
     protected float radius;
     /** CURRENT image for this object. May change over time. */
     protected FilmStrip animator;
+    private static final float SHELL_SIZE_MULTIPLE = 4.0f;
+    /** How fast we change frames (one frame per 4 calls to update) */
+
 
 
 
@@ -35,11 +40,7 @@ public class CalibNote {
         System.out.println(texture);
         animator = new FilmStrip(texture,1,NUM_ANIM_FRAMES,NUM_ANIM_FRAMES);
         origin = new Vector2(animator.getRegionWidth()/2.0f, animator.getRegionHeight()/2.0f);
-        radius = animator.getRegionHeight() / 2.0f;
-    }
-
-    public Texture getTexture() {
-        return animator == null ? null : animator.getTexture();
+        radius = animator.getRegionHeight() /  2.0f;
     }
 
     /**
@@ -146,7 +147,7 @@ public class CalibNote {
      * @return the radius of this object.
      */
     public float getRadius() {
-        return radius;
+        return radius * SHELL_SIZE_MULTIPLE;
     }
 
     /**
@@ -172,8 +173,9 @@ public class CalibNote {
      * @param canvas The drawing context
      */
     public void draw(GameCanvas canvas) {
-        canvas.draw(animator, Color.WHITE, origin.x, origin.y,
-                position.x, position.y, 0.0f, 1.0f, 1.f);
+        animator.setFrame((int)animeframe);
+        canvas.draw(animator, Color.WHITE, origin.x, origin.y, position.x, position.y,
+                0.0f, SHELL_SIZE_MULTIPLE, SHELL_SIZE_MULTIPLE);
     }
 
 }
