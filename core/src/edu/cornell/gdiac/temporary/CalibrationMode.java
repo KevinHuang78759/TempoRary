@@ -216,8 +216,8 @@ public class CalibrationMode implements Screen {
                         afterCount++;
                     }
                 }
-                this.beforeOffset = Math.abs(before) / beforeCount + BASE_OFFSET;
-                this.afterOffset = after / afterCount + BASE_OFFSET;
+                this.beforeOffset = beforeCount > 0 ? Math.abs(before) / beforeCount + BASE_OFFSET : BASE_OFFSET;
+                this.afterOffset = afterOffset > 0 ? after / afterCount + BASE_OFFSET : BASE_OFFSET;
                 isCalibrated = true;
                 System.out.println("before " + beforeOffset);
                 System.out.println("after " + afterOffset);
