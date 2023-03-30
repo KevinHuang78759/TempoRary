@@ -78,11 +78,12 @@ public class CalibrationMode implements Screen {
 
     // new system (based on samples)
     /** List of the beats and their positions (based on samples */
-    private int[] beatsSamples;
+//    private int[] beatsSamples;
 
     /** Beats per minute (BPM) of the calibration beat */
     private final int BPM = 90;
 
+    /** temp variable to draw whether the hit was on beat or not */
     private boolean onBeat;
 
     /**
@@ -92,8 +93,6 @@ public class CalibrationMode implements Screen {
     public CalibrationMode(GameCanvas canvas) {
         inputController = new InputController();
         this.canvas = canvas;
-        // frame rate can be calculated by 1 / delta
-//        frameRate = 60;
         noteList = new CalibNote[10];
         for (int i = 0; i < noteList.length; i++) {
             noteList[i] = new CalibNote();
@@ -105,11 +104,15 @@ public class CalibrationMode implements Screen {
         objects = new Array<GameObject>();
     }
 
-    // TODO: finish method
-    public int getOffset() {
-        return 0;
+    /** gets offset for early notes */
+    public int getBeforeOffset() {
+        return beforeOffset;
     }
 
+    /** gets offset for late notes */
+    public int getAfterOffset() {
+        return afterOffset;
+    }
     /**
      * Populates this mode from the given the directory.
      *
@@ -133,7 +136,6 @@ public class CalibrationMode implements Screen {
         // distance between two beats
 //        this.beat = Math.round(((float) sampleRate) / (((float) BPM) / frameRate));
 //        this.samplesPerFrame = sampleRate / frameRate;
-
     }
 
     @Override
@@ -159,7 +161,6 @@ public class CalibrationMode implements Screen {
         //draw a hit bar
         canvas.drawLine(canvas.getWidth()/2-canvas.getWidth()/12, 100, canvas.getWidth()/2-canvas.getWidth()/12+(canvas.getWidth()/6), 100, 3, Color.BLACK);
         // add notes
-
         for (int i=0; i<100;i++){
             Note s = new Note(0, Note.NType.BEAT);
             s.setX(canvas.getWidth()/2);
