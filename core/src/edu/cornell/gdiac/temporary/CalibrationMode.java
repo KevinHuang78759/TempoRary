@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.MusicQueue;
 import edu.cornell.gdiac.temporary.entity.CalibNote;
+import edu.cornell.gdiac.temporary.entity.Note;
 import edu.cornell.gdiac.util.ScreenListener;
 
 import java.util.LinkedList;
@@ -122,6 +123,7 @@ public class CalibrationMode implements Screen {
         displayFont = directory.getEntry("times", BitmapFont.class);
         catNote = directory.getEntry("catnote", Texture.class);
         music = directory.getEntry("calibration", MusicQueue.class);
+        background  = directory.getEntry("background",Texture.class); //calibration background?
 //        music.setLooping(true);
 //        music.getSource(0).getStream().getSampleOffset();
         // define parts of the music
@@ -132,9 +134,6 @@ public class CalibrationMode implements Screen {
 //        this.beat = Math.round(((float) sampleRate) / (((float) BPM) / frameRate));
 //        this.samplesPerFrame = sampleRate / frameRate;
 
-        background  = directory.getEntry("background",Texture.class); //calibration background?
-
-        // time between beats is a lot of
     }
 
     @Override
@@ -153,8 +152,6 @@ public class CalibrationMode implements Screen {
         canvas.begin();
         canvas.drawBackground(background,0,0);
         canvas.drawTextCentered("Calibration", displayFont,50);
-        canvas.drawTextCentered("" + Math.round(1 / delta), displayFont, 100);
-        canvas.drawTextCentered("" + onBeat, displayFont, 150);
 
         //drawing a lane
         Vector2 bottomLeft = new Vector2(canvas.getWidth()/2-canvas.getWidth()/12, 40);
@@ -163,11 +160,10 @@ public class CalibrationMode implements Screen {
         canvas.drawLine(canvas.getWidth()/2-canvas.getWidth()/12, 100, canvas.getWidth()/2-canvas.getWidth()/12+(canvas.getWidth()/6), 100, 3, Color.BLACK);
         // add notes
 
-
         for (int i=0; i<100;i++){
             Note s = new Note(0, Note.NType.BEAT);
             s.setX(canvas.getWidth()/2);
-            s.setTexture(catNoteTexture);
+            s.setTexture(catNote);
             s.setY(100+200*i);
             s.setVX(0);
             objects.add(s);
