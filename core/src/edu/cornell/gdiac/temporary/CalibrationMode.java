@@ -136,7 +136,6 @@ public class CalibrationMode implements Screen {
         catNote = directory.getEntry("catnote", Texture.class);
         music = directory.getEntry("calibration", MusicQueue.class);
         background  = directory.getEntry("background",Texture.class); //calibration background?
-
 //        music.setLooping(true);
 //        music.getSource(0).getStream().getSampleOffset();
         // define parts of the music
