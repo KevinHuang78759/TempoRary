@@ -181,6 +181,7 @@ public class CalibNote {
         animator.setFrame((int)animeframe);
         canvas.draw(animator, Color.WHITE, origin.x, origin.y, position.x, position.y,
                 0.0f, SHELL_SIZE_MULTIPLE, SHELL_SIZE_MULTIPLE);
+        canvas.drawLine(position.x - getRadius() - 20, position.y, position.x + getRadius() + 20, position.y, 3, Color.MAGENTA);
     }
 
 }

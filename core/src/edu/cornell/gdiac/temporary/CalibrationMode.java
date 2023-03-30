@@ -5,11 +5,9 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.MusicQueue;
 import edu.cornell.gdiac.temporary.entity.CalibNote;
-import edu.cornell.gdiac.temporary.entity.Note;
 import edu.cornell.gdiac.util.ScreenListener;
 
 import java.util.LinkedList;
@@ -64,10 +62,16 @@ public class CalibrationMode implements Screen {
 //    private int[] beatsSamples;
 
     /** Beats per minute (BPM) of the calibration beat */
-    private final int BPM = 90;
+    private final int BPM = 100;
+
+    /** Distance between beats in milliseconds */
+    private final int DIST_BETWEEN_BEAT = 60000 / BPM;
 
     /** Position of hit line in the y position */
-    private final int lineY = 200;
+    private final int LINE_Y = 350;
+
+    /** Distance between each of the notes */
+    private final int DIST_BETWEEN_NOTE = 275;
 
     /** temp variable to draw whether the hit was on beat or not */
     private boolean onBeat;
@@ -79,14 +83,14 @@ public class CalibrationMode implements Screen {
     public CalibrationMode(GameCanvas canvas) {
         inputController = new InputController();
         this.canvas = canvas;
-        noteList = new CalibNote[10];
+        noteList = new CalibNote[8];
         for (int i = 0; i < noteList.length; i++) {
             CalibNote note = new CalibNote();
             noteList[i] = note;
             note.setX(canvas.getWidth()/2);
-            note.setY(100+(i%10+1)*200);
-            note.setVY(0);
-            note.setVY(-5);
+            note.setY(LINE_Y + i * DIST_BETWEEN_NOTE);
+            note.setVX(0);
+            note.setVY(-calculateVY());
 
             // notes for initialization
             // target is the line drawn for the hit (it's at y = 100 right now)
@@ -97,6 +101,23 @@ public class CalibrationMode implements Screen {
         userHitBeats = new LinkedList<>();
         beforeOffset = afterOffset = 0;
         isCalibrated = false;
+    }
+
+    /**
+     * Calculates the velocity of a note based on the constants NOTE_DIST and DIST_BETWEEN_BEAT
+     *
+     * @return "velocity" of note as a float
+     */
+    private float calculateVY() {
+        // velocity = distance / time
+        // since you are about NOTE_DIST apart, you need to get to the line in NOTE_DIST / DIST_BETWEEN_BEAT
+        // velocity is
+        // with the delta, it means that you have about 0.016667 seconds between each frame
+        // but here, since you are drawing every frame, the velocity is technically units/frame
+        // time = DIST_BETWEEN_BEAT
+
+        // (float) NOTE_DIST / DIST_BETWEEN_BEAT (units / ms) * 1000 ms / 1 second (units / second) * 1 second / 60 frames
+        return ((float) DIST_BETWEEN_NOTE / DIST_BETWEEN_BEAT) * (1000) * (1f / 60) ;
     }
 
     /** gets offset for early notes */
@@ -122,15 +143,7 @@ public class CalibrationMode implements Screen {
         catNote = directory.getEntry("catnote", Texture.class);
         music = directory.getEntry("calibration", MusicQueue.class);
         background  = directory.getEntry("background",Texture.class); //calibration background?
-//        music.setLooping(true);
 //        music.getSource(0).getStream().getSampleOffset();
-        // define parts of the music
-//        this.sampleRate = music.getSampleRate();
-        // sample / second / (beat / second * second / frame) -->
-        // sample / second * (frame / beat) --> sample * frame / beat * second
-        // distance between two beats
-//        this.beat = Math.round(((float) sampleRate) / (((float) BPM) / frameRate));
-//        this.samplesPerFrame = sampleRate / frameRate;
     }
 
     @Override
@@ -148,7 +161,6 @@ public class CalibrationMode implements Screen {
     private void draw(float delta) {
         canvas.begin();
         canvas.drawBackground(background,0,0);
-        canvas.drawTextCentered("Calibration", displayFont,50);
 
         // drawing a lane
         Vector2 bottomLeft = new Vector2(canvas.getWidth()/2-canvas.getWidth()/12, 40);
@@ -156,8 +168,8 @@ public class CalibrationMode implements Screen {
 
         // draw a hit bar
         // Change line color if it is triggered
-        Color lineColor = inputController.didPressPlay() ? Color.CYAN : Color.NAVY;
-        canvas.drawLine(canvas.getWidth()/2-canvas.getWidth()/12, lineY, canvas.getWidth()/2-canvas.getWidth()/12+(canvas.getWidth()/6), lineY, 3, lineColor);
+        Color lineColor = inputController.didPressPlay() ? Color.PINK : Color.NAVY;
+        canvas.drawLine(canvas.getWidth()/2-canvas.getWidth()/12, LINE_Y, canvas.getWidth()/2-canvas.getWidth()/12+(canvas.getWidth()/6), LINE_Y, 3, lineColor);
 
         // draw each note
         for (CalibNote c : noteList) {
@@ -168,6 +180,8 @@ public class CalibrationMode implements Screen {
         if (isCalibrated) {
             canvas.drawTextCentered("" + onBeat, displayFont, 150);
         }
+
+        canvas.drawTextCentered("Calibration", displayFont,canvas.getHeight() / 2 - 20);
         canvas.end();
     }
 
@@ -176,12 +190,18 @@ public class CalibrationMode implements Screen {
         // Process the input into screen
         inputController.readInput();
 
+        float maxY = 0;
+        for (CalibNote note : noteList) {
+            maxY = Math.max(note.getY(), maxY);
+        }
+
         // update each of the notes
         for (CalibNote note : noteList) {
-            // TODO: update notes
+            // check if out of bounds, bring back to the top
+            if (note.getY() + note.getRadius() < 0) {
+                note.setY(maxY + DIST_BETWEEN_NOTE);
+            }
             note.update(delta);
-
-            // goal dest
         }
 
         // resolve inputs from the user
@@ -229,19 +249,16 @@ public class CalibrationMode implements Screen {
     private void resolveInputs() {
         // use space to take inputs
         boolean hitSpace = inputController.didPressPlay();
+
         // essentially, resolve the current position at which you hit the space bar
         // assign the beat it's at, and then determine how far off you are
         if (hitSpace) {
             // TODO: rename all of these variables
             int currPosInMs = Math.round(music.getPosition() * 1000);
-            int tempBeat = (60000 / BPM);
             // your beat that you hit the space bar at
-            int hitBeat = Math.round((float) (currPosInMs) / tempBeat);
+            int hitBeat = Math.round((float) (currPosInMs) / DIST_BETWEEN_BEAT);
             // the beat we are actually at
-            int actualBeat = hitBeat * tempBeat;
-//            int tempBeat = Math.round(((float) sampleRate) / (((float) BPM) / (1 / delta)));
-//            int currentBeat = Math.round((float) musicPosition / tempBeat);
-//            int attemptedBeat = currentBeat * tempBeat;
+            int actualBeat = hitBeat * DIST_BETWEEN_BEAT;
             int diff = currPosInMs - actualBeat;
 
             if (isCalibrated) {
@@ -250,18 +267,15 @@ public class CalibrationMode implements Screen {
             else {
                 userHitBeats.add(diff);
             }
-//            onBeat = isOnBeat(attemptedBeat, musicPosition);
 
-//            System.out.println(isOnBeat(attemptedBeat, musicPosition));
-//            System.out.println("hit at beat: " + musicPosition + " attempted beat hit: " + attemptedBeat + " diff: " + (musicPosition - attemptedBeat));
             System.out.println("hit at pos: " + currPosInMs + " attempted beat hit: " + actualBeat + " diff: " + (currPosInMs - actualBeat));
-
         }
     }
 
-    /** checks whether use is on beat or not
+    /**
+     * checks whether use is on beat or not
      * TODO: move this someplace else
-     * */
+     */
     private boolean isOnBeat(int hitPosition, int currPosition) {
         int lowerRange = hitPosition - this.beforeOffset;
         int higherRange = hitPosition + this.afterOffset;
