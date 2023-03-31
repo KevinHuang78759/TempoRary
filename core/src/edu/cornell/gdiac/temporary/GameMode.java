@@ -16,8 +16,14 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.audio.MusicQueue;
+import edu.cornell.gdiac.temporary.editor.EditorMode;
+import edu.cornell.gdiac.temporary.editor.EditorNote;
 import edu.cornell.gdiac.util.*;
+
+import java.util.LinkedList;
 
 /**
  * The primary controller class for the game.
@@ -44,6 +50,8 @@ public class GameMode implements Screen {
 	private Texture background;
 	/** The font for giving messages to the player */
 	private BitmapFont displayFont;
+
+	private MusicQueue music;
 
 	/// CONSTANTS
 	/** Offset for the game over message on the screen */
@@ -80,6 +88,44 @@ public class GameMode implements Screen {
 	 */
 	int lpl;
 
+	/** name of the level */
+
+	String levelName;
+
+	/** name of the song */
+	String songName;
+
+	/**
+	 * 2D array of int lists representing the level's beat note information.
+	 * The first index is the lane.
+	 * The second index is the line
+	 * The int list is the song location (in samples) of the beat notes.
+	 * List is always sorted chronologically.
+	 *
+	 * */
+	private LinkedList<Integer>[][] beatNotes;
+
+	/**
+	 * 2D array of int lists representing the level's held note information.
+	 * The first index is the lane.
+	 * The second index is the line
+	 * The int array list is the song location and duration (in samples) of the held notes.
+	 * List is always sorted chronologically.
+	 *
+	 * */
+	private LinkedList<Integer[]>[][] heldNotes;
+
+	/**
+	 * array of int lists representing the level's switch note information.
+	 * The first index is the lane.
+	 * The int list is the song location (in samples) of the held notes.
+	 * List is always sorted chronologically.
+	 *
+	 * */
+	private LinkedList<Integer>[] switchNotes;
+
+	private int maxCompetency;
+
 	/**
 	 * Creates a new game with the given drawing context.
 	 *
@@ -110,6 +156,47 @@ public class GameMode implements Screen {
 	}
 
 	/**
+	 * Loads all the notes and other level editor settings in from what is specified in the level JSON.
+	 * @param level the JSON value corresponding to the JSON file containing all the level information
+	 */
+	private void loadLevel(JsonValue level) {
+		levelName = level.getString("levelName");
+		songName = level.getString("song");
+		maxCompetency = level.getInt("maxCompetency");
+		lanes = level.get("bandMembers").size;
+		lpl = level.getInt("linesPerMember");
+
+		//initialize level data lists
+		beatNotes = new LinkedList[lanes][lpl];
+		heldNotes = new LinkedList[lanes][lpl];
+		switchNotes = new LinkedList[lanes];
+		for (int lane = 0; lane < lanes; lane++){
+			switchNotes[lane] = new LinkedList<Integer>();
+			for (int line = 0; line < lpl; line++){
+				beatNotes[lane][line] = new LinkedList<Integer>();
+				heldNotes[lane][line] = new LinkedList<Integer[]>();
+			}
+			JsonValue memberNotes = level.get("bandMembers").get(lane).get("notes");
+			for (int i = 0; i < memberNotes.size; i++){
+				int position = memberNotes.get(i).getInt("position");
+				int line;
+				int duration;
+				if (memberNotes.get(i).getString("type").equals("beat")){
+					line = memberNotes.get(i).getInt("line");
+					beatNotes[lane][line].add(position);
+				} else if (memberNotes.get(i).getString("type").equals("held")){
+					line = memberNotes.get(i).getInt("line");
+					duration = memberNotes.get(i).getInt("duration");
+					heldNotes[lane][line].add(new Integer[] {position,duration});
+				} else {
+					switchNotes[lane].add(position);
+				}
+			}
+		}
+
+	}
+
+	/**
 	 * Populates this mode from the given the directory.
 	 *
 	 * The asset directory is a dictionary that maps string keys to assets.
@@ -122,6 +209,9 @@ public class GameMode implements Screen {
 		background  = directory.getEntry("background",Texture.class);
 		displayFont = directory.getEntry("times",BitmapFont.class);
 		gameplayController.populate(directory);
+		JsonValue defaultLevel = directory.getEntry("level_test", JsonValue.class);
+		music = directory.getEntry(defaultLevel.getString("song"), MusicQueue.class);
+		loadLevel(defaultLevel);
 	}
 
 	/**

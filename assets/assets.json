@@ -21,5 +21,8 @@
           "music/noedell.ogg"
         ]
       }
-    }
+    },
+  "jsons": {
+    "level_test" : "levels/test.json"
+  }
 }

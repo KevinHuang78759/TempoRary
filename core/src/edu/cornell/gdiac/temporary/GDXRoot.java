@@ -23,6 +23,8 @@ import edu.cornell.gdiac.temporary.editor.*;
 import com.badlogic.gdx.*;
 import edu.cornell.gdiac.assets.*;
 
+import java.io.IOException;
+
 /**
  * Root class for a LibGDX.  
  * 
@@ -65,8 +67,12 @@ public class GDXRoot extends Game implements ScreenListener {
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("assets.json",canvas,1);
 		playing = new GameMode(canvas, 4,4);
-		editing = new EditorMode(canvas);
-		
+		try {
+			editing = new EditorMode(canvas);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
 		loading.setScreenListener(this);
 		setScreen(loading);
 	}

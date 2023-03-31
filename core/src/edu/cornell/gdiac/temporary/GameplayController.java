@@ -24,10 +24,13 @@ import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.graphics.Texture;
 
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.temporary.editor.EditorMode;
+import edu.cornell.gdiac.temporary.editor.EditorNote;
 import edu.cornell.gdiac.temporary.entity.*;
 import edu.cornell.gdiac.temporary.GameObject.ObjectType;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 
 /**
  * Controller to handle gameplay interactions.
@@ -188,6 +191,7 @@ public class GameplayController {
 		triggers = new boolean[linesPerLane];
 		lpl = linesPerLane;
 	}
+
 
 	private void initializeHealth() {
 		health = new int[NUM_LANES];

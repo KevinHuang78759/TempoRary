@@ -194,6 +194,18 @@ public class InputController {
 	private boolean track;
 	private boolean trackPress;
 	private boolean trackLast;
+
+	private boolean save;
+	private boolean savePress;
+	private boolean saveLast;
+
+	private boolean upDuration;
+	private boolean upDurationPress;
+	private boolean upDurationLast;
+	private boolean downDuration;
+	private boolean downDurationPress;
+	private boolean downDurationLast;
+
 	boolean[] triggerPress;
 	boolean[] triggerLifted;
 	/**
@@ -237,6 +249,11 @@ public class InputController {
 
 		trackPress = Gdx.input.isKeyPressed(Input.Keys.P) ;
 
+		savePress = Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && Gdx.input.isKeyPressed(Input.Keys.S);
+
+		upDurationPress = Gdx.input.isKeyPressed(Input.Keys.NUM_9);
+		downDurationPress = Gdx.input.isKeyPressed(Input.Keys.NUM_8);
+
 		//Compute actual values by comparing with previous value. We only register a click if the trigger or switch
 		// went from false to true. We only register a lift if the trigger went from true to false.
 		for(int i = 0; i < Math.max(switchesPress.length, triggerPress.length); ++i){
@@ -265,6 +282,15 @@ public class InputController {
 
 		track = !trackLast && trackPress;
 		trackLast = trackPress;
+
+		save = !saveLast && savePress;
+		saveLast = savePress;
+
+		upDuration = !upDurationLast && upDurationPress;
+		upDurationLast = upDurationPress;
+
+		downDuration = !downDurationLast && downDurationPress;
+		downDurationLast = downDurationPress;
 	}
 
 	/*
@@ -307,7 +333,7 @@ public class InputController {
 	public boolean didPrecision2() {return Gdx.input.isKeyPressed(Input.Keys.NUM_2);}
 	public boolean didPrecision3() {return Gdx.input.isKeyPressed(Input.Keys.NUM_3);}
 
-	public boolean setSwitchNotes() {return Gdx.input.isKeyPressed(Input.Keys.S);}
+	public boolean setSwitchNotes() {return Gdx.input.isKeyPressed(Input.Keys.S) && !Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT);}
 	public boolean setBeatNotes() {return Gdx.input.isKeyPressed(Input.Keys.B);}
 	public boolean setHeldNotes() {return Gdx.input.isKeyPressed(Input.Keys.H);}
 
@@ -315,13 +341,19 @@ public class InputController {
 
 	public boolean didPressTrack() {return track;}
 
-	public boolean didResetSong() {return Gdx.input.isKeyPressed(Input.Keys.R);}
+	public boolean didResetSong() {return Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT);}
 
 	public boolean didSpeedUp() {return Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT);}
 
 	public boolean didUndo() {return undid;}
 
 	public boolean didRedo() {return redid;}
+
+	public boolean didSave() {return save;}
+
+	public boolean durationUp() {return upDuration;}
+
+	public boolean durationDown() {return downDuration;}
 
 	public void setEditorProcessor() {
 		Gdx.input.setInputProcessor(processor);
