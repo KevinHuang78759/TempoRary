@@ -133,6 +133,14 @@ public class BandMember {
      */
     private Array<Note> backing;
 
+
+    private int lossRate;
+    public void setLossRate(int t){
+        lossRate = t;
+    }
+    public int getLossRate(){
+        return lossRate;
+    }
     /**
      * Maximum competency
      */
@@ -166,6 +174,12 @@ public class BandMember {
         switchNotes = new Array<>();
         allNotes = new Queue<>();
         backing = new Array<>();
+    }
+
+    public void setStartingState(int comp, Queue<Note> notes){
+        curComp = comp;
+        maxComp = comp;
+        allNotes = notes;
     }
 
     /**
