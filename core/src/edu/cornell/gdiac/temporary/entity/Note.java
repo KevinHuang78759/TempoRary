@@ -156,8 +156,10 @@ public class Note{
 		w = animator.getRegionWidth();
 	}
 
-
-	public void update(int frame) {
+	/**
+	 * Update animations
+	 */
+	public void update() {
 		// Increase animation frame
 		animeframe += ANIMATION_SPEED;
 		if (animeframe >= NUM_ANIM_FRAMES) {

@@ -183,16 +183,15 @@ public class BandMember {
     }
 
     /**
-     * Updates according to frame
-     * @param frame
+     * Update animations
      */
-    public void updateNotes(int frame){
+    public void updateNotes(){
         //Update both switchNotes and hit notes no matter what
         for(Note n : switchNotes){
-            n.update(frame);
+            n.update();
         }
         for(Note n : hitNotes){
-            n.update(frame);
+            n.update();
         }
     }
 
@@ -272,7 +271,7 @@ public class BandMember {
                 //Calculate the spawning y coordinate to be high enough such that none of the note is
                 //visible
                 float spawnY = BL.y + height + n.getHeight();
-                n.setY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample()) *(hitY - spawnY) );
+                n.setY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample()) *(hitY - spawnY));
                 n.draw(canvas, 3*width/4, 3*width/4);
             }
         }

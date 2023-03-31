@@ -286,7 +286,7 @@ public class GameplayController {
 
 		//Then, update the notes for each band member and spawn new notes
 		for(BandMember bm : bandMembers){
-			bm.updateNotes(curframe);
+			bm.updateNotes();
 			//Make sure to spawn new notes form the all queue
 			bm.spawnNotes(curframe);
 			//Occasionally decrease the competency
@@ -294,7 +294,7 @@ public class GameplayController {
 				bm.compUpdate(-1);
 			}
 		}
-		//Upate the objects of this class (mostly stars)
+		//Update the objects of this class (mostly stars)
 		for(GameObject o : objects){
 			o.update(0f);
 		}
