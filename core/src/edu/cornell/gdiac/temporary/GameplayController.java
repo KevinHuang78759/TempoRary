@@ -388,14 +388,12 @@ public class GameplayController {
 					//add a hit note
 					int l = RandomController.rollInt(0, lpl - 1);
 					Note n = new Note(l, Note.NoteType.BEAT, frame, catNoteTexture);
-					n.setY(noteSpawnY);
 					bm.getAllNotes().addLast(n);
 				}
 				//5% chance to add a switch note
 				else if (det < 0.30) {
 					//add a switch note
 					Note n = new Note(0, Note.NoteType.SWITCH, frame, greenTexture);
-					n.setY(noteSpawnY);
 					bm.getAllNotes().addLast(n);
 				}
 				//10% chance to add a hold note for duration 150.
@@ -403,9 +401,7 @@ public class GameplayController {
 					//add a held note of length 150 frames
 					int l = RandomController.rollInt(0, lpl - 1);
 					Note n = new Note(l, Note.NoteType.HELD, frame, greenTexture);
-					n.setY(noteSpawnY);
-					n.setBottomY(noteSpawnY);
-					n.setHoldFrames(150);
+					n.setHoldSamples(150);
 					bm.getAllNotes().addLast(n);
 				}
 			}
@@ -513,7 +509,7 @@ public class GameplayController {
 						float dist = Math.abs(hitbarY - n.getY())/n.getHeight();
 						if(dist < 1.5){
 							n.setHitStatus(dist < 0.75 ? 4 : 2);
-							spawnStars(n.getHitStatus(), n.getX(), n.getY(), 0, n.getYVel());
+							spawnStars(n.getHitStatus(), n.getX(), n.getY(), 0, 0);
 							n.setDestroyed(true);
 						}
 					}
@@ -557,7 +553,7 @@ public class GameplayController {
 						//have registered a hit for this line for this click. This ensures that
 						//We do not have a single hit count for two notes that are close together
 						n.setHitStatus(dist < 0.75 ? 2 : 1);
-						spawnStars(n.getHitStatus(), n.getX(), n.getY(), 0, n.getYVel());
+						spawnStars(n.getHitStatus(), n.getX(), n.getY(), 0, 0);
 						n.setDestroyed(true);
 						hitReg[n.getLine()] = true;
 					}
@@ -571,7 +567,7 @@ public class GameplayController {
 					float dist = Math.abs(hitbarY - n.getBottomY())/n.getHeight();
 					if(dist < 1.5){
 						n.setHitStatus(dist < 0.75 ? 2 : 1);
-						spawnStars(n.getHitStatus(), n.getX(), n.getBottomY(), 0, n.getYVel());
+						spawnStars(n.getHitStatus(), n.getX(), n.getBottomY(), 0, 0);
 						hitReg[n.getLine()] = true;
 					}
 				}
@@ -581,7 +577,7 @@ public class GameplayController {
 					float dist = Math.abs(hitbarY - n.getY())/n.getHeight();
 					if(dist < 1.5){
 						n.setHitStatus(n.getHitStatus() + dist < 0.75 ? 3 : 1);
-						spawnStars(n.getHitStatus(), n.getX(), n.getY(), 0, n.getYVel());
+						spawnStars(n.getHitStatus(), n.getX(), n.getY(), 0, 0);
 						n.setDestroyed(true);
 					}
 				}
