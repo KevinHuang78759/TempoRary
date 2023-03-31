@@ -134,7 +134,7 @@ public class GameMode implements Screen {
 	 * @param delta Number of seconds since last animation frame
 	 */
 
-	private void update(float delta) {
+	private void update(int sample) {
 		// Process the game input
 		inputController.readInput();
 
@@ -151,7 +151,7 @@ public class GameMode implements Screen {
 					gameplayController.reset();
 					gameplayController.start();
 				} else {
-					play(delta);
+					play(sample);
 				}
 				break;
 			case PLAY:
@@ -161,7 +161,7 @@ public class GameMode implements Screen {
 					gameplayController.reset();
 					gameplayController.start();
 				} else {
-					play(delta);
+					play(sample);
 				}
 				ticks++;
 				break;
@@ -180,7 +180,7 @@ public class GameMode implements Screen {
 	 *
 	 * @param delta Number of seconds since last animation frame
 	 */
-	protected void play(float delta) {
+	protected void play(int sample) {
 
 
 		// Update objects.
@@ -197,7 +197,7 @@ public class GameMode implements Screen {
 	 * of using the single render() method that LibGDX does.  We will talk about why we
 	 * prefer this in lecture.
 	 */
-	private void draw(float delta) {
+	private void draw(int sample) {
 		canvas.begin();
 		//First draw the background
 		canvas.drawBackground(background,0,0);
@@ -223,14 +223,14 @@ public class GameMode implements Screen {
 				//If we are the goal of the a active lane we need to draw separation lines and held/beat notes
 				//We also need to draw a separate hit bar for each line
 				if(gameplayController.activeBM == i || gameplayController.goalBM == i){
-					gameplayController.bandMembers[i].drawHitNotes(canvas);
+					gameplayController.bandMembers[i].drawHitNotes(canvas, sample);
 					gameplayController.bandMembers[i].drawLineSeps(canvas);
-					gameplayController.bandMembers[i].drawHitBar(canvas, gameplayController.hitbarY, Color.WHITE, gameplayController.triggers);
+					gameplayController.bandMembers[i].drawHitBar(canvas, Color.WHITE, gameplayController.triggers);
 				}
 				//Otherwise just draw the switch notes, and we only have 1 hit bar to draw
 				else{
-					gameplayController.bandMembers[i].drawSwitchNotes(canvas);
-					gameplayController.bandMembers[i].drawHitBar(canvas, gameplayController.hitbarY, Color.WHITE, gameplayController.switches[i]);
+					gameplayController.bandMembers[i].drawSwitchNotes(canvas, sample);
+					gameplayController.bandMembers[i].drawHitBar(canvas, Color.WHITE, gameplayController.switches[i]);
 
 				}
 			}
@@ -267,8 +267,8 @@ public class GameMode implements Screen {
 	 */
 	public void render(float delta) {
 		if (active) {
-			update(delta);
-			draw(delta);
+			update(sample);
+			draw(sample);
 			if (inputController.didExit() && listener != null) {
 				listener.exitScreen(this, 0);
 			}
