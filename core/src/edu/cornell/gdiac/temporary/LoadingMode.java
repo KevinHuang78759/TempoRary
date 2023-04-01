@@ -158,6 +158,10 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		return pressState == 2 || pressState == 4 || pressState == 5;
 	}
 
+	public void resetScreen() {
+		pressState = 1;
+	}
+
 	/**
 	 * Returns the asset directory produced by this loading screen
 	 *
