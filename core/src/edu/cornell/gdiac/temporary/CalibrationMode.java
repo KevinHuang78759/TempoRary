@@ -38,21 +38,17 @@ public class CalibrationMode implements Screen {
     /** List of notes that are being used in calculation */
     private CalibNote[] noteList;
 
+    // TODO: CONVERT TO SAMPLES
     // new system (based on milliseconds)
-    /** Represents the base amount of leeway for hitting on the beat (in milliseconds) */
-    public final int BASE_OFFSET = 40;
-    /** Represents the start of the song, i.e. where the beats begin (in milliseconds) */
-//    public final int START_OFFSET = 30;
+    /** Represents the amount of leeway for hitting on the beat (in milliseconds) */
+    public final int BASE_OFFSET = 65;
 //    /** List of the beats and their positions (based on ms) */
 //    private int[] beats;
     /** List of beats that user has hit */
     private List<Integer> userHitBeats;
 
-    /** offset when hitting early */
-    private int beforeOffset;
-
-    /** offset for hitting late */
-    private int afterOffset;
+    /** offset after calibration  */
+    private int offset;
 
     /** whether we finished calibration */
     private boolean isCalibrated;
@@ -90,7 +86,7 @@ public class CalibrationMode implements Screen {
             note.setX(canvas.getWidth()/2);
             note.setY(LINE_Y + i * DIST_BETWEEN_NOTE);
             note.setVX(0);
-            note.setVY(-calculateVY());
+//            note.setVY(-calculateVY());
 
             // notes for initialization
             // target is the line drawn for the hit (it's at y = 100 right now)
@@ -99,7 +95,7 @@ public class CalibrationMode implements Screen {
             // y should be the start position of the note
         }
         userHitBeats = new LinkedList<>();
-        beforeOffset = afterOffset = 0;
+        offset = 0;
         isCalibrated = false;
     }
 
@@ -108,7 +104,7 @@ public class CalibrationMode implements Screen {
      *
      * @return "velocity" of note as a float
      */
-    private float calculateVY() {
+    private float calculateVY(float delta) {
         // velocity = distance / time
         // since you are about NOTE_DIST apart, you need to get to the line in NOTE_DIST / DIST_BETWEEN_BEAT
         // velocity is
@@ -117,18 +113,14 @@ public class CalibrationMode implements Screen {
         // time = DIST_BETWEEN_BEAT
 
         // (float) NOTE_DIST / DIST_BETWEEN_BEAT (units / ms) * 1000 ms / 1 second (units / second) * 1 second / 60 frames
-        return ((float) DIST_BETWEEN_NOTE / DIST_BETWEEN_BEAT) * (1000) * (1f / 60) ;
+        return ((float) DIST_BETWEEN_NOTE / DIST_BETWEEN_BEAT) * (1000) * (delta) ;
     }
 
-    /** gets offset for early notes */
-    public int getBeforeOffset() {
-        return beforeOffset;
+    /** Returns the offset */
+    public int getOffset() {
+        return offset;
     }
 
-    /** gets offset for late notes */
-    public int getAfterOffset() {
-        return afterOffset;
-    }
     /**
      * Populates this mode from the given the directory.
      *
@@ -192,6 +184,7 @@ public class CalibrationMode implements Screen {
 
         float maxY = 0;
         for (CalibNote note : noteList) {
+            note.setVY(-calculateVY(delta));
             maxY = Math.max(note.getY(), maxY);
         }
 
@@ -218,31 +211,17 @@ public class CalibrationMode implements Screen {
     }
 
     private void setCalibration() {
-        if (userHitBeats.isEmpty()) {
-            beforeOffset = afterOffset = BASE_OFFSET;
+        // average
+        // desync between video and audio (there will always be maybe a little bit of a desync) - can use data to move it
+        //     make beat simple, figure out where the "note" is
+        // desync between user input and when it's processed
+        int sum = 0;
+        for (Integer diff : userHitBeats) {
+            sum += diff;
         }
-        else {
-            int before = 0, beforeCount = 0, after = 0, afterCount = 0;
-            for (Integer diff : userHitBeats) {
-                if (diff < 0) {
-                    before += diff;
-                    beforeCount++;
-                }
-                else if (diff > 0) {
-                    after += diff;
-                    afterCount++;
-                }
-                else {
-                    beforeCount++;
-                    afterCount++;
-                }
-            }
-            this.beforeOffset = beforeCount > 0 ? Math.abs(before) / beforeCount + BASE_OFFSET : BASE_OFFSET;
-            this.afterOffset = afterCount > 0 ? after / afterCount + BASE_OFFSET : BASE_OFFSET;
-            isCalibrated = true;
-            System.out.println("before " + beforeOffset);
-            System.out.println("after " + afterOffset);
-        }
+        this.offset = userHitBeats.size() > 0 ? sum / userHitBeats.size() : 0;
+        isCalibrated = true;
+        System.out.println("offset: " + offset);
     }
 
     /** Resolves inputs from the input controller */
@@ -268,19 +247,20 @@ public class CalibrationMode implements Screen {
                 userHitBeats.add(diff);
             }
 
-            System.out.println("hit at pos: " + currPosInMs + " attempted beat hit: " + actualBeat + " diff: " + (currPosInMs - actualBeat));
+            System.out.println("hit at pos: " + currPosInMs + " attempted beat hit: " + actualBeat);
         }
     }
 
     /**
      * checks whether use is on beat or not
-     * TODO: move this someplace else
+     * TODO: move this someplace else???
      */
-    private boolean isOnBeat(int hitPosition, int currPosition) {
-        int lowerRange = hitPosition - this.beforeOffset;
-        int higherRange = hitPosition + this.afterOffset;
-        System.out.println(lowerRange + " " + higherRange + "  " + currPosition +  " " + hitPosition + " " + (currPosition >= lowerRange && currPosition <= higherRange));
-        return currPosition >= lowerRange && currPosition <= higherRange;
+    public boolean isOnBeat(int hitPosition, int currPosition) {
+        int adjustedPosition = currPosition - this.offset;
+        int lowerRange = hitPosition - BASE_OFFSET;
+        int higherRange = hitPosition + BASE_OFFSET;
+        System.out.println(lowerRange + ", " + higherRange + "; " + adjustedPosition +  " " + hitPosition + " " + (adjustedPosition >= lowerRange && adjustedPosition <= higherRange));
+        return adjustedPosition >= lowerRange && adjustedPosition <= higherRange;
     }
 
     @Override
