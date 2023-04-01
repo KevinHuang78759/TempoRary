@@ -41,7 +41,7 @@ public class CalibrationMode implements Screen {
     // TODO: CONVERT TO SAMPLES
     // new system (based on milliseconds)
     /** Represents the amount of leeway for hitting on the beat (in milliseconds) */
-    public final int BASE_OFFSET = 65;
+    public final int BASE_OFFSET = 70;
 //    /** List of the beats and their positions (based on ms) */
 //    private int[] beats;
     /** List of beats that user has hit */
@@ -122,6 +122,14 @@ public class CalibrationMode implements Screen {
     }
 
     /**
+     * Returns true if the player is done calibrating and wants to go back to the main menu.
+     * @return true if the player is ready to exit calibration mode
+     */
+    public boolean isReady() {
+        return isCalibrated && inputController.didExit();
+    }
+
+    /**
      * Populates this mode from the given the directory.
      *
      * The asset directory is a dictionary that maps string keys to assets.
@@ -143,7 +151,7 @@ public class CalibrationMode implements Screen {
         if (active) {
             update(delta);
             draw(delta);
-            if (inputController.didExit() && listener != null) {
+            if (isReady() && listener != null) {
                 listener.exitScreen(this, 0);
             }
         }
@@ -171,6 +179,7 @@ public class CalibrationMode implements Screen {
 
         if (isCalibrated) {
             canvas.drawTextCentered("" + onBeat, displayFont, 150);
+            canvas.drawText("You have been calibrated!\nYou can exit this screen", displayFont, 100, canvas.getWidth() / 2);
         }
 
         canvas.drawTextCentered("Calibration", displayFont,canvas.getHeight() / 2 - 20);
@@ -210,14 +219,18 @@ public class CalibrationMode implements Screen {
         }
     }
 
+    /**
+     * computes values of userHitBeats to set the offset after calibration
+     */
     private void setCalibration() {
         // average
         // desync between video and audio (there will always be maybe a little bit of a desync) - can use data to move it
         //     make beat simple, figure out where the "note" is
         // desync between user input and when it's processed
         int sum = 0;
-        for (Integer diff : userHitBeats) {
-            sum += diff;
+        // skip first two because of bad data most likely
+        for (int i = 2; i < userHitBeats.size(); i++) {
+            sum += userHitBeats.get(i);
         }
         this.offset = userHitBeats.size() > 0 ? sum / userHitBeats.size() : 0;
         isCalibrated = true;
@@ -247,19 +260,20 @@ public class CalibrationMode implements Screen {
                 userHitBeats.add(diff);
             }
 
-            System.out.println("hit at pos: " + currPosInMs + " attempted beat hit: " + actualBeat);
+            System.out.println("hit at pos: " + currPosInMs + " attempted beat hit: " + actualBeat + " diff: " + diff);
         }
     }
 
     /**
      * checks whether use is on beat or not
      * TODO: move this someplace else???
+     * currentHitPosition should be the song position at which you hit the "beat"
      */
-    public boolean isOnBeat(int hitPosition, int currPosition) {
-        int adjustedPosition = currPosition - this.offset;
-        int lowerRange = hitPosition - BASE_OFFSET;
-        int higherRange = hitPosition + BASE_OFFSET;
-        System.out.println(lowerRange + ", " + higherRange + "; " + adjustedPosition +  " " + hitPosition + " " + (adjustedPosition >= lowerRange && adjustedPosition <= higherRange));
+    public boolean isOnBeat(int actualBeatPosition, int currentHitPosition) {
+        int adjustedPosition = currentHitPosition - this.offset;
+        int lowerRange = actualBeatPosition - BASE_OFFSET;
+        int higherRange = actualBeatPosition + BASE_OFFSET;
+        System.out.println(lowerRange + ", " + higherRange + "; " + adjustedPosition +  " " + actualBeatPosition + " " + (adjustedPosition >= lowerRange && adjustedPosition <= higherRange));
         return adjustedPosition >= lowerRange && adjustedPosition <= higherRange;
     }
 

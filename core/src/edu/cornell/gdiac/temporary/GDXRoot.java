@@ -87,6 +87,9 @@ public class GDXRoot extends Game implements ScreenListener {
 		screen.dispose();
 		canvas.dispose();
 		canvas = null;
+		loading = null;
+		calibration = null;
+		editing = null;
 	
 		// Unload all of the resources
 		if (directory != null) {
@@ -146,7 +149,13 @@ public class GDXRoot extends Game implements ScreenListener {
 			}
 
 			loading.dispose();
-			loading = null;
+		} else if (screen == calibration) {
+			loading.setScreenListener(this);
+			setScreen(loading);
+
+			System.out.println("Offset from CalibrationMode: " + calibration);
+
+			calibration.dispose();
 		} else {
 			// We quit the main application
 			Gdx.app.exit();
