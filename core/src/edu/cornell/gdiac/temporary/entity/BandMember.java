@@ -182,6 +182,8 @@ public class BandMember {
         allNotes = notes;
     }
 
+
+
     /**
      * Update animations
      */
