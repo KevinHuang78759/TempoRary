@@ -2,7 +2,7 @@
   "title" : "test level",
   "number" : 0,
   "maxCompetency" : 30,
-  "song" : "music/noedell.ogg",
+  "song" : "noedell",
   "bandmembers": [
     {
       "competencyLossRate": 1,
