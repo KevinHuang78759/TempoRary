@@ -85,7 +85,7 @@ public class BandMember {
     /**
      * The color of the border
      */
-    private Color borderColor;
+    private Color borderColor = Color.BLACK;
     public void setBColor(Color l){
         borderColor = l;
     }
@@ -168,7 +168,6 @@ public class BandMember {
      * Constructor
      */
     public BandMember(){
-        //instantiate everything to evade NULL POINTERS
         BL = new Vector2();
         hitNotes = new Array<>();
         switchNotes = new Array<>();
@@ -219,7 +218,7 @@ public class BandMember {
      * Add notes from the queue to the correct active array
      * @param currentSample
      */
-    public void spawnNotes(int currentSample){
+    public void spawnNotes(long currentSample){
         //add everything at the front of the queue that's supposed to start on this frame
         while(!allNotes.isEmpty() && allNotes.first().getStartSample() <= currentSample){
             Note n = allNotes.removeFirst();
@@ -264,7 +263,7 @@ public class BandMember {
     /**
      * Draw the switch notes
      */
-    public void drawSwitchNotes(GameCanvas canvas, int currentSample){
+    public void drawSwitchNotes(GameCanvas canvas, long currentSample){
         for(Note n : switchNotes){
             if(!n.isDestroyed()){
                 //Switch notes should just appear in the middle of the lane
@@ -282,7 +281,7 @@ public class BandMember {
     /**
      * Draw the held and beat notes
      */
-    public void drawHitNotes(GameCanvas canvas, int currentSample){
+    public void drawHitNotes(GameCanvas canvas, long currentSample){
         for(Note n : hitNotes){
             if(!n.isDestroyed()){
                 //Hitnotes will be based on what line we are on

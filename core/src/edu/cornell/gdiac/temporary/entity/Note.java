@@ -43,31 +43,31 @@ public class Note{
 	public void setLine(int t){
 		line = t;
 	}
-	private int startSample;
-	public int getStartSample(){
+	private long startSample;
+	public long getStartSample(){
 		return startSample;
 	}
-	public void setStartSample(int t){
+	public void setStartSample(long t){
 		startSample = t;
 	}
 
-	private int hitSample;
-	public int getHitSample(){
+	private long hitSample;
+	public long getHitSample(){
 		return hitSample;
 	}
-	public void setHitSample(int t){
+	public void setHitSample(long t){
 		hitSample = t;
 	}
 
 	/**
 	 * How many samples do we intend to hold the held note for?
 	 */
-	private int holdSamples;
+	private long holdSamples;
 
-	public int getHoldSamples(){
+	public long getHoldSamples(){
 		return holdSamples;
 	}
-	public void setHoldSamples(int t){
+	public void setHoldSamples(long t){
 		holdSamples = t;
 	}
 
@@ -136,7 +136,7 @@ public class Note{
 	/**
 	 * Initialize shell with trivial starting position.
 	 */
-	public Note(int line, NoteType n, int startSample, Texture t) {
+	public Note(int line, NoteType n, long startSample, Texture t) {
 		// Set minimum Y velocity for this shell
 		this.line = line;
 		hitStatus = 0;

@@ -12,10 +12,17 @@
 package edu.cornell.gdiac.temporary;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.utils.JsonReader;
+import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.util.*;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 
 /**
  * The primary controller class for the game.
@@ -61,43 +68,40 @@ public class GameMode implements Screen {
 
 	/** Variable to track the game state (SIMPLE FIELDS) */
 	private GameState gameState;
-	/** Variable to track total time played in milliseconds (SIMPLE FIELDS) */
-	private float totalTime = 0;
+
 	/** Whether or not this player mode is still active */
 	private boolean active;
 
 	/** Listener that will update the player mode when we are done */
 	private ScreenListener listener;
 
-	/** Amount of game ticks which have gone by */
-	private int ticks;
-	/**
-	 * Number of band member lanes
-	 */
 
-	int lanes;
-	/**
-	 * Number of lines per lane
-	 */
-	int lpl;
 	/**
 	 * Creates a new game with the given drawing context.
 	 *
 	 * This constructor initializes the models and controllers for the game.  The
 	 * view has already been initialized by the root class.
 	 */
-	public GameMode(GameCanvas canvas,int lanes, int linesperlane) {
-		lpl = linesperlane;
-		this.lanes = lanes;
+	public GameMode(GameCanvas canvas)  {
 		this.canvas = canvas;
 		active = false;
-		ticks = 0;
+
 		// Null out all pointers, 0 out all ints, etc.
 		gameState = GameState.INTRO;
 
+
+
 		// Create the controllers.
-		inputController = new InputController(lanes, lpl);
-		gameplayController = new GameplayController(lanes,lpl, canvas.getWidth(),canvas.getHeight());
+		gameplayController = new GameplayController(canvas.getWidth(),canvas.getHeight());
+
+
+	}
+
+	public void readLevel(AssetDirectory directory){
+		JsonReader jr = new JsonReader();
+		JsonValue levelData = jr.parse(Gdx.files.internal("level.json"));
+		gameplayController.loadLevel(levelData, directory);
+		inputController = new InputController(gameplayController.NUM_LANES, gameplayController.lpl);
 	}
 
 	/**
@@ -134,7 +138,7 @@ public class GameMode implements Screen {
 	 * @param delta Number of seconds since last animation frame
 	 */
 
-	private void update(int sample) {
+	private void update(float delta) {
 		// Process the game input
 		inputController.readInput();
 
@@ -145,42 +149,25 @@ public class GameMode implements Screen {
 				gameplayController.start();
 				break;
 			case OVER:
-				if (inputController.didReset()) {
-					ticks = 0;
-					gameState = GameState.PLAY;
-					gameplayController.reset();
-					gameplayController.start();
-				} else {
-					play(sample);
-				}
-				break;
 			case PLAY:
 				if (inputController.didReset()) {
-					ticks = 0;
 					gameState = GameState.PLAY;
 					gameplayController.reset();
 					gameplayController.start();
 				} else {
-					play(sample);
+					play(delta);
 				}
-				ticks++;
 				break;
 			default:
 				break;
 		}
 	}
-
-	/**
-	 * current tick we are on
-	 */
-	int currTick;
-
 	/**
 	 * This method processes a single step in the game loop.
 	 *
 	 * @param delta Number of seconds since last animation frame
 	 */
-	protected void play(int sample) {
+	protected void play(float delta) {
 
 
 		// Update objects.
@@ -197,7 +184,7 @@ public class GameMode implements Screen {
 	 * of using the single render() method that LibGDX does.  We will talk about why we
 	 * prefer this in lecture.
 	 */
-	private void draw(int sample) {
+	private void draw(long sample) {
 		canvas.begin();
 		//First draw the background
 		canvas.drawBackground(background,0,0);
@@ -217,23 +204,7 @@ public class GameMode implements Screen {
 			}
 
 
-			for(int i = 0; i < gameplayController.bandMembers.length; ++i){
-				//Draw the border of each band member
-				gameplayController.bandMembers[i].drawBorder(canvas);
-				//If we are the goal of the a active lane we need to draw separation lines and held/beat notes
-				//We also need to draw a separate hit bar for each line
-				if(gameplayController.activeBM == i || gameplayController.goalBM == i){
-					gameplayController.bandMembers[i].drawHitNotes(canvas, sample);
-					gameplayController.bandMembers[i].drawLineSeps(canvas);
-					gameplayController.bandMembers[i].drawHitBar(canvas, Color.WHITE, gameplayController.triggers);
-				}
-				//Otherwise just draw the switch notes, and we only have 1 hit bar to draw
-				else{
-					gameplayController.bandMembers[i].drawSwitchNotes(canvas, sample);
-					gameplayController.bandMembers[i].drawHitBar(canvas, Color.WHITE, gameplayController.switches[i]);
-
-				}
-			}
+			gameplayController.level.drawEverything(canvas, gameplayController.activeBM, gameplayController.goalBM, inputController.triggerPress, inputController.switches());
 
 			//obtain background color
 			Color bkgC = new Color(237f/255f, 224f/255f, 1f, 1.0f);
@@ -267,8 +238,8 @@ public class GameMode implements Screen {
 	 */
 	public void render(float delta) {
 		if (active) {
-			update(sample);
-			draw(sample);
+			update(delta);
+			draw(gameplayController.level.getMusic().getCurrent().getStream().getSampleOffset());
 			if (inputController.didExit() && listener != null) {
 				listener.exitScreen(this, 0);
 			}

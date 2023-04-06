@@ -1,8 +1,9 @@
 {
 	"textures": {
         "background": "images/background.png",
-        "green":    "images/green.png",
-        "catnote":      "images/catnote.png",
+        "switch":    "images/green.png",
+        "hit":      "images/catnote.png",
+        "hold":      "images/catnote.png",
         "star":     "images/star.png"
     },
     "fonts": {
