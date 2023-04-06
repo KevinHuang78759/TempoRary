@@ -67,7 +67,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("assets.json",canvas,1);
 		playing = new GameMode(canvas);
-		playing.readLevel(directory);
+
 		editing = new EditorMode(canvas);
 		loading.setScreenListener(this);
 		setScreen(loading);
@@ -124,6 +124,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		} else if (screen == loading && loading.getPressState() == 2) {
 			playing.setScreenListener(this);
 			directory = loading.getAssets();
+			playing.readLevel(directory);
 			playing.populate(directory);
 			setScreen(playing);
 

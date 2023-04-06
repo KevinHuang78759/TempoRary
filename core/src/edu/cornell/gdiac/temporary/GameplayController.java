@@ -151,6 +151,17 @@ public class GameplayController {
 		RIGHTBOUND = 9*width/10f;
 		TOPBOUND = 19f*height/20f;
 		BOTTOMBOUND = height/5f;
+
+
+	}
+
+	/**
+	 * Loads a level
+	 */
+	public void loadLevel(JsonValue levelData, AssetDirectory directory){
+		level = new Level(levelData, directory);
+		NUM_LANES = level.getBandMembers().length;
+
 		//The space in between two lanes is 1/4 the width of a small lane
 		//the width of the large lane is 10x the width of a small lane
 		//In total, we have NUM_LANES - 1 small lanes, 1 large lane, and n - 1 in between segments
@@ -162,31 +173,15 @@ public class GameplayController {
 		//initiate default active band member to 0
 		activeBM = 0;
 		//Have the y value be a bit above the bottom of the play area, but not too close
-		hitbarY = BOTTOMBOUND + 3*height/20f;
+		hitbarY = BOTTOMBOUND + 3*(TOPBOUND - BOTTOMBOUND)/20f;
 		//There ar e NUM_LANES hp bars, and the width between each one shall be 1/4 their length
 		//The width will then be 1/(5NUMLANES/4 - 1/4) of the total available width
 		hpwidth = (RIGHTBOUND - LEFTBOUND)/(5f*NUM_LANES/4f - 0.25f);
 		//Width between each HP bar shall be 1/4 of the width of an HP bar
 		hpbet = hpwidth/4f;
 		//instantiate other variables
-
 		noteSpawnY = TOPBOUND + smallwidth/2;
 		noteDieY = BOTTOMBOUND - smallwidth/2;
-
-	}
-
-	/**
-	 * Loads a level
-	 */
-	public void loadLevel(JsonValue levelData, AssetDirectory directory){
-		level = new Level(levelData, directory);
-		int maxLinesPerLane = 0;
-		for(BandMember bm : level.getBandMembers()){
-			maxLinesPerLane = Math.max(maxLinesPerLane, bm.getNumLines());
-		}
-		NUM_LANES = level.getBandMembers().length;
-		lpl = maxLinesPerLane;
-		triggers = new boolean[lpl];
 		switches = new boolean[NUM_LANES];
 		triggers = new boolean[lpl];
 
@@ -316,7 +311,7 @@ public class GameplayController {
 	/**
 	 * The maximum number of lines per lane
 	 */
-	public int lpl;
+	public int lpl = 4;
 
 	/**
 	 * Garbage collects all deleted objects.

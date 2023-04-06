@@ -103,6 +103,7 @@ public class Level {
         title = data.getString("title");
         order = data.getInt("number");
         maxCompetency = data.getInt("maxCompetency");
+
         music = directory.getEntry("noedell", MusicQueue.class);
 
         hitNoteTexture = directory.getEntry("hit", Texture.class);
@@ -167,6 +168,7 @@ public class Level {
         for (BandMember bandMember : BandMembers) {
             bandMember.setWidth(short_width);
             bandMember.setLineHeight(0f);
+            bandMember.setHeight(maxLineHeight);
         }
         BandMembers[activeBM].setWidth(large_width);
         BandMembers[activeBM].setLineHeight(maxLineHeight);
@@ -184,6 +186,7 @@ public class Level {
         for (BandMember bandMember : BandMembers) {
             bandMember.setWidth(short_width);
             bandMember.setLineHeight(0f);
+            bandMember.setHeight(maxLineHeight);
         }
         BandMembers[previousBM].setWidth(large_width - (large_width - short_width)*t_progress);
         BandMembers[nextBM].setWidth(short_width + (large_width - short_width)*t_progress);
@@ -209,7 +212,8 @@ public class Level {
     }
 
     public void drawEverything(GameCanvas canvas, int active, int goal, boolean[] triggers, boolean[] switches){
-        long sample = music.getCurrent().getStream().getSampleOffset();
+        long sample = music.getCurrent().getStream().getByteOffset();
+        System.out.println(sample);
         for(int i = 0; i < BandMembers.length; ++i){
             //Draw the border of each band member
             BandMembers[i].drawBorder(canvas);

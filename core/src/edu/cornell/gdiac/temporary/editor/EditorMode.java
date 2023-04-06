@@ -372,7 +372,7 @@ public class EditorMode implements Screen {
     public void populate(AssetDirectory directory) {
         background  = directory.getEntry("background",Texture.class);
         displayFont = directory.getEntry("times",BitmapFont.class);
-        catNoteTexture = directory.getEntry("catnote", Texture.class);
+        catNoteTexture = directory.getEntry("hit", Texture.class);
         animator = new FilmStrip(catNoteTexture, 1, 4,4);
         origin = new Vector2(animator.getRegionWidth()/2.0f, animator.getRegionHeight()/2.0f);
         displayFont = directory.getEntry("lucida", BitmapFont.class);

@@ -72,11 +72,8 @@ public class BandMember {
     /**
      * Number of lines this band member has
      */
-    private int numLines;
+    private final int numLines = 4;
 
-    public void setNumLines(int l){
-        numLines = l;
-    }
 
     public int getNumLines(){
         return numLines;
