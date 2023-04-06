@@ -103,7 +103,7 @@ public class Level {
         title = data.getString("title");
         order = data.getInt("number");
         maxCompetency = data.getInt("maxCompetency");
-        music = directory.getEntry(data.getString("song"), MusicQueue.class);
+        music = directory.getEntry("noedell", MusicQueue.class);
 
         hitNoteTexture = directory.getEntry("hit", Texture.class);
         switchNoteTexture = directory.getEntry("switch", Texture.class);
