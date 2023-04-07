@@ -57,7 +57,7 @@ public class GameCanvas {
 	private TextureRegion holder;
 	Pixmap pixel;
 	ArrayList<Texture> disp;
-	Texture t;
+	Texture pixelTexture;
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.
 	 * 
@@ -76,7 +76,7 @@ public class GameCanvas {
 		pixel = new Pixmap(1,1,Pixmap.Format.RGB888);
 		pixel.setColor(Color.WHITE);
 		pixel.fill();
-		t = new Texture(pixel);
+		pixelTexture = new Texture(pixel);
 	}
 		
     /**
@@ -89,7 +89,7 @@ public class GameCanvas {
 		}
 		pixel.dispose();
 		spriteBatch.dispose();
-		t.dispose();
+		pixelTexture.dispose();
 		PRG = null;
 		pixel = null;
     	spriteBatch = null;
@@ -358,7 +358,7 @@ public class GameCanvas {
 
 		short[] triangles = new short[]{0, 1, 2, 1, 2, 3};
 		//Create the PolygonRegion and set the color, then draw it with no offset
-		PolygonRegion PRG = new PolygonRegion(new TextureRegion(t), coors, triangles);
+		PolygonRegion PRG = new PolygonRegion(new TextureRegion(pixelTexture), coors, triangles);
 		Color tint = new Color(c.r, c.g,c.b,1f);
 
 		spriteBatch.setColor(tint);
@@ -389,7 +389,7 @@ public class GameCanvas {
 
 			short[] triangles = new short[]{0, 1, 2, 1, 3, 2};
 			//Generate a polyregion
-			PRG = new PolygonRegion(new TextureRegion(t), coors, triangles);
+			PRG = new PolygonRegion(new TextureRegion(pixelTexture), coors, triangles);
 			//set the color
 			Color tint = new Color(c.r, c.g,c.b,1f);
 			spriteBatch.setColor(tint);
@@ -413,13 +413,14 @@ public class GameCanvas {
 	 * @param x2
 	 * @param y2
 	 */
-	public void textureRect(FilmStrip t, float x1, float y1, float x2, float y2){
+	public void textureRect(Texture t, float x1, float y1, float x2, float y2){
 			float[] coors = new float[]{x1,y1,
 					x1,y2,
 					x2,y1,
 					x2,y2};
 			short[] triangles = new short[]{0, 1, 2, 1, 3, 2};
-			PRG = new PolygonRegion(t, coors, triangles);
+			t.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+			PRG = new PolygonRegion(new TextureRegion(t), coors, triangles);
 			spriteBatch.draw(PRG, 0, 0);
 
 	}

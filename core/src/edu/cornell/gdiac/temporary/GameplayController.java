@@ -342,16 +342,14 @@ public class GameplayController {
 	 * Spawns stars at location x, y with center of mass velocity vx0 and vy0.
 	 * Directions are randomzed, and more stars are spawned with a higher value of k
 	 */
-	public void spawnStars(int k, float x, float y, float vx0, float vy0){
+	public void spawnStars(int k, float x, float y){
 		for(int i = 0; i < k; ++i){
 			for (int j = 0; j < 5; j++) {
 				Star s = new Star();
 				s.setTexture(starTexture);
 				s.getPosition().set(x, y);
-				float vx = vx0 * RandomController.rollFloat(MIN_STAR_FACTOR, MAX_STAR_FACTOR)
-						+ RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
-				float vy = vy0 * RandomController.rollFloat(MIN_STAR_FACTOR, MAX_STAR_FACTOR)
-						+ RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
+				float vx = RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
+				float vy = RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
 				s.getVelocity().set(vx,vy);
 				objects.add(s);
 			}
@@ -415,7 +413,7 @@ public class GameplayController {
 						long dist = Math.abs(currentSample - n.getHitSample());
 						if(dist < 25000){
 							n.setHitStatus(dist < 10000 ? 4 : 2);
-							spawnStars(n.getHitStatus(), n.getX(), n.getY(), 0, 0);
+							spawnStars(n.getHitStatus(), n.getX(), n.getY());
 							n.setDestroyed(true);
 						}
 					}
@@ -459,7 +457,7 @@ public class GameplayController {
 						//have registered a hit for this line for this click. This ensures that
 						//We do not have a single hit count for two notes that are close together
 						n.setHitStatus(dist < 10000 ? 2 : 1);
-						spawnStars(n.getHitStatus(), n.getX(), n.getY(), 0, 0);
+						spawnStars(n.getHitStatus(), n.getX(), n.getY());
 						n.setDestroyed(true);
 						hitReg[n.getLine()] = true;
 					}
@@ -473,7 +471,7 @@ public class GameplayController {
 					long dist = Math.abs(currentSample - n.getHitSample());
 					if(dist < 25000){
 						n.setHitStatus(dist < 10000 ? 2 : 1);
-						spawnStars(n.getHitStatus(), n.getX(), n.getBottomY(), 0, 0);
+						spawnStars(n.getHitStatus(), n.getX(), n.getBottomY());
 						hitReg[n.getLine()] = true;
 					}
 				}
@@ -483,7 +481,7 @@ public class GameplayController {
 					long dist = Math.abs(currentSample - (n.getHitSample() + n.getHoldSamples()));
 					if(dist < 25000){
 						n.setHitStatus(n.getHitStatus() + dist < 10000 ? 3 : 1);
-						spawnStars(n.getHitStatus(), n.getX(), n.getY(), 0, 0);
+						spawnStars(n.getHitStatus(), n.getX(), n.getY());
 						n.setDestroyed(true);
 					}
 				}

@@ -260,7 +260,7 @@ public class BandMember {
     /**
      * Draw the switch notes
      */
-    public void drawSwitchNotes(GameCanvas canvas, long currentSample){
+    public void drawSwitchNotes(GameCanvas canvas, long currentSample, float spawnY){
         for(Note n : switchNotes){
             if(!n.isDestroyed()){
                 //Switch notes should just appear in the middle of the lane
@@ -268,7 +268,6 @@ public class BandMember {
                 //Set the Y coordinate according to sampleProgression
                 //Calculate the spawning y coordinate to be high enough such that none of the note is
                 //visible
-                float spawnY = BL.y + height + n.getHeight();
                 n.setY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample()) *(hitY - spawnY));
                 n.draw(canvas, 3*width/4, 3*width/4);
             }
@@ -278,14 +277,14 @@ public class BandMember {
     /**
      * Draw the held and beat notes
      */
-    public void drawHitNotes(GameCanvas canvas, long currentSample){
+    public void drawHitNotes(GameCanvas canvas, long currentSample, float spawnY){
         for(Note n : hitNotes){
             if(!n.isDestroyed()){
                 //Hitnotes will be based on what line we are on
                 n.setX(BL.x + width/(2*numLines) + n.getLine()*(width/numLines));
-                n.setTail_thickness(width/(4f*numLines));
-                float spawnY = BL.y + height + n.getHeight();
                 if(n.getNoteType() == Note.NoteType.HELD){
+                    n.setTail_thickness(width/(4f*numLines));
+
                     n.setBottomY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample()) *(hitY - spawnY));
                     n.setY(spawnY + Math.max(0, (float)(currentSample - n.getStartSample() - n.getHoldSamples())/(n.getHitSample() - n.getStartSample()))*(hitY - spawnY));
                 }
@@ -303,6 +302,7 @@ public class BandMember {
      * Draw the border
      */
     public void drawBorder(GameCanvas canvas){
+
         canvas.drawRect(BL, width, height, borderColor, false);
     }
 

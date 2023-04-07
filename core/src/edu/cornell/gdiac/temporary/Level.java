@@ -124,6 +124,7 @@ public class Level {
                 if (thisNote.getString("type").equals("single")){
                     n = new Note(thisNote.getInt("lane"), Note.NoteType.BEAT, thisNote.getLong("sample") - spawnOffset, hitNoteTexture);
                     n.setHitSample(thisNote.getInt("sample"));
+
                 }
                 else if(thisNote.getString("type").equals("switch")){
                     n = new Note(0, Note.NoteType.SWITCH, thisNote.getLong("sample") - spawnOffset, switchNoteTexture);
@@ -134,6 +135,7 @@ public class Level {
                     n = new Note(thisNote.getInt("lane"), Note.NoteType.HELD, thisNote.get("connections").get(0).getLong("sample") - spawnOffset, holdNoteTexture);
                     n.setHoldSamples(thisNote.get("connections").get(1).getLong("sample") - thisNote.get("connections").get(0).getLong("sample"));
                     n.setHitSample(thisNote.get("connections").get(0).getLong("sample"));
+
                 }
                 notes.addLast(n);
             }
@@ -252,13 +254,13 @@ public class Level {
             //If we are the goal of the active lane we need to draw separation lines and held/beat notes
             //We also need to draw a separate hit bar for each line
             if(active == i || goal == i){
-                BandMembers[i].drawHitNotes(canvas, sample);
+                BandMembers[i].drawHitNotes(canvas, sample, canvas.getHeight());
                 BandMembers[i].drawLineSeps(canvas);
                 BandMembers[i].drawHitBar(canvas, Color.WHITE, triggers);
             }
             //Otherwise just draw the switch notes, and we only have 1 hit bar to draw
             else{
-                BandMembers[i].drawSwitchNotes(canvas, sample);
+                BandMembers[i].drawSwitchNotes(canvas, sample, canvas.getHeight());
                 BandMembers[i].drawHitBar(canvas, Color.WHITE, switches[i]);
             }
         }

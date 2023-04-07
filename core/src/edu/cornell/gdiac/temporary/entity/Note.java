@@ -21,8 +21,17 @@ public class Note{
 	private static final float SHELL_SIZE_MULTIPLE = 4.0f;
 	/** How fast we change frames (one frame per 4 calls to update) */
 	private static final float ANIMATION_SPEED = 0.25f;
+
+	public int getNUM_ANIM_FRAMES() {
+		return NUM_ANIM_FRAMES;
+	}
+
+	public void setNUM_ANIM_FRAMES(int NUM_ANIM_FRAMES) {
+		this.NUM_ANIM_FRAMES = NUM_ANIM_FRAMES;
+	}
+
 	/** The number of animation frames in our filmstrip */
-	private static final int   NUM_ANIM_FRAMES = 4;
+	private int   NUM_ANIM_FRAMES;
 	/** Current animation frame for this shell */
 	private float animeframe;
 
@@ -143,6 +152,17 @@ public class Note{
 		animeframe = 0.0f;
 		nt = n;
 		this.startSample = startSample;
+		switch(nt) {
+			case BEAT:
+				NUM_ANIM_FRAMES = 1;
+				break;
+			case HELD:
+				NUM_ANIM_FRAMES = 4;
+				break;
+			case SWITCH:
+				NUM_ANIM_FRAMES = 1;
+				break;
+		}
 		animator = new FilmStrip(t,1,NUM_ANIM_FRAMES,NUM_ANIM_FRAMES);
 		origin = new Vector2(animator.getRegionWidth()/2.0f, animator.getRegionHeight()/2.0f);
 		h = animator.getRegionHeight();
@@ -176,25 +196,26 @@ public class Note{
 		tail_thickness = t;
 	}
 	/**
-	 * Draws this shell to the canvas
-	 *
-	 * There is only one drawing pass in this application, so you can draw the objects
-	 * in any order.
+	 * Draws this note to the canvas under a width and height restriction
+	 * This will draw the image in the original scale, and will scale the image down by the smallest possible factor
+	 * to meet the confinements
 	 *
 	 * @param canvas The drawing context
 	 */
 	public void draw(GameCanvas canvas, float widthConfine, float heightConfine) {
+
+		float scale = Math.max(widthConfine/w, heightConfine/h);
 		if(nt == NoteType.HELD){
 			canvas.drawRect(x - tail_thickness/2, by, x + tail_thickness/2, y, Color.BLUE, true);
 
-			animator.setFrame(0);
 			canvas.draw(animator, Color.WHITE, origin.x, origin.y, x, by,
-					0.0f, widthConfine/w, heightConfine/h);
+					0.0f, scale, scale);
 		}
 		else{
+
 			animator.setFrame((int)animeframe);
 			canvas.draw(animator, Color.WHITE, origin.x, origin.y, x, y,
-					0.0f, widthConfine/w, heightConfine/h);
+					0.0f, scale, scale);
 		}
 
 	}
