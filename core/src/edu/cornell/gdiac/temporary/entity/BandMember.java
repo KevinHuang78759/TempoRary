@@ -285,9 +285,13 @@ public class BandMember {
                 n.setX(BL.x + width/(2*numLines) + n.getLine()*(width/numLines));
                 n.setTail_thickness(width/(4f*numLines));
                 float spawnY = BL.y + height + n.getHeight();
-
-                n.setBottomY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample()) *(hitY - spawnY) );
-                n.setY(spawnY + Math.max(0, (float)(currentSample - n.getStartSample() - n.getHoldSamples())/(n.getHitSample() - n.getStartSample()))*(hitY - spawnY));
+                if(n.getNoteType() == Note.NoteType.HELD){
+                    n.setBottomY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample()) *(hitY - spawnY));
+                    n.setY(spawnY + Math.max(0, (float)(currentSample - n.getStartSample() - n.getHoldSamples())/(n.getHitSample() - n.getStartSample()))*(hitY - spawnY));
+                }
+                else{
+                    n.setY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample())*(hitY - spawnY));
+                }
 
                 n.draw(canvas, 3*width/(4*numLines), 3*width/(4*numLines));
             }

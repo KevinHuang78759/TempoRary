@@ -403,7 +403,7 @@ public class GameplayController {
 		switches = input.switches();
 		triggers = input.didTrigger();
 		boolean[] lifted = input.triggerLifted;
-		long currentSample = level.getMusic().getCurrent().getStream().getSampleOffset();
+		long currentSample = level.getCurrentSample();
 		//First handle the switches
 		if(curP == play_phase.NOTES){
 			for(int i = 0; i < switches.length; ++i){
@@ -413,7 +413,7 @@ public class GameplayController {
 						//Check for all the switch notes of this lane, if one is close enough destroy it and
 						//give it positive hit status
 						long dist = Math.abs(currentSample - n.getHitSample());
-						if(dist < 15000){
+						if(dist < 25000){
 							n.setHitStatus(dist < 10000 ? 4 : 2);
 							spawnStars(n.getHitStatus(), n.getX(), n.getY(), 0, 0);
 							n.setDestroyed(true);
@@ -451,14 +451,14 @@ public class GameplayController {
 		for(Note n : level.getBandMembers()[checkBM].getHitNotes()){
 			if(n.getNoteType() == Note.NoteType.BEAT){
 				if(triggers[n.getLine()] && !hitReg[n.getLine()]){
-					//Check for all the beats in this line and in the active band member
+					//Check for all the notes in this line and in the active band member
 					//See if any are close enough
-					float dist = Math.abs(hitbarY - n.getY())/n.getHeight();
-					if(dist < 1.5){
+					long dist = Math.abs(currentSample - n.getHitSample());
+					if(dist < 25000){
 						//If so, destroy the note and set a positive hit status. Also set that we
 						//have registered a hit for this line for this click. This ensures that
 						//We do not have a single hit count for two notes that are close together
-						n.setHitStatus(dist < 0.75 ? 2 : 1);
+						n.setHitStatus(dist < 10000 ? 2 : 1);
 						spawnStars(n.getHitStatus(), n.getX(), n.getY(), 0, 0);
 						n.setDestroyed(true);
 						hitReg[n.getLine()] = true;
@@ -470,9 +470,9 @@ public class GameplayController {
 
 				//Check if we hit the trigger down close enough to the head
 				if(triggers[n.getLine()] && !hitReg[n.getLine()]){
-					float dist = Math.abs(hitbarY - n.getBottomY())/n.getHeight();
-					if(dist < 1.5){
-						n.setHitStatus(dist < 0.75 ? 2 : 1);
+					long dist = Math.abs(currentSample - n.getHitSample());
+					if(dist < 25000){
+						n.setHitStatus(dist < 10000 ? 2 : 1);
 						spawnStars(n.getHitStatus(), n.getX(), n.getBottomY(), 0, 0);
 						hitReg[n.getLine()] = true;
 					}
@@ -480,9 +480,9 @@ public class GameplayController {
 
 				//check if we lifted close to the end
 				if(lifted[n.getLine()]){
-					float dist = Math.abs(hitbarY - n.getY())/n.getHeight();
-					if(dist < 1.5){
-						n.setHitStatus(n.getHitStatus() + dist < 0.75 ? 3 : 1);
+					long dist = Math.abs(currentSample - (n.getHitSample() + n.getHoldSamples()));
+					if(dist < 25000){
+						n.setHitStatus(n.getHitStatus() + dist < 10000 ? 3 : 1);
 						spawnStars(n.getHitStatus(), n.getX(), n.getY(), 0, 0);
 						n.setDestroyed(true);
 					}

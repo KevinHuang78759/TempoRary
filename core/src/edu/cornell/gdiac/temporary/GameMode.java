@@ -198,13 +198,13 @@ public class GameMode implements Screen {
 //			canvas.drawTextCentered("(Hold H at the same time to change to random notes)", displayFont, -50);
 		}
 		else{
-			// Draw the game objects
+			//Draw everything in the current level
+			gameplayController.level.drawEverything(canvas, gameplayController.activeBM, gameplayController.goalBM, inputController.triggerPress, inputController.switches());
+
+			// Draw the rest of the game objects on top
 			for (GameObject o : gameplayController.getObjects()) {
 				o.draw(canvas);
 			}
-
-
-			gameplayController.level.drawEverything(canvas, gameplayController.activeBM, gameplayController.goalBM, inputController.triggerPress, inputController.switches());
 
 			//obtain background color
 			Color bkgC = new Color(237f/255f, 224f/255f, 1f, 1.0f);

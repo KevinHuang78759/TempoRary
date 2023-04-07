@@ -15,6 +15,16 @@
           "type" : "single",
           "lane" : 0,
           "sample" : 100000
+        },
+        {
+          "type" : "single",
+          "lane" : 3,
+          "sample" : 200000
+        },
+        {
+          "type" : "single",
+          "lane" : 2,
+          "sample" : 300000
         }
       ]
     },
@@ -22,9 +32,21 @@
       "competencyLossRate": 1,
       "notes": [
         {
-          "type" : "single",
+          "type" : "switch",
           "lane" : 0,
           "sample" : 100000
+        },
+        {
+          "type" : "held",
+          "lane" : 2,
+          "connections" : [
+            {
+              "sample": 500000
+            },
+            {
+              "sample": 700000
+            }
+          ]
         }
       ]
     }

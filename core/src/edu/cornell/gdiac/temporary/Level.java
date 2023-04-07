@@ -112,7 +112,7 @@ public class Level {
 
         // preallocate band members
         BandMembers = new BandMember[data.get("bandMembers").size];
-        spawnOffset = music.getSampleRate()/2;
+        spawnOffset = 2*music.getSampleRate();
         for(int i = 0; i < BandMembers.length; i++){
             BandMembers[i] = new BandMember();
             JsonValue bmData = data.get("bandMembers").get(i);
@@ -180,14 +180,17 @@ public class Level {
      * @param nextBM - BandMember we are transitioning into
      * @param large_width - width of fully active BandMember
      * @param short_width - with of fully in active Band Member
-     * @param t_progress - transition progress, should be between 0 and 1. 1 means completed.
+     * @param t_progress - transition progress, should be between 0 and 1. 1 means transition completed.
      * */
     public void setTransitionProperties(int previousBM, int nextBM, float large_width, float short_width, float maxLineHeight, float t_progress){
+        //set default widths and heights, which means everyone with no lines and everyone has no lines
         for (BandMember bandMember : BandMembers) {
             bandMember.setWidth(short_width);
             bandMember.setLineHeight(0f);
             bandMember.setHeight(maxLineHeight);
         }
+
+        //set the width and line heights of the active and goal bandmembers accordingly
         BandMembers[previousBM].setWidth(large_width - (large_width - short_width)*t_progress);
         BandMembers[nextBM].setWidth(short_width + (large_width - short_width)*t_progress);
 
@@ -195,25 +198,54 @@ public class Level {
         BandMembers[nextBM].setLineHeight(maxLineHeight*t_progress);
     }
 
-
+    /**
+     * Spawns new notes according to what sample we are at. Also decrements bandmembers' competency
+     * for some amount about once a second
+     */
     public void updateBandMemberNotes(){
-        long currentSample = music.getCurrent().getStream().getSampleOffset();
+        //First get the sample we at
+        long sample = getCurrentSample();
         for(BandMember bm : BandMembers){
-            bm.spawnNotes(currentSample);
-            if(currentSample - lastDec >= 40000){
-                bm.compUpdate(-1);
-                lastDec = currentSample;
+            //update the note frames
+            bm.updateNotes();
+            //spawn new notes accordingly
+            bm.spawnNotes(sample);
+            //check if enough samples  have passed since the last decrement
+            if(sample - lastDec >= music.getSampleRate()){
+                //if so, decrement competency
+                bm.compUpdate(-bm.getLossRate());
+                lastDec = sample;
             }
         }
     }
 
+    /**
+     * Starts the music
+     */
     public void startmusic(){
         music.play();
     }
 
+    /**
+     * Gets the current sample of the song
+     * @return
+     */
+    public long getCurrentSample(){
+        return (long)(music.getPosition()*music.getSampleRate());
+    }
+
+    /**
+     * this draws everything the level needs to display on the given canvas
+     * @param canvas - what are we drawing on
+     * @param active - which band member is active
+     * @param goal - which band member are we/have we transitioned to?
+     * @param triggers - which triggers are pressed?
+     * @param switches - which switches are pressed?
+     */
+
     public void drawEverything(GameCanvas canvas, int active, int goal, boolean[] triggers, boolean[] switches){
-        long sample = music.getCurrent().getStream().getByteOffset();
-        System.out.println(sample);
+        //first we get the sample, since this determines where the notes will be drawn
+        long sample = getCurrentSample();
         for(int i = 0; i < BandMembers.length; ++i){
             //Draw the border of each band member
             BandMembers[i].drawBorder(canvas);
@@ -230,5 +262,6 @@ public class Level {
                 BandMembers[i].drawHitBar(canvas, Color.WHITE, switches[i]);
             }
         }
+
     }
 }
