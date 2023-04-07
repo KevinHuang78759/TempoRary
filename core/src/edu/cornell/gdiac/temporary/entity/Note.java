@@ -150,6 +150,8 @@ public class Note{
 		this.line = line;
 		hitStatus = 0;
 		animeframe = 0.0f;
+		curEndFrame = 0.0f;
+		curTrailFrame = 0.0f;
 		nt = n;
 		this.startSample = startSample;
 		switch(nt) {
@@ -157,7 +159,7 @@ public class Note{
 				NUM_ANIM_FRAMES = 1;
 				break;
 			case HELD:
-				NUM_ANIM_FRAMES = 4;
+				NUM_ANIM_FRAMES = 1;
 				break;
 			case SWITCH:
 				NUM_ANIM_FRAMES = 1;
@@ -176,6 +178,55 @@ public class Note{
 		w = animator.getRegionWidth();
 	}
 
+	private FilmStrip trailAnimator;
+	private int trailFrames;
+	/**
+	 * Height of the trail texture
+	 */
+	private float trailHeight;
+	/**
+	 * Width of the trail texture
+	 */
+	private float trailWidth;
+	/**
+	 * Origin of trail texture
+	 */
+	private Vector2 trailOrigin;
+
+
+	private FilmStrip endAnimator;
+	private int endFrames;
+	/**
+	 * Height of end texture
+	 */
+	private float endHeight;
+	/**
+	 * Width of end texture
+	 */
+	private float endWidth;
+	/**
+	 * Origin of end texture
+	 */
+	private Vector2 endOrigin;
+	private float curTrailFrame;
+	private float curEndFrame;
+
+	public void setHoldTextures(Texture trail, int trailFrames, Texture end, int endFrames){
+		trailAnimator = new FilmStrip(trail, 1, trailFrames, trailFrames);
+		this.trailFrames = trailFrames;
+		trailHeight = trailAnimator.getRegionHeight();
+		trailWidth = trailAnimator.getRegionWidth();
+		trailOrigin = new Vector2(trailWidth/2f, trailHeight/2f);
+
+		endAnimator = new FilmStrip(end, 1, endFrames, endFrames);
+		this.endFrames = endFrames;
+		endHeight = endAnimator.getRegionHeight();
+		endWidth = endAnimator.getRegionWidth();
+		endOrigin = new Vector2(endWidth/2f, endHeight/2f);
+	}
+
+
+
 	/**
 	 * Update animations
 	 */
@@ -184,6 +235,16 @@ public class Note{
 		animeframe += ANIMATION_SPEED;
 		if (animeframe >= NUM_ANIM_FRAMES) {
 			animeframe -= NUM_ANIM_FRAMES;
+		}
+		if(nt == NoteType.HELD){
+			curTrailFrame += ANIMATION_SPEED;
+			if(curTrailFrame >= trailFrames){
+				curTrailFrame -= trailFrames;
+			}
+			curEndFrame += ANIMATION_SPEED;
+			if(curEndFrame >= endFrames){
+				curEndFrame -= endFrames;
+			}
 		}
 	}
 
@@ -206,9 +267,19 @@ public class Note{
 
 		float scale = Math.max(widthConfine/w, heightConfine/h);
 		if(nt == NoteType.HELD){
-			canvas.drawRect(x - tail_thickness/2, by, x + tail_thickness/2, y, Color.BLUE, true);
+			tail_thickness = widthConfine/2f;
+			trailAnimator.setFrame((int)curTrailFrame);
+			endAnimator.setFrame((int)curEndFrame);
+			for (float cury = by; cury <= y; cury += trailHeight*tail_thickness/trailWidth){
+				canvas.draw(trailAnimator, Color.WHITE, trailOrigin.x, 0, x, cury,
+						0.0f, tail_thickness/trailWidth, tail_thickness/trailWidth);
+			}
+
+
 
 			canvas.draw(animator, Color.WHITE, origin.x, origin.y, x, by,
+					0.0f, scale, scale);
+			canvas.draw(endAnimator, Color.WHITE, endOrigin.x, endOrigin.y, x, y,
 					0.0f, scale, scale);
 		}
 		else{

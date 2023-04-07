@@ -3,7 +3,9 @@
         "background": "images/background.png",
         "switch":    "images/switch.png",
         "hit":      "images/press.png",
-        "hold":      "images/catnote.png",
+        "hold-start":      "images/holdNoteStart.png",
+        "hold-trail":      "images/trailTexture.png",
+        "hold-end":      "images/holdTailEnd.png",
         "star":     "images/star.png"
     },
     "fonts": {

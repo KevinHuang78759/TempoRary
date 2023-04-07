@@ -405,25 +405,17 @@ public class GameCanvas {
 		}
 	}
 
-	/**
-	 * Fills in a rectangle with a certain texture
-	 * @param t
-	 * @param x1
-	 * @param y1
-	 * @param x2
-	 * @param y2
-	 */
-	public void textureRect(Texture t, float x1, float y1, float x2, float y2){
-			float[] coors = new float[]{x1,y1,
-					x1,y2,
-					x2,y1,
-					x2,y2};
-			short[] triangles = new short[]{0, 1, 2, 1, 3, 2};
-			t.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
-			PRG = new PolygonRegion(new TextureRegion(t), coors, triangles);
-			spriteBatch.draw(PRG, 0, 0);
-
-	}
+//	/**
+//	 * Fills in a rectangle with a certain texture
+//	 * @param tr
+//	 * @param x1
+//	 * @param y1
+//	 * @param x2
+//	 * @param y2
+//	 */
+//	public void textureRect(TextureRegion tr, float x1, float y1, float x2, float y2, Texture.TextureWrap uWrap, Texture.TextureWrap vWrap){
+//
+//	}
 
 	/**
 	 * Another method for drawing a rectangle when given the bottom left corner, width, and height

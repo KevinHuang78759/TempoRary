@@ -88,6 +88,8 @@ public class Level {
     private Texture hitNoteTexture;
     private Texture switchNoteTexture;
     private Texture holdNoteTexture;
+    private Texture holdEndTexture;
+    private Texture holdTrailTexture;
     private String title;
     private int order;
     private int maxCompetency;
@@ -108,8 +110,10 @@ public class Level {
 
         hitNoteTexture = directory.getEntry("hit", Texture.class);
         switchNoteTexture = directory.getEntry("switch", Texture.class);
-        holdNoteTexture = directory.getEntry("hold", Texture.class);
-
+        holdNoteTexture = directory.getEntry("hold-start", Texture.class);
+        holdTrailTexture = directory.getEntry("hold-trail", Texture.class);
+        holdTrailTexture.setWrap(Texture.TextureWrap.ClampToEdge, Texture.TextureWrap.Repeat);
+        holdEndTexture = directory.getEntry("hold-end", Texture.class);
         // preallocate band members
         BandMembers = new BandMember[data.get("bandMembers").size];
         spawnOffset = 2*music.getSampleRate();
@@ -133,6 +137,7 @@ public class Level {
                 }
                 else{
                     n = new Note(thisNote.getInt("lane"), Note.NoteType.HELD, thisNote.get("connections").get(0).getLong("sample") - spawnOffset, holdNoteTexture);
+                    n.setHoldTextures(holdTrailTexture,1,holdEndTexture,1);
                     n.setHoldSamples(thisNote.get("connections").get(1).getLong("sample") - thisNote.get("connections").get(0).getLong("sample"));
                     n.setHitSample(thisNote.get("connections").get(0).getLong("sample"));
 
