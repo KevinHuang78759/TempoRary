@@ -577,6 +577,18 @@ public class GameCanvas {
 		spriteBatch.setColor(tint);
 		spriteBatch.draw(region,region.getRegionWidth(),region.getRegionHeight(),local);
 	}
+
+	public void drawPartial(TextureRegion region, Color tint, float ox, float oy,
+					 float x, float y, float angle, float sx, float sy, float xfrac, float yfrac) {
+		if (!active) {
+			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+			return;
+		}
+
+		computeTransform(ox,oy,x,y,angle,sx,sy);
+		spriteBatch.setColor(tint);
+		spriteBatch.draw(region,region.getRegionWidth(),region.getRegionHeight()*yfrac,local);
+	}
 	
 	/**
 	 * Compute the affine transform (and store it in local) for this image.

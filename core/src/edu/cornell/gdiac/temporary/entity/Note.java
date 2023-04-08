@@ -270,10 +270,15 @@ public class Note{
 			tail_thickness = widthConfine/2f;
 			trailAnimator.setFrame((int)curTrailFrame);
 			endAnimator.setFrame((int)curEndFrame);
-			for (float cury = by; cury <= y; cury += trailHeight*tail_thickness/trailWidth){
+			float cury = by;
+			for (;cury < y - trailHeight*tail_thickness/trailWidth; cury += trailHeight*tail_thickness/trailWidth){
 				canvas.draw(trailAnimator, Color.WHITE, trailOrigin.x, 0, x, cury,
 						0.0f, tail_thickness/trailWidth, tail_thickness/trailWidth);
 			}
+			System.out.println((y - cury)/(trailAnimator.getRegionHeight()*tail_thickness/trailWidth));
+			canvas.drawPartial(trailAnimator, Color.WHITE, trailOrigin.x, 0, x, cury,
+					0f, tail_thickness/trailWidth, tail_thickness/trailWidth,
+					1f,(y - cury)/(trailAnimator.getRegionHeight()*tail_thickness/trailWidth));
 
 
 
