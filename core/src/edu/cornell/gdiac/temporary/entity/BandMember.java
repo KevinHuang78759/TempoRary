@@ -283,7 +283,7 @@ public class BandMember {
                 //Hitnotes will be based on what line we are on
                 n.setX(BL.x + width/(2*numLines) + n.getLine()*(width/numLines));
                 if(n.getNoteType() == Note.NoteType.HELD){
-
+                    //Y coordinates based on formula mentioned in discord.
                     n.setBottomY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample()) *(hitY - spawnY));
                     n.setY(spawnY + Math.max(0, (float)(currentSample - n.getStartSample() - n.getHoldSamples())/(n.getHitSample() - n.getStartSample()))*(hitY - spawnY));
                 }

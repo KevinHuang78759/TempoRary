@@ -154,6 +154,7 @@ public class Note{
 		curTrailFrame = 0.0f;
 		nt = n;
 		this.startSample = startSample;
+		//Set the number of animation frames
 		switch(nt) {
 			case BEAT:
 				NUM_ANIM_FRAMES = 1;
@@ -171,6 +172,10 @@ public class Note{
 		w = animator.getRegionWidth();
 	}
 
+	/**
+	 * Sets the note texture
+	 * @param texture
+	 */
 	public void setTexture(Texture texture) {
 		animator = new FilmStrip(texture,1,NUM_ANIM_FRAMES,NUM_ANIM_FRAMES);
 		origin = new Vector2(animator.getRegionWidth()/2.0f, animator.getRegionHeight()/2.0f);
@@ -211,6 +216,13 @@ public class Note{
 	private float curTrailFrame;
 	private float curEndFrame;
 
+	/**
+	 * Set the textures for held notes. This is outside the constructor because not every note is a held note
+	 * @param trail
+	 * @param trailFrames
+	 * @param end
+	 * @param endFrames
+	 */
 	public void setHoldTextures(Texture trail, int trailFrames, Texture end, int endFrames){
 		trailAnimator = new FilmStrip(trail, 1, trailFrames, trailFrames);
 		this.trailFrames = trailFrames;
@@ -264,24 +276,30 @@ public class Note{
 	 * @param canvas The drawing context
 	 */
 	public void draw(GameCanvas canvas, float widthConfine, float heightConfine) {
-
+		//Calculate a scale such that the entire sprite fits within both confines, but does not get distorted
 		float scale = Math.max(widthConfine/w, heightConfine/h);
 		if(nt == NoteType.HELD){
+			//The tail should be about half the width of the actual note assets
 			tail_thickness = widthConfine/2f;
+			//Set the animation frame properly
 			trailAnimator.setFrame((int)curTrailFrame);
 			endAnimator.setFrame((int)curEndFrame);
+			//Start at the bottom location, then draw until we reach the top
 			float cury = by;
+			//This for loop is cursed, but its really a while loop
 			for (;cury < y - trailHeight*tail_thickness/trailWidth; cury += trailHeight*tail_thickness/trailWidth){
 				canvas.draw(trailAnimator, Color.WHITE, trailOrigin.x, 0, x, cury,
 						0.0f, tail_thickness/trailWidth, tail_thickness/trailWidth);
 			}
-			System.out.println((y - cury)/(trailAnimator.getRegionHeight()*tail_thickness/trailWidth));
+			//We do not want to draw the tail in a way such that it will poke out of the top sprite
+			//Therefore, we need to draw only a vertical fraction of our trail asset for the final
+			//segment
 			canvas.drawPartial(trailAnimator, Color.WHITE, trailOrigin.x, 0, x, cury,
 					0f, tail_thickness/trailWidth, tail_thickness/trailWidth,
 					1f,(y - cury)/(trailAnimator.getRegionHeight()*tail_thickness/trailWidth));
 
 
-
+			//The head and tail are drawn after the trails to cover up the jagged ends
 			canvas.draw(animator, Color.WHITE, origin.x, origin.y, x, by,
 					0.0f, scale, scale);
 			canvas.draw(endAnimator, Color.WHITE, endOrigin.x, endOrigin.y, x, y,

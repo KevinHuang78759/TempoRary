@@ -578,6 +578,20 @@ public class GameCanvas {
 		spriteBatch.draw(region,region.getRegionWidth(),region.getRegionHeight(),local);
 	}
 
+	/**
+	 * The same as the normal draw, except it only draws a fraction of the texture
+	 * @param region
+	 * @param tint
+	 * @param ox
+	 * @param oy
+	 * @param x
+	 * @param y
+	 * @param angle
+	 * @param sx
+	 * @param sy
+	 * @param xfrac - horizontal fraction
+	 * @param yfrac - vertical fraction
+	 */
 	public void drawPartial(TextureRegion region, Color tint, float ox, float oy,
 					 float x, float y, float angle, float sx, float sy, float xfrac, float yfrac) {
 		if (!active) {
@@ -587,7 +601,7 @@ public class GameCanvas {
 
 		computeTransform(ox,oy,x,y,angle,sx,sy);
 		spriteBatch.setColor(tint);
-		spriteBatch.draw(region,region.getRegionWidth(),region.getRegionHeight()*yfrac,local);
+		spriteBatch.draw(region,region.getRegionWidth()*xfrac,region.getRegionHeight()*yfrac,local);
 	}
 	
 	/**

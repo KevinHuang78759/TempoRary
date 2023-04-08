@@ -101,6 +101,7 @@ public class Level {
      */
     private long lastDec;
     public Level(JsonValue data, AssetDirectory directory) {
+        //Read in Json  Value and populate asset textures
         lastDec = 0;
         title = data.getString("title");
         order = data.getInt("number");
@@ -249,7 +250,6 @@ public class Level {
      * @param triggers - which triggers are pressed?
      * @param switches - which switches are pressed?
      */
-
     public void drawEverything(GameCanvas canvas, int active, int goal, boolean[] triggers, boolean[] switches){
         //first we get the sample, since this determines where the notes will be drawn
         long sample = getCurrentSample();
