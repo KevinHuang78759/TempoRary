@@ -801,8 +801,8 @@ public class EditorMode implements Screen {
             music.play();
             if (relocate) {
                 relocated = true;
-                if (songPosition < startPosition){
-                    music.setPosition(0.0f);
+                if (songPosition <= startPosition){
+                    music.setPosition(0.01f);
                 } else {
                     music.setPosition(((float) (songPosition - startPosition - beat/4))/ ((float) sampleRate));
                 }
@@ -900,7 +900,7 @@ public class EditorMode implements Screen {
 
         if (x >= playButtonLocation.x && x <= playButtonLocation.x + playButtonDimensions.x){
             if (y >= playButtonLocation.y && y <= playButtonLocation.y + playButtonDimensions.y){
-                togglePlay(true);
+                togglePlay(false);
             }
         }
         if (x >= trackButtonLocation.x && x <= trackButtonLocation.x + trackButtonDimensions.x){
