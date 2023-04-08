@@ -124,6 +124,14 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	/** Whether or not this player mode is still active */
 	private boolean active;
 
+	/** PRESS STATES **/
+
+	/** Int that returns with the button to go to the game */
+	public static final int TO_GAME = 2;
+
+	/** Int that returns with the button to go to the level editor */
+	public static final int TO_LEVEL_EDITOR = 4;
+
 	/**
 	 * Returns the budget for the asset loader.
 	 *
@@ -158,7 +166,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @return true if the player is ready to go
 	 */
 	public boolean isReady() {
-		return pressState == 2 || pressState == 4;
+		return pressState == TO_GAME || pressState == TO_LEVEL_EDITOR;
 	}
 
 	/**
@@ -430,7 +438,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @return whether to hand the event to other listeners. 
 	 */
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		if (playButton == null || pressState == 2) {
+		if (playButton == null || pressState == TO_GAME) {
 			return true;
 		}
 		
@@ -448,7 +456,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		float radiusEditor = BUTTON_SCALE*scale*levelEditorButton.getWidth()/2.0f;
 		float distEditor = (screenX-(centerX + levelEditorButton.getWidth() + 10))*(screenX-(centerX + levelEditorButton.getWidth() + 10))+(screenY-centerY)*(screenY-centerY);
 		if (distEditor < radiusEditor*radiusEditor) {
-			pressState = 4;
+			pressState = TO_LEVEL_EDITOR;
 		}
 		return false;
 	}
@@ -466,7 +474,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 */	
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) { 
 		if (pressState == 1) {
-			pressState = 2;
+			pressState = TO_GAME;
 			return false;
 		}
 		return true;
@@ -509,7 +517,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		if (pressState == 1) {
 			ControllerMapping mapping = controller.getMapping();
 			if (mapping != null && buttonCode == mapping.buttonStart ) {
-				pressState = 2;
+				pressState = TO_GAME;
 				return false;
 			}
 		}
