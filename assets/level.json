@@ -32,6 +32,35 @@
       "competencyLossRate": 1,
       "notes": [
         {
+          "type" : "held",
+          "lane" : 1,
+          "connections" : [
+            {
+              "sample": 750000
+            },
+            {
+              "sample": 950000
+            }
+          ]
+        },
+        {
+          "type" : "held",
+          "lane" : 3,
+          "connections" : [
+            {
+              "sample": 900000
+            },
+            {
+              "sample": 1100000
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "competencyLossRate": 1,
+      "notes": [
+        {
           "type" : "switch",
           "lane" : 0,
           "sample" : 100000
