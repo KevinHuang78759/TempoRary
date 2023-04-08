@@ -60,6 +60,10 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	/** Texture atlas to support a progress bar */
 	private Texture statusBar;
 
+	/** Tempo-Rary logo */
+	private Texture title;
+
+	/** button to transition to level editor */
 	private Texture levelEditorButton;
 	
 	// statusBar is a "texture atlas." Break it up into parts.
@@ -207,6 +211,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		// Load the next two images immediately.
 		playButton = null;
 		levelEditorButton = null;
+		title = internal.getEntry("title", Texture.class);
 		background = internal.getEntry( "background", Texture.class );
 		background.setFilter( TextureFilter.Linear, TextureFilter.Linear );
 		statusBar = internal.getEntry( "progress", Texture.class );
@@ -265,7 +270,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			if (progress >= 1.0f) {
 				this.progress = 1.0f;
 				playButton = internal.getEntry("play",Texture.class);
-				levelEditorButton = internal.getEntry("play",Texture.class);
+				levelEditorButton = internal.getEntry("level-editor",Texture.class);
 			}
 		}
 	}
@@ -283,13 +288,18 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		if (playButton == null) {
 			drawProgress(canvas);
 		} else {
+
+			// TODO: THE POSITIONS OF THESE BUTTONS SHOULD NOT BE HARDCODED HERE.
+
 			Color tint = (pressState == 1 ? Color.GRAY: Color.WHITE);
 			canvas.draw(playButton, tint, playButton.getWidth()/2, playButton.getHeight()/2 + 50,
-						centerX, centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+					centerX + levelEditorButton.getWidth() + 10, centerY+200, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 
-			Color tintEditor = (pressState == 1 ? Color.GRAY: Color.GREEN);
-			canvas.draw(playButton, tintEditor, levelEditorButton.getWidth()/2, levelEditorButton.getHeight()/2 + 50,
+			canvas.draw(levelEditorButton, tint, levelEditorButton.getWidth()/2, levelEditorButton.getHeight()/2 + 50,
 					centerX + levelEditorButton.getWidth() + 10, centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+
+			canvas.draw(title, tint, title.getWidth()/2, title.getHeight()/2,
+					title.getWidth()/2+50, centerY+300, 0,scale, scale);
 		}
 		canvas.end();
 	}
