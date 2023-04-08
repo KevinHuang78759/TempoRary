@@ -206,6 +206,10 @@ public class InputController {
 	private boolean downDurationPress;
 	private boolean downDurationLast;
 
+	private boolean placeStart;
+	private boolean placeStartPress;
+	private boolean placeStartLast;
+
 	boolean[] triggerPress;
 	boolean[] triggerLifted;
 	/**
@@ -247,7 +251,9 @@ public class InputController {
 
 		playPress = Gdx.input.isKeyPressed(Input.Keys.SPACE);
 
-		trackPress = Gdx.input.isKeyPressed(Input.Keys.P) ;
+		trackPress = Gdx.input.isKeyPressed(Input.Keys.V);
+
+		placeStartPress = Gdx.input.isKeyPressed(Input.Keys.P);
 
 		savePress = Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && Gdx.input.isKeyPressed(Input.Keys.S);
 
@@ -291,6 +297,9 @@ public class InputController {
 
 		downDuration = !downDurationLast && downDurationPress;
 		downDurationLast = downDurationPress;
+
+		placeStart = !placeStartLast && placeStartPress;
+		placeStartLast = placeStartPress;
 	}
 
 	/*
@@ -337,7 +346,14 @@ public class InputController {
 	public boolean setBeatNotes() {return Gdx.input.isKeyPressed(Input.Keys.B);}
 	public boolean setHeldNotes() {return Gdx.input.isKeyPressed(Input.Keys.H);}
 
-	public boolean didPressPlay() {return play;}
+	public boolean didPressPlay(boolean relocate) {
+		if (!relocate) {
+			return play && !Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT);
+		}
+		else {
+			return play && Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT);
+		}
+	}
 
 	public boolean didPressTrack() {return track;}
 
@@ -348,6 +364,8 @@ public class InputController {
 	public boolean didUndo() {return undid;}
 
 	public boolean didRedo() {return redid;}
+
+	public boolean pressedPlaceStart() {return placeStart;}
 
 	public boolean didSave() {return save;}
 
