@@ -100,6 +100,10 @@ public class GameMode implements Screen {
 		gameplayController = new GameplayController(lanes,lpl, canvas.getWidth(),canvas.getHeight());
 	}
 
+	/** Return to loading screen state */
+	private boolean returnLoadingState = false;
+	public boolean getReturnLoadingState(){return returnLoadingState;}
+
 	/**
 	 * Dispose of all (non-static) resources allocated to this mode.
 	 */
@@ -160,7 +164,12 @@ public class GameMode implements Screen {
 					gameState = GameState.PLAY;
 					gameplayController.reset();
 					gameplayController.start();
-				} else {
+				} else if (inputController.didPause()){
+					returnLoadingState = true;
+					listener.exitScreen(this, 0);
+					returnLoadingState = false;
+				}
+				else {
 					play(delta);
 				}
 				ticks++;

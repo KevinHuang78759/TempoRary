@@ -22,6 +22,9 @@ import java.util.LinkedList;
 
 public class EditorMode implements Screen {
 
+    private boolean returnLoadingState = false;
+    public boolean getReturnLoadingState(){return returnLoadingState;}
+
     /** number of beats per minute */
     private final int BPM = 100;
 
@@ -591,6 +594,12 @@ public class EditorMode implements Screen {
             note.setX(lineToScreenX(note.getLane(), note.getLine()));
             note.setY(songPosToScreenY(note.getPos()));
             note.setOnScreen(onScreen(note.getPos()));
+        }
+
+        if(inputController.didPause()){
+            returnLoadingState = true;
+            listener.exitScreen(this, 0);
+            returnLoadingState = false;
         }
     }
 

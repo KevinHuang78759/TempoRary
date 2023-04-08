@@ -135,7 +135,17 @@ public class GDXRoot extends Game implements ScreenListener {
 
 			loading.dispose();
 			loading = null;
-		} else {
+		} else if (screen == playing && playing.getReturnLoadingState()){
+			loading = new LoadingMode("assets.json",canvas,1);
+			loading.setScreenListener(this);
+			setScreen(loading);
+		}
+		else if (screen == editing && editing.getReturnLoadingState()){
+			loading = new LoadingMode("assets.json",canvas,1);
+			loading.setScreenListener(this);
+			setScreen(loading);
+		}
+		else {
 			// We quit the main application
 			Gdx.app.exit();
 		}
