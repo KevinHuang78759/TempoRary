@@ -315,10 +315,10 @@ public class EditorMode implements Screen {
         //Play and Track Buttons
         playButtonLocation.set(width*0.50f, height * 0.90f);
         trackButtonLocation.set(width*0.60f, height*0.90f);
-        resetButtonLocation.set(width*0.45f, height*0.90f);
+        resetButtonLocation.set(width*0.46f, height*0.90f);
         playButtonDimensions.set(width*0.08f, height*0.06f);
         trackButtonDimensions.set(width*0.075f, height*0.05f);
-        resetButtonSize = height*0.05f;
+        resetButtonSize = height*0.035f;
 
         //Undo and Redo Buttons
         undoButtonLocation.set(width*0.85f, height*0.90f);
@@ -346,6 +346,8 @@ public class EditorMode implements Screen {
         placing_start = false;
         playing = false;
         trackSong = true;
+        BPM = 95;
+        maxCompetency = 100;
 
         //initialize UI button locations
         quarterPrecision1ButtonLocation = new Vector2();
@@ -376,6 +378,32 @@ public class EditorMode implements Screen {
         undoNotes = new LinkedList<EditorNote>();
     }
 
+    private void initializeLevel(int laneNumber, int lineNumber) {
+        sampleRate = music.getSampleRate();
+        frameRate = 60;
+        defineSongCharacteristics();
+        startPosition = 0;
+        playPosition = startPosition;
+        this.laneNumber = laneNumber;
+        this.lineNumber = lineNumber;
+
+        //initialize band member lanes
+        defineRectangles(laneNumber);
+
+        //initialize level data lists
+        Notes = new LinkedList();
+        beatNotes = new LinkedList[laneNumber][lineNumber];
+        heldNotes = new LinkedList[laneNumber][lineNumber];
+        switchNotes = new LinkedList[laneNumber];
+        for (int lane = 0; lane < laneNumber; lane++) {
+            switchNotes[lane] = new LinkedList<Integer>();
+            for (int line = 0; line < lineNumber; line++) {
+                beatNotes[lane][line] = new LinkedList<Integer>();
+                heldNotes[lane][line] = new LinkedList<Integer[]>();
+            }
+        }
+    }
+
     /**
      * Loads all the notes and other level editor settings in from what is specified in the level JSON.
      * @param level the JSON value corresponding to the JSON file containing all the level information
@@ -387,10 +415,10 @@ public class EditorMode implements Screen {
         frameRate = 60;
         BPM = level.getInt("bpm");
         defineSongCharacteristics();
-        playPosition = startPosition;
         selectedDuration = beat;
         songPosition = (int) ((4/zoom)*beat);
         startPosition = level.getInt("startPosition");
+        playPosition = startPosition;
         laneNumber = level.get("bandMembers").size;
         lineNumber = level.getInt("linesPerMember");
         maxCompetency = level.getInt("maxCompetency");
@@ -536,8 +564,8 @@ public class EditorMode implements Screen {
         displayFont = directory.getEntry("lucida", BitmapFont.class);
         inputController.setEditorProcessor();
         defaultLevel = directory.getEntry("level_test", JsonValue.class);
-        music = directory.getEntry(defaultLevel.getString("song"), MusicQueue.class);
-        loadLevel(defaultLevel);
+        music = directory.getEntry("noedell", MusicQueue.class);
+        initializeLevel(4, 4);
     }
 
     /**
@@ -815,7 +843,6 @@ public class EditorMode implements Screen {
     private void resetSong(){
         playing = false;
         playPosition = startPosition;
-        relocated = true;
         music.reset();
         music.stop();
         if (trackSong){
@@ -906,6 +933,9 @@ public class EditorMode implements Screen {
         if (x >= trackButtonLocation.x && x <= trackButtonLocation.x + trackButtonDimensions.x){
             if (y >= trackButtonLocation.y && y <= trackButtonLocation.y + trackButtonDimensions.y){
                 trackSong = !trackSong;
+                if (playing) {
+                    songPosition = playPosition;
+                }
             }
         }
         if (x >= resetButtonLocation.x && x <= resetButtonLocation.x + resetButtonSize){
@@ -1070,6 +1100,9 @@ public class EditorMode implements Screen {
         }
         if (inputController.didPressTrack()){
             trackSong = !trackSong;
+            if (playing) {
+                songPosition = playPosition;
+            }
         }
         if (inputController.didResetSong()) {
             resetSong();
@@ -1090,6 +1123,10 @@ public class EditorMode implements Screen {
         //Get Save Input
         if (inputController.didSave()){
             saveLevel("level_test");
+        }
+
+        if (inputController.didLoad()){
+            loadLevel(defaultLevel);
         }
     }
 
@@ -1170,10 +1207,6 @@ public class EditorMode implements Screen {
                 canvas.drawLine(x2, y, x2, y + laneHeight, 1, Color.BLACK);
             }
 
-            //draw center bar
-            l = songPosToScreenY(songPosition);
-            canvas.drawLine(x, l, x + laneWidth, l, 8, Color.PURPLE);
-
             //draw song bar
             if (onScreen(playPosition)){
                 l = songPosToScreenY(playPosition);
@@ -1187,8 +1220,13 @@ public class EditorMode implements Screen {
             //draw start bar
             if (onScreen(startPosition)){
                 l = songPosToScreenY(startPosition);
-                canvas.drawLine(x, l, x + laneWidth, l, 8, Color.OLIVE);
+                canvas.drawLine(x, l, x + laneWidth, l, 8, Color.GOLDENROD);
             }
+
+            //draw center bar
+            l = songPosToScreenY(songPosition);
+            canvas.drawLine(x, l, x + laneWidth, l, 4, Color.PURPLE);
+
 
             x += laneWidth + laneSpacing;
 
@@ -1289,7 +1327,7 @@ public class EditorMode implements Screen {
         canvas.drawRect(trackButtonLocation, trackButtonDimensions.x, trackButtonDimensions.y, Color.FOREST, true);
         canvas.drawRect(trackButtonLocation, trackButtonDimensions.x, trackButtonDimensions.y, Color.BLACK, false);
 
-        canvas.drawRect(resetButtonLocation, resetButtonSize, resetButtonSize, Color.FOREST, true);
+        canvas.drawRect(resetButtonLocation, resetButtonSize, resetButtonSize, Color.DARK_GRAY, true);
         canvas.drawRect(resetButtonLocation, resetButtonSize, resetButtonSize, Color.BLACK, false);
 
         if (playing) {
@@ -1300,7 +1338,7 @@ public class EditorMode implements Screen {
         if (trackSong) {
             selectBoxX = trackButtonLocation.x;
             selectBoxY = trackButtonLocation.y;
-            canvas.drawRect(selectBoxX + trackButtonDimensions.x / 4f, selectBoxY + trackButtonDimensions.y / 4f, selectBoxX + trackButtonDimensions.x * (1f - 1f / 4f), selectBoxY + trackButtonDimensions.y * (1f - 1f / 4f), Color.MAROON, true);
+            canvas.drawRect(selectBoxX + trackButtonDimensions.x / 4f, selectBoxY + trackButtonDimensions.y / 4f, selectBoxX + trackButtonDimensions.x * (1f - 1f / 4f), selectBoxY + trackButtonDimensions.y * (1f - 1f / 4f), Color.NAVY, true);
         }
 
         //draw undo/redo buttons

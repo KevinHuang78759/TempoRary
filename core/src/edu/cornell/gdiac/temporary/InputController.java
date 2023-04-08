@@ -199,6 +199,10 @@ public class InputController {
 	private boolean savePress;
 	private boolean saveLast;
 
+	private boolean load;
+	private boolean loadPress;
+	private boolean loadLast;
+
 	private boolean upDuration;
 	private boolean upDurationPress;
 	private boolean upDurationLast;
@@ -257,6 +261,8 @@ public class InputController {
 
 		savePress = Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && Gdx.input.isKeyPressed(Input.Keys.S);
 
+		loadPress = Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && Gdx.input.isKeyPressed(Input.Keys.L);
+
 		upDurationPress = Gdx.input.isKeyPressed(Input.Keys.NUM_9);
 		downDurationPress = Gdx.input.isKeyPressed(Input.Keys.NUM_8);
 
@@ -291,6 +297,9 @@ public class InputController {
 
 		save = !saveLast && savePress;
 		saveLast = savePress;
+
+		load = !loadLast && loadPress;
+		loadLast = loadPress;
 
 		upDuration = !upDurationLast && upDurationPress;
 		upDurationLast = upDurationPress;
@@ -368,6 +377,8 @@ public class InputController {
 	public boolean pressedPlaceStart() {return placeStart;}
 
 	public boolean didSave() {return save;}
+
+	public boolean didLoad() {return load;}
 
 	public boolean durationUp() {return upDuration;}
 
