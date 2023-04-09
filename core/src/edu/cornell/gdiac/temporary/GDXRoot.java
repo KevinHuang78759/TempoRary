@@ -78,6 +78,13 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public void dispose() {
 		// Call dispose on our children
+		// dispose of each of the individual controller screens
+		loading.dispose();
+		loading = null;
+
+		playing.dispose();
+		playing = null;
+
 		Screen screen = getScreen();
 		setScreen(null);
 		screen.dispose();
@@ -124,24 +131,18 @@ public class GDXRoot extends Game implements ScreenListener {
 			directory = loading.getAssets();
 			playing.populate(directory);
 			setScreen(playing);
-
-			loading.dispose();
-			loading = null;
 		} else if (screen == loading && loading.getPressState() == LoadingMode.TO_LEVEL_EDITOR) {
 			editing.setScreenListener(this);
 			directory = loading.getAssets();
 			editing.populate(directory);
 			setScreen(editing);
-
-			loading.dispose();
-			loading = null;
-		} else if (screen == playing && playing.getReturnLoadingState()){
-			loading = new LoadingMode("assets.json",canvas,1);
+		} else if (screen == playing){
+			loading = new LoadingMode("assets.json", canvas,1);
 			loading.setScreenListener(this);
 			setScreen(loading);
 		}
-		else if (screen == editing && editing.getReturnLoadingState()){
-			loading = new LoadingMode("assets.json",canvas,1);
+		else if (screen == editing){
+			loading = new LoadingMode("assets.json", canvas,1);
 			loading.setScreenListener(this);
 			setScreen(loading);
 		}
