@@ -90,6 +90,8 @@ public class Level {
     private Texture holdNoteTexture;
     private Texture holdEndTexture;
     private Texture holdTrailTexture;
+
+    private Texture hpbar;
     private String title;
     private int order;
     private int maxCompetency;
@@ -113,6 +115,7 @@ public class Level {
         switchNoteTexture = directory.getEntry("switch", Texture.class);
         holdNoteTexture = directory.getEntry("hold-start", Texture.class);
         holdTrailTexture = directory.getEntry("hold-trail", Texture.class);
+        hpbar = directory.getEntry("hp-bar", Texture.class);
         holdTrailTexture.setWrap(Texture.TextureWrap.ClampToEdge, Texture.TextureWrap.Repeat);
         holdEndTexture = directory.getEntry("hold-end", Texture.class);
         // preallocate band members
@@ -149,6 +152,7 @@ public class Level {
             BandMembers[i].setCurComp(maxCompetency);
             BandMembers[i].setMaxComp(maxCompetency);
             BandMembers[i].setLossRate(bmData.getInt("competencyLossRate"));
+            BandMembers[i].setHpBarFilmStrip(hpbar, 47);
         }
     }
 
@@ -213,17 +217,22 @@ public class Level {
     public void updateBandMemberNotes(){
         //First get the sample we at
         long sample = getCurrentSample();
+        boolean decTog = false;
         for(BandMember bm : BandMembers){
             //update the note frames
             bm.updateNotes();
             //spawn new notes accordingly
             bm.spawnNotes(sample);
-            //check if enough samples  have passed since the last decrement
+            //check if enough samples have passed since the last decrement
+
             if(sample - lastDec >= music.getSampleRate()){
                 //if so, decrement competency
                 bm.compUpdate(-bm.getLossRate());
-                lastDec = sample;
+                decTog = true;
             }
+        }
+        if (decTog){
+            lastDec = sample;
         }
     }
 
@@ -256,6 +265,7 @@ public class Level {
         for(int i = 0; i < BandMembers.length; ++i){
             //Draw the border of each band member
             BandMembers[i].drawBorder(canvas);
+
             //If we are the goal of the active lane we need to draw separation lines and held/beat notes
             //We also need to draw a separate hit bar for each line
             if(active == i || goal == i){

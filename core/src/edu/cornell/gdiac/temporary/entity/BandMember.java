@@ -1,14 +1,22 @@
 package edu.cornell.gdiac.temporary.entity;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.temporary.*;
+import edu.cornell.gdiac.util.FilmStrip;
+import org.w3c.dom.Text;
 
 
 public class BandMember {
 
+    FilmStrip hpbar;
+    /**
+     * Number of frames in HP bar animation
+     */
+    int hpbarFrames;
 
     /**
      * Bottom left corner
@@ -172,6 +180,12 @@ public class BandMember {
         backing = new Array<>();
     }
 
+    public void setHpBarFilmStrip(Texture t, int numFrames){
+        hpbarFrames = numFrames;
+        hpbar = new FilmStrip(t,1,hpbarFrames,hpbarFrames);
+        hpbar.setFrame(0);
+    }
+
     public void setStartingState(int comp, Queue<Note> notes){
         curComp = comp;
         maxComp = comp;
@@ -254,7 +268,11 @@ public class BandMember {
      * Update competency by the specified amount but will not go below 0 or exceed the max
      */
     public void compUpdate(int amount){
+        if (amount >= 1){
+            System.out.println(amount);
+        }
         curComp = Math.min(Math.max(0, curComp + amount), maxComp);
+        hpbar.setFrame(Math.min((int)((1 - (float)curComp/maxComp)*(hpbarFrames)), hpbarFrames - 1));
     }
 
     /**
@@ -303,6 +321,14 @@ public class BandMember {
     public void drawBorder(GameCanvas canvas){
 
         canvas.drawRect(BL, width, height, borderColor, false);
+    }
+
+    public void drawHPBar(GameCanvas canvas){
+
+        float scale = (BL.y*4/5)/hpbar.getRegionHeight();
+        float trueHeight = scale*hpbar.getRegionHeight();
+        canvas.draw(hpbar, Color.WHITE, 0, 0,BL.x + width/10, (BL.y - trueHeight)/2,
+                0.0f, scale, scale);
     }
 
     /**

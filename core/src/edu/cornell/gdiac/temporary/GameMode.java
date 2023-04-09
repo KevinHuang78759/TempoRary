@@ -18,6 +18,7 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.temporary.entity.BandMember;
 import edu.cornell.gdiac.util.*;
 
 import java.io.File;
@@ -171,8 +172,8 @@ public class GameMode implements Screen {
 
 
 		// Update objects.
-		gameplayController.update();
 		gameplayController.handleActions(inputController);
+		gameplayController.update();
 		// Clean up destroyed objects
 		gameplayController.garbageCollect();
 	}
@@ -211,6 +212,10 @@ public class GameMode implements Screen {
 			//draw two rectangles to cover up spawning/disappearing areas of notes and switches
 			canvas.drawRect(0, gameplayController.TOPBOUND, canvas.getWidth(), canvas.getHeight(), bkgC, true);
 			canvas.drawRect(0, 0, canvas.getWidth(), gameplayController.BOTTOMBOUND, bkgC, true);
+			for(BandMember bm : gameplayController.level.getBandMembers()){
+				//Draw the competency bar
+				bm.drawHPBar(canvas);
+			}
 		}
 		canvas.end();
 	}

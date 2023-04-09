@@ -206,8 +206,24 @@ public class GameplayController {
 			for(Note n : level.getBandMembers()[i].getHitNotes()){
 				//If a note is out of bounds and it has not been hit, we need to mark it destroyed and assign
 				//a negative hit status
-				if(n.getY() < noteDieY && n.getHitStatus() == 0){
+				if(n.getY() < noteDieY && !n.isDestroyed()){
 					n.setHitStatus(-2);
+					n.setDestroyed(true);
+				}
+				if(n.isDestroyed()){
+					//if this note is destroyed we need to increment the competency of the
+					//lane it was destroyed in by its hitstatus
+					if(i == activeBM || i == goalBM){
+						level.getBandMembers()[i].compUpdate(n.getHitStatus());
+					}
+				}
+			}
+
+			for(Note n : level.getBandMembers()[i].getSwitchNotes()){
+				//If a note is out of bounds and it has not been hit, we need to mark it destroyed and assign
+				//a negative hit status
+				if(n.getY() < noteDieY && !n.isDestroyed()){
+					n.setHitStatus(0);
 					n.setDestroyed(true);
 				}
 				if(n.isDestroyed()){
