@@ -228,7 +228,7 @@ public class CalibrationMode implements Screen {
         //     make beat simple, figure out where the "note" is
         // desync between user input and when it's processed
         int sum = 0;
-        // skip first two because of bad data most likely
+        // skip first two because of potential initial noisy data
         for (int i = 2; i < userHitBeats.size(); i++) {
             sum += userHitBeats.get(i);
         }
@@ -258,9 +258,8 @@ public class CalibrationMode implements Screen {
             }
             else {
                 userHitBeats.add(diff);
+                System.out.println("hit at pos: " + currPosInMs + " attempted beat hit: " + actualBeat + " diff: " + diff);
             }
-
-            System.out.println("hit at pos: " + currPosInMs + " attempted beat hit: " + actualBeat + " diff: " + diff);
         }
     }
 
