@@ -4,10 +4,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.MusicQueue;
-import edu.cornell.gdiac.temporary.entity.CalibNote;
 import edu.cornell.gdiac.util.ScreenListener;
 
 import java.util.LinkedList;
@@ -35,40 +33,20 @@ public class CalibrationMode implements Screen {
     /** Listener that will update the player mode when we are done */
     private ScreenListener listener;
 
-    /** List of notes that are being used in calculation */
-    private CalibNote[] noteList;
-
     // TODO: CONVERT TO SAMPLES
     // new system (based on milliseconds)
     /** Represents the amount of leeway for hitting on the beat (in milliseconds) */
     public final int BASE_OFFSET = 70;
-//    /** List of the beats and their positions (based on ms) */
-//    private int[] beats;
     /** List of beats that user has hit */
     private List<Integer> userHitBeats;
-
     /** offset after calibration  */
     private int offset;
-
     /** whether we finished calibration */
     private boolean isCalibrated;
-
-    // new system (based on samples)
-    /** List of the beats and their positions (based on samples */
-//    private int[] beatsSamples;
-
     /** Beats per minute (BPM) of the calibration beat */
     private final int BPM = 100;
-
     /** Distance between beats in milliseconds */
     private final int DIST_BETWEEN_BEAT = 60000 / BPM;
-
-    /** Position of hit line in the y position */
-    private final int LINE_Y = 350;
-
-    /** Distance between each of the notes */
-    private final int DIST_BETWEEN_NOTE = 275;
-
     /** temp variable to draw whether the hit was on beat or not */
     private boolean onBeat;
 
@@ -79,41 +57,9 @@ public class CalibrationMode implements Screen {
     public CalibrationMode(GameCanvas canvas) {
         inputController = new InputController();
         this.canvas = canvas;
-        noteList = new CalibNote[8];
-        for (int i = 0; i < noteList.length; i++) {
-            CalibNote note = new CalibNote();
-            noteList[i] = note;
-            note.setX(canvas.getWidth()/2);
-            note.setY(LINE_Y + i * DIST_BETWEEN_NOTE);
-            note.setVX(0);
-//            note.setVY(-calculateVY());
-
-            // notes for initialization
-            // target is the line drawn for the hit (it's at y = 100 right now)
-            // the middle of the cat note itself should be at 100 every 666.666 milliseconds
-            // the above will determine where the initial y of the cat note is and the velocity of the note
-            // y should be the start position of the note
-        }
         userHitBeats = new LinkedList<>();
         offset = 0;
         isCalibrated = false;
-    }
-
-    /**
-     * Calculates the velocity of a note based on the constants NOTE_DIST and DIST_BETWEEN_BEAT
-     *
-     * @return "velocity" of note as a float
-     */
-    private float calculateVY(float delta) {
-        // velocity = distance / time
-        // since you are about NOTE_DIST apart, you need to get to the line in NOTE_DIST / DIST_BETWEEN_BEAT
-        // velocity is
-        // with the delta, it means that you have about 0.016667 seconds between each frame
-        // but here, since you are drawing every frame, the velocity is technically units/frame
-        // time = DIST_BETWEEN_BEAT
-
-        // (float) NOTE_DIST / DIST_BETWEEN_BEAT (units / ms) * 1000 ms / 1 second (units / second) * 1 second / 60 frames
-        return ((float) DIST_BETWEEN_NOTE / DIST_BETWEEN_BEAT) * (1000) * (delta) ;
     }
 
     /** Returns the offset */
@@ -140,10 +86,8 @@ public class CalibrationMode implements Screen {
      */
     public void populate(AssetDirectory directory) {
         displayFont = directory.getEntry("times", BitmapFont.class);
-        catNote = directory.getEntry("catnote", Texture.class);
         music = directory.getEntry("calibration", MusicQueue.class);
         background  = directory.getEntry("background",Texture.class); //calibration background?
-//        music.getSource(0).getStream().getSampleOffset();
     }
 
     @Override
@@ -162,27 +106,17 @@ public class CalibrationMode implements Screen {
         canvas.begin();
         canvas.drawBackground(background,0,0);
 
-        // drawing a lane
-        Vector2 bottomLeft = new Vector2(canvas.getWidth()/2-canvas.getWidth()/12, 40);
-        canvas.drawRect(bottomLeft, canvas.getWidth()/6, canvas.getHeight()-80, Color.LIME, false);
-
         // draw a hit bar
         // Change line color if it is triggered
-        Color lineColor = inputController.didPressPlay() ? Color.PINK : Color.NAVY;
-        canvas.drawLine(canvas.getWidth()/2-canvas.getWidth()/12, LINE_Y, canvas.getWidth()/2-canvas.getWidth()/12+(canvas.getWidth()/6), LINE_Y, 3, lineColor);
-
-        // draw each note
-        for (CalibNote c : noteList) {
-            c.setTexture(catNote);
-            c.draw(canvas);
-        }
+        Color lineColor = inputController.didHoldPlay() ? Color.TEAL : Color.NAVY;
+        canvas.drawLine(canvas.getWidth()/2-canvas.getWidth()/12, canvas.getHeight()/2, canvas.getWidth()/2-canvas.getWidth()/12+(canvas.getWidth()/6), canvas.getHeight()/2, 200, lineColor);
 
         if (isCalibrated) {
             canvas.drawTextCentered("" + onBeat, displayFont, 150);
-            canvas.drawText("You have been calibrated!\nYou can exit this screen", displayFont, 100, canvas.getWidth() / 2);
+            canvas.drawText("You have been calibrated!\nYou can exit this screen\nwith the esc key", displayFont, 100, canvas.getWidth() / 2);
         }
 
-        canvas.drawTextCentered("Calibration", displayFont,canvas.getHeight() / 2 - 20);
+        canvas.drawTextCentered("Calibration", displayFont,200);
         canvas.end();
     }
 
@@ -190,22 +124,6 @@ public class CalibrationMode implements Screen {
     private void update(float delta) {
         // Process the input into screen
         inputController.readInput();
-
-        float maxY = 0;
-        for (CalibNote note : noteList) {
-            note.setVY(-calculateVY(delta));
-            maxY = Math.max(note.getY(), maxY);
-        }
-
-        // update each of the notes
-        for (CalibNote note : noteList) {
-            // check if out of bounds, bring back to the top
-            if (note.getY() + note.getRadius() < 0) {
-                note.setY(maxY + DIST_BETWEEN_NOTE);
-            }
-            note.update(delta);
-        }
-
         // resolve inputs from the user
         resolveInputs();
 
@@ -305,6 +223,7 @@ public class CalibrationMode implements Screen {
 
     @Override
     public void dispose() {
+        music.stop();
         inputController = null;
         canvas = null;
     }

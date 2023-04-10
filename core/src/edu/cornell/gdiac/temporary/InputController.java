@@ -319,6 +319,7 @@ public class InputController {
 	public boolean setHeldNotes() {return Gdx.input.isKeyPressed(Input.Keys.H);}
 
 	public boolean didPressPlay() {return play;}
+	public boolean didHoldPlay() {return playPress;}
 
 	public boolean didPressTrack() {return track;}
 
