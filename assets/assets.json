@@ -1,9 +1,14 @@
 {
 	"textures": {
         "background": "images/background.png",
-        "green":    "images/green.png",
-        "catnote":      "images/catnote.png",
-        "star":     "images/star.png"
+        "switch":    "images/switch.png",
+        "hit":      "images/press.png",
+        "hold-start":      "images/holdNoteStart.png",
+        "hold-trail":      "images/trailTexture.png",
+        "hold-end":      "images/holdTailEnd.png",
+        "star":     "images/star.png",
+        "hp-bar": "images/HPbarPNG.png",
+        "catnote": "images/catnote.png"
     },
     "fonts": {
         "lucida": {

@@ -1,14 +1,22 @@
 package edu.cornell.gdiac.temporary.entity;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.temporary.*;
+import edu.cornell.gdiac.util.FilmStrip;
+import org.w3c.dom.Text;
 
 
 public class BandMember {
 
+    FilmStrip hpbar;
+    /**
+     * Number of frames in HP bar animation
+     */
+    int hpbarFrames;
 
     /**
      * Bottom left corner
@@ -52,20 +60,28 @@ public class BandMember {
     private float height;
     public void setHeight(float l){
         height = l;
+        setHitY(BL.y + l/4);
     }
 
     public float getHeight(){
         return height;
     }
 
+    private float hitY;
+    public void setHitY(float t){
+        hitY = t;
+    }
+    public float getHitY(){
+        return hitY;
+    }
+
+
+
     /**
      * Number of lines this band member has
      */
-    private int numLines;
+    private final int numLines = 4;
 
-    public void setNumLines(int l){
-        numLines = l;
-    }
 
     public int getNumLines(){
         return numLines;
@@ -74,7 +90,7 @@ public class BandMember {
     /**
      * The color of the border
      */
-    private Color borderColor;
+    private Color borderColor = Color.BLACK;
     public void setBColor(Color l){
         borderColor = l;
     }
@@ -122,6 +138,14 @@ public class BandMember {
      */
     private Array<Note> backing;
 
+
+    private int lossRate;
+    public void setLossRate(int t){
+        lossRate = t;
+    }
+    public int getLossRate(){
+        return lossRate;
+    }
     /**
      * Maximum competency
      */
@@ -149,7 +173,6 @@ public class BandMember {
      * Constructor
      */
     public BandMember(){
-        //instantiate everything to evade NULL POINTERS
         BL = new Vector2();
         hitNotes = new Array<>();
         switchNotes = new Array<>();
@@ -157,17 +180,30 @@ public class BandMember {
         backing = new Array<>();
     }
 
+    public void setHpBarFilmStrip(Texture t, int numFrames){
+        hpbarFrames = numFrames;
+        hpbar = new FilmStrip(t,1,hpbarFrames,hpbarFrames);
+        hpbar.setFrame(0);
+    }
+
+    public void setStartingState(int comp, Queue<Note> notes){
+        curComp = comp;
+        maxComp = comp;
+        allNotes = notes;
+    }
+
+
+
     /**
-     * Updates according to frame
-     * @param frame
+     * Update animations
      */
-    public void updateNotes(int frame){
+    public void updateNotes(){
         //Update both switchNotes and hit notes no matter what
         for(Note n : switchNotes){
-            n.update(frame);
+            n.update();
         }
         for(Note n : hitNotes){
-            n.update(frame);
+            n.update();
         }
     }
 
@@ -175,27 +211,27 @@ public class BandMember {
      * Draw the hit bar in a certain color according to if we triggered the line. Pass in an array for the active
      * lane
      */
-    public void drawHitBar(GameCanvas canvas, float yval, Color hitColor, boolean[] hits){
+    public void drawHitBar(GameCanvas canvas, Color hitColor, boolean[] hits){
         //If we get passed an array we must draw 4 hit bars
         for(int i = 0; i < numLines; ++i){
-            canvas.drawLine(BL.x + i * width/numLines, yval, BL.x +(i+1) * width/numLines, yval, 3, hits[i] ? hitColor : Color.BLACK);
+            canvas.drawLine(BL.x + i * width/numLines, hitY, BL.x +(i+1) * width/numLines, hitY, 3, hits[i] ? hitColor : Color.BLACK);
         }
     }
     /**
      * Draw the hit bar in a certain color according to if we triggered the line. Pass in a value for a switchable lane
      */
-    public void drawHitBar(GameCanvas canvas, float yval, Color hitColor, boolean hit){
+    public void drawHitBar(GameCanvas canvas, Color hitColor, boolean hit){
         //If we get passed a single value then we're in a switch lane
-        canvas.drawLine(BL.x, yval, BL.x + width, yval, 3, hit ? hitColor : Color.BLACK);
+        canvas.drawLine(BL.x, hitY, BL.x + width, hitY, 3, hit ? hitColor : Color.BLACK);
     }
 
     /**
      * Add notes from the queue to the correct active array
-     * @param frame
+     * @param currentSample
      */
-    public void spawnNotes(int frame){
+    public void spawnNotes(long currentSample){
         //add everything at the front of the queue that's supposed to start on this frame
-        while(!allNotes.isEmpty() && allNotes.first().getStartFrame() == frame){
+        while(!allNotes.isEmpty() && allNotes.first().getStartSample() <= currentSample){
             Note n = allNotes.removeFirst();
             if(n.getNoteType() == Note.NoteType.SWITCH){
                 switchNotes.add(n);
@@ -232,17 +268,25 @@ public class BandMember {
      * Update competency by the specified amount but will not go below 0 or exceed the max
      */
     public void compUpdate(int amount){
+        if (amount >= 1){
+            System.out.println(amount);
+        }
         curComp = Math.min(Math.max(0, curComp + amount), maxComp);
+        hpbar.setFrame(Math.min((int)((1 - (float)curComp/maxComp)*(hpbarFrames)), hpbarFrames - 1));
     }
 
     /**
      * Draw the switch notes
      */
-    public void drawSwitchNotes(GameCanvas canvas){
+    public void drawSwitchNotes(GameCanvas canvas, long currentSample, float spawnY){
         for(Note n : switchNotes){
             if(!n.isDestroyed()){
                 //Switch notes should just appear in the middle of the lane
                 n.setX(BL.x + width/2);
+                //Set the Y coordinate according to sampleProgression
+                //Calculate the spawning y coordinate to be high enough such that none of the note is
+                //visible
+                n.setY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample()) *(hitY - spawnY));
                 n.draw(canvas, 3*width/4, 3*width/4);
             }
         }
@@ -251,12 +295,20 @@ public class BandMember {
     /**
      * Draw the held and beat notes
      */
-    public void drawHitNotes(GameCanvas canvas){
+    public void drawHitNotes(GameCanvas canvas, long currentSample, float spawnY){
         for(Note n : hitNotes){
             if(!n.isDestroyed()){
                 //Hitnotes will be based on what line we are on
                 n.setX(BL.x + width/(2*numLines) + n.getLine()*(width/numLines));
-                n.setTail_thickness(width/(4f*numLines));
+                if(n.getNoteType() == Note.NoteType.HELD){
+                    //Y coordinates based on formula mentioned in discord.
+                    n.setBottomY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample()) *(hitY - spawnY));
+                    n.setY(spawnY + Math.max(0, (float)(currentSample - n.getStartSample() - n.getHoldSamples())/(n.getHitSample() - n.getStartSample()))*(hitY - spawnY));
+                }
+                else{
+                    n.setY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample())*(hitY - spawnY));
+                }
+
                 n.draw(canvas, 3*width/(4*numLines), 3*width/(4*numLines));
             }
 
@@ -267,7 +319,16 @@ public class BandMember {
      * Draw the border
      */
     public void drawBorder(GameCanvas canvas){
+
         canvas.drawRect(BL, width, height, borderColor, false);
+    }
+
+    public void drawHPBar(GameCanvas canvas){
+
+        float scale = (BL.y*4/5)/hpbar.getRegionHeight();
+        float trueHeight = scale*hpbar.getRegionHeight();
+        canvas.draw(hpbar, Color.WHITE, 0, 0,BL.x + width/10, (BL.y - trueHeight)/2,
+                0.0f, scale, scale);
     }
 
     /**
