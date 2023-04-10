@@ -23,6 +23,8 @@ import edu.cornell.gdiac.temporary.editor.*;
 import com.badlogic.gdx.*;
 import edu.cornell.gdiac.assets.*;
 
+import java.io.FileNotFoundException;
+
 /**
  * Root class for a LibGDX.  
  * 
@@ -66,7 +68,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	public void create() {
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("assets.json", canvas,1);
-		playing = new GameMode(canvas, 4,4);
+		playing = new GameMode(canvas);
 		editing = new EditorMode(canvas);
 		calibration = new CalibrationMode(canvas);
 
@@ -93,7 +95,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		calibration = null;
 		editing.dispose();
 		editing = null;
-	
+
 		// Unload all of the resources
 		if (directory != null) {
 			directory.unloadAssets();
@@ -147,6 +149,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			// load playing screen
 			else {
 				playing.setScreenListener(this);
+				playing.readLevel(directory);
 				playing.populate(directory);
 				setScreen(playing);
 			}

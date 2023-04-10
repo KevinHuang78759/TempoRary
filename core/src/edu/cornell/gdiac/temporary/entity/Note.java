@@ -1,20 +1,9 @@
 /*
  * Note.java
  *
- * This is a passive model, and this model does very little by itself.  
- * All of its work is done by the CollisionController or the 
- * GameplayController.  
  *
- * This separation is very important for this class because it has a lot 
- * of interactions with other classes.  When a shell dies, it emits stars.  
- * If did not move that behavior to the CollisionController,
- * then we would have to have a reference to the GameEngine in this
- * class.  Tight coupling with the GameEngine is a very bad idea, so
- * we have separated this out.
- *
- * Author: Walker M. White
- * Based on original Optimization Lab by Don Holden, 2007
- * LibGDX version, 2/2/2015
+ * This separation is very important for this class because it has a lot
+ * of interactions with other classes.  When a note is hit, it emits stars.
  */
 package edu.cornell.gdiac.temporary.entity;
 
@@ -25,173 +14,304 @@ import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 
 /**
- * Model class for enemy shells.
+ * Model class for Notes.
  */
-public class Note extends GameObject {
-	public static final float descentSpeed = -3.5f;
+public class Note{
 	/** Rescale the size of a shell */
 	private static final float SHELL_SIZE_MULTIPLE = 4.0f;
 	/** How fast we change frames (one frame per 4 calls to update) */
 	private static final float ANIMATION_SPEED = 0.25f;
-	/** The number of animation frames in our filmstrip */
-	private static final int   NUM_ANIM_FRAMES = 4;
 
-	/** Friction multiplier for this shell */
-	//private float friction;
-	/** Minimum Y velocity for this sheall */
-	private float minvelocy;
+	public int getNUM_ANIM_FRAMES() {
+		return NUM_ANIM_FRAMES;
+	}
+
+	public void setNUM_ANIM_FRAMES(int NUM_ANIM_FRAMES) {
+		this.NUM_ANIM_FRAMES = NUM_ANIM_FRAMES;
+	}
+
+	/** The number of animation frames in our filmstrip */
+	private int   NUM_ANIM_FRAMES;
 	/** Current animation frame for this shell */
 	private float animeframe;
-	
-	/** To measure if we are damaged */
-	private boolean damaged;
-	/** The backup texture to use if we are damaged */
-	private Texture dmgTexture;
 
-	public int hitStatus;
+	private int hitStatus;
+
+	public int getHitStatus(){
+		return hitStatus;
+	}
+	public void setHitStatus(int t){
+		hitStatus = t;
+	}
 
 	/** line the note is one */
-	public int line;
+	private int line;
+	public int getLine(){
+		return line;
+	}
+	public void setLine(int t){
+		line = t;
+	}
+	private long startSample;
+	public long getStartSample(){
+		return startSample;
+	}
+	public void setStartSample(long t){
+		startSample = t;
+	}
 
-	public int startFrame;
-	public int holdFrame;
+	private long hitSample;
+	public long getHitSample(){
+		return hitSample;
+	}
+	public void setHitSample(long t){
+		hitSample = t;
+	}
 
-	public enum NType{
+	/**
+	 * How many samples do we intend to hold the held note for?
+	 */
+	private long holdSamples;
+
+	public long getHoldSamples(){
+		return holdSamples;
+	}
+	public void setHoldSamples(long t){
+		holdSamples = t;
+	}
+
+	public enum NoteType {
 		SWITCH,
 		HELD,
 		BEAT
 	}
 
-	public NType nt;
+	private NoteType nt;
 
-	/**
-	 * Returns the type of this object.
-	 *
-	 * We use this instead of runtime-typing for performance reasons.
-	 *
-	 * @return the type of this object.
-	 */
-	public ObjectType getType() {
-		return ObjectType.NOTE;
+	public NoteType getNoteType(){
+		return nt;
 	}
+	public void setNoteType(NoteType t){
+		nt = t;
+	}
+	private float w;
 
-	public float getRadius(){
-		return super.getRadius() * SHELL_SIZE_MULTIPLE;
+	public float getWidth(){
+		return w;
 	}
-	
-	/**
-	 * Sets whether this shell is destroyed.
-	 *
-	 * Shells have to be shot twice to be destroyed.  This getter checks whether this 
-	 * shell should be destroyed or it should just change colors.
-	 *
-	 * @param value whether this shell is destroyed
-	 */
-	public void setDestroyed(boolean value) {
-		destroyed = true;
+	public void setWidth(float t){
+		w = t;
 	}
-	
+	private float h;
+
+	public float getHeight(){
+		return h;
+	}
+	public void setHeight(float t){
+		h = t;
+	}
+	private float x;
+
+	public float getX(){
+		return x;
+	}
+	public void setX(float t){
+		x = t;
+	}
+	private float y;
+	public float getY(){
+		return y;
+	}
+	public void setY(float t){
+		y = t;
+	}
+	private float by;
+	public float getBottomY(){
+		return by;
+	}
+	public void setBottomY(float y){
+		by = y;
+	}
+	private boolean destroyed;
+	public boolean isDestroyed(){
+		return destroyed;
+	}
+	public void setDestroyed(boolean d){
+		destroyed = d;
+	}
+	FilmStrip animator;
+	Vector2 origin;
+
 	/**
 	 * Initialize shell with trivial starting position.
 	 */
-	public Note(int line, NType n) {
+	public Note(int line, NoteType n, long startSample, Texture t) {
 		// Set minimum Y velocity for this shell
 		this.line = line;
-		minvelocy = 0f;
 		hitStatus = 0;
 		animeframe = 0.0f;
+		curEndFrame = 0.0f;
+		curTrailFrame = 0.0f;
 		nt = n;
-		setVY(n == NType.HELD? 0f : descentSpeed);
-	}
-
-	public int getHitVal(){
-		return hitStatus;
-	}
-
-	public int getLine() { return line;}
-
-	public void setTexture(Texture texture) {
-		animator = new FilmStrip(texture,1,NUM_ANIM_FRAMES,NUM_ANIM_FRAMES);
+		this.startSample = startSample;
+		//Set the number of animation frames
+		switch(nt) {
+			case BEAT:
+				NUM_ANIM_FRAMES = 1;
+				break;
+			case HELD:
+				NUM_ANIM_FRAMES = 1;
+				break;
+			case SWITCH:
+				NUM_ANIM_FRAMES = 1;
+				break;
+		}
+		animator = new FilmStrip(t,1,NUM_ANIM_FRAMES,NUM_ANIM_FRAMES);
 		origin = new Vector2(animator.getRegionWidth()/2.0f, animator.getRegionHeight()/2.0f);
-		radius = animator.getRegionHeight() / 2.0f;
-	}
-
-	public float bx;
-	public float by;
-	public Texture getDamagedTexture() {
-		return dmgTexture;
+		h = animator.getRegionHeight();
+		w = animator.getRegionWidth();
 	}
 
 	/**
-	 * Updates the animation frame and velocity of this shell.
-	 *
-	 * @param delta Number of seconds since last animation frame
+	 * Sets the note texture
+	 * @param texture
 	 */
+	public void setTexture(Texture texture) {
+		animator = new FilmStrip(texture,1,NUM_ANIM_FRAMES,NUM_ANIM_FRAMES);
+		origin = new Vector2(animator.getRegionWidth()/2.0f, animator.getRegionHeight()/2.0f);
+		h = animator.getRegionHeight();
+		w = animator.getRegionWidth();
+	}
+
+	private FilmStrip trailAnimator;
+	private int trailFrames;
+	/**
+	 * Height of the trail texture
+	 */
+	private float trailHeight;
+	/**
+	 * Width of the trail texture
+	 */
+	private float trailWidth;
+	/**
+	 * Origin of trail texture
+	 */
+	private Vector2 trailOrigin;
 
 
-	public void update(float delta, int frame) {
-		// Call superclass's run
-		super.update(delta);
+	private FilmStrip endAnimator;
+	private int endFrames;
+	/**
+	 * Height of end texture
+	 */
+	private float endHeight;
+	/**
+	 * Width of end texture
+	 */
+	private float endWidth;
+	/**
+	 * Origin of end texture
+	 */
+	private Vector2 endOrigin;
+	private float curTrailFrame;
+	private float curEndFrame;
 
-		if(nt == NType.HELD){
-			by += descentSpeed;
-			if(frame%1800 == (startFrame + holdFrame)%1800){
-				setVY(descentSpeed);
-			}
+	/**
+	 * Set the textures for held notes. This is outside the constructor because not every note is a held note
+	 * @param trail
+	 * @param trailFrames
+	 * @param end
+	 * @param endFrames
+	 */
+	public void setHoldTextures(Texture trail, int trailFrames, Texture end, int endFrames){
+		trailAnimator = new FilmStrip(trail, 1, trailFrames, trailFrames);
+		this.trailFrames = trailFrames;
+		trailHeight = trailAnimator.getRegionHeight();
+		trailWidth = trailAnimator.getRegionWidth();
+		trailOrigin = new Vector2(trailWidth/2f, trailHeight/2f);
 
-		}
+		endAnimator = new FilmStrip(end, 1, endFrames, endFrames);
+		this.endFrames = endFrames;
+		endHeight = endAnimator.getRegionHeight();
+		endWidth = endAnimator.getRegionWidth();
+		endOrigin = new Vector2(endWidth/2f, endHeight/2f);
+	}
 
+
+
+	/**
+	 * Update animations
+	 */
+	public void update() {
 		// Increase animation frame
 		animeframe += ANIMATION_SPEED;
 		if (animeframe >= NUM_ANIM_FRAMES) {
 			animeframe -= NUM_ANIM_FRAMES;
 		}
+		if(nt == NoteType.HELD){
+			curTrailFrame += ANIMATION_SPEED;
+			if(curTrailFrame >= trailFrames){
+				curTrailFrame -= trailFrames;
+			}
+			curEndFrame += ANIMATION_SPEED;
+			if(curEndFrame >= endFrames){
+				curEndFrame -= endFrames;
+			}
+		}
 	}
 
-	public float tail_thickness = 0f;
+	private float tail_thickness = 5f;
+
+	public float getTail_thickness(){
+		return tail_thickness;
+	}
+	public void setTail_thickness(float t){
+		tail_thickness = t;
+	}
 	/**
-	 * Draws this shell to the canvas
-	 *
-	 * There is only one drawing pass in this application, so you can draw the objects 
-	 * in any order.
+	 * Draws this note to the canvas under a width and height restriction
+	 * This will draw the image in the original scale, and will scale the image down by the smallest possible factor
+	 * to meet the confinements
 	 *
 	 * @param canvas The drawing context
 	 */
-	public void draw(GameCanvas canvas) {
-		if(nt == NType.HELD){
+	public void draw(GameCanvas canvas, float widthConfine, float heightConfine) {
+		//Calculate a scale such that the entire sprite fits within both confines, but does not get distorted
+		float scale = Math.max(widthConfine/w, heightConfine/h);
+		if(nt == NoteType.HELD){
+			//The tail should be about half the width of the actual note assets
+			tail_thickness = widthConfine/2f;
+			//Set the animation frame properly
+			trailAnimator.setFrame((int)curTrailFrame);
+			endAnimator.setFrame((int)curEndFrame);
+			//Start at the bottom location, then draw until we reach the top
+			float cury = by;
+			//This for loop is cursed, but its really a while loop
+			for (;cury < y - trailHeight*tail_thickness/trailWidth; cury += trailHeight*tail_thickness/trailWidth){
+				canvas.draw(trailAnimator, Color.WHITE, trailOrigin.x, 0, x, cury,
+						0.0f, tail_thickness/trailWidth, tail_thickness/trailWidth);
+			}
+			//We do not want to draw the tail in a way such that it will poke out of the top sprite
+			//Therefore, we need to draw only a vertical fraction of our trail asset for the final
+			//segment
+			canvas.drawPartial(trailAnimator, Color.WHITE, trailOrigin.x, 0, x, cury,
+					0f, tail_thickness/trailWidth, tail_thickness/trailWidth,
+					1f,(y - cury)/(trailAnimator.getRegionHeight()*tail_thickness/trailWidth));
 
-			tail.setFrame(0);
-			//System.out.println(bx + " " + by + " " + position.x + " " + position.y + " " + tail_thickness);
-			canvas.textureRect(tail, bx - tail_thickness/2, by, position.x + tail_thickness/2, position.y);
-			canvas.drawRect(bx - tail_thickness/2, by, position.x + tail_thickness/2, position.y, Color.BLUE, true);
 
-			animator.setFrame(0);
-			canvas.draw(animator, Color.WHITE, origin.x, origin.y, bx, by,
-					0.0f, SHELL_SIZE_MULTIPLE, SHELL_SIZE_MULTIPLE);
+			//The head and tail are drawn after the trails to cover up the jagged ends
+			canvas.draw(animator, Color.WHITE, origin.x, origin.y, x, by,
+					0.0f, scale, scale);
+			canvas.draw(endAnimator, Color.WHITE, endOrigin.x, endOrigin.y, x, y,
+					0.0f, scale, scale);
 		}
 		else{
+
 			animator.setFrame((int)animeframe);
-			canvas.draw(animator, Color.WHITE, origin.x, origin.y, position.x, position.y,
-					0.0f, SHELL_SIZE_MULTIPLE, SHELL_SIZE_MULTIPLE);
+			canvas.draw(animator, Color.WHITE, origin.x, origin.y, x, y,
+					0.0f, scale, scale);
 		}
 
 	}
 
-	@Override
-	public String toString() {
-		return "Note{" +
-				"position=" + position +
-				", velocity=" + velocity +
-				", origin=" + origin +
-				", radius=" + radius +
-				", destroyed=" + destroyed +
-				", animator=" + animator +
-				", minvelocy=" + minvelocy +
-				", animeframe=" + animeframe +
-				", damaged=" + damaged +
-				", dmgTexture=" + dmgTexture +
-				", hitStatus=" + hitStatus +
-				", line=" + line +
-				'}';
-	}
 }
