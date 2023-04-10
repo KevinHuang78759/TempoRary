@@ -7,7 +7,8 @@
         "hold-trail":      "images/trailTexture.png",
         "hold-end":      "images/holdTailEnd.png",
         "star":     "images/star.png",
-        "hp-bar": "images/HPbarPNG.png"
+        "hp-bar": "images/HPbarPNG.png",
+        "catnote": "images/catnote.png"
     },
     "fonts": {
         "lucida": {
