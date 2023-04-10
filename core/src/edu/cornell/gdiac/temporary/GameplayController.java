@@ -295,6 +295,7 @@ public class GameplayController {
 		}
 		//increment the current frame.
 		++curframe;
+
 	}
 
 

@@ -50,6 +50,8 @@ public class InputController {
 	public float mouseMoveY;
 	public boolean mouseClicked;
 
+	public boolean pausePressed;
+
 	/**
 	 * Returns true if the reset button was pressed.
 	 *
@@ -65,6 +67,11 @@ public class InputController {
 	 * @return true if the exit button was pressed.
 	 */
 	public boolean didExit() { return exitPressed; }
+
+	/** Returns true if the pause button was pressed.
+	 *
+	 * @return true if the pause buttonw as pressed.*/
+	public boolean didPause() {return pausePressed;}
 	
 	/**
 	 * Creates a new input controller
@@ -242,7 +249,9 @@ public class InputController {
 
 		playPress = Gdx.input.isKeyPressed(Input.Keys.SPACE);
 
-		trackPress = Gdx.input.isKeyPressed(Input.Keys.P) ;
+		trackPress = Gdx.input.isKeyPressed(Input.Keys.P);
+
+		pausePressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
 
 		//Compute actual values by comparing with previous value. We only register a click if the trigger or switch
 		// went from false to true. We only register a lift if the trigger went from true to false.
