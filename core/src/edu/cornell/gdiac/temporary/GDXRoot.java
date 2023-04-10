@@ -80,6 +80,13 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public void dispose() {
 		// Call dispose on our children
+		// dispose of each of the individual controller screens
+		playing.dispose();
+		playing = null;
+
+		editing.dispose();
+		editing = null;
+
 		Screen screen = getScreen();
 		setScreen(null);
 		screen.dispose();
@@ -121,24 +128,32 @@ public class GDXRoot extends Game implements ScreenListener {
 		if (exitCode != 0) {
 			Gdx.app.error("GDXRoot", "Exit with error code "+exitCode, new RuntimeException());
 			Gdx.app.exit();
-		} else if (screen == loading && loading.getPressState() == 2) {
+		} else if (screen == loading && loading.getPressState() == LoadingMode.TO_GAME) {
 			playing.setScreenListener(this);
 			directory = loading.getAssets();
 			playing.readLevel(directory);
 			playing.populate(directory);
 			setScreen(playing);
-
 			loading.dispose();
 			loading = null;
-		} else if (screen == loading && loading.getPressState() == 4) {
+		} else if (screen == loading && loading.getPressState() == LoadingMode.TO_LEVEL_EDITOR) {
 			editing.setScreenListener(this);
 			directory = loading.getAssets();
 			editing.populate(directory);
 			setScreen(editing);
-
 			loading.dispose();
 			loading = null;
-		} else {
+		} else if (screen == playing){
+			loading = new LoadingMode("assets.json", canvas,1);
+			loading.setScreenListener(this);
+			setScreen(loading);
+		}
+		else if (screen == editing){
+			loading = new LoadingMode("assets.json", canvas,1);
+			loading.setScreenListener(this);
+			setScreen(loading);
+		}
+		else {
 			// We quit the main application
 			Gdx.app.exit();
 		}

@@ -155,7 +155,10 @@ public class GameMode implements Screen {
 					gameState = GameState.PLAY;
 					gameplayController.reset();
 					gameplayController.start();
-				} else {
+				} else if (inputController.didPause()){
+					listener.exitScreen(this, 0);
+				}
+				else {
 					play(delta);
 				}
 				break;
