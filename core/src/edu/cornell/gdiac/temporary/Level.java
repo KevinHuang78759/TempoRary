@@ -72,7 +72,6 @@ public class Level {
         this.levelNumber = levelNumber;
     }
 
-
     public void setMaxCompetency(int maxCompetency) {
         this.maxCompetency = maxCompetency;
     }
@@ -86,14 +85,19 @@ public class Level {
     }
 
     private BandMember[] BandMembers;
+
+    // TEXTURES
     private Texture hitNoteTexture;
     private Texture switchNoteTexture;
     private Texture holdNoteTexture;
     private Texture holdEndTexture;
     private Texture holdTrailTexture;
     private BitmapFont displayFont;
-
     private Texture hpbar;
+    private Texture noteIndicator;
+    private Texture noteIndicatorHit;
+
+    // PROPERTIES
     private String levelName;
     private int levelNumber;
     private int maxCompetency;
@@ -122,9 +126,11 @@ public class Level {
         hpbar = directory.getEntry("hp-bar", Texture.class);
         holdTrailTexture.setWrap(Texture.TextureWrap.ClampToEdge, Texture.TextureWrap.Repeat);
         holdEndTexture = directory.getEntry("hold-end", Texture.class);
+        noteIndicator = directory.getEntry("note-indicator", Texture.class);
+        noteIndicatorHit = directory.getEntry("note-indicator-hit", Texture.class);
+
         // preallocate band members
-//        BandMembers = new BandMember[data.get("bandMembers").size];
-        BandMembers = new BandMember[2];
+        BandMembers = new BandMember[data.get("bandMembers").size];
         spawnOffset = 2*music.getSampleRate();
         for(int i = 0; i < BandMembers.length; i++){
             BandMembers[i] = new BandMember();
@@ -154,6 +160,7 @@ public class Level {
             BandMembers[i].setLossRate(bmData.getInt("competencyLossRate"));
             BandMembers[i].setHpBarFilmStrip(hpbar, 47);
             BandMembers[i].setFont(displayFont);
+            BandMembers[i].setIndicatorTextures(noteIndicator, noteIndicatorHit);
         }
     }
 

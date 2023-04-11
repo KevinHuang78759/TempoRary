@@ -23,6 +23,8 @@ public class BandMember {
      */
     private Vector2 BL;
     private BitmapFont displayFont;
+    private Texture noteIndicator;
+    private Texture noteIndicatorHit;
 
     public void setBottomLeft(Vector2 V){
         BL = V;
@@ -206,28 +208,6 @@ public class BandMember {
     }
 
     /**
-     * Draw the hit bar in a certain color according to if we triggered the line. Pass in an array for the active
-     * lane
-     * also draw the keyBind
-     */
-    public void drawHitBar(GameCanvas canvas, Color hitColor, boolean[] hits){
-        //If we get passed an array we must draw 4 hit bars
-        for(int i = 0; i < numLines; ++i){
-            canvas.drawLine(BL.x + i * width/numLines, hitY, BL.x +(i+1) * width/numLines, hitY, 3, hits[i] ? hitColor : Color.BLACK);
-            canvas.drawText(InputController.triggerKeyBinds()[i], displayFont, (BL.x + i * width/numLines + BL.x +(i+1) * width/numLines) / 2, hitY - 80);
-        }
-    }
-
-    /**
-     * Draw the hit bar in a certain color according to if we triggered the line. Pass in a value for a switchable lane
-     */
-    public void drawHitBar(GameCanvas canvas, Color hitColor, boolean hit, int i){
-        //If we get passed a single value then we're in a switch lane
-        canvas.drawLine(BL.x, hitY, BL.x + width, hitY, 3, hit ? hitColor : Color.BLACK);
-        canvas.drawText(InputController.switchKeyBinds()[i], displayFont, ( BL.x + BL.x + width) / 2f, hitY - 80);
-    }
-
-    /**
      * Add notes from the queue to the correct active array
      * @param currentSample
      */
@@ -275,6 +255,33 @@ public class BandMember {
         }
         curComp = Math.min(Math.max(0, curComp + amount), maxComp);
         hpbar.setFrame(Math.min((int)((1 - (float)curComp/maxComp)*(hpbarFrames)), hpbarFrames - 1));
+    }
+
+    // DRAWING METHODS
+
+    /**
+     * Draw the hit bar in a certain color according to if we triggered the line. Pass in an array for the active
+     * lane
+     * also draw the keyBind
+     */
+    public void drawHitBar(GameCanvas canvas, Color hitColor, boolean[] hits){
+        //If we get passed an array we must draw 4 hit bars
+        for(int i = 0; i < numLines; ++i){
+            canvas.draw(hits[i] ? noteIndicatorHit : noteIndicator, Color.WHITE, noteIndicatorHit.getWidth() / 2, noteIndicatorHit.getHeight() / 2,
+                    ((BL.x + i * width/numLines) + (BL.x +(i+1) * width/numLines)) / 2 - 5, hitY,
+                    0.0f,0.45f, 0.45f);
+            canvas.drawText(InputController.triggerKeyBinds()[i], displayFont, (BL.x + i * width/numLines + BL.x +(i+1) * width/numLines) / 2, hitY - 80);
+        }
+    }
+
+    /**
+     * Draw the hit bar in a certain color according to if we triggered the line. Pass in a value for a switchable lane
+     * also draw the keyBind
+     */
+    public void drawHitBar(GameCanvas canvas, Color hitColor, boolean hit, int i){
+        //If we get passed a single value then we're in a switch lane
+        canvas.drawLine(BL.x, hitY, BL.x + width, hitY, 3, hit ? hitColor : Color.BLACK);
+        canvas.drawText(InputController.switchKeyBinds()[i], displayFont, ( BL.x + BL.x + width) / 2f, hitY - 80);
     }
 
     /**
@@ -343,5 +350,10 @@ public class BandMember {
 
     public void setFont(BitmapFont displayFont) {
         this.displayFont = displayFont;
+    }
+
+    public void setIndicatorTextures(Texture texture, Texture textureHit) {
+        noteIndicator = texture;
+        noteIndicatorHit = textureHit;
     }
 }

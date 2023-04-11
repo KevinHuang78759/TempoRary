@@ -1,14 +1,16 @@
 {
 	"textures": {
         "background": "images/background.png",
-        "switch":    "images/switch.png",
+        "switch":    "images/switch2.png",
         "hit":      "images/press.png",
         "hold-start":      "images/holdNoteStart.png",
         "hold-trail":      "images/trailTexture.png",
         "hold-end":      "images/holdTailEnd.png",
-        "star":     "images/star.png",
+        "star":     "images/note_hit_effect.png",
         "hp-bar": "images/HPbarPNG.png",
-        "catnote": "images/catnote.png"
+        "catnote": "images/catnote.png",
+        "note-indicator": "images/note_indicator.png",
+        "note-indicator-hit": "images/note_indicator_hit.png"
     },
     "fonts": {
         "lucida": {

@@ -130,7 +130,7 @@ public class GameplayController {
 	 */
 	public void loadLevel(JsonValue levelData, AssetDirectory directory){
 		level = new Level(levelData, directory);
-		NUM_LANES = 2;
+		NUM_LANES = level.getBandMembers().length;
 		// 70 is referring to ms
 		baseLeniency = (int) ((70f / 1000f) * level.getMusic().getSampleRate());
 
