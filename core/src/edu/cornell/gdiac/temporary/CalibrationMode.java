@@ -223,7 +223,6 @@ public class CalibrationMode implements Screen {
 
     @Override
     public void dispose() {
-        music.stop();
         inputController = null;
         canvas = null;
     }

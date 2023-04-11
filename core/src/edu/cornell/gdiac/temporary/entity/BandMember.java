@@ -269,7 +269,7 @@ public class BandMember {
      */
     public void compUpdate(int amount){
         if (amount >= 1){
-            System.out.println(amount);
+//            System.out.println(amount);
         }
         curComp = Math.min(Math.max(0, curComp + amount), maxComp);
         hpbar.setFrame(Math.min((int)((1 - (float)curComp/maxComp)*(hpbarFrames)), hpbarFrames - 1));

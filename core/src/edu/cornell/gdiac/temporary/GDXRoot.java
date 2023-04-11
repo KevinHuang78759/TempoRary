@@ -138,6 +138,7 @@ public class GDXRoot extends Game implements ScreenListener {
 				playing.setScreenListener(this);
 				playing.readLevel(directory);
 				playing.populate(directory);
+				playing.initializeOffset(calibration.getOffset());
 				setScreen(playing);
 			} else if (screen == loading && loading.getPressState() == LoadingMode.TO_LEVEL_EDITOR) {
 				editing.setScreenListener(this);

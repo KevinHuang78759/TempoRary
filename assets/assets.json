@@ -23,7 +23,7 @@
     "soundtrack": {
         "calibration": {
             "sources": [
-                "music/calibration4.ogg"
+                "music/calibration.ogg"
             ]
         },
         "noedell": {
