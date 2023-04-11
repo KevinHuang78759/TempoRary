@@ -124,19 +124,6 @@ public class InputController {
 		switches = new boolean[lanes.length];
 		triggerLifted = new boolean[lpl.length];
 		switchesOrder = lanes;
-		triggerBindings = new int[]{
-				Input.Keys.D,
-				Input.Keys.F,
-				Input.Keys.J,
-				Input.Keys.K
-		};
-
-		switchesBindings = new int[]{
-				Input.Keys.E,
-				Input.Keys.R,
-				Input.Keys.U,
-				Input.Keys.I,
-		};
 	}
 
 	/*

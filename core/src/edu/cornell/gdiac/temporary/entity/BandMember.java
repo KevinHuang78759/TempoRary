@@ -223,6 +223,7 @@ public class BandMember {
             }
         }
     }
+
     public void garbageCollect(){
         //Stop and copy both the switch and hit notes
         for(Note n : switchNotes){
