@@ -95,6 +95,13 @@ public class InputController {
 		triggerLifted = new boolean[lpl];
 	}
 
+	/*
+	 * Default constructor (lanes and lpl default to 4)
+	 */
+	public InputController() {
+		this(4, 4);
+	}
+
 	/**
 	 * Reads the input for the player and converts the result into game logic.
 	 */
@@ -321,6 +328,7 @@ public class InputController {
 	public boolean setHeldNotes() {return Gdx.input.isKeyPressed(Input.Keys.H);}
 
 	public boolean didPressPlay() {return play;}
+	public boolean didHoldPlay() {return playPress;}
 
 	public boolean didPressTrack() {return track;}
 

@@ -243,6 +243,14 @@ public class Level {
         music.play();
     }
 
+    public void stopMusic() {
+        music.stop();
+    }
+
+    public void pauseMusic() {
+        music.pause();
+    }
+
     /**
      * Gets the current sample of the song
      * @return

@@ -11,19 +11,16 @@
  */
 package edu.cornell.gdiac.temporary;
 
-import com.badlogic.gdx.*;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.temporary.entity.BandMember;
-import edu.cornell.gdiac.util.*;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import edu.cornell.gdiac.util.ScreenListener;
 
 /**
  * The primary controller class for the game.
@@ -90,12 +87,16 @@ public class GameMode implements Screen {
 		// Null out all pointers, 0 out all ints, etc.
 		gameState = GameState.INTRO;
 
-
-
 		// Create the controllers.
 		gameplayController = new GameplayController(canvas.getWidth(),canvas.getHeight());
+	}
 
-
+	/**
+	 * Initializes the offset to use for the gameplayController
+	 * @param offset the offset from CalibrationMode
+	 */
+	public void initializeOffset(int offset) {
+		gameplayController.setOffset(offset);
 	}
 
 	public void readLevel(AssetDirectory directory){
@@ -148,6 +149,7 @@ public class GameMode implements Screen {
 			case INTRO:
 				gameState = GameState.PLAY;
 				gameplayController.start();
+//				System.out.println(gameplayController.offset);
 				break;
 			case OVER:
 			case PLAY:
@@ -172,8 +174,6 @@ public class GameMode implements Screen {
 	 * @param delta Number of seconds since last animation frame
 	 */
 	protected void play(float delta) {
-
-
 		// Update objects.
 		gameplayController.handleActions(inputController);
 		gameplayController.update();
@@ -198,8 +198,6 @@ public class GameMode implements Screen {
 			canvas.drawTextCentered("Game Over!",displayFont, GAME_OVER_OFFSET+50);
 			displayFont.setColor(Color.NAVY);
 			canvas.drawTextCentered("Press ENTER to Restart", displayFont, 0);
-//			displayFont.setColor(Color.NAVY);
-//			canvas.drawTextCentered("(Hold H at the same time to change to random notes)", displayFont, -50);
 		}
 		else{
 			//Draw everything in the current level
@@ -279,6 +277,7 @@ public class GameMode implements Screen {
 	public void show() {
 		// Useless if called in outside animation loop
 		active = true;
+		gameState = GameState.INTRO;
 	}
 
 	/**
@@ -287,6 +286,7 @@ public class GameMode implements Screen {
 	public void hide() {
 		// Useless if called in outside animation loop
 		active = false;
+		gameplayController.level.stopMusic();
 	}
 
 	/**

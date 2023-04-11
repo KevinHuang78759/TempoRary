@@ -38,16 +38,18 @@ public class GDXRoot extends Game implements ScreenListener {
 	/** AssetManager to load game assets (textures, sounds, etc.) */
 	AssetDirectory directory;
 	/** Drawing context to display graphics (VIEW CLASS) */
-	private GameCanvas canvas; 
+	private GameCanvas canvas;
+
+	// SCREEN MODES
 	/** Player mode for the asset loading screen (CONTROLLER CLASS) */
 	private LoadingMode loading;
 	/** Player mode for the game proper (CONTROLLER CLASS) */
 	private GameMode playing;
 	/** Player mode for the level editor (CONTROLLER CLASS) */
 	private EditorMode editing;
+	/** Player mode for getting calibration (CONTROLLER CLASS) */
+	private CalibrationMode calibration;
 
-	/** True if we want to enter level editor, false if we want to play game */
-	private boolean edit = true;
 
 	/**
 	 * Creates a new game from the configuration settings.
@@ -65,10 +67,12 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public void create() {
 		canvas  = new GameCanvas();
-		loading = new LoadingMode("assets.json",canvas,1);
+		loading = new LoadingMode("assets.json", canvas,1);
 		playing = new GameMode(canvas);
-
 		editing = new EditorMode(canvas);
+		calibration = new CalibrationMode(canvas);
+
+		calibration.setScreenListener(this);
 		loading.setScreenListener(this);
 		setScreen(loading);
 	}
@@ -81,18 +85,18 @@ public class GDXRoot extends Game implements ScreenListener {
 	public void dispose() {
 		// Call dispose on our children
 		// dispose of each of the individual controller screens
-		playing.dispose();
-		playing = null;
-
-		editing.dispose();
-		editing = null;
-
 		Screen screen = getScreen();
 		setScreen(null);
 		screen.dispose();
 		canvas.dispose();
 		canvas = null;
-	
+		playing.dispose();
+		playing = null;
+		calibration.dispose();
+		calibration = null;
+		editing.dispose();
+		editing = null;
+
 		// Unload all of the resources
 		if (directory != null) {
 			directory.unloadAssets();
@@ -128,30 +132,39 @@ public class GDXRoot extends Game implements ScreenListener {
 		if (exitCode != 0) {
 			Gdx.app.error("GDXRoot", "Exit with error code "+exitCode, new RuntimeException());
 			Gdx.app.exit();
-		} else if (screen == loading && loading.getPressState() == LoadingMode.TO_GAME) {
-			playing.setScreenListener(this);
+		} else if (screen == loading) {
 			directory = loading.getAssets();
-			playing.readLevel(directory);
-			playing.populate(directory);
-			setScreen(playing);
-			loading.dispose();
-			loading = null;
-		} else if (screen == loading && loading.getPressState() == LoadingMode.TO_LEVEL_EDITOR) {
-			editing.setScreenListener(this);
-			directory = loading.getAssets();
-			editing.populate(directory);
-			setScreen(editing);
+			if (loading.getPressState() == LoadingMode.TO_GAME) {
+				playing.setScreenListener(this);
+				playing.readLevel(directory);
+				playing.populate(directory);
+				playing.initializeOffset(calibration.getOffset());
+				setScreen(playing);
+			} else if (screen == loading && loading.getPressState() == LoadingMode.TO_LEVEL_EDITOR) {
+				editing.setScreenListener(this);
+				editing.populate(directory);
+				setScreen(editing);
+			} else if (screen == loading && loading.getPressState() == LoadingMode.TO_CALIBRATION) {
+				calibration.setScreenListener(this);
+				calibration.populate(directory);
+				setScreen(calibration);
+			}
 			loading.dispose();
 			loading = null;
 		} else if (screen == playing){
 			loading = new LoadingMode("assets.json", canvas,1);
 			loading.setScreenListener(this);
 			setScreen(loading);
-		}
-		else if (screen == editing){
+		} else if (screen == editing){
 			loading = new LoadingMode("assets.json", canvas,1);
 			loading.setScreenListener(this);
 			setScreen(loading);
+		} else if (screen == calibration) {
+			loading = new LoadingMode("assets.json", canvas,1);
+			loading.setScreenListener(this);
+			setScreen(loading);
+
+			System.out.println("Offset from CalibrationMode: " + calibration.getOffset());
 		}
 		else {
 			// We quit the main application

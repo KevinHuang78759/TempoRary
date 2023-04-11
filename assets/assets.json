@@ -21,10 +21,15 @@
         }
     },
     "soundtrack": {
-      "noedell": {
-        "sources": [
-          "music/noedell.ogg"
-        ]
-      }
+        "calibration": {
+            "sources": [
+                "music/calibration.ogg"
+            ]
+        },
+        "noedell": {
+            "sources": [
+                "music/noedell.ogg"
+            ]
+        }
     }
 }
