@@ -134,6 +134,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private Vector2 playButtonCoords;
 	/** Level editor button x and y coordinates represented as a vector */
 	private Vector2 levelEditorButtonCoords;
+	/** Calibration button x and y coordinates represented as a vector */
+	private Vector2 calibrationButtonCoords;
 
 	/* PRESS STATES **/
 	// TODO: potentially change this to enums
@@ -147,6 +149,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private static final int LEVEL_EDITOR_PRESSED = 3;
 	/** Exit code for the button to go to the level editor */
 	public static final int TO_LEVEL_EDITOR = 4;
+	/** Exit code for the button to go to the level editor */
+	public static final int TO_CALIBRATION = 5;
 
 	/**
 	 * Returns the budget for the asset loader.
@@ -182,7 +186,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @return true if the player is ready to go
 	 */
 	public boolean isReady() {
-		return pressState == TO_GAME || pressState == TO_LEVEL_EDITOR || pressState == 5;
+		return pressState == TO_GAME || pressState == TO_LEVEL_EDITOR || pressState == TO_CALIBRATION;
 	}
 
 	/**
@@ -301,9 +305,10 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 				this.progress = 1.0f;
 				playButton = internal.getEntry("play",Texture.class);
 				levelEditorButton = internal.getEntry("level-editor",Texture.class);
-				calibrationButton = internal.getEntry("play",Texture.class);
-				playButtonCoords = new Vector2(centerX + levelEditorButton.getWidth(), centerY + 200);
-				levelEditorButtonCoords = new Vector2(centerX + levelEditorButton.getWidth(), centerY);
+				calibrationButton = internal.getEntry("play-old",Texture.class);
+				playButtonCoords = new Vector2(centerX + levelEditorButton.getWidth(), canvas.getHeight()/2 + 200);
+				levelEditorButtonCoords = new Vector2(centerX + levelEditorButton.getWidth(), canvas.getHeight()/2);
+				calibrationButtonCoords = new Vector2(centerX + calibrationButton.getWidth()*2 , centerY);
 			}
 		}
 	}
@@ -333,9 +338,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 					title.getWidth()/2+50, centerY+300, 0,scale, scale);
 
 			//draw calibration button
-			Color tintCalibration = (pressState == 4 ? Color.GRAY: Color.RED);
-			canvas.draw(calibrationButton, tintCalibration, calibrationButton.getWidth()/2, calibrationButton.getHeight()/2 + 50,
-					centerX + calibrationButton.getWidth()*2 , centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+			Color tintCalibration = (pressState == TO_CALIBRATION ? Color.GRAY: Color.RED);
+			canvas.draw(calibrationButton, tintCalibration, calibrationButton.getWidth()/2, calibrationButton.getHeight()/2,
+					calibrationButtonCoords.x, calibrationButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 		}
 		canvas.end();
 	}
@@ -489,7 +494,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @return whether to hand the event to other listeners. 
 	 */
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		if (playButton == null || pressState == TO_GAME || pressState == TO_LEVEL_EDITOR || pressState == 5) {
+		if (playButton == null || pressState == TO_GAME || pressState == TO_LEVEL_EDITOR || pressState == TO_CALIBRATION) {
 			return true;
 		}
 		
@@ -505,10 +510,11 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			pressState = LEVEL_EDITOR_PRESSED;
 		}
 
-		float radiusCali = BUTTON_SCALE*scale*calibrationButton.getWidth()/2.0f;
-		float distCali = (screenX-(centerX + calibrationButton.getWidth()*2))*(screenX-(centerX + calibrationButton.getWidth()*2))+(screenY-centerY)*(screenY-centerY);
-		if (distCali < radiusCali*radiusCali) {
-			pressState = 4;
+		float radius = BUTTON_SCALE*scale*calibrationButton.getWidth()/2.0f;
+		float dist = (screenX-calibrationButtonCoords.x)*(screenX-calibrationButtonCoords.x)
+				+(screenY-calibrationButtonCoords.y)*(screenY-calibrationButtonCoords.y);
+		if (dist < radius*radius) {
+			pressState = TO_CALIBRATION;
 		}
 		return false;
 	}

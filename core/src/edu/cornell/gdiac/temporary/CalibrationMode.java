@@ -72,7 +72,7 @@ public class CalibrationMode implements Screen {
      * @return true if the player is ready to exit calibration mode
      */
     public boolean isReady() {
-        return isCalibrated && inputController.didExit();
+        return inputController.didExit();
     }
 
     /**

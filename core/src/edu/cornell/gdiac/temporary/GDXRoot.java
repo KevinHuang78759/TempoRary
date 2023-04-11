@@ -132,25 +132,24 @@ public class GDXRoot extends Game implements ScreenListener {
 		if (exitCode != 0) {
 			Gdx.app.error("GDXRoot", "Exit with error code "+exitCode, new RuntimeException());
 			Gdx.app.exit();
-		} else if (screen == loading && loading.getPressState() == LoadingMode.TO_GAME) {
-			playing.setScreenListener(this);
+		} else if (screen == loading) {
 			directory = loading.getAssets();
-			playing.readLevel(directory);
-			playing.populate(directory);
-			setScreen(playing);
+			if (loading.getPressState() == LoadingMode.TO_GAME) {
+				playing.setScreenListener(this);
+				playing.readLevel(directory);
+				playing.populate(directory);
+				setScreen(playing);
+			} else if (screen == loading && loading.getPressState() == LoadingMode.TO_LEVEL_EDITOR) {
+				editing.setScreenListener(this);
+				editing.populate(directory);
+				setScreen(editing);
+			} else if (screen == loading && loading.getPressState() == LoadingMode.TO_CALIBRATION) {
+				calibration.setScreenListener(this);
+				calibration.populate(directory);
+				setScreen(calibration);
+			}
 			loading.dispose();
 			loading = null;
-		} else if (screen == loading && loading.getPressState() == LoadingMode.TO_LEVEL_EDITOR) {
-			editing.setScreenListener(this);
-			directory = loading.getAssets();
-			editing.populate(directory);
-			setScreen(editing);
-			loading.dispose();
-			loading = null;
-		} else if (loading.getPressState() == 5) {
-			editing.setScreenListener(this);
-			editing.populate(directory);
-			setScreen(editing);
 		} else if (screen == playing){
 			loading = new LoadingMode("assets.json", canvas,1);
 			loading.setScreenListener(this);
@@ -160,13 +159,11 @@ public class GDXRoot extends Game implements ScreenListener {
 			loading.setScreenListener(this);
 			setScreen(loading);
 		} else if (screen == calibration) {
-			loading.resetScreen();
+			loading = new LoadingMode("assets.json", canvas,1);
 			loading.setScreenListener(this);
 			setScreen(loading);
 
 			System.out.println("Offset from CalibrationMode: " + calibration.getOffset());
-
-			calibration.dispose();
 		}
 		else {
 			// We quit the main application
