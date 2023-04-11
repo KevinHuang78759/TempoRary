@@ -27,12 +27,12 @@ public class Level {
         return holdNoteTexture;
     }
 
-    public String getTitle() {
-        return title;
+    public String getLevelName() {
+        return levelName;
     }
 
-    public int getOrder() {
-        return order;
+    public int getLevelNumber() {
+        return levelNumber;
     }
 
     public int getMaxCompetency() {
@@ -63,12 +63,12 @@ public class Level {
         this.holdNoteTexture = holdNoteTexture;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setLevelName(String levelName) {
+        this.levelName = levelName;
     }
 
-    public void setOrder(int order) {
-        this.order = order;
+    public void setLevelNumber(int levelNumber) {
+        this.levelNumber = levelNumber;
     }
 
 
@@ -92,11 +92,11 @@ public class Level {
     private Texture holdTrailTexture;
 
     private Texture hpbar;
-    private String title;
-    private int order;
+    private String levelName;
+    private int levelNumber;
     private int maxCompetency;
     private int spawnOffset;
-   private MusicQueue music;
+    private MusicQueue music;
 
     /**
      * The last sample that health was decremented due to continuous decay
@@ -105,10 +105,11 @@ public class Level {
     public Level(JsonValue data, AssetDirectory directory) {
         //Read in Json  Value and populate asset textures
         lastDec = 0;
-        title = data.getString("title");
-        order = data.getInt("number");
+        levelName = data.getString("levelName");
+        levelNumber = data.getInt("levelNumber");
         maxCompetency = data.getInt("maxCompetency");
 
+        // need to take from directory because this is the only way to load it into the music queue
         music = directory.getEntry("challenger", MusicQueue.class);
 
         hitNoteTexture = directory.getEntry("hit", Texture.class);
@@ -129,23 +130,18 @@ public class Level {
             for(int j = 0; j < noteData.size; ++j){
                 JsonValue thisNote = noteData.get(j);
                 Note n;
-                if (thisNote.getString("type").equals("single")){
-                    n = new Note(thisNote.getInt("lane"), Note.NoteType.BEAT, thisNote.getLong("sample") - spawnOffset, hitNoteTexture);
-                    n.setHitSample(thisNote.getInt("sample"));
-
+                if (thisNote.getString("type").equals("beat")){
+                    n = new Note(thisNote.getInt("line"), Note.NoteType.BEAT, thisNote.getLong("position") - spawnOffset, hitNoteTexture);
                 }
-                else if(thisNote.getString("type").equals("switch")){
-                    n = new Note(0, Note.NoteType.SWITCH, thisNote.getLong("sample") - spawnOffset, switchNoteTexture);
-                    n.setHitSample(thisNote.getInt("sample"));
-
+                else if (thisNote.getString("type").equals("switch")){
+                    n = new Note(0, Note.NoteType.SWITCH, thisNote.getLong("position") - spawnOffset, switchNoteTexture);
                 }
-                else{
-                    n = new Note(thisNote.getInt("lane"), Note.NoteType.HELD, thisNote.get("connections").get(0).getLong("sample") - spawnOffset, holdNoteTexture);
+                else {
+                    n = new Note(thisNote.getInt("line"), Note.NoteType.HELD, thisNote.getLong("position") - spawnOffset, holdNoteTexture);
                     n.setHoldTextures(holdTrailTexture,1,holdEndTexture,1);
-                    n.setHoldSamples(thisNote.get("connections").get(1).getLong("sample") - thisNote.get("connections").get(0).getLong("sample"));
-                    n.setHitSample(thisNote.get("connections").get(0).getLong("sample"));
-
+                    n.setHoldSamples(thisNote.getLong("duration"));
                 }
+                n.setHitSample(thisNote.getInt("position"));
                 notes.addLast(n);
             }
             BandMembers[i].setAllNotes(notes);

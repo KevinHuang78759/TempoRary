@@ -143,6 +143,7 @@ public class GameplayController {
 		inBetweenWidth = smallwidth/4f;
 		largewidth = 10f*smallwidth;
 		//initiate default active band member to 0
+		// TODO: change this to be whatever the default BM is based on Sami's level editor
 		activeBM = 0;
 		//Have the y value be a bit above the bottom of the play area, but not too close
 		hitbarY = BOTTOMBOUND + 3*(TOPBOUND - BOTTOMBOUND)/20f;
