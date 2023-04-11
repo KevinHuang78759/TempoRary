@@ -25,6 +25,8 @@ import edu.cornell.gdiac.assets.*;
 
 import java.io.FileNotFoundException;
 
+import java.io.IOException;
+
 /**
  * Root class for a LibGDX.  
  * 
@@ -69,10 +71,13 @@ public class GDXRoot extends Game implements ScreenListener {
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("assets.json", canvas,1);
 		playing = new GameMode(canvas);
-		editing = new EditorMode(canvas);
+		try {
+			editing = new EditorMode(canvas);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 		calibration = new CalibrationMode(canvas);
 
-		calibration.setScreenListener(this);
 		loading.setScreenListener(this);
 		setScreen(loading);
 	}

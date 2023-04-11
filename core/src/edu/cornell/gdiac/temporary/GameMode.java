@@ -18,9 +18,18 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.audio.MusicQueue;
+import edu.cornell.gdiac.temporary.editor.EditorMode;
+import edu.cornell.gdiac.temporary.editor.EditorNote;
+import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.temporary.entity.BandMember;
 import edu.cornell.gdiac.util.ScreenListener;
+
+import java.util.LinkedList;
 
 /**
  * The primary controller class for the game.
@@ -168,6 +177,7 @@ public class GameMode implements Screen {
 				break;
 		}
 	}
+
 	/**
 	 * This method processes a single step in the game loop.
 	 *
