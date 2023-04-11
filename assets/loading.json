@@ -1,14 +1,34 @@
 {
 	"textures": {
         "background": {
-          "file":     "images/loading.png",
+          "file":     "images/background.png",
           "minFilter": "linear",
           "magFilter": "linear"
         },
+        "title": {
+          "file": "images/title_v1.png",
+          "minFilter": "linear",
+          "magFilter": "linear"
+        },
+        "ghost-cat": {
+            "file": "images/ghost_cat.jpg",
+            "minFilter": "linear",
+            "maxFilter": "linear"
+        },
+        "play-old": {
+            "file": "images/play.png",
+            "minFilter": "linear",
+            "maxFilter": "linear"
+        },
 		"play": {
-			"file":     "images/play.png",
+			"file":     "images/play_button_v1.png",
             "minFilter": "linear",
             "magFilter": "linear"
+        },
+        "level-editor": {
+            "file": "images/leveleditor_button_v1.png",
+            "minFilter": "linear",
+            "maxFilter": "linear"
         },
         "progress": {
             "file":      "images/progressbar.png",

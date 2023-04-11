@@ -777,6 +777,10 @@ public class EditorMode implements Screen {
             note.setY(songPosToScreenY(note.getPos()));
             note.setOnScreen(onScreen(note.getPos()));
         }
+
+        if (inputController.didExit()) {
+            listener.exitScreen(this, 0);
+        }
     }
 
     /**

@@ -30,8 +30,11 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.ControllerMapping;
 
+import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.assets.*;
 import edu.cornell.gdiac.util.*;
+
+import java.util.logging.Level;
 
 /**
  * Class that provides a loading screen for the state of the game.
@@ -57,9 +60,15 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private Texture background;
 	/** Play button to display when done */
 	private Texture playButton;
+	private Texture calibrationButton;
+
 	/** Texture atlas to support a progress bar */
 	private Texture statusBar;
 
+	/** Tempo-Rary logo */
+	private Texture title;
+
+	/** button to transition to level editor */
 	private Texture levelEditorButton;
 	
 	// statusBar is a "texture atlas." Break it up into parts.
@@ -120,6 +129,29 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	/** Whether or not this player mode is still active */
 	private boolean active;
 
+	/* BUTTON LOCATIONS */
+	/** Play button x and y coordinates represented as a vector */
+	private Vector2 playButtonCoords;
+	/** Level editor button x and y coordinates represented as a vector */
+	private Vector2 levelEditorButtonCoords;
+	/** Calibration button x and y coordinates represented as a vector */
+	private Vector2 calibrationButtonCoords;
+
+	/* PRESS STATES **/
+	// TODO: potentially change this to enums
+	/** Initial button state */
+	private static final int INITIAL = 0;
+	/** Pressed down button state for the play button */
+	private static final int PLAY_PRESSED = 1;
+	/** Exit code for button to go to the game */
+	public static final int TO_GAME = 2;
+	/** Pressed down button state for the level editor button */
+	private static final int LEVEL_EDITOR_PRESSED = 3;
+	/** Exit code for the button to go to the level editor */
+	public static final int TO_LEVEL_EDITOR = 4;
+	/** Exit code for the button to go to the level editor */
+	public static final int TO_CALIBRATION = 5;
+
 	/**
 	 * Returns the budget for the asset loader.
 	 *
@@ -154,7 +186,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @return true if the player is ready to go
 	 */
 	public boolean isReady() {
-		return pressState == 2 || pressState == 4;
+		return pressState == TO_GAME || pressState == TO_LEVEL_EDITOR || pressState == TO_CALIBRATION;
 	}
 
 	/**
@@ -207,6 +239,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		// Load the next two images immediately.
 		playButton = null;
 		levelEditorButton = null;
+		calibrationButton = null;
+
+		title = internal.getEntry("title", Texture.class);
 		background = internal.getEntry( "background", Texture.class );
 		background.setFilter( TextureFilter.Linear, TextureFilter.Linear );
 		statusBar = internal.getEntry( "progress", Texture.class );
@@ -222,7 +257,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 		// No progress so far.
 		progress = 0;
-		pressState = 0;
+		pressState = INITIAL;
 
 		Gdx.input.setInputProcessor( this );
 
@@ -237,10 +272,14 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		active = true;
 	}
 
+	/**
+	 * Getter for the press state of a button
+	 * @return value of `pressState`
+	 */
 	public int getPressState() {
 		return pressState;
 	}
-	
+
 	/**
 	 * Called when this screen should release all resources.
 	 */
@@ -259,13 +298,17 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @param delta Number of seconds since last animation frame
 	 */
 	private void update(float delta) {
-		if (playButton == null) {
+		if (playButton == null || levelEditorButton == null) {
 			assets.update(budget);
 			this.progress = assets.getProgress();
 			if (progress >= 1.0f) {
 				this.progress = 1.0f;
 				playButton = internal.getEntry("play",Texture.class);
-				levelEditorButton = internal.getEntry("play",Texture.class);
+				levelEditorButton = internal.getEntry("level-editor",Texture.class);
+				calibrationButton = internal.getEntry("play-old",Texture.class);
+				playButtonCoords = new Vector2(centerX + levelEditorButton.getWidth(), canvas.getHeight()/2 + 200);
+				levelEditorButtonCoords = new Vector2(centerX + levelEditorButton.getWidth(), canvas.getHeight()/2);
+				calibrationButtonCoords = new Vector2(centerX + calibrationButton.getWidth()*2 , centerY);
 			}
 		}
 	}
@@ -283,13 +326,21 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		if (playButton == null) {
 			drawProgress(canvas);
 		} else {
-			Color tint = (pressState == 1 ? Color.GRAY: Color.WHITE);
-			canvas.draw(playButton, tint, playButton.getWidth()/2, playButton.getHeight()/2 + 50,
-						centerX, centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+			Color playButtonTint = (pressState == PLAY_PRESSED ? Color.GRAY: Color.WHITE);
+			canvas.draw(playButton, playButtonTint, playButton.getWidth()/2, playButton.getHeight()/2,
+					playButtonCoords.x, playButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 
-			Color tintEditor = (pressState == 1 ? Color.GRAY: Color.GREEN);
-			canvas.draw(playButton, tintEditor, levelEditorButton.getWidth()/2, levelEditorButton.getHeight()/2 + 50,
-					centerX + levelEditorButton.getWidth() + 10, centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+			Color levelEditorButtonTint = (pressState == LEVEL_EDITOR_PRESSED ? Color.GREEN: Color.WHITE);
+			canvas.draw(levelEditorButton, levelEditorButtonTint, levelEditorButton.getWidth()/2, levelEditorButton.getHeight()/2,
+					levelEditorButtonCoords.x, levelEditorButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+
+			canvas.draw(title, Color.WHITE, title.getWidth()/2, title.getHeight()/2,
+					title.getWidth()/2+50, centerY+300, 0,scale, scale);
+
+			//draw calibration button
+			Color tintCalibration = (pressState == TO_CALIBRATION ? Color.GRAY: Color.RED);
+			canvas.draw(calibrationButton, tintCalibration, calibrationButton.getWidth()/2, calibrationButton.getHeight()/2,
+					calibrationButtonCoords.x, calibrationButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 		}
 		canvas.end();
 	}
@@ -332,7 +383,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			update(delta);
 			draw();
 
-			// We are are ready, notify our listener
+			// We are ready, notify our listener
 			if (isReady() && listener != null) {
 				listener.exitScreen(this, 0);
 			}
@@ -407,7 +458,30 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	}
 	
 	// PROCESSING PLAYER INPUT
-	/** 
+	/**
+	 * Checks to see if the location clicked at `screenX`, `screenY` are within the bounds of the given button
+	 * `buttonTexture` and `buttonCoords` should refer to the appropriate button parameters
+	 *
+	 * @param screenX the x-coordinate of the mouse on the screen
+	 * @param screenY the y-coordinate of the mouse on the screen
+	 * @param buttonTexture the specified button texture
+	 * @param buttonCoords the specified button coordinates as a Vector2 object
+	 * @return whether the button specified was pressed
+	 */
+	public boolean isButtonPressed(int screenX, int screenY, Texture buttonTexture, Vector2 buttonCoords) {
+		// buttons are rectangles
+		// buttonCoords hold the center of the rectangle, buttonTexture has the width and height
+		// get half the x length of the button portrayed
+		float xRadius = BUTTON_SCALE * scale * buttonTexture.getWidth()/2.0f;
+		boolean xInBounds = buttonCoords.x - xRadius <= screenX && buttonCoords.x + xRadius >= screenX;
+
+		// get half the y length of the button portrayed
+		float yRadius = BUTTON_SCALE * scale * buttonTexture.getHeight()/2.0f;
+		boolean yInBounds = buttonCoords.y - yRadius <= screenY && buttonCoords.y + yRadius >= screenY;
+		return xInBounds && yInBounds;
+	}
+
+	/**
 	 * Called when the screen was touched or a mouse button was pressed.
 	 *
 	 * This method checks to see if the play button is available and if the click
@@ -420,25 +494,27 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @return whether to hand the event to other listeners. 
 	 */
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		if (playButton == null || pressState == 2) {
+		if (playButton == null || pressState == TO_GAME || pressState == TO_LEVEL_EDITOR || pressState == TO_CALIBRATION) {
 			return true;
 		}
 		
 		// Flip to match graphics coordinates
 		screenY = heightY-screenY;
 		
-		// TODO: Fix scaling
-		// Play button is a circle.
-		float radius = BUTTON_SCALE*scale*playButton.getWidth()/2.0f;
-		float dist = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
-		if (dist < radius*radius) {
-			pressState = 1;
+		// TODO: Fix scaling (?)
+		// check if buttons get pressed appropriately
+		if (isButtonPressed(screenX, screenY, playButton, playButtonCoords)) {
+			pressState = PLAY_PRESSED;
+		}
+		if (isButtonPressed(screenX, screenY, levelEditorButton, levelEditorButtonCoords)) {
+			pressState = LEVEL_EDITOR_PRESSED;
 		}
 
-		float radiusEditor = BUTTON_SCALE*scale*levelEditorButton.getWidth()/2.0f;
-		float distEditor = (screenX-(centerX + levelEditorButton.getWidth() + 10))*(screenX-(centerX + levelEditorButton.getWidth() + 10))+(screenY-centerY)*(screenY-centerY);
-		if (distEditor < radiusEditor*radiusEditor) {
-			pressState = 4;
+		float radius = BUTTON_SCALE*scale*calibrationButton.getWidth()/2.0f;
+		float dist = (screenX-calibrationButtonCoords.x)*(screenX-calibrationButtonCoords.x)
+				+(screenY-calibrationButtonCoords.y)*(screenY-calibrationButtonCoords.y);
+		if (dist < radius*radius) {
+			pressState = TO_CALIBRATION;
 		}
 		return false;
 	}
@@ -454,12 +530,17 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @param pointer the button or touch finger number
 	 * @return whether to hand the event to other listeners. 
 	 */	
-	public boolean touchUp(int screenX, int screenY, int pointer, int button) { 
-		if (pressState == 1) {
-			pressState = 2;
-			return false;
+	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+		switch (pressState){
+			case PLAY_PRESSED:
+				pressState = TO_GAME;
+				return false;
+			case LEVEL_EDITOR_PRESSED:
+				pressState = TO_LEVEL_EDITOR;
+				return false;
+			default:
+				return true;
 		}
-		return true;
 	}
 	
 	/** 
@@ -474,10 +555,11 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @return whether to hand the event to other listeners. 
 	 */
 	public boolean buttonDown (Controller controller, int buttonCode) {
-		if (pressState == 0) {
+		// note: does not work for level editor
+		if (pressState == INITIAL) {
 			ControllerMapping mapping = controller.getMapping();
-			if (mapping != null && buttonCode == mapping.buttonStart ) {
-				pressState = 1;
+			if (mapping != null && buttonCode == mapping.buttonStart) {
+				pressState = PLAY_PRESSED;
 				return false;
 			}
 		}
@@ -496,10 +578,11 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @return whether to hand the event to other listeners. 
 	 */
 	public boolean buttonUp (Controller controller, int buttonCode) {
-		if (pressState == 1) {
+		// note: does not work for level editor
+		if (pressState == PLAY_PRESSED) {
 			ControllerMapping mapping = controller.getMapping();
 			if (mapping != null && buttonCode == mapping.buttonStart ) {
-				pressState = 2;
+				pressState = TO_GAME;
 				return false;
 			}
 		}

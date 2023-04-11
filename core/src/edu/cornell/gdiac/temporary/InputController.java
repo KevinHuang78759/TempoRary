@@ -50,6 +50,8 @@ public class InputController {
 	public float mouseMoveY;
 	public boolean mouseClicked;
 
+	public boolean pausePressed;
+
 	/**
 	 * Returns true if the reset button was pressed.
 	 *
@@ -65,7 +67,12 @@ public class InputController {
 	 * @return true if the exit button was pressed.
 	 */
 	public boolean didExit() { return exitPressed; }
-	
+
+	/** Returns true if the pause button was pressed.
+	 *
+	 * @return true if the pause buttonw as pressed.*/
+	public boolean didPause() {return pausePressed;}
+
 	/**
 	 * Creates a new input controller
 	 * 
@@ -86,6 +93,13 @@ public class InputController {
 		triggers = new boolean[lpl];
 		switches = new boolean[lanes];
 		triggerLifted = new boolean[lpl];
+	}
+
+	/*
+	 * Default constructor (lanes and lpl default to 4)
+	 */
+	public InputController() {
+		this(4, 4);
 	}
 
 	/**
@@ -266,6 +280,8 @@ public class InputController {
 		upDurationPress = Gdx.input.isKeyPressed(Input.Keys.NUM_9);
 		downDurationPress = Gdx.input.isKeyPressed(Input.Keys.NUM_8);
 
+		pausePressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
+
 		//Compute actual values by comparing with previous value. We only register a click if the trigger or switch
 		// went from false to true. We only register a lift if the trigger went from true to false.
 		for(int i = 0; i < Math.max(switchesPress.length, triggerPress.length); ++i){
@@ -355,6 +371,7 @@ public class InputController {
 	public boolean setBeatNotes() {return Gdx.input.isKeyPressed(Input.Keys.B);}
 	public boolean setHeldNotes() {return Gdx.input.isKeyPressed(Input.Keys.H);}
 
+	public boolean didHoldPlay() {return playPress;}
 	public boolean didPressPlay(boolean relocate) {
 		if (!relocate) {
 			return play && !Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT);

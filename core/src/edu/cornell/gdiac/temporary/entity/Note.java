@@ -17,13 +17,21 @@ import com.badlogic.gdx.graphics.*;
  * Model class for Notes.
  */
 public class Note{
-	public static final float descentSpeed = -4.5f;
 	/** Rescale the size of a shell */
 	private static final float SHELL_SIZE_MULTIPLE = 4.0f;
 	/** How fast we change frames (one frame per 4 calls to update) */
 	private static final float ANIMATION_SPEED = 0.25f;
+
+	public int getNUM_ANIM_FRAMES() {
+		return NUM_ANIM_FRAMES;
+	}
+
+	public void setNUM_ANIM_FRAMES(int NUM_ANIM_FRAMES) {
+		this.NUM_ANIM_FRAMES = NUM_ANIM_FRAMES;
+	}
+
 	/** The number of animation frames in our filmstrip */
-	private static final int   NUM_ANIM_FRAMES = 4;
+	private int   NUM_ANIM_FRAMES;
 	/** Current animation frame for this shell */
 	private float animeframe;
 
@@ -44,20 +52,32 @@ public class Note{
 	public void setLine(int t){
 		line = t;
 	}
-	private int startFrame;
-	public int getStartFrame(){
-		return startFrame;
+	private long startSample;
+	public long getStartSample(){
+		return startSample;
 	}
-	public void setStartFrame(int t){
-		startFrame = t;
+	public void setStartSample(long t){
+		startSample = t;
 	}
-	private int holdFrame;
 
-	public int getHoldFrames(){
-		return holdFrame;
+	private long hitSample;
+	public long getHitSample(){
+		return hitSample;
 	}
-	public void setHoldFrames(int t){
-		holdFrame = t;
+	public void setHitSample(long t){
+		hitSample = t;
+	}
+
+	/**
+	 * How many samples do we intend to hold the held note for?
+	 */
+	private long holdSamples;
+
+	public long getHoldSamples(){
+		return holdSamples;
+	}
+	public void setHoldSamples(long t){
+		holdSamples = t;
 	}
 
 	public enum NoteType {
@@ -105,13 +125,6 @@ public class Note{
 	public void setY(float t){
 		y = t;
 	}
-	private float vy;
-	public float getYVel(){
-		return vy;
-	}
-	public void setYVel(float t){
-		vy = t;
-	}
 	private float by;
 	public float getBottomY(){
 		return by;
@@ -132,20 +145,37 @@ public class Note{
 	/**
 	 * Initialize shell with trivial starting position.
 	 */
-	public Note(int line, NoteType n, int frame, Texture t) {
+	public Note(int line, NoteType n, long startSample, Texture t) {
 		// Set minimum Y velocity for this shell
 		this.line = line;
 		hitStatus = 0;
 		animeframe = 0.0f;
+		curEndFrame = 0.0f;
+		curTrailFrame = 0.0f;
 		nt = n;
-		vy = n == NoteType.HELD? 0f : descentSpeed;
-		startFrame = frame;
+		this.startSample = startSample;
+		//Set the number of animation frames
+		switch(nt) {
+			case BEAT:
+				NUM_ANIM_FRAMES = 1;
+				break;
+			case HELD:
+				NUM_ANIM_FRAMES = 1;
+				break;
+			case SWITCH:
+				NUM_ANIM_FRAMES = 1;
+				break;
+		}
 		animator = new FilmStrip(t,1,NUM_ANIM_FRAMES,NUM_ANIM_FRAMES);
 		origin = new Vector2(animator.getRegionWidth()/2.0f, animator.getRegionHeight()/2.0f);
 		h = animator.getRegionHeight();
 		w = animator.getRegionWidth();
 	}
 
+	/**
+	 * Sets the note texture
+	 * @param texture
+	 */
 	public void setTexture(Texture texture) {
 		animator = new FilmStrip(texture,1,NUM_ANIM_FRAMES,NUM_ANIM_FRAMES);
 		origin = new Vector2(animator.getRegionWidth()/2.0f, animator.getRegionHeight()/2.0f);
@@ -153,21 +183,80 @@ public class Note{
 		w = animator.getRegionWidth();
 	}
 
+	private FilmStrip trailAnimator;
+	private int trailFrames;
+	/**
+	 * Height of the trail texture
+	 */
+	private float trailHeight;
+	/**
+	 * Width of the trail texture
+	 */
+	private float trailWidth;
+	/**
+	 * Origin of trail texture
+	 */
+	private Vector2 trailOrigin;
 
-	public void update(int frame) {
 
-		if(nt == NoteType.HELD){
-			by += descentSpeed;
-			if(frame == (startFrame + holdFrame)){
-				vy = descentSpeed;
-			}
+	private FilmStrip endAnimator;
+	private int endFrames;
+	/**
+	 * Height of end texture
+	 */
+	private float endHeight;
+	/**
+	 * Width of end texture
+	 */
+	private float endWidth;
+	/**
+	 * Origin of end texture
+	 */
+	private Vector2 endOrigin;
+	private float curTrailFrame;
+	private float curEndFrame;
 
-		}
-		y += vy;
+	/**
+	 * Set the textures for held notes. This is outside the constructor because not every note is a held note
+	 * @param trail
+	 * @param trailFrames
+	 * @param end
+	 * @param endFrames
+	 */
+	public void setHoldTextures(Texture trail, int trailFrames, Texture end, int endFrames){
+		trailAnimator = new FilmStrip(trail, 1, trailFrames, trailFrames);
+		this.trailFrames = trailFrames;
+		trailHeight = trailAnimator.getRegionHeight();
+		trailWidth = trailAnimator.getRegionWidth();
+		trailOrigin = new Vector2(trailWidth/2f, trailHeight/2f);
+
+		endAnimator = new FilmStrip(end, 1, endFrames, endFrames);
+		this.endFrames = endFrames;
+		endHeight = endAnimator.getRegionHeight();
+		endWidth = endAnimator.getRegionWidth();
+		endOrigin = new Vector2(endWidth/2f, endHeight/2f);
+	}
+
+
+
+	/**
+	 * Update animations
+	 */
+	public void update() {
 		// Increase animation frame
 		animeframe += ANIMATION_SPEED;
 		if (animeframe >= NUM_ANIM_FRAMES) {
 			animeframe -= NUM_ANIM_FRAMES;
+		}
+		if(nt == NoteType.HELD){
+			curTrailFrame += ANIMATION_SPEED;
+			if(curTrailFrame >= trailFrames){
+				curTrailFrame -= trailFrames;
+			}
+			curEndFrame += ANIMATION_SPEED;
+			if(curEndFrame >= endFrames){
+				curEndFrame -= endFrames;
+			}
 		}
 	}
 
@@ -180,25 +269,47 @@ public class Note{
 		tail_thickness = t;
 	}
 	/**
-	 * Draws this shell to the canvas
-	 *
-	 * There is only one drawing pass in this application, so you can draw the objects
-	 * in any order.
+	 * Draws this note to the canvas under a width and height restriction
+	 * This will draw the image in the original scale, and will scale the image down by the smallest possible factor
+	 * to meet the confinements
 	 *
 	 * @param canvas The drawing context
 	 */
 	public void draw(GameCanvas canvas, float widthConfine, float heightConfine) {
+		//Calculate a scale such that the entire sprite fits within both confines, but does not get distorted
+		float scale = Math.max(widthConfine/w, heightConfine/h);
 		if(nt == NoteType.HELD){
-			canvas.drawRect(x - tail_thickness/2, by, x + tail_thickness/2, y, Color.BLUE, true);
+			//The tail should be about half the width of the actual note assets
+			tail_thickness = widthConfine/2f;
+			//Set the animation frame properly
+			trailAnimator.setFrame((int)curTrailFrame);
+			endAnimator.setFrame((int)curEndFrame);
+			//Start at the bottom location, then draw until we reach the top
+			float cury = by;
+			//This for loop is cursed, but its really a while loop
+			for (;cury < y - trailHeight*tail_thickness/trailWidth; cury += trailHeight*tail_thickness/trailWidth){
+				canvas.draw(trailAnimator, Color.WHITE, trailOrigin.x, 0, x, cury,
+						0.0f, tail_thickness/trailWidth, tail_thickness/trailWidth);
+			}
+			//We do not want to draw the tail in a way such that it will poke out of the top sprite
+			//Therefore, we need to draw only a vertical fraction of our trail asset for the final
+			//segment
+			canvas.drawPartial(trailAnimator, Color.WHITE, trailOrigin.x, 0, x, cury,
+					0f, tail_thickness/trailWidth, tail_thickness/trailWidth,
+					1f,(y - cury)/(trailAnimator.getRegionHeight()*tail_thickness/trailWidth));
 
-			animator.setFrame(0);
+
+			//The head and tail are drawn after the trails to cover up the jagged ends
 			canvas.draw(animator, Color.WHITE, origin.x, origin.y, x, by,
-					0.0f, widthConfine/w, heightConfine/h);
+					0.0f, scale, scale);
+			canvas.draw(endAnimator, Color.WHITE, endOrigin.x, endOrigin.y, x, y,
+					0.0f, scale, scale);
 		}
 		else{
+
 			animator.setFrame((int)animeframe);
 			canvas.draw(animator, Color.WHITE, origin.x, origin.y, x, y,
-					0.0f, widthConfine/w, heightConfine/h);
+					0.0f, scale, scale);
 		}
 
 	}
