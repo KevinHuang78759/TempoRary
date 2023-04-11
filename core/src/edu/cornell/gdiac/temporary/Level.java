@@ -2,6 +2,7 @@ package edu.cornell.gdiac.temporary;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Queue;
@@ -27,12 +28,12 @@ public class Level {
         return holdNoteTexture;
     }
 
-    public String getTitle() {
-        return title;
+    public String getLevelName() {
+        return levelName;
     }
 
-    public int getOrder() {
-        return order;
+    public int getLevelNumber() {
+        return levelNumber;
     }
 
     public int getMaxCompetency() {
@@ -63,14 +64,13 @@ public class Level {
         this.holdNoteTexture = holdNoteTexture;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setLevelName(String levelName) {
+        this.levelName = levelName;
     }
 
-    public void setOrder(int order) {
-        this.order = order;
+    public void setLevelNumber(int levelNumber) {
+        this.levelNumber = levelNumber;
     }
-
 
     public void setMaxCompetency(int maxCompetency) {
         this.maxCompetency = maxCompetency;
@@ -85,18 +85,24 @@ public class Level {
     }
 
     private BandMember[] BandMembers;
+
+    // TEXTURES
     private Texture hitNoteTexture;
     private Texture switchNoteTexture;
     private Texture holdNoteTexture;
     private Texture holdEndTexture;
     private Texture holdTrailTexture;
-
+    private BitmapFont displayFont;
     private Texture hpbar;
-    private String title;
-    private int order;
+    private Texture noteIndicator;
+    private Texture noteIndicatorHit;
+
+    // PROPERTIES
+    private String levelName;
+    private int levelNumber;
     private int maxCompetency;
     private int spawnOffset;
-   private MusicQueue music;
+    private MusicQueue music;
 
     /**
      * The last sample that health was decremented due to continuous decay
@@ -105,19 +111,24 @@ public class Level {
     public Level(JsonValue data, AssetDirectory directory) {
         //Read in Json  Value and populate asset textures
         lastDec = 0;
-        title = data.getString("title");
-        order = data.getInt("number");
+        levelName = data.getString("levelName");
+        levelNumber = data.getInt("levelNumber");
         maxCompetency = data.getInt("maxCompetency");
 
+        // need to take from directory because this is the only way to load it into the music queue
         music = directory.getEntry("challenger", MusicQueue.class);
 
         hitNoteTexture = directory.getEntry("hit", Texture.class);
         switchNoteTexture = directory.getEntry("switch", Texture.class);
         holdNoteTexture = directory.getEntry("hold-start", Texture.class);
         holdTrailTexture = directory.getEntry("hold-trail", Texture.class);
+        displayFont = directory.getEntry("times", BitmapFont.class);
         hpbar = directory.getEntry("hp-bar", Texture.class);
         holdTrailTexture.setWrap(Texture.TextureWrap.ClampToEdge, Texture.TextureWrap.Repeat);
         holdEndTexture = directory.getEntry("hold-end", Texture.class);
+        noteIndicator = directory.getEntry("note-indicator", Texture.class);
+        noteIndicatorHit = directory.getEntry("note-indicator-hit", Texture.class);
+
         // preallocate band members
         BandMembers = new BandMember[data.get("bandMembers").size];
         spawnOffset = 2*music.getSampleRate();
@@ -129,23 +140,18 @@ public class Level {
             for(int j = 0; j < noteData.size; ++j){
                 JsonValue thisNote = noteData.get(j);
                 Note n;
-                if (thisNote.getString("type").equals("single")){
-                    n = new Note(thisNote.getInt("lane"), Note.NoteType.BEAT, thisNote.getLong("sample") - spawnOffset, hitNoteTexture);
-                    n.setHitSample(thisNote.getInt("sample"));
-
+                if (thisNote.getString("type").equals("beat")){
+                    n = new Note(thisNote.getInt("line"), Note.NoteType.BEAT, thisNote.getLong("position") - spawnOffset, hitNoteTexture);
                 }
-                else if(thisNote.getString("type").equals("switch")){
-                    n = new Note(0, Note.NoteType.SWITCH, thisNote.getLong("sample") - spawnOffset, switchNoteTexture);
-                    n.setHitSample(thisNote.getInt("sample"));
-
+                else if (thisNote.getString("type").equals("switch")){
+                    n = new Note(0, Note.NoteType.SWITCH, thisNote.getLong("position") - spawnOffset, switchNoteTexture);
                 }
-                else{
-                    n = new Note(thisNote.getInt("lane"), Note.NoteType.HELD, thisNote.get("connections").get(0).getLong("sample") - spawnOffset, holdNoteTexture);
+                else {
+                    n = new Note(thisNote.getInt("line"), Note.NoteType.HELD, thisNote.getLong("position") - spawnOffset, holdNoteTexture);
                     n.setHoldTextures(holdTrailTexture,1,holdEndTexture,1);
-                    n.setHoldSamples(thisNote.get("connections").get(1).getLong("sample") - thisNote.get("connections").get(0).getLong("sample"));
-                    n.setHitSample(thisNote.get("connections").get(0).getLong("sample"));
-
+                    n.setHoldSamples(thisNote.getLong("duration"));
                 }
+                n.setHitSample(thisNote.getInt("position"));
                 notes.addLast(n);
             }
             BandMembers[i].setAllNotes(notes);
@@ -153,6 +159,8 @@ public class Level {
             BandMembers[i].setMaxComp(maxCompetency);
             BandMembers[i].setLossRate(bmData.getInt("competencyLossRate"));
             BandMembers[i].setHpBarFilmStrip(hpbar, 47);
+            BandMembers[i].setFont(displayFont);
+            BandMembers[i].setIndicatorTextures(noteIndicator, noteIndicatorHit);
         }
     }
 
@@ -284,7 +292,7 @@ public class Level {
             //Otherwise just draw the switch notes, and we only have 1 hit bar to draw
             else{
                 BandMembers[i].drawSwitchNotes(canvas, sample, canvas.getHeight());
-                BandMembers[i].drawHitBar(canvas, Color.WHITE, switches[i]);
+                BandMembers[i].drawHitBar(canvas, Color.WHITE, switches[i], i);
             }
         }
 

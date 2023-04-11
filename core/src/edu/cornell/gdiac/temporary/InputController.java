@@ -93,6 +93,37 @@ public class InputController {
 		triggers = new boolean[lpl];
 		switches = new boolean[lanes];
 		triggerLifted = new boolean[lpl];
+		triggerBindings = new int[]{
+				Input.Keys.D,
+				Input.Keys.F,
+				Input.Keys.J,
+				Input.Keys.K
+		};
+
+		switchesBindings = new int[]{
+				Input.Keys.E,
+				Input.Keys.R,
+				Input.Keys.U,
+				Input.Keys.I,
+		};
+	}
+
+	/** if you want custom ordering, use this controller (note that lpl is useless rn) */
+	public InputController(int[] lanes, int[] lpl) {
+		// If we have a game-pad for id, then use it.
+		Array<XBoxController> controllers = Controllers.get().getXBoxControllers();
+		if (controllers.size > 0) {
+			xbox = controllers.get(0);
+		} else {
+			xbox = null;
+		}
+		clicking = false;
+		triggerLast = new boolean[lpl.length];
+		switchesLast = new boolean[lanes.length];
+		triggers = new boolean[lpl.length];
+		switches = new boolean[lanes.length];
+		triggerLifted = new boolean[lpl.length];
+		switchesOrder = lanes;
 	}
 
 	/*
@@ -184,14 +215,19 @@ public class InputController {
 
 	//Arrays to registering switch and trigger presses
 	//We need to track their previous values so that we dont register a hold as repeated clicks
-	private boolean[] triggers;
+	private static boolean[] triggers;
 	private boolean[] triggerLast;
-	private boolean[] switches;
+	private static int[] triggerBindings;
+	private static boolean[] switches;
 	private boolean[] switchesLast;
+	private static int[] switchesBindings;
 	private boolean[] moves;
 	private boolean erased;
 	private boolean erasedPress;
 	private boolean erasedLast;
+
+	// for use with remapping ordering of keys
+	private static int[] switchesOrder;
 
 	private boolean undid;
 	private boolean undidPress;
@@ -240,19 +276,13 @@ public class InputController {
 		exitPressed = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
 		rKey = resetPressed && Gdx.input.isKeyPressed(Input.Keys.H);
 
-		triggerPress = new boolean[]{
-				Gdx.input.isKeyPressed(Input.Keys.D),
-				Gdx.input.isKeyPressed(Input.Keys.F),
-				Gdx.input.isKeyPressed(Input.Keys.J),
-				Gdx.input.isKeyPressed(Input.Keys.K)
-		};
+		triggerPress = new boolean[4];
+		boolean[] switchesPress = new boolean[4];
 
-		boolean[] switchesPress = new boolean[]{
-				Gdx.input.isKeyPressed(Input.Keys.E),
-				Gdx.input.isKeyPressed(Input.Keys.R),
-				Gdx.input.isKeyPressed(Input.Keys.U),
-				Gdx.input.isKeyPressed(Input.Keys.I),
-		};
+		for (int i = 0; i < triggerBindings.length; i++) {
+			triggerPress[i] = Gdx.input.isKeyPressed(triggerBindings[i]);
+			switchesPress[i] = Gdx.input.isKeyPressed(switchesBindings[i]);
+		}
 
 		moves = new boolean[]{
 				Gdx.input.isKeyPressed(Input.Keys.UP),
@@ -291,8 +321,13 @@ public class InputController {
 				triggerLast[i] = triggerPress[i];
 			}
 			if(i < switches.length){
-				switches[i] = !switchesLast[i] && switchesPress[i];
-				switchesLast[i] = switchesPress[i];
+				if (switchesOrder != null) {
+					switches[i] = !switchesLast[i] && switchesPress[switchesOrder[i]];
+					switchesLast[i] = switchesPress[switchesOrder[i]];
+				} else {
+					switches[i] = !switchesLast[i] && switchesPress[i];
+					switchesLast[i] = switchesPress[i];
+				}
 			}
 		}
 
@@ -327,10 +362,39 @@ public class InputController {
 		placeStartLast = placeStartPress;
 	}
 
-	/*
-	 * Returns an array that represents the if left switch or right switch key are being pressed
+	/**
+	 * Returns the current key bindings for switching
+	 * @return
 	 */
-	public boolean[] switches(){
+	public static String[] switchKeyBinds() {
+		String[] bindings = new String[switches.length];
+		for (int i = 0; i < switches.length; i++) {
+			if (switchesOrder != null) {
+				bindings[i] = Input.Keys.toString(switchesBindings[switchesOrder[i]]);
+			}
+			else {
+				bindings[i] = Input.Keys.toString(switchesBindings[i]);
+			}
+		}
+		return bindings;
+	}
+
+	/**
+	 * Returns the current key bindings for note hitting
+	 * @return
+	 */
+	public static String[] triggerKeyBinds() {
+		String[] bindings = new String[triggers.length];
+		for (int i = 0; i < bindings.length; i++) {
+			bindings[i] = Input.Keys.toString(triggerBindings[i]);
+		}
+		return bindings;
+	}
+
+	/*
+	 * Returns an array that represents if the switch lane keys are being pressed
+	 */
+	public boolean[] switches() {
 		return switches;
 	}
 

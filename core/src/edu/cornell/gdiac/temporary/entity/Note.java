@@ -237,8 +237,6 @@ public class Note{
 		endOrigin = new Vector2(endWidth/2f, endHeight/2f);
 	}
 
-
-
 	/**
 	 * Update animations
 	 */
@@ -311,7 +309,5 @@ public class Note{
 			canvas.draw(animator, Color.WHITE, origin.x, origin.y, x, y,
 					0.0f, scale, scale);
 		}
-
 	}
-
 }

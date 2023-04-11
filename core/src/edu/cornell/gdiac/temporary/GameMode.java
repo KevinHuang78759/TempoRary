@@ -18,18 +18,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
-
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.audio.MusicQueue;
-import edu.cornell.gdiac.temporary.editor.EditorMode;
-import edu.cornell.gdiac.temporary.editor.EditorNote;
-import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.temporary.entity.BandMember;
 import edu.cornell.gdiac.util.ScreenListener;
-
-import java.util.LinkedList;
 
 /**
  * The primary controller class for the game.
@@ -82,6 +73,9 @@ public class GameMode implements Screen {
 	/** Listener that will update the player mode when we are done */
 	private ScreenListener listener;
 
+	/** used for "counting down" before game starts */
+	private float waiting = 4f;
+
 
 	/**
 	 * Creates a new game with the given drawing context.
@@ -110,9 +104,14 @@ public class GameMode implements Screen {
 
 	public void readLevel(AssetDirectory directory){
 		JsonReader jr = new JsonReader();
-		JsonValue levelData = jr.parse(Gdx.files.internal("level.json"));
+		JsonValue levelData = jr.parse(Gdx.files.internal("levels/test2.json"));
 		gameplayController.loadLevel(levelData, directory);
-		inputController = new InputController(gameplayController.NUM_LANES, gameplayController.lpl);
+		if (gameplayController.NUM_LANES == 2) {
+			inputController = new InputController(new int[]{1, 2},  new int[gameplayController.lpl]);
+		}
+		else {
+			inputController = new InputController(gameplayController.NUM_LANES, gameplayController.lpl);
+		}
 	}
 
 	/**
@@ -156,14 +155,21 @@ public class GameMode implements Screen {
 		// Test whether to reset the game.
 		switch (gameState) {
 			case INTRO:
-				gameState = GameState.PLAY;
-				gameplayController.start();
-//				System.out.println(gameplayController.offset);
+				// wait a few frames before starting
+				if (waiting == 4f) {
+					gameplayController.reset();
+					gameplayController.update();
+					gameplayController.start();
+				}
+				waiting -= delta;
+				if (waiting < 1f) {
+					gameState = GameState.PLAY;
+					gameplayController.level.startmusic();
+				}
 				break;
 			case OVER:
 			case PLAY:
 				if (inputController.didReset()) {
-					gameState = GameState.PLAY;
 					gameplayController.reset();
 					gameplayController.start();
 				} else if (inputController.didPause()){
@@ -187,6 +193,13 @@ public class GameMode implements Screen {
 		// Update objects.
 		gameplayController.handleActions(inputController);
 		gameplayController.update();
+
+		// if we have a competency bar at 0
+		if (gameplayController.hasZeroCompetency()) {
+			gameState = GameState.OVER;
+			gameplayController.level.stopMusic();
+		}
+
 		// Clean up destroyed objects
 		gameplayController.garbageCollect();
 	}
@@ -227,6 +240,10 @@ public class GameMode implements Screen {
 				//Draw the competency bar
 				bm.drawHPBar(canvas);
 			}
+			// draw the countdown
+			if (gameState == GameState.INTRO) {
+				canvas.drawTextCentered("" + (int) waiting, displayFont, 0);
+			}
 		}
 		canvas.end();
 	}
@@ -255,7 +272,7 @@ public class GameMode implements Screen {
 	public void render(float delta) {
 		if (active) {
 			update(delta);
-			draw(gameplayController.level.getMusic().getCurrent().getStream().getSampleOffset());
+			draw(0);
 			if (inputController.didExit() && listener != null) {
 				listener.exitScreen(this, 0);
 			}
@@ -287,6 +304,7 @@ public class GameMode implements Screen {
 	public void show() {
 		// Useless if called in outside animation loop
 		active = true;
+		waiting = 4f;
 		gameState = GameState.INTRO;
 	}
 

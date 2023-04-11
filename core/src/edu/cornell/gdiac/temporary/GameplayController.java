@@ -143,6 +143,7 @@ public class GameplayController {
 		inBetweenWidth = smallwidth/4f;
 		largewidth = 10f*smallwidth;
 		//initiate default active band member to 0
+		// TODO: change this to be whatever the default BM is based on Sami's level editor
 		activeBM = 0;
 		//Have the y value be a bit above the bottom of the play area, but not too close
 		hitbarY = BOTTOMBOUND + 3*(TOPBOUND - BOTTOMBOUND)/20f;
@@ -185,13 +186,14 @@ public class GameplayController {
 				//If a note is out of bounds and it has not been hit, we need to mark it destroyed and assign
 				//a negative hit status
 				if(n.getY() < noteDieY && !n.isDestroyed()){
-					n.setHitStatus(-2);
+//					n.setHitStatus(-2);
 					n.setDestroyed(true);
 				}
 				if(n.isDestroyed()){
 					//if this note is destroyed we need to increment the competency of the
 					//lane it was destroyed in by its hitstatus
 					if(i == activeBM || i == goalBM){
+//						System.out.println("hit gained: " + n.getHitStatus());
 						level.getBandMembers()[i].compUpdate(n.getHitStatus());
 					}
 				}
@@ -208,11 +210,25 @@ public class GameplayController {
 					//if this note is destroyed we need to increment the competency of the
 					//lane it was destroyed in by its hitstatus
 					if(i == activeBM || i == goalBM){
+						System.out.println("switch gained: " + n.getHitStatus());
 						level.getBandMembers()[i].compUpdate(n.getHitStatus());
 					}
 				}
 			}
 		}
+	}
+
+	/**
+	 * Helper function to determine whether a band member has 0 competency for losing
+	 * @return returns if at least bone band members has 0 competency
+	 */
+	public boolean hasZeroCompetency() {
+		for (BandMember bandMember : level.getBandMembers()) {
+			if (bandMember.getCurComp() == 0) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -250,7 +266,6 @@ public class GameplayController {
 		goalBM = 0;
 		updateBMCoords();
 		curframe = 0;
-		level.startmusic();
 	}
 
 	/**
@@ -293,7 +308,6 @@ public class GameplayController {
 	 * Resets the game, deleting all objects.
 	 */
 	public void reset() {
-		//player = null;
 		curframe = 0;
 		objects.clear();
 		curP = PlayPhase.NOTES;
@@ -397,35 +411,42 @@ public class GameplayController {
 				: Math.abs(adjustedPosition - note.getHitSample());
 
 		// check if note was hit or on beat
-		if(dist < 25000){
-			//If so, destroy the note and set a positive hit status. Also set that we
-			//have registered a hit for this line for this click. This ensures that
-			//We do not have a single hit count for two notes that are close together
-			boolean isOnBeat = isHitOnBeat(adjustedPosition, dist);
-			System.out.println("is on beat? " + isOnBeat);
-			switch (note.getNoteType()) {
-				case HELD:
-					if (!lifted) {
-						note.setHitStatus(isOnBeat ? 2 : 1);
-						spawnStars(note.getHitStatus(), note.getX(), note.getBottomY());
-						hitReg[note.getLine()] = true;
-					} else {
-						note.setHitStatus(isOnBeat ? 3 : 1);
+		if(dist < 25000) {
+			if (dist < 18000) {
+				//If so, destroy the note and set a positive hit status. Also set that we
+				//have registered a hit for this line for this click. This ensures that
+				//We do not have a single hit count for two notes that are close together
+				boolean isOnBeat = isHitOnBeat(adjustedPosition, dist);
+				System.out.println("is on beat? " + isOnBeat);
+				switch (note.getNoteType()) {
+					// THESE ARE ALSO ALL THE WAR
+					case HELD:
+						if (!lifted) {
+							note.setHitStatus(isOnBeat ? 4 : 1);
+							spawnStars(note.getHitStatus(), note.getX(), note.getBottomY());
+							hitReg[note.getLine()] = true;
+						} else {
+							note.setHitStatus(isOnBeat ? 5 : 2);
+							spawnStars(note.getHitStatus(), note.getX(), note.getY());
+							note.setDestroyed(true);
+						}
+						break;
+					case BEAT:
+					case SWITCH:
+						note.setHitStatus(isOnBeat ? 6 : 3);
 						spawnStars(note.getHitStatus(), note.getX(), note.getY());
+						if (hitReg != null) {
+							hitReg[note.getLine()] = true;
+						}
 						note.setDestroyed(true);
-					}
-					break;
-				case BEAT:
-				case SWITCH:
-					note.setHitStatus(isOnBeat ? 4 : 1);
-					spawnStars(note.getHitStatus(), note.getX(), note.getY());
-					if (hitReg != null) {
-						hitReg[note.getLine()] = true;
-					}
-					note.setDestroyed(true);
-					break;
-				default:
-					break;
+						break;
+					default:
+						break;
+				}
+			}
+			else {
+				// lose some competency since you played a bit off beat
+				note.setHitStatus(-1);
 			}
 		}
 	}

@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Collections;
 
 public class EditorMode implements Screen {
 
@@ -335,7 +336,7 @@ public class EditorMode implements Screen {
      */
     public EditorMode(GameCanvas canvas) throws IOException {
         this.canvas = canvas;
-        inputController = new InputController(4, 4);
+        inputController = new InputController();
 
         //editor parameters
         zoom = 2;
@@ -493,6 +494,10 @@ public class EditorMode implements Screen {
             public int linesPerMember;
             public ArrayList<BandMember> bandMembers;
         }
+
+        // first sort all the notes
+        Collections.sort(Notes);
+
 
         Level l = new Level();
         l.levelName = this.levelName;
