@@ -280,7 +280,11 @@ public class BandMember {
      */
     public void drawHitBar(GameCanvas canvas, Color hitColor, boolean hit, int i){
         //If we get passed a single value then we're in a switch lane
-        canvas.drawLine(BL.x, hitY, BL.x + width, hitY, 3, hit ? hitColor : Color.BLACK);
+        // commenting out now because I'm not too sure about it
+//        canvas.drawLine(BL.x, hitY, BL.x + width, hitY, 3, hit ? hitColor : Color.BLACK);
+        canvas.draw(hit ? noteIndicatorHit : noteIndicator, Color.WHITE, noteIndicatorHit.getWidth() / 2, noteIndicatorHit.getHeight() / 2,
+                (BL.x + BL.x + width) / 2 - 2, hitY,
+                0.0f,0.20f, 0.20f);
         canvas.drawText(InputController.switchKeyBinds()[i], displayFont, ( BL.x + BL.x + width) / 2f, hitY - 80);
     }
 
