@@ -2,12 +2,12 @@ package edu.cornell.gdiac.temporary.entity;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.temporary.*;
 import edu.cornell.gdiac.util.FilmStrip;
-import org.w3c.dom.Text;
 
 
 public class BandMember {
@@ -22,6 +22,7 @@ public class BandMember {
      * Bottom left corner
      */
     private Vector2 BL;
+    private BitmapFont displayFont;
 
     public void setBottomLeft(Vector2 V){
         BL = V;
@@ -74,7 +75,6 @@ public class BandMember {
     public float getHitY(){
         return hitY;
     }
-
 
 
     /**
@@ -192,8 +192,6 @@ public class BandMember {
         allNotes = notes;
     }
 
-
-
     /**
      * Update animations
      */
@@ -210,19 +208,23 @@ public class BandMember {
     /**
      * Draw the hit bar in a certain color according to if we triggered the line. Pass in an array for the active
      * lane
+     * also draw the keyBind
      */
     public void drawHitBar(GameCanvas canvas, Color hitColor, boolean[] hits){
         //If we get passed an array we must draw 4 hit bars
         for(int i = 0; i < numLines; ++i){
             canvas.drawLine(BL.x + i * width/numLines, hitY, BL.x +(i+1) * width/numLines, hitY, 3, hits[i] ? hitColor : Color.BLACK);
+            canvas.drawText(InputController.triggerKeyBinds()[i], displayFont, (BL.x + i * width/numLines + BL.x +(i+1) * width/numLines) / 2, hitY - 80);
         }
     }
+
     /**
      * Draw the hit bar in a certain color according to if we triggered the line. Pass in a value for a switchable lane
      */
-    public void drawHitBar(GameCanvas canvas, Color hitColor, boolean hit){
+    public void drawHitBar(GameCanvas canvas, Color hitColor, boolean hit, int i){
         //If we get passed a single value then we're in a switch lane
         canvas.drawLine(BL.x, hitY, BL.x + width, hitY, 3, hit ? hitColor : Color.BLACK);
+        canvas.drawText(InputController.switchKeyBinds()[i], displayFont, ( BL.x + BL.x + width) / 2f, hitY - 80);
     }
 
     /**
@@ -319,12 +321,10 @@ public class BandMember {
      * Draw the border
      */
     public void drawBorder(GameCanvas canvas){
-
         canvas.drawRect(BL, width, height, borderColor, false);
     }
 
     public void drawHPBar(GameCanvas canvas){
-
         float scale = (BL.y*4/5)/hpbar.getRegionHeight();
         float trueHeight = scale*hpbar.getRegionHeight();
         canvas.draw(hpbar, Color.WHITE, 0, 0,BL.x + width/10, (BL.y - trueHeight)/2,
@@ -341,5 +341,7 @@ public class BandMember {
         }
     }
 
-
+    public void setFont(BitmapFont displayFont) {
+        this.displayFont = displayFont;
+    }
 }

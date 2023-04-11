@@ -2,6 +2,7 @@ package edu.cornell.gdiac.temporary;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Queue;
@@ -90,6 +91,7 @@ public class Level {
     private Texture holdNoteTexture;
     private Texture holdEndTexture;
     private Texture holdTrailTexture;
+    private BitmapFont displayFont;
 
     private Texture hpbar;
     private String levelName;
@@ -116,11 +118,13 @@ public class Level {
         switchNoteTexture = directory.getEntry("switch", Texture.class);
         holdNoteTexture = directory.getEntry("hold-start", Texture.class);
         holdTrailTexture = directory.getEntry("hold-trail", Texture.class);
+        displayFont = directory.getEntry("times", BitmapFont.class);
         hpbar = directory.getEntry("hp-bar", Texture.class);
         holdTrailTexture.setWrap(Texture.TextureWrap.ClampToEdge, Texture.TextureWrap.Repeat);
         holdEndTexture = directory.getEntry("hold-end", Texture.class);
         // preallocate band members
-        BandMembers = new BandMember[data.get("bandMembers").size];
+//        BandMembers = new BandMember[data.get("bandMembers").size];
+        BandMembers = new BandMember[2];
         spawnOffset = 2*music.getSampleRate();
         for(int i = 0; i < BandMembers.length; i++){
             BandMembers[i] = new BandMember();
@@ -149,6 +153,7 @@ public class Level {
             BandMembers[i].setMaxComp(maxCompetency);
             BandMembers[i].setLossRate(bmData.getInt("competencyLossRate"));
             BandMembers[i].setHpBarFilmStrip(hpbar, 47);
+            BandMembers[i].setFont(displayFont);
         }
     }
 
@@ -280,7 +285,7 @@ public class Level {
             //Otherwise just draw the switch notes, and we only have 1 hit bar to draw
             else{
                 BandMembers[i].drawSwitchNotes(canvas, sample, canvas.getHeight());
-                BandMembers[i].drawHitBar(canvas, Color.WHITE, switches[i]);
+                BandMembers[i].drawHitBar(canvas, Color.WHITE, switches[i], i);
             }
         }
 

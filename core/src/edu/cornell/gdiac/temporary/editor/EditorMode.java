@@ -335,7 +335,7 @@ public class EditorMode implements Screen {
      */
     public EditorMode(GameCanvas canvas) throws IOException {
         this.canvas = canvas;
-        inputController = new InputController(4, 4);
+        inputController = new InputController();
 
         //editor parameters
         zoom = 2;

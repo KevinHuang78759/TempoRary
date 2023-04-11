@@ -29,6 +29,7 @@ import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.temporary.entity.BandMember;
 import edu.cornell.gdiac.util.ScreenListener;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 
 /**
@@ -112,7 +113,12 @@ public class GameMode implements Screen {
 		JsonReader jr = new JsonReader();
 		JsonValue levelData = jr.parse(Gdx.files.internal("levels/test2.json"));
 		gameplayController.loadLevel(levelData, directory);
-		inputController = new InputController(gameplayController.NUM_LANES, gameplayController.lpl);
+		if (gameplayController.NUM_LANES == 2) {
+			inputController = new InputController(new int[]{1, 2},  new int[gameplayController.lpl]);
+		}
+		else {
+			inputController = new InputController(gameplayController.NUM_LANES, gameplayController.lpl);
+		}
 	}
 
 	/**
