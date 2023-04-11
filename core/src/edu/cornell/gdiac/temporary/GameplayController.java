@@ -588,4 +588,27 @@ public class GameplayController {
 			}
 		}
 	}
+
+	/**
+	 * Chooses a random BandMember if it is set to true in lanes and meets the minHealth requirement, and decreases
+	 * selected BandMember's health by hitValue
+	 *
+	 * @param lanes
+	 * @param hitValue
+	 * @param minHealth
+	 * @return
+	 */
+	public boolean hpHit(boolean[] lanes, int hitValue, int minHealth) {
+		assert lanes.length <= NUM_LANES;
+		int randomInt = RandomController.rollInt(0, lanes.length-1);
+		int count = 0;
+		while (lanes[randomInt] == false || bandMembers[randomInt].getCurComp() < minHealth) {
+			if (count > lanes.length) return false;
+			randomInt = (randomInt + 1) % lanes.length;
+		}
+
+		curHealth = bandMembers[randomInt].getCurComp();
+		bandMembers[randomInt].setCurComp(curHealth - hitValue);
+		return true;
+	}
 }
