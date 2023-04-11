@@ -26,13 +26,14 @@
                 "music/calibration.ogg"
             ]
         },
-        "noedell": {
+        "challenger": {
             "sources": [
-                "music/noedell.ogg"
+                "music/Challenger-Approaches.ogg"
             ]
         }
     },
     "jsons": {
-        "level_test" : "levels/test.json"
+        "level_test": "levels/test2.json",
+        "level_test_old" : "levels/test.json"
     }
 }

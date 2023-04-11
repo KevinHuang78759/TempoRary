@@ -346,7 +346,7 @@ public class EditorMode implements Screen {
         placing_start = false;
         playing = false;
         trackSong = true;
-        BPM = 95;
+        BPM = 144;
         maxCompetency = 100;
 
         //initialize UI button locations
@@ -482,7 +482,6 @@ public class EditorMode implements Screen {
             public int competencyLossRate;
             public String state;
             public ArrayList<Note> notes;
-
         }
         class Level {
             public String levelName;
@@ -564,7 +563,7 @@ public class EditorMode implements Screen {
         displayFont = directory.getEntry("lucida", BitmapFont.class);
         inputController.setEditorProcessor();
         defaultLevel = directory.getEntry("level_test", JsonValue.class);
-        music = directory.getEntry("noedell", MusicQueue.class);
+        music = directory.getEntry("challenger", MusicQueue.class);
         initializeLevel(4, 4);
     }
 

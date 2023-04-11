@@ -371,7 +371,7 @@ public class InputController {
 	public boolean setBeatNotes() {return Gdx.input.isKeyPressed(Input.Keys.B);}
 	public boolean setHeldNotes() {return Gdx.input.isKeyPressed(Input.Keys.H);}
 
-	public boolean didHoldPlay() {return playPress;}
+	public boolean didPressPlay() {return play;}
 	public boolean didPressPlay(boolean relocate) {
 		if (!relocate) {
 			return play && !Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT);
@@ -380,6 +380,7 @@ public class InputController {
 			return play && Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT);
 		}
 	}
+	public boolean didHoldPlay() {return playPress;}
 
 	public boolean didPressTrack() {return track;}
 
