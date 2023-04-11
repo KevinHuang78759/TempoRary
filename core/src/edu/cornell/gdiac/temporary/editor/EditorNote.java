@@ -23,7 +23,7 @@ import java.util.LinkedList;
  * Model class for editors notes.
  * Does not extend GameObject because this is an editor object not present in the game.
  */
-public class EditorNote{
+public class EditorNote implements Comparable<EditorNote> {
     private float sizeMultiple;
 
     private FilmStrip animator;
@@ -51,6 +51,17 @@ public class EditorNote{
 
     /** True if the note should be visible on screen*/
     private boolean onScreen;
+
+    @Override
+    public int compareTo(EditorNote n) {
+        if (this.getPos() == n.getPos()) {
+            return 0;
+        } else if (this.getPos() < n.getPos()) {
+            return -1;
+        } else {
+            return 1;
+        }
+    }
 
     public enum NoteType{
         SWITCH,

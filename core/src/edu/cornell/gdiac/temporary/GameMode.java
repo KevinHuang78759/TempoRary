@@ -83,6 +83,9 @@ public class GameMode implements Screen {
 	/** Listener that will update the player mode when we are done */
 	private ScreenListener listener;
 
+	/** used for "counting down" before game starts */
+	private float waiting = 4f;
+
 
 	/**
 	 * Creates a new game with the given drawing context.
@@ -162,14 +165,20 @@ public class GameMode implements Screen {
 		// Test whether to reset the game.
 		switch (gameState) {
 			case INTRO:
-				gameState = GameState.PLAY;
-				gameplayController.start();
-//				System.out.println(gameplayController.offset);
+				// wait a few frames before starting
+				if (waiting == 4f) {
+					gameplayController.update();
+					gameplayController.start();
+				}
+				waiting -= delta;
+				if (waiting < 1f) {
+					gameState = GameState.PLAY;
+					gameplayController.level.startmusic();
+				}
 				break;
 			case OVER:
 			case PLAY:
 				if (inputController.didReset()) {
-					gameState = GameState.PLAY;
 					gameplayController.reset();
 					gameplayController.start();
 				} else if (inputController.didPause()){
@@ -193,6 +202,13 @@ public class GameMode implements Screen {
 		// Update objects.
 		gameplayController.handleActions(inputController);
 		gameplayController.update();
+
+		// if we have a competency bar at 0
+		if (gameplayController.hasZeroCompetency()) {
+			gameState = GameState.OVER;
+			gameplayController.level.stopMusic();
+		}
+
 		// Clean up destroyed objects
 		gameplayController.garbageCollect();
 	}
@@ -233,6 +249,10 @@ public class GameMode implements Screen {
 				//Draw the competency bar
 				bm.drawHPBar(canvas);
 			}
+			// draw the countdown
+			if (gameState == GameState.INTRO) {
+				canvas.drawTextCentered("" + (int) waiting, displayFont, 0);
+			}
 		}
 		canvas.end();
 	}
@@ -261,7 +281,7 @@ public class GameMode implements Screen {
 	public void render(float delta) {
 		if (active) {
 			update(delta);
-			draw(gameplayController.level.getMusic().getCurrent().getStream().getSampleOffset());
+			draw(0);
 			if (inputController.didExit() && listener != null) {
 				listener.exitScreen(this, 0);
 			}

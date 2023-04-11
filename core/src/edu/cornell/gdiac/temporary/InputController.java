@@ -334,8 +334,13 @@ public class InputController {
 				triggerLast[i] = triggerPress[i];
 			}
 			if(i < switches.length){
-				switches[i] = !switchesLast[i] && switchesPress[switchesOrder[i]];
-				switchesLast[i] = switchesPress[switchesOrder[i]];
+				if (switchesOrder != null) {
+					switches[i] = !switchesLast[i] && switchesPress[switchesOrder[i]];
+					switchesLast[i] = switchesPress[switchesOrder[i]];
+				} else {
+					switches[i] = !switchesLast[i] && switchesPress[i];
+					switchesLast[i] = switchesPress[i];
+				}
 			}
 		}
 
