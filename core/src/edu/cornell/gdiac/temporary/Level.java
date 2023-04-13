@@ -130,9 +130,11 @@ public class Level {
         noteIndicatorHit = directory.getEntry("note-indicator-hit", Texture.class);
 
         // preallocate band members
+
         BandMembers = new BandMember[data.get("bandMembers").size];
-        spawnOffset = 2*music.getSampleRate();
+        spawnOffset = (2*music.getSampleRate()/3);
         for(int i = 0; i < BandMembers.length; i++){
+            long t = System.nanoTime();
             BandMembers[i] = new BandMember();
             JsonValue bmData = data.get("bandMembers").get(i);
             Queue<Note> notes = new Queue<>();
@@ -161,6 +163,7 @@ public class Level {
             BandMembers[i].setHpBarFilmStrip(hpbar, 47);
             BandMembers[i].setFont(displayFont);
             BandMembers[i].setIndicatorTextures(noteIndicator, noteIndicatorHit);
+            System.out.println(System.nanoTime() - t);
         }
     }
 
@@ -236,6 +239,7 @@ public class Level {
             if(sample - lastDec >= music.getSampleRate()){
                 //if so, decrement competency
                 bm.compUpdate(-bm.getLossRate());
+                System.out.println(bm.getCurComp() + " " + bm.getLossRate());
                 decTog = true;
             }
         }
@@ -264,6 +268,7 @@ public class Level {
      * @return
      */
     public long getCurrentSample(){
+
         return (long)(music.getPosition()*music.getSampleRate());
     }
 

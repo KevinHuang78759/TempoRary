@@ -210,7 +210,7 @@ public class GameplayController {
 					//if this note is destroyed we need to increment the competency of the
 					//lane it was destroyed in by its hitstatus
 					if(i == activeBM || i == goalBM){
-						System.out.println("switch gained: " + n.getHitStatus());
+						//System.out.println("switch gained: " + n.getHitStatus());
 						level.getBandMembers()[i].compUpdate(n.getHitStatus());
 					}
 				}
@@ -391,8 +391,8 @@ public class GameplayController {
 	 * @return whether the hit is on beat
 	 */
 	public boolean isHitOnBeat(long adjustedPosition, long dist) {
-		System.out.println("Adjusted position: " + adjustedPosition +  ", Dist: " + dist);
-		System.out.println(baseLeniency);
+		//System.out.println("Adjusted position: " + adjustedPosition +  ", Dist: " + dist);
+		//System.out.println(baseLeniency);
 		return dist < baseLeniency;
 	}
 
@@ -417,7 +417,7 @@ public class GameplayController {
 				//have registered a hit for this line for this click. This ensures that
 				//We do not have a single hit count for two notes that are close together
 				boolean isOnBeat = isHitOnBeat(adjustedPosition, dist);
-				System.out.println("is on beat? " + isOnBeat);
+				//System.out.println("is on beat? " + isOnBeat);
 				switch (note.getNoteType()) {
 					// THESE ARE ALSO ALL THE WAR
 					case HELD:

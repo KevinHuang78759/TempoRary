@@ -152,7 +152,7 @@ public class CalibrationMode implements Screen {
         }
         this.offset = userHitBeats.size() > 0 ? sum / userHitBeats.size() : 0;
         isCalibrated = true;
-        System.out.println("offset: " + offset);
+        //System.out.println("offset: " + offset);
     }
 
     /** Resolves inputs from the input controller */
@@ -176,7 +176,7 @@ public class CalibrationMode implements Screen {
             }
             else {
                 userHitBeats.add(diff);
-                System.out.println("hit at pos: " + currPosInMs + " attempted beat hit: " + actualBeat + " diff: " + diff);
+                //System.out.println("hit at pos: " + currPosInMs + " attempted beat hit: " + actualBeat + " diff: " + diff);
             }
         }
     }
@@ -190,7 +190,7 @@ public class CalibrationMode implements Screen {
         int adjustedPosition = currentHitPosition - this.offset;
         int lowerRange = actualBeatPosition - BASE_OFFSET;
         int higherRange = actualBeatPosition + BASE_OFFSET;
-        System.out.println(lowerRange + ", " + higherRange + "; " + adjustedPosition +  " " + actualBeatPosition + " " + (adjustedPosition >= lowerRange && adjustedPosition <= higherRange));
+        //System.out.println(lowerRange + ", " + higherRange + "; " + adjustedPosition +  " " + actualBeatPosition + " " + (adjustedPosition >= lowerRange && adjustedPosition <= higherRange));
         return adjustedPosition >= lowerRange && adjustedPosition <= higherRange;
     }
 
