@@ -25,13 +25,7 @@ import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.graphics.Texture;
 
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.temporary.editor.EditorMode;
-import edu.cornell.gdiac.temporary.editor.EditorNote;
 import edu.cornell.gdiac.temporary.entity.*;
-import edu.cornell.gdiac.temporary.GameObject.ObjectType;
-
-import java.util.HashMap;
-import java.util.LinkedList;
 
 /**
  * Controller to handle gameplay interactions.
@@ -346,7 +340,7 @@ public class GameplayController {
 	 * Spawns stars at location x, y with center of mass velocity vx0 and vy0.
 	 * Directions are randomzed, and more stars are spawned with a higher value of k
 	 */
-	public void spawnStars(int k, float x, float y){
+	public void spawnHitEffect(int k, float x, float y){
 		for(int i = 0; i < k; ++i){
 			for (int j = 0; j < 5; j++) {
 				Star s = new Star();
@@ -374,7 +368,6 @@ public class GameplayController {
 	int T_SwitchPhases = 20;
 	/** The band member lane index that we are trying to switch to */
 	int goalBM;
-
 	/** The current transition progress */
 	int t_progress;
 
@@ -383,27 +376,16 @@ public class GameplayController {
 	/** Trigger inputs */
 	public boolean[] triggers;
 
-
-	/**
-	 * Checks whether the adjusted hit position is on beat based on lenience
-	 * @param adjustedPosition Current sample adjusted by the offset from calibration
-	 * @param dist Distance between the sample at the note was hit and the sample the note exists at
-	 * @return whether the hit is on beat
-	 */
-	public boolean isHitOnBeat(long adjustedPosition, long dist) {
-		System.out.println("Adjusted position: " + adjustedPosition +  ", Dist: " + dist);
-		System.out.println(baseLeniency);
-		return dist < baseLeniency;
-	}
-
 	/**
 	 * Handles logic of a hit, whether it is on beat or not, etc.
 	 * @param note the note that we are trying to hit
 	 * @param currentSample the current sample of the song
 	 * @param hitReg the hitReg array
-	 * @param lifted whether the note was lifted (if held)
+	 * @param lifted whether the note was lifted (if held, can only be true if note type == HELD)
 	 */
-	public void checkHit(Note note, long currentSample, boolean[] hitReg, boolean lifted) {
+	public void checkHit(Note note, long currentSample, int onBeatGain, int offBeatGain, boolean destroy, boolean[] hitReg, boolean lifted) {
+		// check for precondition that lifted is true iff note type is HELD
+		assert !lifted || note.getNoteType() == Note.NoteType.HELD;
 		//Check for all the switch notes of this lane, if one is close enough destroy it and
 		//give it positive hit status
 		long adjustedPosition = currentSample - this.offset;
@@ -416,36 +398,20 @@ public class GameplayController {
 				//If so, destroy the note and set a positive hit status. Also set that we
 				//have registered a hit for this line for this click. This ensures that
 				//We do not have a single hit count for two notes that are close together
-				boolean isOnBeat = isHitOnBeat(adjustedPosition, dist);
+//				boolean isOnBeat = isHitOnBeat(adjustedPosition, dist);
+				boolean isOnBeat = dist < baseLeniency;
 				System.out.println("is on beat? " + isOnBeat);
-				switch (note.getNoteType()) {
-					// THESE ARE ALSO ALL THE WAR
-					case HELD:
-						if (!lifted) {
-							note.setHitStatus(isOnBeat ? 4 : 1);
-							spawnStars(note.getHitStatus(), note.getX(), note.getBottomY());
-							hitReg[note.getLine()] = true;
-						} else {
-							note.setHitStatus(isOnBeat ? 5 : 2);
-							spawnStars(note.getHitStatus(), note.getX(), note.getY());
-							note.setDestroyed(true);
-						}
-						break;
-					case BEAT:
-					case SWITCH:
-						note.setHitStatus(isOnBeat ? 6 : 3);
-						spawnStars(note.getHitStatus(), note.getX(), note.getY());
-						if (hitReg != null) {
-							hitReg[note.getLine()] = true;
-						}
-						note.setDestroyed(true);
-						break;
-					default:
-						break;
+
+				note.setHitStatus(isOnBeat ? onBeatGain : offBeatGain);
+				spawnHitEffect(note.getHitStatus(), note.getX(), note.getBottomY());
+				if (hitReg != null) {
+					hitReg[note.getLine()] = true;
 				}
+				note.setDestroyed(destroy);
 			}
 			else {
 				// lose some competency since you played a bit off beat
+				// TODO: REWORK THIS
 				note.setHitStatus(-1);
 			}
 		}
@@ -461,15 +427,15 @@ public class GameplayController {
 		triggers = input.didTrigger();
 		boolean[] lifted = input.triggerLifted;
 		long currentSample = level.getCurrentSample();
-		//First handle the switches
-		if(curP == PlayPhase.NOTES){
-			for(int i = 0; i < switches.length; ++i){
-				if(switches[i] && i != activeBM){
+		// SWITCH NOTE HANDLING
+		if (curP == PlayPhase.NOTES){
+			for (int i = 0; i < switches.length; ++i){
+				if (switches[i] && i != activeBM){
 					//Check only the lanes that are not the current active lane
-					for(Note n : level.getBandMembers()[i].getSwitchNotes()){
+					for(Note n : level.getBandMembers()[i].getSwitchNotes()) {
 						//Check for all the switch notes of this lane, if one is close enough destroy it and
 						//give it positive hit status
-						checkHit(n, currentSample, null, false);
+						checkHit(n, currentSample, 6, 5, true, null, false);
 					}
 					//set goalBM
 					goalBM = i;
@@ -481,7 +447,7 @@ public class GameplayController {
 				}
 			}
 		}
-		else{
+		else {
 			//Otherwise we must be in transition
 
 			//Increment progress
@@ -505,19 +471,18 @@ public class GameplayController {
 				if(triggers[n.getLine()] && !hitReg[n.getLine()]){
 					//Check for all the notes in this line and in the active band member
 					//See if any are close enough
-					checkHit(n, currentSample, hitReg, false);
+					checkHit(n, currentSample, 3, 1, true, hitReg, false);
 				}
 			}
 			else{
-				//If it's not a beat and its in the hitNotes its gotta be a hold note
-
+				// HOLD NOTE
 				//Check if we hit the trigger down close enough to the head
 				if(triggers[n.getLine()] && !hitReg[n.getLine()]){
-					checkHit(n, currentSample, hitReg, false);
+					checkHit(n, currentSample, 4, 2, false, hitReg, false);
 				}
 				//check if we lifted close to the end
 				if(lifted[n.getLine()]){
-					checkHit(n, currentSample, hitReg, lifted[n.getLine()]);
+					checkHit(n, currentSample, 5, 2, true, hitReg, true);
 				}
 			}
 		}
