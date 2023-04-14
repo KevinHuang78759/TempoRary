@@ -533,7 +533,7 @@ public class EditorMode implements Screen {
         }
         Json json = new Json();
         try {
-            file = new FileWriter("test.json");
+            file = new FileWriter("test_easy_level.json");
             file.write(json.toJson(l));
             file.close();
         } catch (IOException e) {
