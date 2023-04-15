@@ -381,11 +381,18 @@ public class GameplayController {
 	 * @param note the note that we are trying to hit
 	 * @param currentSample the current sample of the song
 	 * @param hitReg the hitReg array
-	 * @param lifted whether the note was lifted (if held, can only be true if note type == HELD)
+	 * @param lifted whether the note was lifted (if held, can only be true if NoteType == HELD)
 	 */
-	public void checkHit(Note note, long currentSample, int onBeatGain, int offBeatGain, boolean destroy, boolean[] hitReg, boolean lifted) {
+	public void checkHit(Note note,
+						 long currentSample,
+						 int onBeatGain, int offBeatGain,
+						 float spawnEffectY,
+						 boolean destroy,
+						 boolean[] hitReg,
+						 boolean lifted) {
 		// check for precondition that lifted is true iff note type is HELD
 		assert !lifted || note.getNoteType() == Note.NoteType.HELD;
+
 		//Check for all the switch notes of this lane, if one is close enough destroy it and
 		//give it positive hit status
 		long adjustedPosition = currentSample - this.offset;
@@ -398,15 +405,11 @@ public class GameplayController {
 				//If so, destroy the note and set a positive hit status. Also set that we
 				//have registered a hit for this line for this click. This ensures that
 				//We do not have a single hit count for two notes that are close together
-//				boolean isOnBeat = isHitOnBeat(adjustedPosition, dist);
 				boolean isOnBeat = dist < baseLeniency;
-				System.out.println("is on beat? " + isOnBeat);
 
 				note.setHitStatus(isOnBeat ? onBeatGain : offBeatGain);
-				spawnHitEffect(note.getHitStatus(), note.getX(), note.getBottomY());
-				if (hitReg != null) {
-					hitReg[note.getLine()] = true;
-				}
+				spawnHitEffect(note.getHitStatus(), note.getX(), spawnEffectY);
+				if (note.getLine() != -1) hitReg[note.getLine()] = true;
 				note.setDestroyed(destroy);
 			}
 			else {
@@ -427,15 +430,18 @@ public class GameplayController {
 		triggers = input.didTrigger();
 		boolean[] lifted = input.triggerLifted;
 		long currentSample = level.getCurrentSample();
-		// SWITCH NOTE HANDLING
+
+		//This array tells us if a hit has already been registered in this frame for the ith bm.
+		//We do not want one hit to count for two notes that are close together.
+		boolean[] hitReg = new boolean[triggers.length];
+
+		// SWITCH NOTE HIT HANDLING
 		if (curP == PlayPhase.NOTES){
 			for (int i = 0; i < switches.length; ++i){
 				if (switches[i] && i != activeBM){
 					//Check only the lanes that are not the current active lane
 					for(Note n : level.getBandMembers()[i].getSwitchNotes()) {
-						//Check for all the switch notes of this lane, if one is close enough destroy it and
-						//give it positive hit status
-						checkHit(n, currentSample, 6, 5, true, null, false);
+						checkHit(n, currentSample, 8, 5, n.getY(),true, hitReg, false);
 					}
 					//set goalBM
 					goalBM = i;
@@ -462,27 +468,24 @@ public class GameplayController {
 			updateBMCoords();
 		}
 		//Now check for hit and held notes
-		//This array tells us if a hit has already been registered in this frame for the ith bm.
-		//We do not want one hit to count for two notes that are close together.
-		boolean[] hitReg = new boolean[triggers.length];
 		int checkBM = curP == PlayPhase.NOTES ? activeBM : goalBM;
 		for(Note n : level.getBandMembers()[checkBM].getHitNotes()){
 			if(n.getNoteType() == Note.NoteType.BEAT){
 				if(triggers[n.getLine()] && !hitReg[n.getLine()]){
 					//Check for all the notes in this line and in the active band member
 					//See if any are close enough
-					checkHit(n, currentSample, 3, 1, true, hitReg, false);
+					checkHit(n, currentSample, 3, 1, n.getY(),true, hitReg, false);
 				}
 			}
 			else{
 				// HOLD NOTE
 				//Check if we hit the trigger down close enough to the head
 				if(triggers[n.getLine()] && !hitReg[n.getLine()]){
-					checkHit(n, currentSample, 4, 2, false, hitReg, false);
+					checkHit(n, currentSample, 4, 2, n.getBottomY(),false, hitReg, false);
 				}
 				//check if we lifted close to the end
 				if(lifted[n.getLine()]){
-					checkHit(n, currentSample, 5, 2, true, hitReg, true);
+					checkHit(n, currentSample, 4, 2, n.getY(),true, hitReg, true);
 				}
 			}
 		}

@@ -44,7 +44,7 @@ public class Note{
 		hitStatus = t;
 	}
 
-	/** line the note is one */
+	/** line the note is on (if switch note, this is -1) */
 	private int line;
 	public int getLine(){
 		return line;

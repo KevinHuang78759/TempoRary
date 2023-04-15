@@ -131,7 +131,7 @@ public class Level {
 
         // preallocate band members
         BandMembers = new BandMember[data.get("bandMembers").size];
-        spawnOffset = 2*music.getSampleRate();
+        spawnOffset = music.getSampleRate();
         for(int i = 0; i < BandMembers.length; i++){
             BandMembers[i] = new BandMember();
             JsonValue bmData = data.get("bandMembers").get(i);
@@ -144,7 +144,7 @@ public class Level {
                     n = new Note(thisNote.getInt("line"), Note.NoteType.BEAT, thisNote.getLong("position") - spawnOffset, hitNoteTexture);
                 }
                 else if (thisNote.getString("type").equals("switch")){
-                    n = new Note(0, Note.NoteType.SWITCH, thisNote.getLong("position") - spawnOffset, switchNoteTexture);
+                    n = new Note(thisNote.getInt("line"), Note.NoteType.SWITCH, thisNote.getLong("position") - spawnOffset, switchNoteTexture);
                 }
                 else {
                     n = new Note(thisNote.getInt("line"), Note.NoteType.HELD, thisNote.getLong("position") - spawnOffset, holdNoteTexture);
