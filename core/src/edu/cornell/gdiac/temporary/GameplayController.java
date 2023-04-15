@@ -62,7 +62,7 @@ public class GameplayController {
 	private Array<GameObject> backing;
 
 	/** Index of the currently active band member */
-	public int activeBM;
+	public int activeBandMember;
 	/** Level object, stores bandMembers */
 	public Level level;
 	/** Indicates whether or not we want to use randomly generated notes */
@@ -137,8 +137,7 @@ public class GameplayController {
 		inBetweenWidth = smallwidth/4f;
 		largewidth = 10f*smallwidth;
 		//initiate default active band member to 0
-		// TODO: change this to be whatever the default BM is based on Sami's level editor
-		activeBM = 0;
+		activeBandMember = 0;
 		//Have the y value be a bit above the bottom of the play area, but not too close
 		hitbarY = BOTTOMBOUND + 3*(TOPBOUND - BOTTOMBOUND)/20f;
 		//There ar e NUM_LANES hp bars, and the width between each one shall be 1/4 their length
@@ -186,7 +185,7 @@ public class GameplayController {
 				if(n.isDestroyed()){
 					//if this note is destroyed we need to increment the competency of the
 					//lane it was destroyed in by its hitstatus
-					if(i == activeBM || i == goalBM){
+					if(i == activeBandMember || i == goalBandMember){
 //						System.out.println("hit gained: " + n.getHitStatus());
 						level.getBandMembers()[i].compUpdate(n.getHitStatus());
 					}
@@ -203,7 +202,7 @@ public class GameplayController {
 				if(n.isDestroyed()){
 					//if this note is destroyed we need to increment the competency of the
 					//lane it was destroyed in by its hitstatus
-					if(i == activeBM || i == goalBM){
+					if(i == activeBandMember || i == goalBandMember){
 						System.out.println("switch gained: " + n.getHitStatus());
 						level.getBandMembers()[i].compUpdate(n.getHitStatus());
 					}
@@ -256,9 +255,9 @@ public class GameplayController {
 	 */
 	public void start() {
 		setupBandMembers();
-		activeBM = 0;
-		goalBM = 0;
-		updateBMCoords();
+		activeBandMember = 0;
+		goalBandMember = 0;
+		updateBandMemberCoords();
 		curframe = 0;
 	}
 
@@ -284,15 +283,15 @@ public class GameplayController {
 	/**
 	 * Update the coordinates
 	 */
-	public void updateBMCoords(){
+	public void updateBandMemberCoords(){
 		if(curP == PlayPhase.NOTES){
 			//If we are in the notes phase, we use setActiveProperties
-			level.setActiveProperties(activeBM, largewidth, smallwidth, TOPBOUND - BOTTOMBOUND);
+			level.setActiveProperties(activeBandMember, largewidth, smallwidth, TOPBOUND - BOTTOMBOUND);
 		}
 		else{
 			//Otherwise we must be in transition, so set the transition properties
 			float progressFrac = t_progress/(float)T_SwitchPhases;
-			level.setTransitionProperties(activeBM, goalBM, largewidth, smallwidth, TOPBOUND - BOTTOMBOUND, progressFrac);
+			level.setTransitionProperties(activeBandMember, goalBandMember, largewidth, smallwidth, TOPBOUND - BOTTOMBOUND, progressFrac);
 		}
 		//finally, set the bottom left
 		level.setBandMemberBl(new Vector2(LEFTBOUND, BOTTOMBOUND), inBetweenWidth);
@@ -331,8 +330,8 @@ public class GameplayController {
 		backing = objects;
 		objects = tmp;
 		backing.clear();
-		for (BandMember bm : level.getBandMembers()) {
-			bm.garbageCollect();
+		for (BandMember bandMember : level.getBandMembers()) {
+			bandMember.garbageCollect();
 		}
 	}
 
@@ -367,7 +366,7 @@ public class GameplayController {
 	/** Total progress needed before we declare ourselves fully transitioned */
 	int T_SwitchPhases = 20;
 	/** The band member lane index that we are trying to switch to */
-	int goalBM;
+	int goalBandMember;
 	/** The current transition progress */
 	int t_progress;
 
@@ -438,13 +437,13 @@ public class GameplayController {
 		// SWITCH NOTE HIT HANDLING
 		if (curP == PlayPhase.NOTES){
 			for (int i = 0; i < switches.length; ++i){
-				if (switches[i] && i != activeBM){
+				if (switches[i] && i != activeBandMember){
 					//Check only the lanes that are not the current active lane
 					for(Note n : level.getBandMembers()[i].getSwitchNotes()) {
 						checkHit(n, currentSample, 8, 5, n.getY(),true, hitReg, false);
 					}
 					//set goalBM
-					goalBM = i;
+					goalBandMember = i;
 					//change phase
 					curP = PlayPhase.TRANSITION;
 					//reset progress
@@ -462,14 +461,14 @@ public class GameplayController {
 			//Check if we are done, if so set active BM and change phase
 			if(t_progress == T_SwitchPhases){
 				curP = PlayPhase.NOTES;
-				activeBM = goalBM;
+				activeBandMember = goalBandMember;
 			}
 			//During this phase we need to change the BL and widths of each BM
-			updateBMCoords();
+			updateBandMemberCoords();
 		}
 		//Now check for hit and held notes
-		int checkBM = curP == PlayPhase.NOTES ? activeBM : goalBM;
-		for(Note n : level.getBandMembers()[checkBM].getHitNotes()){
+		int checkBandMember = curP == PlayPhase.NOTES ? activeBandMember : goalBandMember;
+		for(Note n : level.getBandMembers()[checkBandMember].getHitNotes()){
 			if(n.getNoteType() == Note.NoteType.BEAT){
 				if(triggers[n.getLine()] && !hitReg[n.getLine()]){
 					//Check for all the notes in this line and in the active band member

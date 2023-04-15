@@ -224,7 +224,7 @@ public class GameMode implements Screen {
 		}
 		else{
 			//Draw everything in the current level
-			gameplayController.level.drawEverything(canvas, gameplayController.activeBM, gameplayController.goalBM, inputController.triggerPress, inputController.switches());
+			gameplayController.level.drawEverything(canvas, gameplayController.activeBandMember, gameplayController.goalBandMember, inputController.triggerPress, inputController.switches());
 
 			// Draw the rest of the game objects on top
 			for (GameObject o : gameplayController.getObjects()) {
@@ -236,9 +236,9 @@ public class GameMode implements Screen {
 			//draw two rectangles to cover up spawning/disappearing areas of notes and switches
 			canvas.drawRect(0, gameplayController.TOPBOUND, canvas.getWidth(), canvas.getHeight(), bkgC, true);
 			canvas.drawRect(0, 0, canvas.getWidth(), gameplayController.BOTTOMBOUND, bkgC, true);
-			for(BandMember bm : gameplayController.level.getBandMembers()){
+			for(BandMember bandMember : gameplayController.level.getBandMembers()){
 				//Draw the competency bar
-				bm.drawHPBar(canvas);
+				bandMember.drawHPBar(canvas);
 			}
 			// draw the countdown
 			if (gameState == GameState.INTRO) {
