@@ -203,7 +203,6 @@ public class GameplayController {
 					//if this note is destroyed we need to increment the competency of the
 					//lane it was destroyed in by its hitstatus
 					if(i == activeBandMember || i == goalBandMember){
-						System.out.println("switch gained: " + n.getHitStatus());
 						level.getBandMembers()[i].compUpdate(n.getHitStatus());
 					}
 				}

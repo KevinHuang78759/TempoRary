@@ -161,6 +161,7 @@ public class Level {
             bandMembers[i].setHpBarFilmStrip(hpbar, 47);
             bandMembers[i].setFont(displayFont);
             bandMembers[i].setIndicatorTextures(noteIndicator, noteIndicatorHit);
+//            System.out.println(System.nanoTime() - t);
         }
     }
 
@@ -236,6 +237,7 @@ public class Level {
             if(sample - lastDec >= music.getSampleRate()){
                 //if so, decrement competency
                 bandMember.compUpdate(-bandMember.getLossRate());
+//                System.out.println(bm.getCurComp() + " " + bm.getLossRate());
                 decTog = true;
             }
         }
