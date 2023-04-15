@@ -20,6 +20,7 @@ import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.temporary.entity.BandMember;
+import edu.cornell.gdiac.temporary.entity.Particle;
 import edu.cornell.gdiac.util.ScreenListener;
 
 /**
@@ -227,7 +228,7 @@ public class GameMode implements Screen {
 			gameplayController.level.drawEverything(canvas, gameplayController.activeBandMember, gameplayController.goalBandMember, inputController.triggerPress, inputController.switches());
 
 			// Draw the rest of the game objects on top
-			for (GameObject o : gameplayController.getObjects()) {
+			for (Particle o : gameplayController.getParticles()) {
 				o.draw(canvas);
 			}
 

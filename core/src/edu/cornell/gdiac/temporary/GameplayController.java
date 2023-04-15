@@ -29,8 +29,6 @@ import edu.cornell.gdiac.temporary.entity.*;
 
 /**
  * Controller to handle gameplay interactions.
- * </summary>
- * <remarks>
  * This controller also acts as the root class for all the models.
  */
 public class GameplayController {
@@ -38,7 +36,7 @@ public class GameplayController {
 	int curframe;
 	// Graphics assets for the entities
 	/** Texture for all stars, as they look the same */
-	private Texture starTexture;
+	private Texture particleTexture;
 
 	/** The minimum velocity factor (x shell velocity) of a newly created star */
 	private static final float MIN_STAR_FACTOR = 0.1f;
@@ -57,9 +55,9 @@ public class GameplayController {
 
 	// List of objects with the garbage collection set.
 	/** The currently active object */
-	private Array<GameObject> objects;
+	private Array<Particle> particles;
 	/** The backing set for garbage collection */
-	private Array<GameObject> backing;
+	private Array<Particle> backing;
 
 	/** Index of the currently active band member */
 	public int activeBandMember;
@@ -108,7 +106,7 @@ public class GameplayController {
 	 * @param height
 	 */
 	public GameplayController(float width, float height){
-		objects = new Array<>();
+		particles = new Array<>();
 		backing = new Array<>();
 		randomNotes = true;
 		//Set margins so there is a comfortable amount of space between play area and screen boundaries
@@ -233,7 +231,7 @@ public class GameplayController {
 	 * @param directory 	Reference to the asset directory.
 	 */
 	public void populate(AssetDirectory directory) {
-		starTexture = directory.getEntry("star", Texture.class);
+		particleTexture = directory.getEntry("star", Texture.class);
 	}
 
 	/**
@@ -245,8 +243,8 @@ public class GameplayController {
 	 *
 	 * @return the list of the currently active (not destroyed) game objects
 	 */
-	public Array<GameObject> getObjects() {
-		return objects;
+	public Array<Particle> getParticles() {
+		return particles;
 	}
 
 	/**
@@ -271,7 +269,7 @@ public class GameplayController {
 		//Then, update the notes for each band member and spawn new notes
 		level.updateBandMemberNotes();
 		//Update the objects of this class (mostly stars)
-		for(GameObject o : objects){
+		for(Particle o : particles){
 			o.update(0f);
 		}
 		//increment the current frame.
@@ -301,7 +299,7 @@ public class GameplayController {
 	 */
 	public void reset() {
 		curframe = 0;
-		objects.clear();
+		particles.clear();
 		curP = PlayPhase.NOTES;
 	}
 
@@ -318,16 +316,16 @@ public class GameplayController {
 	 */
 	public void garbageCollect() {
 		// INVARIANT: backing and objects are disjoint
-		for (GameObject o : objects) {
+		for (Particle o : particles) {
 			if (!o.isDestroyed()) {
 				backing.add(o);
 			}
 		}
 		// Swap the backing store and the objects.
 		// This is essentially stop-and-copy garbage collection
-		Array<GameObject> tmp = backing;
-		backing = objects;
-		objects = tmp;
+		Array<Particle> tmp = backing;
+		backing = particles;
+		particles = tmp;
 		backing.clear();
 		for (BandMember bandMember : level.getBandMembers()) {
 			bandMember.garbageCollect();
@@ -341,13 +339,13 @@ public class GameplayController {
 	public void spawnHitEffect(int k, float x, float y){
 		for(int i = 0; i < k; ++i){
 			for (int j = 0; j < 5; j++) {
-				Star s = new Star();
-				s.setTexture(starTexture);
+				Particle s = new Particle();
+				s.setTexture(particleTexture);
 				s.getPosition().set(x, y);
 				float vx = RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
 				float vy = RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
 				s.getVelocity().set(vx,vy);
-				objects.add(s);
+				particles.add(s);
 			}
 		}
 	}
@@ -383,7 +381,7 @@ public class GameplayController {
 	 */
 	public void checkHit(Note note,
 						 long currentSample,
-						 int onBeatGain, int offBeatGain,
+						 int onBeatGain, int offBeatGain, int offBeatLoss,
 						 float spawnEffectY,
 						 boolean destroy,
 						 boolean[] hitReg,
@@ -413,7 +411,7 @@ public class GameplayController {
 			else {
 				// lose some competency since you played a bit off beat
 				// TODO: REWORK THIS
-				note.setHitStatus(-1);
+				note.setHitStatus(offBeatLoss);
 			}
 		}
 	}
@@ -439,7 +437,7 @@ public class GameplayController {
 				if (switches[i] && i != activeBandMember){
 					//Check only the lanes that are not the current active lane
 					for(Note n : level.getBandMembers()[i].getSwitchNotes()) {
-						checkHit(n, currentSample, 8, 5, n.getY(),true, hitReg, false);
+						checkHit(n, currentSample, 8, 5, 0, n.getY(),true, hitReg, false);
 					}
 					//set goalBM
 					goalBandMember = i;
@@ -472,18 +470,18 @@ public class GameplayController {
 				if(triggers[n.getLine()] && !hitReg[n.getLine()]){
 					//Check for all the notes in this line and in the active band member
 					//See if any are close enough
-					checkHit(n, currentSample, 3, 1, n.getY(),true, hitReg, false);
+					checkHit(n, currentSample, 3, 1, -1, n.getY(),true, hitReg, false);
 				}
 			}
 			else{
 				// HOLD NOTE
 				//Check if we hit the trigger down close enough to the head
 				if(triggers[n.getLine()] && !hitReg[n.getLine()]){
-					checkHit(n, currentSample, 4, 2, n.getBottomY(),false, hitReg, false);
+					checkHit(n, currentSample, 4, 2, -1, n.getBottomY(),false, hitReg, false);
 				}
 				//check if we lifted close to the end
 				if(lifted[n.getLine()]){
-					checkHit(n, currentSample, 4, 2, n.getY(),true, hitReg, true);
+					checkHit(n, currentSample, 4, 2, -1, n.getY(),true, hitReg, true);
 				}
 			}
 		}
