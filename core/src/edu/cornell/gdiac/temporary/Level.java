@@ -268,6 +268,12 @@ public class Level {
     }
 
     /**
+     * Returns true if the player has won this level
+     * @return
+     */
+    public boolean hasWon(){return true;};
+
+    /**
      * this draws everything the level needs to display on the given canvas
      * @param canvas - what are we drawing on
      * @param active - which band member is active
