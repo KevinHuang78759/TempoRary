@@ -1,23 +1,10 @@
 package edu.cornell.gdiac.temporary.editor;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.utils.*;
-import com.badlogic.gdx.math.Vector2;
+
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.*;
-
-import edu.cornell.gdiac.temporary.*;
-import edu.cornell.gdiac.assets.AssetDirectory;
+import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.temporary.GameCanvas;
-import edu.cornell.gdiac.temporary.InputController;
-import edu.cornell.gdiac.temporary.entity.*;
-import edu.cornell.gdiac.util.*;
-import edu.cornell.gdiac.temporary.GameObject.ObjectType;
 import edu.cornell.gdiac.util.FilmStrip;
-import edu.cornell.gdiac.util.ScreenListener;
-
-import java.util.HashMap;
-import java.util.LinkedList;
 
 /**
  * Model class for editors notes.

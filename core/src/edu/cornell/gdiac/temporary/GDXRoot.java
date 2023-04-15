@@ -169,7 +169,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			loading.setScreenListener(this);
 			setScreen(loading);
 
-			//System.out.println("Offset from CalibrationMode: " + calibration.getOffset());
+			System.out.println("Offset from CalibrationMode: " + calibration.getOffset());
 		}
 		else {
 			// We quit the main application

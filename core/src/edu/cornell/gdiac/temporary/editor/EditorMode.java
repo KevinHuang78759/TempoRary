@@ -11,8 +11,6 @@ import com.badlogic.gdx.graphics.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.temporary.GameCanvas;
 import edu.cornell.gdiac.temporary.InputController;
-import edu.cornell.gdiac.temporary.entity.*;
-import edu.cornell.gdiac.temporary.GameObject.ObjectType;
 import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.ScreenListener;
 import edu.cornell.gdiac.audio.*;
@@ -21,7 +19,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Collections;
 

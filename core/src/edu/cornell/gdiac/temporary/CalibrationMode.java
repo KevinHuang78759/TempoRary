@@ -59,6 +59,11 @@ public class CalibrationMode implements Screen {
         this.canvas = canvas;
         userHitBeats = new LinkedList<>();
         offset = 0;
+        reset();
+    }
+
+    private void reset() {
+        userHitBeats.clear();
         isCalibrated = false;
     }
 
@@ -183,7 +188,6 @@ public class CalibrationMode implements Screen {
 
     /**
      * checks whether use is on beat or not
-     * TODO: move this someplace else???
      * currentHitPosition should be the song position at which you hit the "beat"
      */
     public boolean isOnBeat(int actualBeatPosition, int currentHitPosition) {
@@ -198,6 +202,7 @@ public class CalibrationMode implements Screen {
     public void show() {
         active = true;
         music.play();
+        reset();
     }
 
     @Override

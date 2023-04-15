@@ -13,7 +13,7 @@ import edu.cornell.gdiac.temporary.entity.Note;
 
 public class Level {
     public BandMember[] getBandMembers() {
-        return BandMembers;
+        return bandMembers;
     }
 
     public Texture getHitNoteTexture() {
@@ -49,7 +49,7 @@ public class Level {
     }
 
     public void setBandMembers(BandMember[] bandMembers) {
-        BandMembers = bandMembers;
+        this.bandMembers = bandMembers;
     }
 
     public void setHitNoteTexture(Texture hitNoteTexture) {
@@ -84,7 +84,7 @@ public class Level {
         this.music = music;
     }
 
-    private BandMember[] BandMembers;
+    private BandMember[] bandMembers;
 
     // TEXTURES
     private Texture hitNoteTexture;
@@ -130,15 +130,13 @@ public class Level {
         noteIndicatorHit = directory.getEntry("note-indicator-hit", Texture.class);
 
         // preallocate band members
-
-        BandMembers = new BandMember[data.get("bandMembers").size];
-        spawnOffset = (2*music.getSampleRate()/3);
-        for(int i = 0; i < BandMembers.length; i++){
-            long t = System.nanoTime();
-            BandMembers[i] = new BandMember();
-            JsonValue bmData = data.get("bandMembers").get(i);
+        bandMembers = new BandMember[data.get("bandMembers").size];
+        spawnOffset = music.getSampleRate();
+        for(int i = 0; i < bandMembers.length; i++){
+            bandMembers[i] = new BandMember();
+            JsonValue bandMemberData = data.get("bandMembers").get(i);
             Queue<Note> notes = new Queue<>();
-            JsonValue noteData = bmData.get("notes");
+            JsonValue noteData = bandMemberData.get("notes");
             for(int j = 0; j < noteData.size; ++j){
                 JsonValue thisNote = noteData.get(j);
                 Note n;
@@ -146,7 +144,7 @@ public class Level {
                     n = new Note(thisNote.getInt("line"), Note.NoteType.BEAT, thisNote.getLong("position") - spawnOffset, hitNoteTexture);
                 }
                 else if (thisNote.getString("type").equals("switch")){
-                    n = new Note(0, Note.NoteType.SWITCH, thisNote.getLong("position") - spawnOffset, switchNoteTexture);
+                    n = new Note(thisNote.getInt("line"), Note.NoteType.SWITCH, thisNote.getLong("position") - spawnOffset, switchNoteTexture);
                 }
                 else {
                     n = new Note(thisNote.getInt("line"), Note.NoteType.HELD, thisNote.getLong("position") - spawnOffset, holdNoteTexture);
@@ -156,14 +154,14 @@ public class Level {
                 n.setHitSample(thisNote.getInt("position"));
                 notes.addLast(n);
             }
-            BandMembers[i].setAllNotes(notes);
-            BandMembers[i].setCurComp(maxCompetency);
-            BandMembers[i].setMaxComp(maxCompetency);
-            BandMembers[i].setLossRate(bmData.getInt("competencyLossRate"));
-            BandMembers[i].setHpBarFilmStrip(hpbar, 47);
-            BandMembers[i].setFont(displayFont);
-            BandMembers[i].setIndicatorTextures(noteIndicator, noteIndicatorHit);
-            System.out.println(System.nanoTime() - t);
+            bandMembers[i].setAllNotes(notes);
+            bandMembers[i].setCurComp(maxCompetency);
+            bandMembers[i].setMaxComp(maxCompetency);
+            bandMembers[i].setLossRate(bandMemberData.getInt("competencyLossRate"));
+            bandMembers[i].setHpBarFilmStrip(hpbar, 47);
+            bandMembers[i].setFont(displayFont);
+            bandMembers[i].setIndicatorTextures(noteIndicator, noteIndicatorHit);
+//            System.out.println(System.nanoTime() - t);
         }
     }
 
@@ -175,7 +173,7 @@ public class Level {
     public void setBandMemberBl(Vector2 windowBL, float inBetweenWidth){
         float xCoord = windowBL.x;
         float yCoord = windowBL.y;
-        for (BandMember bandMember : BandMembers) {
+        for (BandMember bandMember : bandMembers) {
             bandMember.setBottomLeft(new Vector2(xCoord, yCoord));
             xCoord += inBetweenWidth + bandMember.getWidth();
         }
@@ -183,18 +181,18 @@ public class Level {
 
     /**
      * Sets width and height of BandMembers outside of transition. Call once after transitioning is finished
-     * @param activeBM - index of active BandMember
+     * @param activeBandMember - index of active BandMember
      * @param large_width - width of active BandMember
      * @param short_width - width of inactive BandMember
      */
-    public void setActiveProperties(int activeBM, float large_width, float short_width, float maxLineHeight){
-        for (BandMember bandMember : BandMembers) {
+    public void setActiveProperties(int activeBandMember, float large_width, float short_width, float maxLineHeight){
+        for (BandMember bandMember : bandMembers) {
             bandMember.setWidth(short_width);
             bandMember.setLineHeight(0f);
             bandMember.setHeight(maxLineHeight);
         }
-        BandMembers[activeBM].setWidth(large_width);
-        BandMembers[activeBM].setLineHeight(maxLineHeight);
+        bandMembers[activeBandMember].setWidth(large_width);
+        bandMembers[activeBandMember].setLineHeight(maxLineHeight);
     }
 
     /**
@@ -207,18 +205,18 @@ public class Level {
      * */
     public void setTransitionProperties(int previousBM, int nextBM, float large_width, float short_width, float maxLineHeight, float t_progress){
         //set default widths and heights, which means everyone with no lines and everyone has no lines
-        for (BandMember bandMember : BandMembers) {
+        for (BandMember bandMember : bandMembers) {
             bandMember.setWidth(short_width);
             bandMember.setLineHeight(0f);
             bandMember.setHeight(maxLineHeight);
         }
 
         //set the width and line heights of the active and goal bandmembers accordingly
-        BandMembers[previousBM].setWidth(large_width - (large_width - short_width)*t_progress);
-        BandMembers[nextBM].setWidth(short_width + (large_width - short_width)*t_progress);
+        bandMembers[previousBM].setWidth(large_width - (large_width - short_width)*t_progress);
+        bandMembers[nextBM].setWidth(short_width + (large_width - short_width)*t_progress);
 
-        BandMembers[previousBM].setLineHeight(maxLineHeight*(1f-t_progress));
-        BandMembers[nextBM].setLineHeight(maxLineHeight*t_progress);
+        bandMembers[previousBM].setLineHeight(maxLineHeight*(1f-t_progress));
+        bandMembers[nextBM].setLineHeight(maxLineHeight*t_progress);
     }
 
     /**
@@ -229,17 +227,17 @@ public class Level {
         //First get the sample we at
         long sample = getCurrentSample();
         boolean decTog = false;
-        for(BandMember bm : BandMembers){
+        for(BandMember bandMember : bandMembers){
             //update the note frames
-            bm.updateNotes();
+            bandMember.updateNotes();
             //spawn new notes accordingly
-            bm.spawnNotes(sample);
+            bandMember.spawnNotes(sample);
             //check if enough samples have passed since the last decrement
 
             if(sample - lastDec >= music.getSampleRate()){
                 //if so, decrement competency
-                bm.compUpdate(-bm.getLossRate());
-                System.out.println(bm.getCurComp() + " " + bm.getLossRate());
+                bandMember.compUpdate(-bandMember.getLossRate());
+//                System.out.println(bm.getCurComp() + " " + bm.getLossRate());
                 decTog = true;
             }
         }
@@ -268,7 +266,6 @@ public class Level {
      * @return
      */
     public long getCurrentSample(){
-
         return (long)(music.getPosition()*music.getSampleRate());
     }
 
@@ -283,21 +280,21 @@ public class Level {
     public void drawEverything(GameCanvas canvas, int active, int goal, boolean[] triggers, boolean[] switches){
         //first we get the sample, since this determines where the notes will be drawn
         long sample = getCurrentSample();
-        for(int i = 0; i < BandMembers.length; ++i){
+        for(int i = 0; i < bandMembers.length; ++i){
             //Draw the border of each band member
-            BandMembers[i].drawBorder(canvas);
+            bandMembers[i].drawBorder(canvas);
 
             //If we are the goal of the active lane we need to draw separation lines and held/beat notes
             //We also need to draw a separate hit bar for each line
             if(active == i || goal == i){
-                BandMembers[i].drawHitNotes(canvas, sample, canvas.getHeight());
-                BandMembers[i].drawLineSeps(canvas);
-                BandMembers[i].drawHitBar(canvas, Color.WHITE, triggers);
+                bandMembers[i].drawHitNotes(canvas, sample, canvas.getHeight());
+                bandMembers[i].drawLineSeps(canvas);
+                bandMembers[i].drawHitBar(canvas, Color.WHITE, triggers);
             }
             //Otherwise just draw the switch notes, and we only have 1 hit bar to draw
             else{
-                BandMembers[i].drawSwitchNotes(canvas, sample, canvas.getHeight());
-                BandMembers[i].drawHitBar(canvas, Color.WHITE, switches[i], i);
+                bandMembers[i].drawSwitchNotes(canvas, sample, canvas.getHeight());
+                bandMembers[i].drawHitBar(canvas, Color.WHITE, switches[i], i);
             }
         }
 
