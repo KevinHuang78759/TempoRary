@@ -289,12 +289,12 @@ public class Level {
             if(active == i || goal == i){
                 bandMembers[i].drawHitNotes(canvas, sample, canvas.getHeight());
                 bandMembers[i].drawLineSeps(canvas);
-                bandMembers[i].drawHitBar(canvas, Color.WHITE, triggers);
+                bandMembers[i].drawHitBar(canvas, triggers);
             }
             //Otherwise just draw the switch notes, and we only have 1 hit bar to draw
             else{
                 bandMembers[i].drawSwitchNotes(canvas, sample, canvas.getHeight());
-                bandMembers[i].drawHitBar(canvas, Color.WHITE, switches[i], i);
+                bandMembers[i].drawHitBar(canvas, switches[i], i);
             }
         }
 
