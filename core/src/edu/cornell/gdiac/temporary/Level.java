@@ -103,12 +103,15 @@ public class Level {
     private FilmStrip drummerSprite;
     private FilmStrip voiceSprite;
     private FilmStrip synthSprite;
+    private FilmStrip backSplash;
+    private FilmStrip frontSplash;
 
     // PROPERTIES
     private String levelName;
     private int levelNumber;
     private int maxCompetency;
     private int spawnOffset;
+    private int bpm;
     private MusicQueue music;
 
     /**
@@ -144,6 +147,7 @@ public class Level {
         levelName = data.getString("levelName");
         levelNumber = data.getInt("levelNumber");
         maxCompetency = data.getInt("maxCompetency");
+        bpm = data.getInt("bpm");
 
         // need to take from directory because this is the only way to load it into the music queue
         music = directory.getEntry("challenger", MusicQueue.class);
@@ -167,6 +171,8 @@ public class Level {
         voiceSprite = new FilmStrip(directory.getEntry("singer-cat", Texture.class), 1, 1, 1);
         drummerSprite = new FilmStrip(directory.getEntry("drummer-cat", Texture.class), 1, 1, 1);
         synthSprite = new FilmStrip(directory.getEntry("drummer-cat", Texture.class), 1, 1, 1);
+        backSplash = new FilmStrip(directory.getEntry("back-splash", Texture.class), 4, 5, 19);
+        frontSplash = new FilmStrip(directory.getEntry("front-splash", Texture.class), 4, 5, 19);
 
         // preallocate band members
         bandMembers = new BandMember[data.get("bandMembers").size];
@@ -187,7 +193,7 @@ public class Level {
                 }
                 else {
                     n = new Note(thisNote.getInt("line"), Note.NoteType.HELD, thisNote.getLong("position") - spawnOffset, holdNoteTexture);
-                    n.setHoldTextures(holdTrailTexture,1,holdEndTexture,1);
+                    n.setHoldTextures(holdTrailTexture,1,holdEndTexture,1, backSplash, frontSplash);
                     n.setHoldSamples(thisNote.getLong("duration"));
                 }
                 n.setHitSample(thisNote.getInt("position"));
