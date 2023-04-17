@@ -372,4 +372,5 @@ public class BandMember {
     public void setCharacterTexture(FilmStrip characterSprite) {
         this.characterSprite = characterSprite;
     }
+
 }

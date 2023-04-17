@@ -13,7 +13,9 @@
         "note-indicator-hit": "images/note_indicator_hit.png",
         "violin-cat": "images/cats/violin_cat.png",
         "singer-cat": "images/cats/singer_cat.png",
-        "drummer-cat": "images/cats/drummer_cat.png"
+        "drummer-cat": "images/cats/drummer_cat.png",
+        "back-splash": "images/notes/hold_back.png",
+        "front-splash": "images/notes/hold_front.png"
     },
     "fonts": {
         "lucida": {

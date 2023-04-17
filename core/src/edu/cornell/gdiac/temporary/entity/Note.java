@@ -17,10 +17,10 @@ import com.badlogic.gdx.graphics.*;
  * Model class for Notes.
  */
 public class Note{
-	/** Rescale the size of a shell */
-	private static final float SHELL_SIZE_MULTIPLE = 4.0f;
 	/** How fast we change frames (one frame per 4 calls to update) */
 	private static final float ANIMATION_SPEED = 0.25f;
+	private FilmStrip backSplash;
+	private FilmStrip frontSplash;
 
 	public int getNUM_ANIM_FRAMES() {
 		return NUM_ANIM_FRAMES;
@@ -143,7 +143,7 @@ public class Note{
 	Vector2 origin;
 
 	/**
-	 * Initialize shell with trivial starting position.
+	 * Note constructor
 	 */
 	public Note(int line, NoteType n, long startSample, Texture t) {
 		// Set minimum Y velocity for this shell
@@ -223,7 +223,7 @@ public class Note{
 	 * @param end
 	 * @param endFrames
 	 */
-	public void setHoldTextures(Texture trail, int trailFrames, Texture end, int endFrames){
+	public void setHoldTextures(Texture trail, int trailFrames, Texture end, int endFrames, FilmStrip backSplash, FilmStrip frontSplash){
 		trailAnimator = new FilmStrip(trail, 1, trailFrames, trailFrames);
 		this.trailFrames = trailFrames;
 		trailHeight = trailAnimator.getRegionHeight();
@@ -235,6 +235,10 @@ public class Note{
 		endHeight = endAnimator.getRegionHeight();
 		endWidth = endAnimator.getRegionWidth();
 		endOrigin = new Vector2(endWidth/2f, endHeight/2f);
+
+		// hold animations
+		this.backSplash = backSplash.copy();
+		this.frontSplash = frontSplash.copy();
 	}
 
 	/**
@@ -246,7 +250,7 @@ public class Note{
 		if (animeframe >= NUM_ANIM_FRAMES) {
 			animeframe -= NUM_ANIM_FRAMES;
 		}
-		if(nt == NoteType.HELD){
+		if(nt == NoteType.HELD) {
 			curTrailFrame += ANIMATION_SPEED;
 			if(curTrailFrame >= trailFrames){
 				curTrailFrame -= trailFrames;
@@ -277,6 +281,8 @@ public class Note{
 		//Calculate a scale such that the entire sprite fits within both confines, but does not get distorted
 		float scale = Math.max(widthConfine/w, heightConfine/h);
 		if(nt == NoteType.HELD){
+			canvas.draw(backSplash, Color.WHITE, backSplash.getRegionWidth() / 2, backSplash.getRegionHeight() / 2,
+					x, by + animator.getRegionHeight() / 2 * scale, 0.0f, scale * 6, scale * 6);
 			//The tail should be about half the width of the actual note assets
 			tail_thickness = widthConfine/2f;
 			//Set the animation frame properly
@@ -302,9 +308,10 @@ public class Note{
 					0.0f, scale, scale);
 			canvas.draw(endAnimator, Color.WHITE, endOrigin.x, endOrigin.y, x, y,
 					0.0f, scale, scale);
+			canvas.draw(frontSplash, Color.WHITE, frontSplash.getRegionWidth() / 2,frontSplash.getRegionHeight() / 2,
+					x, by +  animator.getRegionHeight() / 2 * scale, 0.0f, scale * 6, scale * 6);
 		}
 		else{
-
 			animator.setFrame((int)animeframe);
 			canvas.draw(animator, Color.WHITE, origin.x, origin.y, x, y,
 					0.0f, scale, scale);
