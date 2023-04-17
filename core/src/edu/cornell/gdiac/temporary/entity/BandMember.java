@@ -262,12 +262,13 @@ public class BandMember {
      * lane
      * also draw the keyBind
      */
-    public void drawHitBar(GameCanvas canvas, Color hitColor, boolean[] hits){
+    public void drawHitBar(GameCanvas canvas, boolean[] hits){
         //If we get passed an array we must draw 4 hit bars
+        float scale = 0.8f*(width/4)/noteIndicatorHit.getWidth();
         for(int i = 0; i < numLines; ++i){
             canvas.draw(hits[i] ? noteIndicatorHit : noteIndicator, Color.WHITE, noteIndicatorHit.getWidth() / 2, noteIndicatorHit.getHeight() / 2,
                     ((bottomLeftCorner.x + i * width/numLines) + (bottomLeftCorner.x +(i+1) * width/numLines)) / 2 - 5, hitY,
-                    0.0f,0.45f, 0.45f);
+                    0.0f,scale, scale);
             canvas.drawText(InputController.triggerKeyBinds()[i], displayFont, (bottomLeftCorner.x + i * width/numLines + bottomLeftCorner.x +(i+1) * width/numLines) / 2, hitY - 80);
         }
     }
@@ -276,14 +277,11 @@ public class BandMember {
      * Draw the hit bar in a certain color according to if we triggered the line. Pass in a value for a switchable lane
      * also draw the keyBind
      */
-    public void drawHitBar(GameCanvas canvas, Color hitColor, boolean hit, int i){
-        //If we get passed a single value then we're in a switch lane
-        // commenting out now because I'm not too sure about it
-//        canvas.drawLine(BL.x, hitY, BL.x + width, hitY, 3, hit ? hitColor : Color.BLACK);
-        // TODO: change these so that it's not hardcoded
+    public void drawHitBar(GameCanvas canvas, boolean hit, int i){
+       float scale = 0.8f*width/noteIndicatorHit.getWidth();
         canvas.draw(hit ? noteIndicatorHit : noteIndicator, Color.WHITE, noteIndicatorHit.getWidth() / 2, noteIndicatorHit.getHeight() / 2,
-                (bottomLeftCorner.x + bottomLeftCorner.x + width) / 2 - 2, hitY,
-                0.0f,0.20f, 0.20f);
+                bottomLeftCorner.x + width/2, hitY,
+                0.0f,scale, scale);
         canvas.drawText(InputController.switchKeyBinds()[i], displayFont, ( bottomLeftCorner.x + bottomLeftCorner.x + width) / 2f, hitY - 80);
     }
 
@@ -299,7 +297,7 @@ public class BandMember {
                 //Calculate the spawning y coordinate to be high enough such that none of the note is
                 //visible
                 n.setY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample()) *(hitY - spawnY));
-                n.draw(canvas, 3*width/4, 3*width/4);
+                n.draw(canvas, 0.8f*width, 0.8f*width);
             }
         }
     }
@@ -321,7 +319,7 @@ public class BandMember {
                     n.setY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample())*(hitY - spawnY));
                 }
 
-                n.draw(canvas, 3*width/(4*numLines), 3*width/(4*numLines));
+                n.draw(canvas, 0.8f*width/(numLines), 0.8f*width/(numLines));
             }
 
         }

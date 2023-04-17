@@ -94,11 +94,6 @@ public class GameplayController {
 	/** Y value of the hit bar */
 	public float hitbarY;
 
-	/** Maximum width of an HP bar */
-	public float hpwidth;
-	/** Width between each HP bar*/
-	public float hpbet;
-
 
 	/**
 	 * Create gameplaycontroler
@@ -127,22 +122,17 @@ public class GameplayController {
 		baseLeniency = (int) ((70f / 1000f) * level.getMusic().getSampleRate());
 
 		//The space in between two lanes is 1/4 the width of a small lane
-		//the width of the large lane is 10x the width of a small lane
+		//the width of the large lane is 6x the width of a small lane
 		//In total, we have NUM_LANES - 1 small lanes, 1 large lane, and n - 1 in between segments
 		//Therefore, the width of the small lane shall be 1/(5NUM_LANES/4 + 35/4) of the available total width
 		//Values decided by pure look
-		smallwidth = (RIGHTBOUND - LEFTBOUND)/(5f * NUM_LANES/4f + 35f/4f);
+		smallwidth = (RIGHTBOUND - LEFTBOUND)/(NUM_LANES - 1 + (NUM_LANES - 1)*0.25f + 4);
 		inBetweenWidth = smallwidth/4f;
-		largewidth = 10f*smallwidth;
+		largewidth = 4f*smallwidth;
 		//initiate default active band member to 0
 		activeBandMember = 0;
 		//Have the y value be a bit above the bottom of the play area, but not too close
 		hitbarY = BOTTOMBOUND + 3*(TOPBOUND - BOTTOMBOUND)/20f;
-		//There ar e NUM_LANES hp bars, and the width between each one shall be 1/4 their length
-		//The width will then be 1/(5NUMLANES/4 - 1/4) of the total available width
-		hpwidth = (RIGHTBOUND - LEFTBOUND)/(5f*NUM_LANES/4f - 0.25f);
-		//Width between each HP bar shall be 1/4 of the width of an HP bar
-		hpbet = hpwidth/4f;
 		//instantiate other variables
 		noteSpawnY = TOPBOUND + smallwidth/2;
 		noteDieY = BOTTOMBOUND - smallwidth/2;
