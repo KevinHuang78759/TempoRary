@@ -10,6 +10,7 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.MusicQueue;
 import edu.cornell.gdiac.temporary.entity.BandMember;
 import edu.cornell.gdiac.temporary.entity.Note;
+import edu.cornell.gdiac.util.FilmStrip;
 
 public class Level {
     public BandMember[] getBandMembers() {
@@ -96,6 +97,10 @@ public class Level {
     private Texture hpbar;
     private Texture noteIndicator;
     private Texture noteIndicatorHit;
+    private FilmStrip violinSprite;
+    private FilmStrip drummerSprite;
+    private FilmStrip voiceSprite;
+    private FilmStrip synthSprite;
 
     // PROPERTIES
     private String levelName;
@@ -128,6 +133,10 @@ public class Level {
         holdEndTexture = directory.getEntry("hold-end", Texture.class);
         noteIndicator = directory.getEntry("note-indicator", Texture.class);
         noteIndicatorHit = directory.getEntry("note-indicator-hit", Texture.class);
+        violinSprite = new FilmStrip(directory.getEntry("violin-cat", Texture.class), 1, 1, 1);
+        voiceSprite = new FilmStrip(directory.getEntry("singer-cat", Texture.class), 1, 1, 1);
+        drummerSprite = new FilmStrip(directory.getEntry("drummer-cat", Texture.class), 1, 1, 1);
+        synthSprite = new FilmStrip(directory.getEntry("drummer-cat", Texture.class), 1, 1, 1);
 
         // preallocate band members
         bandMembers = new BandMember[data.get("bandMembers").size];
@@ -161,6 +170,20 @@ public class Level {
             bandMembers[i].setHpBarFilmStrip(hpbar, 47);
             bandMembers[i].setFont(displayFont);
             bandMembers[i].setIndicatorTextures(noteIndicator, noteIndicatorHit);
+            switch (bandMemberData.getString("instrument")) {
+                case "violin":
+                    bandMembers[i].setCharacterTexture(violinSprite);
+                    break;
+                case "piano":
+                    bandMembers[i].setCharacterTexture(synthSprite);
+                    break;
+                case "drum":
+                    bandMembers[i].setCharacterTexture(drummerSprite);
+                    break;
+                case "voice":
+                    bandMembers[i].setCharacterTexture(voiceSprite);
+                    break;
+            }
 //            System.out.println(System.nanoTime() - t);
         }
     }
