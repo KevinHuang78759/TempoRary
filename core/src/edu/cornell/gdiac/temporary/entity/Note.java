@@ -68,6 +68,7 @@ public class Note{
 		hitSample = t;
 	}
 
+	// hold note logic
 	/**
 	 * How many samples do we intend to hold the held note for?
 	 */
@@ -79,6 +80,14 @@ public class Note{
 	public void setHoldSamples(long t){
 		holdSamples = t;
 	}
+
+	private boolean holding;
+	public boolean getHolding() { return holding; }
+	public void setHolding(boolean holding) { this.holding = holding; }
+
+	private float holdingAnimationSpeed;
+	private float holdingAnimationFrames;
+
 
 	public enum NoteType {
 		SWITCH,
@@ -218,12 +227,9 @@ public class Note{
 
 	/**
 	 * Set the textures for held notes. This is outside the constructor because not every note is a held note
-	 * @param trail
-	 * @param trailFrames
-	 * @param end
-	 * @param endFrames
 	 */
-	public void setHoldTextures(Texture trail, int trailFrames, Texture end, int endFrames, FilmStrip backSplash, FilmStrip frontSplash){
+	public void setHoldTextures(Texture trail, int trailFrames, Texture end, int endFrames,
+								FilmStrip backSplash, FilmStrip frontSplash, float holdingAnimationSpeed) {
 		trailAnimator = new FilmStrip(trail, 1, trailFrames, trailFrames);
 		this.trailFrames = trailFrames;
 		trailHeight = trailAnimator.getRegionHeight();
@@ -239,6 +245,8 @@ public class Note{
 		// hold animations
 		this.backSplash = backSplash.copy();
 		this.frontSplash = frontSplash.copy();
+		this.holdingAnimationSpeed = holdingAnimationSpeed;
+		this.holdingAnimationFrames = 0;
 	}
 
 	/**
@@ -258,6 +266,15 @@ public class Note{
 			curEndFrame += ANIMATION_SPEED;
 			if(curEndFrame >= endFrames){
 				curEndFrame -= endFrames;
+			}
+			// advance holding animation only if holding
+			if (holding) {
+				holdingAnimationFrames += holdingAnimationSpeed;
+				System.out.println(holdingAnimationFrames);
+				System.out.println(holdingAnimationSpeed);
+				if (holdingAnimationFrames >= 19) {
+						holdingAnimationFrames -= 19;
+				}
 			}
 		}
 	}
@@ -281,7 +298,10 @@ public class Note{
 		//Calculate a scale such that the entire sprite fits within both confines, but does not get distorted
 		float scale = Math.max(widthConfine/w, heightConfine/h);
 		if(nt == NoteType.HELD){
-			canvas.draw(backSplash, Color.WHITE, backSplash.getRegionWidth() / 2, backSplash.getRegionHeight() / 2,
+			backSplash.setFrame((int) holdingAnimationFrames);
+			frontSplash.setFrame((int) holdingAnimationFrames);
+			if (holding)
+				canvas.draw(backSplash, Color.WHITE, backSplash.getRegionWidth() / 2, backSplash.getRegionHeight() / 2,
 					x, by + animator.getRegionHeight() / 2 * scale, 0.0f, scale * 6, scale * 6);
 			//The tail should be about half the width of the actual note assets
 			tail_thickness = widthConfine/2f;
@@ -302,13 +322,13 @@ public class Note{
 					0f, tail_thickness/trailWidth, tail_thickness/trailWidth,
 					1f,(y - cury)/(trailAnimator.getRegionHeight()*tail_thickness/trailWidth));
 
-
 			//The head and tail are drawn after the trails to cover up the jagged ends
 			canvas.draw(animator, Color.WHITE, origin.x, origin.y, x, by,
 					0.0f, scale, scale);
 			canvas.draw(endAnimator, Color.WHITE, endOrigin.x, endOrigin.y, x, y,
 					0.0f, scale, scale);
-			canvas.draw(frontSplash, Color.WHITE, frontSplash.getRegionWidth() / 2,frontSplash.getRegionHeight() / 2,
+			if (holding)
+				canvas.draw(frontSplash, Color.WHITE, frontSplash.getRegionWidth() / 2,frontSplash.getRegionHeight() / 2,
 					x, by +  animator.getRegionHeight() / 2 * scale, 0.0f, scale * 6, scale * 6);
 		}
 		else{

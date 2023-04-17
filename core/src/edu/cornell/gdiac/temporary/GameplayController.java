@@ -402,7 +402,7 @@ public class GameplayController {
 				//have registered a hit for this line for this click. This ensures that
 				//We do not have a single hit count for two notes that are close together
 				boolean isOnBeat = dist < baseLeniency;
-
+				note.setHolding(true);
 				note.setHitStatus(isOnBeat ? onBeatGain : offBeatGain);
 				spawnHitEffect(note.getHitStatus(), note.getX(), spawnEffectY);
 				if (note.getLine() != -1) hitReg[note.getLine()] = true;
@@ -475,6 +475,7 @@ public class GameplayController {
 			}
 			else{
 				// HOLD NOTE
+				// TODO: add the concept of holding the note
 				//Check if we hit the trigger down close enough to the head
 				if(triggers[n.getLine()] && !hitReg[n.getLine()]){
 					checkHit(n, currentSample, 4, 2, -1, n.getBottomY(),false, hitReg, false);
@@ -482,6 +483,7 @@ public class GameplayController {
 				//check if we lifted close to the end
 				if(lifted[n.getLine()]){
 					checkHit(n, currentSample, 4, 2, -1, n.getY(),true, hitReg, true);
+					n.setHolding(false);
 				}
 			}
 		}
