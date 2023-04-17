@@ -22,9 +22,12 @@ public class BandMember {
      * Bottom left corner
      */
     private Vector2 bottomLeftCorner;
+
+    /** Textures */
     private BitmapFont displayFont;
     private Texture noteIndicator;
     private Texture noteIndicatorHit;
+    private FilmStrip characterSprite;
 
     public void setBottomLeft(Vector2 V){
         bottomLeftCorner = V;
@@ -77,7 +80,6 @@ public class BandMember {
     public float getHitY(){
         return hitY;
     }
-
 
     /**
      * Number of lines this band member has
@@ -395,6 +397,13 @@ public class BandMember {
                 0.0f, scale, scale);
     }
 
+    public void drawCharacterSprite(GameCanvas canvas) {
+        float scale = (bottomLeftCorner.y*4/5)/characterSprite.getRegionHeight();
+        float trueHeight = scale*characterSprite.getRegionHeight();
+        canvas.draw(characterSprite, Color.WHITE, characterSprite.getRegionWidth() / 2, characterSprite.getRegionY() / 2,
+                bottomLeftCorner.x + width/10 + scale * characterSprite.getRegionWidth() / 2 + 20, (bottomLeftCorner.y - trueHeight)/2, 0.0f, scale, scale);
+    }
+
     /**
      * Draw separation lines to divide each line within this lane
      */
@@ -417,5 +426,9 @@ public class BandMember {
     public void setIndicatorTextures(Texture texture, Texture textureHit) {
         noteIndicator = texture;
         noteIndicatorHit = textureHit;
+    }
+
+    public void setCharacterTexture(FilmStrip characterSprite) {
+        this.characterSprite = characterSprite;
     }
 }

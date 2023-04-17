@@ -232,7 +232,8 @@ public class GameMode implements Screen {
 				o.draw(canvas);
 			}
 			for(BandMember bandMember : gameplayController.level.getBandMembers()){
-				//Draw the competency bar
+				//Draw the band member sprite and competency bar
+				bandMember.drawCharacterSprite(canvas);
 				bandMember.drawHPBar(canvas);
 			}
 			// draw the countdown
