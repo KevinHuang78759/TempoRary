@@ -275,26 +275,29 @@ public class Note{
 	 */
 	public void draw(GameCanvas canvas, float widthConfine, float heightConfine) {
 		//Calculate a scale such that the entire sprite fits within both confines, but does not get distorted
-		float scale = Math.max(widthConfine/w, heightConfine/h);
+		float scale = Math.min(widthConfine/w, heightConfine/h);
+
 		if(nt == NoteType.HELD){
 			//The tail should be about half the width of the actual note assets
 			tail_thickness = widthConfine/2f;
 			//Set the animation frame properly
 			trailAnimator.setFrame((int)curTrailFrame);
 			endAnimator.setFrame((int)curEndFrame);
+			float trailScale = tail_thickness/trailWidth;
 			//Start at the bottom location, then draw until we reach the top
 			float cury = by;
-			//This for loop is cursed, but its really a while loop
-			for (;cury < y - trailHeight*tail_thickness/trailWidth; cury += trailHeight*tail_thickness/trailWidth){
+			//This for loop is cursed, but it's really a while loop
+			for (;cury < y - (trailHeight*tail_thickness/trailWidth); cury += trailHeight*tail_thickness/trailWidth){
 				canvas.draw(trailAnimator, Color.WHITE, trailOrigin.x, 0, x, cury,
-						0.0f, tail_thickness/trailWidth, tail_thickness/trailWidth);
+						0.0f, trailScale, trailScale);
 			}
-			//We do not want to draw the tail in a way such that it will poke out of the top sprite
+			//We do not want to draw the tail in a way such that it will poke out of the bottom sprite
 			//Therefore, we need to draw only a vertical fraction of our trail asset for the final
 			//segment
-			canvas.drawPartial(trailAnimator, Color.WHITE, trailOrigin.x, 0, x, cury,
-					0f, tail_thickness/trailWidth, tail_thickness/trailWidth,
-					1f,(y - cury)/(trailAnimator.getRegionHeight()*tail_thickness/trailWidth));
+			System.out.println((y - cury)/(trailHeight));
+			canvas.drawPortionFromTop(trailAnimator, new Vector2(x - trailAnimator.getRegionWidth()*trailScale/2, cury),
+					trailWidth*trailScale, trailHeight*trailScale, (y - cury)/(trailHeight));
+
 
 
 			//The head and tail are drawn after the trails to cover up the jagged ends
@@ -308,6 +311,9 @@ public class Note{
 			animator.setFrame((int)animeframe);
 			canvas.draw(animator, Color.WHITE, origin.x, origin.y, x, y,
 					0.0f, scale, scale);
+//			canvas.drawPortionFromTop(animator, new Vector2(x, y),
+//					animator.getRegionWidth()*scale, animator.getRegionHeight()*scale, 0.75f);
+			canvas.drawPortionFromBottom(animator, x,y, 0.5f, scale);
 		}
 	}
 }

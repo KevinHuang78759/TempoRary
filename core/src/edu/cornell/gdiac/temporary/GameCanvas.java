@@ -603,6 +603,50 @@ public class GameCanvas {
 		spriteBatch.setColor(tint);
 		spriteBatch.draw(region,region.getRegionWidth()*xfrac,region.getRegionHeight()*yfrac,local);
 	}
+
+	public void drawPortionFromBottom(TextureRegion textureRegion,
+			float x, float y, float portionToDraw, float scale)
+	{
+		float trueWidth = textureRegion.getRegionWidth()*scale;
+		float trueHeight = textureRegion.getRegionHeight()*scale;
+		spriteBatch.draw(textureRegion.getTexture(),
+				x,
+				y,
+				trueWidth,
+				trueHeight*portionToDraw,
+				0f,
+				portionToDraw,
+				1f,
+				0f);
+	}
+
+	public void drawPortionFromTop(
+			TextureRegion textureRegion,
+			Vector2 position, float width, float height, float portionToDraw)
+	{
+		spriteBatch.draw(textureRegion.getTexture(),
+				position.x,
+				position.y,
+				width,
+				(height * (1-portionToDraw)),
+				textureRegion.getU(),
+				textureRegion.getV2(),
+				textureRegion.getU2(),
+				textureRegion.getV() + (textureRegion.getV2() - textureRegion.getV()) * (portionToDraw)
+				);
+	}
+
+	public void drawSubsection(TextureRegion region, Color tint, float ox, float oy,
+							float x, float y, float angle, float sx, float sy, float xStart, float yStart, float xEnd, float yEnd) {
+		if (!active) {
+			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+			return;
+		}
+
+		computeTransform(ox*xStart,oy*yStart,x,y,angle,sx,sy);
+		spriteBatch.setColor(tint);
+		spriteBatch.draw(region,region.getRegionWidth()*(xEnd - xStart),region.getRegionHeight()*(yEnd - yStart),local);
+	}
 	
 	/**
 	 * Compute the affine transform (and store it in local) for this image.
