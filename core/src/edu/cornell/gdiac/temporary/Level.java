@@ -193,7 +193,7 @@ public class Level {
                 }
                 else {
                     n = new Note(thisNote.getInt("line"), Note.NoteType.HELD, thisNote.getLong("position") - spawnOffset, holdNoteTexture);
-                    n.setHoldTextures(holdTrailTexture,1,holdEndTexture,1, backSplash, frontSplash);
+                    n.setHoldTextures(holdTrailTexture,1,holdEndTexture,1, backSplash, frontSplash, 0.25f);
                     n.setHoldSamples(thisNote.getLong("duration"));
                 }
                 n.setHitSample(thisNote.getInt("position"));
