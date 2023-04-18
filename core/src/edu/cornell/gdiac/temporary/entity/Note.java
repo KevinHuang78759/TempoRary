@@ -318,12 +318,13 @@ public class Note{
 			//Set the animation frame properly
 			trailAnimator.setFrame((int)curTrailFrame);
 			endAnimator.setFrame((int)curEndFrame);
-			float trailScale = tailThickness /trailWidth;
+			float trailScale = tailThickness / trailWidth;
 			//Start at the bottom location, then draw until we reach the top
 			float startY = holdMiddleBottomY + trailHeight*trailScale*0.5f;
 			float numSegments = ((y - holdMiddleBottomY)/(trailHeight*trailScale));
 			for (int i = 0; i < (int)numSegments; ++i) {
 				float drawY = startY + i*trailHeight*trailScale;
+				// only draw if the Y for the trail is not past the hold note bottom
 				if (drawY > bottomY)
 					canvas.draw(trailAnimator, Color.WHITE, trailOrigin.x, trailOrigin.y, x, drawY, 0f, trailScale, trailScale);
 			}

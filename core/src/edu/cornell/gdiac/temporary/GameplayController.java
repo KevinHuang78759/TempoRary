@@ -397,6 +397,8 @@ public class GameplayController {
 				spawnHitEffect(note.getHitStatus(), note.getX(), spawnEffectY);
 				if (note.getLine() != -1) hitReg[note.getLine()] = true;
 				note.setDestroyed(destroy);
+				// move the note to where the indicator is
+				note.setBottomY(level.getBandMembers()[0].getHitY());
 			}
 			else {
 				// lose some competency since you played a bit off beat
@@ -477,8 +479,9 @@ public class GameplayController {
 					n.setHolding(false);
 				}
 				// destroy if the note head has gone past (will only be true while you're holding)
-				// TODO: do this by sample and physical space conversion
-//				if (n.getBottomY() > n.getY()) n.setDestroyed(true);
+				if (((currentSample - this.offset) - (n.getHitSample() + n.getHoldSamples())) > baseLeniency && n.getHolding()) {
+					n.setDestroyed(true);
+				}
 			}
 		}
 	}
