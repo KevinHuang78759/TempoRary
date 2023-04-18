@@ -386,8 +386,8 @@ public class GameplayController {
 				: Math.abs(adjustedPosition - note.getHitSample());
 
 		// check if note was hit or on beat
-		if(dist < 25000) {
-			if (dist < 18000) {
+		if(dist < 15000) {
+			if (dist < 10000) {
 				//If so, destroy the note and set a positive hit status. Also set that we
 				//have registered a hit for this line for this click. This ensures that
 				//We do not have a single hit count for two notes that are close together
@@ -470,9 +470,11 @@ public class GameplayController {
 				if(triggers[n.getLine()] && !hitReg[n.getLine()]){
 					checkHit(n, currentSample, 4, 2, -1, n.getBottomY(),false, hitReg, false);
 				}
-				//check if we lifted close to the end
-				if(lifted[n.getLine()]){
-					checkHit(n, currentSample, 4, 2, -1, n.getY(),true, hitReg, true);
+				//check if we lifted close to the end (we only check if we ended up holding the note in the first place)
+				if(lifted[n.getLine()] && n.getHolding()){
+					checkHit(n, currentSample, 4, 2, -1, n.getBottomY(),true, hitReg, true);
+					// always destroy (if you are already holding)
+					if (n.getHolding()) n.setDestroyed(true);
 					n.setHolding(false);
 				}
 			}

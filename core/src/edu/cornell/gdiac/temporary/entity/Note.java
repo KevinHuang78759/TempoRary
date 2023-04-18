@@ -88,7 +88,6 @@ public class Note{
 	private float holdingAnimationSpeed;
 	private float holdingAnimationFrames;
 
-
 	public enum NoteType {
 		SWITCH,
 		HELD,
@@ -270,8 +269,6 @@ public class Note{
 			// advance holding animation only if holding
 			if (holding) {
 				holdingAnimationFrames += holdingAnimationSpeed;
-				System.out.println(holdingAnimationFrames);
-				System.out.println(holdingAnimationSpeed);
 				if (holdingAnimationFrames >= 19) {
 						holdingAnimationFrames -= 19;
 				}
@@ -303,7 +300,7 @@ public class Note{
 			frontSplash.setFrame((int) holdingAnimationFrames);
 			if (holding)
 				canvas.draw(backSplash, Color.WHITE, backSplash.getRegionWidth() / 2, backSplash.getRegionHeight() / 2,
-					x, by + animator.getRegionHeight() / 2 * scale, 0.0f, scale * 6, scale * 6);
+					x - 10, by + animator.getRegionHeight() / 2 * scale + 25, 0.0f, scale * 6, scale * 6);
 			//The tail should be about half the width of the actual note assets
 			tail_thickness = widthConfine/2f;
 			//Set the animation frame properly
@@ -400,7 +397,7 @@ public class Note{
 
 			if (holding)
 				canvas.draw(frontSplash, Color.WHITE, frontSplash.getRegionWidth() / 2,frontSplash.getRegionHeight() / 2,
-					x, by +  animator.getRegionHeight() / 2 * scale, 0.0f, scale * 6, scale * 6);
+					x - 10, by +  animator.getRegionHeight() / 2 * scale + 25, 0.0f, scale * 6, scale * 6);
 		}
 		else{
 			animator.setFrame((int)animeframe);
