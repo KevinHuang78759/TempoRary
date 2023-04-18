@@ -1,6 +1,9 @@
 {
 	"textures": {
         "background": "images/background.png",
+        "concert-background": "images/backgrounds/background_temp_concert_1.png",
+        "street-background": "images/backgrounds/background_temp_streets_1.png",
+        "cafe-background": "images/backgrounds/background_temp_cafe_1.png",
         "switch":    "images/switch.png",
         "hit":      "images/press.png",
         "hold-start":      "images/hold_note_bottom.png",
