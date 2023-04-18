@@ -263,18 +263,16 @@ public class BandMember {
     // DRAWING METHODS
 
     /**
-     * Draw the hit bar in a certain color according to if we triggered the line. Pass in an array for the active
-     * lane
-     * also draw the keyBind
+     * Draw the indicator in a certain color according to if we triggered the line. Pass in an array for the active lane
      */
-    public void drawHitBar(GameCanvas canvas, boolean[] hits){
+    public void drawIndicator(GameCanvas canvas, boolean[] hits){
         //If we get passed an array we must draw 4 hit bars
         float scale = NOTE_SIZE_SCALE*(width/4)/noteIndicatorHit.getWidth();
         for(int i = 0; i < numLines; ++i){
             canvas.draw(hits[i] ? noteIndicatorHit : noteIndicator, Color.WHITE, noteIndicatorHit.getWidth() / 2, noteIndicatorHit.getHeight() / 2,
                     ((bottomLeftCorner.x + i * width/numLines) + (bottomLeftCorner.x +(i+1) * width/numLines)) / 2 - 5, hitY,
                     0.0f, scale, scale);
-            canvas.drawText(InputController.triggerKeyBinds()[i], displayFont, (bottomLeftCorner.x + i * width/numLines + bottomLeftCorner.x +(i+1) * width/numLines) / 2, hitY - 80);
+//            canvas.drawText(InputController.triggerKeyBinds()[i], displayFont, (bottomLeftCorner.x + i * width/numLines + bottomLeftCorner.x +(i+1) * width/numLines) / 2, hitY - 80);
         }
     }
 
@@ -282,12 +280,12 @@ public class BandMember {
      * Draw the hit bar in a certain color according to if we triggered the line. Pass in a value for a switchable lane
      * also draw the keyBind
      */
-    public void drawHitBar(GameCanvas canvas, boolean hit, int i){
+    public void drawIndicator(GameCanvas canvas, boolean hit, int i){
        float scale = NOTE_SIZE_SCALE*width/noteIndicatorHit.getWidth();
         canvas.draw(hit ? noteIndicatorHit : noteIndicator, Color.WHITE, noteIndicatorHit.getWidth() / 2, noteIndicatorHit.getHeight() / 2,
                 bottomLeftCorner.x + width/2, hitY,
                 0.0f,scale, scale);
-        canvas.drawText(InputController.switchKeyBinds()[i], displayFont, ( bottomLeftCorner.x + bottomLeftCorner.x + width) / 2f, hitY - 80);
+//        canvas.drawText(InputController.switchKeyBinds()[i], displayFont, ( bottomLeftCorner.x + bottomLeftCorner.x + width) / 2f, hitY - 80);
     }
 
     /**

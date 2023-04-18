@@ -268,7 +268,7 @@ public class Note{
 		if (animeframe >= NUM_ANIM_FRAMES) {
 			animeframe -= NUM_ANIM_FRAMES;
 		}
-		if(nt == NoteType.HELD) {
+		if (nt == NoteType.HELD) {
 			curTrailFrame += ANIMATION_SPEED;
 			if(curTrailFrame >= trailFrames){
 				curTrailFrame -= trailFrames;

@@ -1,6 +1,5 @@
 package edu.cornell.gdiac.temporary;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
@@ -349,12 +348,12 @@ public class Level {
             if(active == i || goal == i){
                 bandMembers[i].drawHitNotes(canvas, sample, canvas.getHeight());
                 bandMembers[i].drawLineSeps(canvas, sepLine);
-                bandMembers[i].drawHitBar(canvas, triggers);
+                bandMembers[i].drawIndicator(canvas, triggers);
             }
             //Otherwise just draw the switch notes, and we only have 1 hit bar to draw
             else{
                 bandMembers[i].drawSwitchNotes(canvas, sample, canvas.getHeight());
-                bandMembers[i].drawHitBar(canvas, switches[i], i);
+                bandMembers[i].drawIndicator(canvas, switches[i], i);
             }
         }
 
