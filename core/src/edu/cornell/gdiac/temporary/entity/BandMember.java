@@ -173,6 +173,7 @@ public class BandMember {
     public int getCurComp(){
         return curComp;
     }
+
     /**
      * Constructor
      */
@@ -306,6 +307,7 @@ public class BandMember {
 
     /**
      * Draw the held and beat notes
+     * Updates the notes
      */
     public void drawHitNotes(GameCanvas canvas, long currentSample, float spawnY){
         for(Note n : hitNotes){
@@ -314,7 +316,8 @@ public class BandMember {
                 n.setX(bottomLeftCorner.x + width/(2*numLines) + n.getLine()*(width/numLines));
                 if(n.getNoteType() == Note.NoteType.HELD){
                     //Y coordinates based on formula mentioned in discord.
-                    n.setBottomY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample()) *(hitY - spawnY));
+                    if (!n.getHolding())
+                        n.setBottomY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample()) *(hitY - spawnY));
                     n.setY(spawnY + Math.max(0, (float)(currentSample - n.getStartSample() - n.getHoldSamples())/(n.getHitSample() - n.getStartSample()))*(hitY - spawnY));
                 }
                 else{
