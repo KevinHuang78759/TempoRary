@@ -5,7 +5,7 @@
         "hit":      "images/press.png",
         "hold-start":      "images/hold_note_bottom.png",
         "hold-trail":      "images/trailTexture.png",
-        "hold-end":      "images/holt_note_top.png",
+        "hold-end":      "images/hold_note_top.png",
         "star":     "images/note_hit_effect.png",
         "hp-bar": "images/HPbarPNG.png",
         "catnote": "images/catnote.png",

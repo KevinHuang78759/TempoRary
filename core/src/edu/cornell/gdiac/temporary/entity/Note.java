@@ -285,18 +285,15 @@ public class Note{
 			endAnimator.setFrame((int)curEndFrame);
 			float trailScale = tail_thickness/trailWidth;
 			//Start at the bottom location, then draw until we reach the top
-			float cury = by;
-			//This for loop is cursed, but it's really a while loop
-			for (;cury < y - (trailHeight*tail_thickness/trailWidth); cury += trailHeight*tail_thickness/trailWidth){
-				canvas.draw(trailAnimator, Color.WHITE, trailOrigin.x, 0, x, cury,
-						0.0f, trailScale, trailScale);
+			float starty = by + trailHeight*trailScale*0.5f;
+			float numSegments = ((y - by)/(trailHeight*trailScale));
+			for(int i = 0; i < (int)numSegments; ++i){
+				canvas.draw(trailAnimator, Color.WHITE, trailOrigin.x, trailOrigin.y, x, starty + i*trailHeight*trailScale, 0f, trailScale, trailScale);
 			}
 			//We do not want to draw the tail in a way such that it will poke out of the bottom sprite
 			//Therefore, we need to draw only a vertical fraction of our trail asset for the final
 			//segment
-			System.out.println((y - cury)/(trailHeight));
-			canvas.drawPortionFromTop(trailAnimator, new Vector2(x - trailAnimator.getRegionWidth()*trailScale/2, cury),
-					trailWidth*trailScale, trailHeight*trailScale, (y - cury)/(trailHeight));
+			canvas.drawSubsection(trailAnimator, x, starty + ((int)numSegments)*trailHeight*trailScale, trailScale, 0f, 1f, 0f, numSegments - (int)numSegments);
 
 
 
@@ -311,9 +308,6 @@ public class Note{
 			animator.setFrame((int)animeframe);
 			canvas.draw(animator, Color.WHITE, origin.x, origin.y, x, y,
 					0.0f, scale, scale);
-//			canvas.drawPortionFromTop(animator, new Vector2(x, y),
-//					animator.getRegionWidth()*scale, animator.getRegionHeight()*scale, 0.75f);
-			canvas.drawPortionFromBottom(animator, x,y, 0.5f, scale);
 		}
 	}
 }

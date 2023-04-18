@@ -264,7 +264,7 @@ public class BandMember {
      */
     public void drawHitBar(GameCanvas canvas, boolean[] hits){
         //If we get passed an array we must draw 4 hit bars
-        float scale = 0.8f*(width/4)/noteIndicatorHit.getWidth();
+        float scale = 0.7f*(width/4)/noteIndicatorHit.getWidth();
         for(int i = 0; i < numLines; ++i){
             canvas.draw(hits[i] ? noteIndicatorHit : noteIndicator, Color.WHITE, noteIndicatorHit.getWidth() / 2, noteIndicatorHit.getHeight() / 2,
                     ((bottomLeftCorner.x + i * width/numLines) + (bottomLeftCorner.x +(i+1) * width/numLines)) / 2 - 5, hitY,
@@ -278,7 +278,7 @@ public class BandMember {
      * also draw the keyBind
      */
     public void drawHitBar(GameCanvas canvas, boolean hit, int i){
-       float scale = 0.8f*width/noteIndicatorHit.getWidth();
+       float scale = 0.7f*width/noteIndicatorHit.getWidth();
         canvas.draw(hit ? noteIndicatorHit : noteIndicator, Color.WHITE, noteIndicatorHit.getWidth() / 2, noteIndicatorHit.getHeight() / 2,
                 bottomLeftCorner.x + width/2, hitY,
                 0.0f,scale, scale);
@@ -297,7 +297,7 @@ public class BandMember {
                 //Calculate the spawning y coordinate to be high enough such that none of the note is
                 //visible
                 n.setY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample()) *(hitY - spawnY));
-                n.draw(canvas, 0.8f*width, 0.8f*width);
+                n.draw(canvas, 0.7f*width, 0.7f*width);
             }
         }
     }
@@ -319,7 +319,7 @@ public class BandMember {
                     n.setY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample())*(hitY - spawnY));
                 }
 
-                n.draw(canvas, 0.8f*width/(numLines), 0.8f*width/(numLines));
+                n.draw(canvas, 0.7f*width/(numLines), 0.7f*width/(numLines));
             }
 
         }
