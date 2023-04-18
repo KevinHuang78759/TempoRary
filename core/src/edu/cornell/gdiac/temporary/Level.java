@@ -268,10 +268,10 @@ public class Level {
     }
 
     /**
-     * Returns true if the player has won this level
+     * Returns true if the player has unlocked this level
      * @return
      */
-    public boolean hasWon(){return true;};
+    public boolean hasUnlocked(){return true;};
 
     /**
      * this draws everything the level needs to display on the given canvas

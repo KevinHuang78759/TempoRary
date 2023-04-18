@@ -52,6 +52,8 @@ public class GDXRoot extends Game implements ScreenListener {
 	/** Player mode for getting calibration (CONTROLLER CLASS) */
 	private CalibrationMode calibration;
 
+	private LevelSelect levelscreen;
+
 
 	/**
 	 * Creates a new game from the configuration settings.
@@ -77,6 +79,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			throw new RuntimeException(e);
 		}
 		calibration = new CalibrationMode(canvas);
+		levelscreen = new LevelSelect("assets.json", canvas);
 
 		loading.setScreenListener(this);
 		setScreen(loading);
@@ -140,11 +143,16 @@ public class GDXRoot extends Game implements ScreenListener {
 		} else if (screen == loading) {
 			directory = loading.getAssets();
 			if (loading.getPressState() == LoadingMode.TO_GAME) {
-				playing.setScreenListener(this);
-				playing.readLevel(directory);
-				playing.populate(directory);
-				playing.initializeOffset(calibration.getOffset());
-				setScreen(playing);
+//				playing.setScreenListener(this);
+//				playing.readLevel(directory);
+//				playing.populate(directory);
+//				playing.initializeOffset(calibration.getOffset());
+//				setScreen(playing);
+
+				levelscreen.setScreenListener(this);
+				levelscreen.loadLevels();
+				setScreen(levelscreen);
+
 			} else if (screen == loading && loading.getPressState() == LoadingMode.TO_LEVEL_EDITOR) {
 				editing.setScreenListener(this);
 				editing.populate(directory);
