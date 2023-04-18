@@ -322,9 +322,6 @@ public class Level {
         //first we get the sample, since this determines where the notes will be drawn
         long sample = getCurrentSample();
         for(int i = 0; i < bandMembers.length; ++i){
-            //Draw the border of each band member
-            bandMembers[i].drawBorder(canvas);
-
             //If we are the goal of the active lane we need to draw separation lines and held/beat notes
             //We also need to draw a separate hit bar for each line
             if(active == i || goal == i){
@@ -337,6 +334,8 @@ public class Level {
                 bandMembers[i].drawSwitchNotes(canvas, sample, canvas.getHeight());
                 bandMembers[i].drawIndicator(canvas, switches[i], i);
             }
+            //Draw the border of each band member
+            bandMembers[i].drawBorder(canvas);
         }
 
     }

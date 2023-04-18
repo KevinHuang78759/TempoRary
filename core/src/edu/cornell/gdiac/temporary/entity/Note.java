@@ -295,6 +295,7 @@ public class Note{
 	public void setTailThickness(float t){
 		tailThickness = t;
 	}
+
 	/**
 	 * Draws this note to the canvas under a width and height restriction
 	 * This will draw the image in the original scale, and will scale the image down by the smallest possible factor
@@ -332,7 +333,7 @@ public class Note{
 			//We do not want to draw the tail in a way such that it will poke out of the bottom sprite
 			//Therefore, we need to draw only a vertical fraction of our trail asset for the final
 			//segment
-			canvas.drawSubsection(trailAnimator, x, startY + ((int)numSegments)*trailHeight*trailScale, trailScale, 0f, 1f, 0f, numSegments - (int)numSegments);
+			canvas.drawSubsection(trailAnimator, Color.WHITE, x, startY + ((int)numSegments)*trailHeight*trailScale, trailScale, 0f, 1f, 0f, numSegments - (int)numSegments);
 
 			//The head and tail are drawn after the trails to cover up the jagged ends
 			canvas.draw(animator, Color.WHITE, origin.x, origin.y, x, bottomY,

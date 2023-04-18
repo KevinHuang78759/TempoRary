@@ -21,6 +21,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.temporary.entity.BandMember;
 import edu.cornell.gdiac.temporary.entity.Particle;
+import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.ScreenListener;
 
 /**
@@ -45,7 +46,7 @@ public class GameMode implements Screen {
 	}
 
 	// Loaded assets
-	private Texture background;
+	private FilmStrip background;
 	/** The font for giving messages to the player */
 	private BitmapFont displayFont;
 
@@ -134,7 +135,7 @@ public class GameMode implements Screen {
 	 * @param directory 	Reference to the asset directory.
 	 */
 	public void populate(AssetDirectory directory) {
-		background  = directory.getEntry("street-background", Texture.class);
+		background  = new FilmStrip(directory.getEntry("street-background", Texture.class), 1, 1);
 		displayFont = directory.getEntry("times",BitmapFont.class);
 		gameplayController.populate(directory);
 	}
@@ -215,7 +216,7 @@ public class GameMode implements Screen {
 	private void draw(long sample) {
 		canvas.begin();
 		//First draw the background
-		canvas.drawBackground(background,0,0);
+		canvas.drawBackground(background.getTexture(),0,0);
 		if (gameState == GameState.OVER) {
 			//Draw game over text
 			displayFont.setColor(Color.NAVY);
@@ -232,11 +233,12 @@ public class GameMode implements Screen {
 				o.draw(canvas);
 			}
 
-			//obtain background color
-			Color bkgC = new Color(237f/255f, 224f/255f, 1f, 1.0f);
-			//draw two rectangles to cover up spawning/disappearing areas of notes and switches
-			canvas.drawRect(0, gameplayController.TOPBOUND, canvas.getWidth(), canvas.getHeight(), bkgC, true);
-			canvas.drawRect(0, 0, canvas.getWidth(), gameplayController.BOTTOMBOUND, bkgC, true);
+			//draw two partial backgrounds to cover up spawning/disappearing areas of notes and switches
+			canvas.drawSubsection(background, Color.WHITE, canvas.getWidth() / 2, canvas.getHeight() / 2, 1,
+					0, 1, gameplayController.TOPBOUND / background.getRegionHeight(), 1);
+			canvas.drawSubsection(background, Color.WHITE, canvas.getWidth() / 2, canvas.getHeight() / 2, 1,
+					0, 1, 0, gameplayController.BOTTOMBOUND / background.getRegionHeight());
+
 			for(BandMember bandMember : gameplayController.level.getBandMembers()){
 				//Draw the band member sprite and competency bar
 				bandMember.drawCharacterSprite(canvas);
