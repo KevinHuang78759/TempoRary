@@ -133,13 +133,24 @@ public class Note{
 	public void setY(float t){
 		y = t;
 	}
-	private float by;
+
+	private float holdMiddleBottomY;
+	public float getHoldMiddleBottomY() {
+		return holdMiddleBottomY;
+	}
+	public void setHoldMiddleBottomY(float holdMiddleBottomY) {
+		this.holdMiddleBottomY = holdMiddleBottomY;
+	}
+
+	/** If a hold note, represents the Y value of the bottom part */
+	private float bottomY;
 	public float getBottomY(){
-		return by;
+		return bottomY;
 	}
 	public void setBottomY(float y){
-		by = y;
+		bottomY = y;
 	}
+
 	private boolean destroyed;
 	public boolean isDestroyed(){
 		return destroyed;
@@ -276,13 +287,13 @@ public class Note{
 		}
 	}
 
-	private float tail_thickness = 5f;
+	private float tailThickness = 5f;
 
-	public float getTail_thickness(){
-		return tail_thickness;
+	public float getTailThickness(){
+		return tailThickness;
 	}
-	public void setTail_thickness(float t){
-		tail_thickness = t;
+	public void setTailThickness(float t){
+		tailThickness = t;
 	}
 	/**
 	 * Draws this note to the canvas under a width and height restriction
@@ -301,33 +312,35 @@ public class Note{
 			frontSplash.setFrame((int) holdingAnimationFrames);
 			if (holding)
 				canvas.draw(backSplash, Color.WHITE, backSplash.getRegionWidth() / 2, backSplash.getRegionHeight() / 2,
-					x, by + animator.getRegionHeight()* scale + 50, 0.0f, splashScale, splashScale);
+					x, bottomY + animator.getRegionHeight()* scale + 50, 0.0f, splashScale, splashScale);
 			//The tail should be about half the width of the actual note assets
-			tail_thickness = widthConfine/2f;
+			tailThickness = widthConfine/1.5f;
 			//Set the animation frame properly
 			trailAnimator.setFrame((int)curTrailFrame);
 			endAnimator.setFrame((int)curEndFrame);
-			float trailScale = tail_thickness/trailWidth;
+			float trailScale = tailThickness /trailWidth;
 			//Start at the bottom location, then draw until we reach the top
-			float starty = by + trailHeight*trailScale*0.5f;
-			float numSegments = ((y - by)/(trailHeight*trailScale));
-			for(int i = 0; i < (int)numSegments; ++i){
-				canvas.draw(trailAnimator, Color.WHITE, trailOrigin.x, trailOrigin.y, x, starty + i*trailHeight*trailScale, 0f, trailScale, trailScale);
+			float startY = holdMiddleBottomY + trailHeight*trailScale*0.5f;
+			float numSegments = ((y - holdMiddleBottomY)/(trailHeight*trailScale));
+			for (int i = 0; i < (int)numSegments; ++i) {
+				float drawY = startY + i*trailHeight*trailScale;
+				if (drawY > bottomY)
+					canvas.draw(trailAnimator, Color.WHITE, trailOrigin.x, trailOrigin.y, x, drawY, 0f, trailScale, trailScale);
 			}
 
 			//We do not want to draw the tail in a way such that it will poke out of the bottom sprite
 			//Therefore, we need to draw only a vertical fraction of our trail asset for the final
 			//segment
-			canvas.drawSubsection(trailAnimator, x, starty + ((int)numSegments)*trailHeight*trailScale, trailScale, 0f, 1f, 0f, numSegments - (int)numSegments);
+			canvas.drawSubsection(trailAnimator, x, startY + ((int)numSegments)*trailHeight*trailScale, trailScale, 0f, 1f, 0f, numSegments - (int)numSegments);
 
 			//The head and tail are drawn after the trails to cover up the jagged ends
-			canvas.draw(animator, Color.WHITE, origin.x, origin.y, x, by,
+			canvas.draw(animator, Color.WHITE, origin.x, origin.y, x, bottomY,
 					0.0f, scale, scale);
 			canvas.draw(endAnimator, Color.WHITE, endOrigin.x, endOrigin.y, x, y,
 					0.0f, scale, scale);
 			if (holding)
 				canvas.draw(frontSplash, Color.WHITE, frontSplash.getRegionWidth() / 2,frontSplash.getRegionHeight() / 2,
-					x, by +  animator.getRegionHeight() * scale + 50, 0.0f, splashScale, splashScale);
+					x, bottomY +  animator.getRegionHeight() * scale + 50, 0.0f, splashScale, splashScale);
 		}
 		else{
 			animator.setFrame((int)animeframe);

@@ -465,7 +465,6 @@ public class GameplayController {
 			}
 			else{
 				// HOLD NOTE
-				// TODO: add the concept of holding the note
 				//Check if we hit the trigger down close enough to the head
 				if(triggers[n.getLine()] && !hitReg[n.getLine()]){
 					checkHit(n, currentSample, 4, 2, -1, n.getBottomY(),false, hitReg, false);
@@ -473,10 +472,13 @@ public class GameplayController {
 				//check if we lifted close to the end (we only check if we ended up holding the note in the first place)
 				if(lifted[n.getLine()] && n.getHolding()){
 					checkHit(n, currentSample, 4, 2, -1, n.getBottomY(),true, hitReg, true);
-					// always destroy (if you are already holding)
+					// destroy (if you are already holding)
 					if (n.getHolding()) n.setDestroyed(true);
 					n.setHolding(false);
 				}
+				// destroy if the note head has gone past (will only be true while you're holding)
+				// TODO: do this by sample and physical space conversion
+//				if (n.getBottomY() > n.getY()) n.setDestroyed(true);
 			}
 		}
 	}

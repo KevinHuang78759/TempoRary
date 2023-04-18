@@ -318,8 +318,10 @@ public class BandMember {
                 n.setX(bottomLeftCorner.x + width/(2*numLines) + n.getLine()*(width/numLines));
                 if(n.getNoteType() == Note.NoteType.HELD){
                     //Y coordinates based on formula mentioned in discord.
+                    float bottomYCalc = spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample()) *(hitY - spawnY);
                     if (!n.getHolding())
-                        n.setBottomY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample()) *(hitY - spawnY));
+                        n.setBottomY(bottomYCalc);
+                    n.setHoldMiddleBottomY(bottomYCalc);
                     n.setY(spawnY + Math.max(0, (float)(currentSample - n.getStartSample() - n.getHoldSamples())/(n.getHitSample() - n.getStartSample()))*(hitY - spawnY));
                 }
                 else{
