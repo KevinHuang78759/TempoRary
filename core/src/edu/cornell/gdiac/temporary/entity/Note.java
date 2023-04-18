@@ -309,9 +309,9 @@ public class Note{
 			trailAnimator.setFrame((int)curTrailFrame);
 			endAnimator.setFrame((int)curEndFrame);
 			//Start at the bottom location, then draw until we reach the top
-			float cury = by;
+			float cury;
 			//This for loop is cursed, but its really a while loop
-			for (;cury < y - trailHeight*tail_thickness/trailWidth; cury += trailHeight*tail_thickness/trailWidth){
+			for (cury = by; cury < y - trailHeight*tail_thickness/trailWidth; cury += trailHeight*tail_thickness/trailWidth){
 				canvas.draw(trailAnimator, Color.WHITE, trailOrigin.x, 0, x, cury,
 						0.0f, tail_thickness/trailWidth, tail_thickness/trailWidth);
 			}
