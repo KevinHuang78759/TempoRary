@@ -133,6 +133,16 @@ public class Note{
 	public void setY(float t){
 		y = t;
 	}
+
+	private float holdMiddleBottomY;
+	public float getHoldMiddleBottomY() {
+		return holdMiddleBottomY;
+	}
+	public void setHoldMiddleBottomY(float holdMiddleBottomY) {
+		this.holdMiddleBottomY = holdMiddleBottomY;
+	}
+
+	/** If a hold note, represents the Y value of the bottom part */
 	private float by;
 	public float getBottomY(){
 		return by;
@@ -140,6 +150,7 @@ public class Note{
 	public void setBottomY(float y){
 		by = y;
 	}
+
 	private boolean destroyed;
 	public boolean isDestroyed(){
 		return destroyed;
