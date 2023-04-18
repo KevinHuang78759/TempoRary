@@ -162,7 +162,7 @@ public class Level {
                 }
                 else {
                     n = new Note(thisNote.getInt("line"), Note.NoteType.HELD, thisNote.getLong("position") - spawnOffset, holdNoteTexture);
-                    n.setHoldTextures(holdTrailTexture,1,holdEndTexture,1, backSplash, frontSplash, 0.25f);
+                    n.setHoldTextures(holdTrailTexture,1,holdEndTexture,1, backSplash, frontSplash, getAnimationRateFromBPM(bpm));
                     n.setHoldSamples(thisNote.getLong("duration"));
                 }
                 n.setHitSample(thisNote.getInt("position"));
@@ -191,6 +191,19 @@ public class Level {
             }
 //            System.out.println(System.nanoTime() - t);
         }
+    }
+
+    /**
+     * Takes BPM and converts it to rate of animation (as all animations should be on beat)
+     * @param bpm BPM of song in level
+     * @return animation rate
+     */
+    public float getAnimationRateFromBPM(int bpm) {
+        // convert to beats per second
+        // change animation every ... frames (assuming 60 frames per second)
+        // represents value we add per frame
+        // multiply by two so it's not too slow
+        return bpm * 2 / 60f / 60f;
     }
 
     /**
