@@ -4,7 +4,7 @@
         "switch":    "images/switch.png",
         "hit":      "images/press.png",
         "hold-start":      "images/hold_note_bottom.png",
-        "hold-trail":      "images/trailTexture.png",
+        "hold-trail":      "images/hold_subsection_.png",
         "hold-end":      "images/hold_note_top.png",
         "star":     "images/note_hit_effect.png",
         "hp-bar": "images/HPbarPNG.png",
