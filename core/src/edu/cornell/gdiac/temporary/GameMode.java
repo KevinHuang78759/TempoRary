@@ -134,7 +134,7 @@ public class GameMode implements Screen {
 	 * @param directory 	Reference to the asset directory.
 	 */
 	public void populate(AssetDirectory directory) {
-		background  = directory.getEntry("background",Texture.class);
+		background  = directory.getEntry("street-background", Texture.class);
 		displayFont = directory.getEntry("times",BitmapFont.class);
 		gameplayController.populate(directory);
 	}
