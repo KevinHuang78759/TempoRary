@@ -257,7 +257,7 @@ public class Note{
 		if (animeframe >= NUM_ANIM_FRAMES) {
 			animeframe -= NUM_ANIM_FRAMES;
 		}
-		if(nt == NoteType.HELD) {
+		if (nt == NoteType.HELD) {
 			curTrailFrame += ANIMATION_SPEED;
 			if(curTrailFrame >= trailFrames){
 				curTrailFrame -= trailFrames;
@@ -293,7 +293,8 @@ public class Note{
 	 */
 	public void draw(GameCanvas canvas, float widthConfine, float heightConfine) {
 		//Calculate a scale such that the entire sprite fits within both confines, but does not get distorted
-		float scale = Math.max(widthConfine/w, heightConfine/h);
+		float scale = Math.min(widthConfine/w, heightConfine/h);
+
 		if(nt == NoteType.HELD){
 			backSplash.setFrame((int) holdingAnimationFrames);
 			frontSplash.setFrame((int) holdingAnimationFrames);
@@ -305,19 +306,18 @@ public class Note{
 			//Set the animation frame properly
 			trailAnimator.setFrame((int)curTrailFrame);
 			endAnimator.setFrame((int)curEndFrame);
+			float trailScale = tail_thickness/trailWidth;
 			//Start at the bottom location, then draw until we reach the top
-			float cury;
-			//This for loop is cursed, but its really a while loop
-			for (cury = by; cury < y - trailHeight*tail_thickness/trailWidth; cury += trailHeight*tail_thickness/trailWidth){
-				canvas.draw(trailAnimator, Color.WHITE, trailOrigin.x, 0, x, cury,
-						0.0f, tail_thickness/trailWidth, tail_thickness/trailWidth);
+			float starty = by + trailHeight*trailScale*0.5f;
+			float numSegments = ((y - by)/(trailHeight*trailScale));
+			for(int i = 0; i < (int)numSegments; ++i){
+				canvas.draw(trailAnimator, Color.WHITE, trailOrigin.x, trailOrigin.y, x, starty + i*trailHeight*trailScale, 0f, trailScale, trailScale);
 			}
-			//We do not want to draw the tail in a way such that it will poke out of the top sprite
+			//We do not want to draw the tail in a way such that it will poke out of the bottom sprite
 			//Therefore, we need to draw only a vertical fraction of our trail asset for the final
 			//segment
-			canvas.drawPartial(trailAnimator, Color.WHITE, trailOrigin.x, 0, x, cury,
-					0f, tail_thickness/trailWidth, tail_thickness/trailWidth,
-					1f,(y - cury)/(trailAnimator.getRegionHeight()*tail_thickness/trailWidth));
+			canvas.drawSubsection(trailAnimator, x, starty + ((int)numSegments)*trailHeight*trailScale, trailScale, 0f, 1f, 0f, numSegments - (int)numSegments);
+
 
 			//The head and tail are drawn after the trails to cover up the jagged ends
 			canvas.draw(animator, Color.WHITE, origin.x, origin.y, x, by,
