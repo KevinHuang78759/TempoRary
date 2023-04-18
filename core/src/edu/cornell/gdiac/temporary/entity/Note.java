@@ -294,13 +294,14 @@ public class Note{
 	public void draw(GameCanvas canvas, float widthConfine, float heightConfine, float topbound, float lowbound) {
 		//Calculate a scale such that the entire sprite fits within both confines, but does not get distorted
 		float scale = Math.min(widthConfine/w, heightConfine/h);
+		float splashScale = scale * 3.5f;
 
 		if(nt == NoteType.HELD){
 			backSplash.setFrame((int) holdingAnimationFrames);
 			frontSplash.setFrame((int) holdingAnimationFrames);
 			if (holding)
 				canvas.draw(backSplash, Color.WHITE, backSplash.getRegionWidth() / 2, backSplash.getRegionHeight() / 2,
-					x - 10, by + animator.getRegionHeight() / 2 * scale + 25, 0.0f, scale * 6, scale * 6);
+					x, by + animator.getRegionHeight()* scale + 50, 0.0f, splashScale, splashScale);
 			//The tail should be about half the width of the actual note assets
 			tail_thickness = widthConfine/2f;
 			//Set the animation frame properly
@@ -335,6 +336,7 @@ public class Note{
 
 				}
 			}
+
 			//We do not want to draw the tail in a way such that it will poke out of the bottom sprite
 			//Therefore, we need to draw only a vertical fraction of our trail asset for the final
 			//segment
@@ -356,7 +358,6 @@ public class Note{
 
 			}
 //			canvas.drawSubsection(trailAnimator, x, lastDrawY, trailScale, 0f, 1f, 0f, numSegments - (int)numSegments);
-
 
 			//The head and tail are drawn after the trails to cover up the jagged ends
 			float headHeight = animator.getRegionHeight()*scale;
@@ -397,7 +398,7 @@ public class Note{
 
 			if (holding)
 				canvas.draw(frontSplash, Color.WHITE, frontSplash.getRegionWidth() / 2,frontSplash.getRegionHeight() / 2,
-					x - 10, by +  animator.getRegionHeight() / 2 * scale + 25, 0.0f, scale * 6, scale * 6);
+					x, by +  animator.getRegionHeight() * scale + 50, 0.0f, splashScale, splashScale);
 		}
 		else{
 			animator.setFrame((int)animeframe);
