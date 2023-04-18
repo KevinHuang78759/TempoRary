@@ -295,6 +295,7 @@ public class Note{
 	public void setTail_thickness(float t){
 		tail_thickness = t;
 	}
+
 	/**
 	 * Draws this note to the canvas under a width and height restriction
 	 * This will draw the image in the original scale, and will scale the image down by the smallest possible factor

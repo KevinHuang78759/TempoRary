@@ -586,10 +586,11 @@ public class GameCanvas {
 	 * @param y
 	 * @param scale
 	 */
-	public void drawSubsection(TextureRegion textureRegion,
+	public void drawSubsection(TextureRegion textureRegion, Color tint,
 							   float x, float y, float scale, float xStart, float xEnd, float yStart, float yEnd) {
 		float trueWidth = textureRegion.getRegionWidth() * scale * (xEnd - xStart);
 		float trueHeight = textureRegion.getRegionHeight() * scale * (yEnd - yStart);
+		spriteBatch.setColor(tint);
 		spriteBatch.draw(textureRegion.getTexture(),
 				x - textureRegion.getRegionWidth() * (scale * (0.5f - xStart)),
 				y - textureRegion.getRegionHeight() * (scale * (0.5f - yStart)),
