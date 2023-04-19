@@ -125,7 +125,7 @@ public class LevelSelect implements Screen {
         canvas.begin();
         canvas.drawBackground(background,0,0);
         System.out.println("start draw");
-
+        canvas.drawRect(0, 2, 3, 4, Color.RED, true);
         for (Level l: allLevels){
 
 //            get the album art from json, right now just rectangle
