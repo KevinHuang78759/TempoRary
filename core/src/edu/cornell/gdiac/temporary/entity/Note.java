@@ -287,15 +287,6 @@ public class Note{
 		}
 	}
 
-	private float tailThickness = 5f;
-
-	public float getTailThickness(){
-		return tailThickness;
-	}
-	public void setTailThickness(float t){
-		tailThickness = t;
-	}
-
 	/**
 	 * Draws this note to the canvas under a width and height restriction
 	 * This will draw the image in the original scale, and will scale the image down by the smallest possible factor
@@ -311,11 +302,14 @@ public class Note{
 		if(nt == NoteType.HELD){
 			backSplash.setFrame((int) holdingAnimationFrames);
 			frontSplash.setFrame((int) holdingAnimationFrames);
+
+			// draw back holding sprite
 			if (holding)
 				canvas.draw(backSplash, Color.WHITE, backSplash.getRegionWidth() / 2, backSplash.getRegionHeight() / 2,
 					x, bottomY + animator.getRegionHeight()* scale + 50, 0.0f, splashScale, splashScale);
+
 			//The tail should be about half the width of the actual note assets
-			tailThickness = widthConfine/1.5f;
+			float tailThickness = widthConfine / 1.5f;
 			//Set the animation frame properly
 			trailAnimator.setFrame((int)curTrailFrame);
 			endAnimator.setFrame((int)curEndFrame);
@@ -340,6 +334,8 @@ public class Note{
 					0.0f, scale, scale);
 			canvas.draw(endAnimator, Color.WHITE, endOrigin.x, endOrigin.y, x, y,
 					0.0f, scale, scale);
+
+			// draw front holding sprite
 			if (holding)
 				canvas.draw(frontSplash, Color.WHITE, frontSplash.getRegionWidth() / 2,frontSplash.getRegionHeight() / 2,
 					x, bottomY +  animator.getRegionHeight() * scale + 50, 0.0f, splashScale, splashScale);
