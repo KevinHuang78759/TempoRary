@@ -311,6 +311,8 @@ public class Note{
 		if(nt == NoteType.HELD){
 			backSplash.setFrame((int) holdingAnimationFrames);
 			frontSplash.setFrame((int) holdingAnimationFrames);
+
+			// draw back holding sprite
 			if (holding)
 				canvas.draw(backSplash, Color.WHITE, backSplash.getRegionWidth() / 2, backSplash.getRegionHeight() / 2,
 					x, by + animator.getRegionHeight()* scale + 50, 0.0f, splashScale, splashScale);

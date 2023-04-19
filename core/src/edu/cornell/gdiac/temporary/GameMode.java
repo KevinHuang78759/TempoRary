@@ -46,15 +46,12 @@ public class GameMode implements Screen {
 	}
 
 	// Loaded assets
-	private FilmStrip background;
+	// background images
+	private FilmStrip streetLevelBackground;
 	/** The font for giving messages to the player */
 	private BitmapFont displayFont;
 
 	/// CONSTANTS
-	/** Factor used to compute where we are in scrolling process */
-	private static final float TIME_MODIFIER    = 0.00f;
-	/** Offset for the shell counter message on the screen */
-	private static final float COUNTER_OFFSET   = 5.0f;
 	/** Offset for the game over message on the screen */
 	private static final float GAME_OVER_OFFSET = 40.0f;
 
@@ -104,7 +101,7 @@ public class GameMode implements Screen {
 		gameplayController.setOffset(offset);
 	}
 
-	public void readLevel(AssetDirectory directory){
+	public void readLevel(AssetDirectory directory) {
 		JsonReader jr = new JsonReader();
 		JsonValue levelData = jr.parse(Gdx.files.internal("levels/test2.json"));
 		gameplayController.loadLevel(levelData, directory);
@@ -135,7 +132,7 @@ public class GameMode implements Screen {
 	 * @param directory 	Reference to the asset directory.
 	 */
 	public void populate(AssetDirectory directory) {
-		background  = new FilmStrip(directory.getEntry("street-background", Texture.class), 1, 1);
+		streetLevelBackground = new FilmStrip(directory.getEntry("street-background", Texture.class), 1, 1);
 		displayFont = directory.getEntry("times",BitmapFont.class);
 		gameplayController.populate(directory);
 	}
@@ -213,14 +210,15 @@ public class GameMode implements Screen {
 	 * of using the single render() method that LibGDX does.  We will talk about why we
 	 * prefer this in lecture.
 	 */
-	private void draw(long sample) {
+	private void draw() {
 		canvas.begin();
-		//First draw the background
-		canvas.drawBackground(background.getTexture(),0,0);
+		// First draw the background
+		// TODO: SWITCH BACKGROUND BASED ON LEVEL JSON (may need to move this to a different location)
+		canvas.drawBackground(streetLevelBackground.getTexture(),0,0);
 		if (gameState == GameState.OVER) {
 			//Draw game over text
 			displayFont.setColor(Color.NAVY);
-			canvas.drawTextCentered("Game Over!",displayFont, GAME_OVER_OFFSET+50);
+			canvas.drawTextCentered("Game Over!", displayFont, GAME_OVER_OFFSET+50);
 			displayFont.setColor(Color.NAVY);
 			canvas.drawTextCentered("Press ENTER to Restart", displayFont, 0);
 		}
@@ -270,7 +268,7 @@ public class GameMode implements Screen {
 	public void render(float delta) {
 		if (active) {
 			update(delta);
-			draw(0);
+			draw();
 			if (inputController.didExit() && listener != null) {
 				listener.exitScreen(this, 0);
 			}
