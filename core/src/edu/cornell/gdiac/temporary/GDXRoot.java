@@ -79,7 +79,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			throw new RuntimeException(e);
 		}
 		calibration = new CalibrationMode(canvas);
-		levelscreen = new LevelSelect("assets.json", canvas);
+		levelscreen = new LevelSelect("loading.json", canvas);
 
 		loading.setScreenListener(this);
 		setScreen(loading);
@@ -150,7 +150,7 @@ public class GDXRoot extends Game implements ScreenListener {
 //				setScreen(playing);
 
 				levelscreen.setScreenListener(this);
-				levelscreen.loadLevels();
+				levelscreen.populate(directory);
 				setScreen(levelscreen);
 
 			} else if (screen == loading && loading.getPressState() == LoadingMode.TO_LEVEL_EDITOR) {
@@ -178,6 +178,11 @@ public class GDXRoot extends Game implements ScreenListener {
 			setScreen(loading);
 
 			System.out.println("Offset from CalibrationMode: " + calibration.getOffset());
+		} else if (screen==levelscreen){
+			loading = new LoadingMode("assets.json", canvas,1);
+			loading.setScreenListener(this);
+			setScreen(loading);
+
 		}
 		else {
 			// We quit the main application

@@ -1368,6 +1368,7 @@ public class EditorMode implements Screen {
      * @param delta Number of seconds since last animation frame
      */
     public void render(float delta) {
+
         if (active) {
             update(delta);
             draw(delta);

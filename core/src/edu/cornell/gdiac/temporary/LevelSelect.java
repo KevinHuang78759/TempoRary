@@ -31,14 +31,14 @@ public class LevelSelect implements Screen {
     /** Play button to display hard level */
     private Texture hardButton;
 
+    /** The background texture */
+    private Texture background;
     private float scale;
-
-
-    /** Play button x and y coordinates represented as a vector */
-    private Vector2 playButtonCoords;
 
     private static float BUTTON_SCALE  = 0.75f;
 
+    /** Play button x and y coordinates represented as a vector */
+    private Vector2 playButtonCoords;
 
     /** easyButton x and y coordinates represented as a vector */
     private Vector2 easyButtonCoords;
@@ -58,16 +58,17 @@ public class LevelSelect implements Screen {
     private ScreenListener listener;
 
     private Level[] allLevels;
-    private AssetDirectory internal;
+    private AssetDirectory loadDirectory;
+    private AssetDirectory assets;
 
     private Texture levelButton;
 
     public LevelSelect(String file, GameCanvas canvas) {
         this.canvas  = canvas;
-        internal = new AssetDirectory(file );
-        playButton = null;
-        hasSelectedLevel = false;
+//        loadDirectory = new AssetDirectory("assets/loading.json" );
+//        playButton = null;
 
+        hasSelectedLevel = false;
     }
 
     /**
@@ -86,35 +87,52 @@ public class LevelSelect implements Screen {
      * Parse information about the levels .
      *
      */
-    public void loadLevels() {
+    public void populate(AssetDirectory directory) {
+        background  = directory.getEntry("background",Texture.class); //menu background
 
         JsonReader jr = new JsonReader();
-//       read assets
         JsonValue levelData = jr.parse(Gdx.files.internal("assets.json"));
         numLevels = levelData.get("jsons").size;
+        allLevels= new Level[numLevels];
+        System.out.println("num levels "+numLevels);
 
 
         if (playButton == null || easyButton == null || mediumButton ==null || hardButton==null) {
-            playButton = internal.getEntry("play",Texture.class);
-//           we don't currently have these in the json yet.
-            easyButton = internal.getEntry("easyButton",Texture.class);
-            mediumButton = internal.getEntry("mediumButton",Texture.class);
-            hardButton = internal.getEntry("hardButton",Texture.class);
+            playButton = directory.getEntry("play",Texture.class);
+//          we don't currently have these in the json yet.
+            easyButton = directory.getEntry("play",Texture.class);
+            mediumButton = directory.getEntry("play",Texture.class);
+            hardButton = directory.getEntry("play",Texture.class);
 
-            playButtonCoords = new Vector2(canvas.getWidth()/2 + playButton.getWidth(), canvas.getHeight()/2 + 200);
-            easyButtonCoords = new Vector2(canvas.getWidth()/2 + easyButton.getWidth(), canvas.getHeight()/2);
-            mediumButtonCoords = new Vector2(canvas.getWidth()/2 + mediumButton.getWidth(), canvas.getHeight()/2);
-            hardButtonCoords = new Vector2(canvas.getWidth()/2 + hardButton.getWidth(), canvas.getHeight()/2);
+            playButtonCoords = new Vector2(20, 20 + 200);
+            easyButtonCoords = new Vector2(20 , 20);
+            mediumButtonCoords = new Vector2(20 , 20);
+            hardButtonCoords = new Vector2(20 , 20);
         }
+
+//      load each level
+        for (int i=0; i<numLevels;i++ ){
+            String levelName = directory.getEntry("jsons", String.class);
+//            Level(JsonValue data, AssetDirectory directory)
+//            level =
+//                    loadLevel(levelData, directory);
+//            allLevels[i]=;
+        }
+
     }
 
-    public void draw(GameCanvas canvas, int numLevels, Level[] allLevels){
+    public void draw(){
+        canvas.begin();
+        canvas.drawBackground(background,0,0);
+        System.out.println("start draw");
 
         for (Level l: allLevels){
-            int currNum = l.getLevelNumber();
-            Color levelButtonTint = (l.hasUnlocked() ? Color.GRAY: Color.WHITE);
-            canvas.drawRect(0, canvas.getHeight(), canvas.getWidth(), canvas.getHeight(), Color.RED, true);
-            canvas.draw(levelButton, levelButtonTint, playButton.getWidth()/2, playButton.getHeight()/2,
+
+//            get the album art from json, right now just rectangle
+            canvas.drawRect(0, 2, 3, 4, Color.RED, true);
+//l.hasUnlocked()
+            Color levelButtonTint = (true ? Color.GRAY: Color.WHITE);
+            canvas.draw(playButton, levelButtonTint, 20, 20,
                     playButtonCoords.x, playButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
         }
 
@@ -124,8 +142,6 @@ public class LevelSelect implements Screen {
                     playButtonCoords.x, playButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 
         }
-
-
 
         canvas.end();
 
@@ -201,7 +217,8 @@ public class LevelSelect implements Screen {
 
     @Override
     public void render(float delta) {
-
+        this.draw();
+        listener.exitScreen(this, 0);
     }
 
     @Override
@@ -225,8 +242,8 @@ public class LevelSelect implements Screen {
     }
 
     public void dispose() {
-        internal.unloadAssets();
-        internal.dispose();
+        loadDirectory.unloadAssets();
+        loadDirectory.dispose();
     }
     
 }

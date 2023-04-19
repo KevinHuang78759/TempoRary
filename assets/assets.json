@@ -1,16 +1,17 @@
 {
 	"textures": {
         "background": "images/background.png",
-        "switch":    "images/switch2.png",
+        "switch":    "images/switch.png",
         "hit":      "images/press.png",
-        "hold-start":      "images/holdNoteStart.png",
-        "hold-trail":      "images/trailTexture.png",
-        "hold-end":      "images/holdTailEnd.png",
+        "hold-start":      "images/hold_note_bottom.png",
+        "hold-trail":      "images/hold_subsection_.png",
+        "hold-end":      "images/hold_note_top.png",
         "star":     "images/note_hit_effect.png",
         "hp-bar": "images/HPbarPNG.png",
         "catnote": "images/catnote.png",
         "note-indicator": "images/note_indicator.png",
-        "note-indicator-hit": "images/note_indicator_hit.png"
+        "note-indicator-hit": "images/note_indicator_hit.png",
+        "play": "images/leveleditor_button_v1.png"
     },
     "fonts": {
         "lucida": {
