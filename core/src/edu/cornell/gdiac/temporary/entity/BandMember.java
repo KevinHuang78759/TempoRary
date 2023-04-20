@@ -3,7 +3,6 @@ package edu.cornell.gdiac.temporary.entity;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Queue;
@@ -377,6 +376,12 @@ public class BandMember {
 
         canvas.draw(VerticalUnit, Color.WHITE, VOrigin.x, VOrigin.y, xLocRight, yLocRight, 0.0f, xScaleRight, heightScale);
     }
+
+    /**
+     * Draw the background of this bandMember
+     * @param canvas
+     * @param 背景
+     */
     public void drawBackground(GameCanvas canvas, Texture 背景){
         float xScale = width/背景.getWidth();
         float yScale = height/背景.getHeight();

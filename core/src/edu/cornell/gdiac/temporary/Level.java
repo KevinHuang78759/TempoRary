@@ -111,10 +111,22 @@ public class Level {
      */
     private long lastDec;
 
+    /**
+     * Horizontal slice of border
+     */
     private Texture HUnit;
+    /**
+     * Vertical slice of border
+     */
     private Texture VUnit;
+    /**
+     * Corner Texture
+     */
     private Texture CUnit;
 
+    /**
+     * background of each lane
+     */
     private Texture laneBackground;
     public Level(JsonValue data, AssetDirectory directory) {
         //Read in Json  Value and populate asset textures
