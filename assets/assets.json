@@ -10,7 +10,11 @@
         "hp-bar": "images/HPbarPNG.png",
         "catnote": "images/catnote.png",
         "note-indicator": "images/note_indicator.png",
-        "note-indicator-hit": "images/note_indicator_hit.png"
+        "note-indicator-hit": "images/note_indicator_hit.png",
+        "borderVUnit" : "images/lane_edge_unit.png",
+        "borderHUnit" : "images/lane_edge_unit.png",
+        "borderCorner" : "images/laneCornerBl.png",
+        "laneBackground" : "images/laneBackGround.png"
     },
     "fonts": {
         "lucida": {

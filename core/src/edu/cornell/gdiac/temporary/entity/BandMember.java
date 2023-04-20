@@ -3,6 +3,7 @@ package edu.cornell.gdiac.temporary.entity;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Queue;
@@ -297,7 +298,7 @@ public class BandMember {
                 //Calculate the spawning y coordinate to be high enough such that none of the note is
                 //visible
                 n.setY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample()) *(hitY - spawnY));
-                n.draw(canvas, 0.7f*width, 0.7f*width);
+                n.draw(canvas, 0.7f*width, 0.7f*width, bottomLeftCorner.y + height, bottomLeftCorner.y);
             }
         }
     }
@@ -319,7 +320,7 @@ public class BandMember {
                     n.setY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample())*(hitY - spawnY));
                 }
 
-                n.draw(canvas, 0.7f*width/(numLines), 0.7f*width/(numLines));
+                n.draw(canvas, 0.7f*width/(numLines), 0.7f*width/(numLines), bottomLeftCorner.y + height, bottomLeftCorner.y);
             }
 
         }
@@ -328,8 +329,58 @@ public class BandMember {
     /**
      * Draw the border
      */
-    public void drawBorder(GameCanvas canvas){
-        canvas.drawRect(bottomLeftCorner, width, height, borderColor, false);
+    public void drawBorder(GameCanvas canvas, Texture HorizontalUnit, Texture VerticalUnit, Texture Corner, float thickness){
+        Vector2 HOrigin = new Vector2(HorizontalUnit.getWidth()/2f, HorizontalUnit.getHeight()/2f);
+        Vector2 VOrigin = new Vector2(VerticalUnit.getWidth()/2f, VerticalUnit.getHeight()/2f);
+        Vector2 COrigin = new Vector2(Corner.getWidth()/2f, Corner.getHeight()/2f);
+
+        //First, calculate 4 borderline coordinates
+        float xLocBottom = bottomLeftCorner.x + width/2;
+        float yLocBottom = bottomLeftCorner.y - thickness/2;
+        float xScaleBottom = width/HorizontalUnit.getWidth();
+        float yScaleBottom = thickness/VerticalUnit.getHeight();
+
+        float xLocTop = bottomLeftCorner.x + width/2;
+        float yLocTop = bottomLeftCorner.y + height + thickness/2;
+        float xScaleTop = width/HorizontalUnit.getWidth();
+        float yScaleTop = thickness/VerticalUnit.getHeight();
+
+        float xLocLeft = bottomLeftCorner.x - thickness/2;
+        float yLocLeft = bottomLeftCorner.y + height/2;
+        float xScaleLeft = thickness/HorizontalUnit.getWidth();
+        float yScaleLeft = height/VerticalUnit.getHeight();
+
+        float xLocRight = bottomLeftCorner.x + width + thickness/2;
+        float yLocRight = bottomLeftCorner.y + height/2;
+        float xScaleRight = thickness/HorizontalUnit.getWidth();
+        float yScaleRight = height/VerticalUnit.getHeight();
+
+        //Now, draw the 4 corners
+
+        canvas.draw(Corner, Color.WHITE, COrigin.x, COrigin.y, xLocLeft, yLocBottom, 0.0f, xScaleLeft, yScaleBottom);
+
+        canvas.draw(Corner, Color.WHITE, COrigin.x, COrigin.y, xLocRight, yLocBottom, 90.0f, xScaleRight, yScaleBottom);
+
+        canvas.draw(Corner, Color.WHITE, COrigin.x, COrigin.y, xLocRight, yLocTop, 180.0f, xScaleRight, yScaleTop);
+
+        canvas.draw(Corner, Color.WHITE, COrigin.x, COrigin.y, xLocLeft, yLocTop, 270.0f, xScaleLeft, yScaleTop);
+
+        //Now, draw the sidebars such that they don't intersect the corners
+        float barHeight = (yLocTop - (Corner.getHeight()*yScaleTop/2)) - (yLocBottom + (Corner.getHeight()*yScaleBottom/2));
+        float barWidth = (xLocRight - (Corner.getWidth()*xScaleRight/2)) - (xLocLeft + (Corner.getWidth()*xScaleLeft/2));
+        float lengthScale = barWidth/HorizontalUnit.getWidth();
+        canvas.draw(HorizontalUnit, Color.WHITE, HOrigin.x, HOrigin.y, xLocBottom, yLocBottom, 0.0f, lengthScale, yScaleBottom);
+        canvas.draw(HorizontalUnit, Color.WHITE, HOrigin.x, HOrigin.y, xLocTop, yLocTop, 0.0f, lengthScale, yScaleTop);
+
+        float heightScale = barHeight/VerticalUnit.getWidth();
+        canvas.draw(VerticalUnit, Color.WHITE, VOrigin.x, VOrigin.y, xLocLeft, yLocLeft, 0.0f, xScaleLeft, heightScale);
+
+        canvas.draw(VerticalUnit, Color.WHITE, VOrigin.x, VOrigin.y, xLocRight, yLocRight, 0.0f, xScaleRight, heightScale);
+    }
+    public void drawBackground(GameCanvas canvas, Texture 背景){
+        float xScale = width/背景.getWidth();
+        float yScale = height/背景.getHeight();
+        canvas.draw(背景, Color.WHITE, 0, 0, bottomLeftCorner.x, bottomLeftCorner.y, 0.0f, xScale, yScale);
     }
 
     public void drawHPBar(GameCanvas canvas){

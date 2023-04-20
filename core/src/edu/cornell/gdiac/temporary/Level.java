@@ -11,6 +11,8 @@ import edu.cornell.gdiac.audio.MusicQueue;
 import edu.cornell.gdiac.temporary.entity.BandMember;
 import edu.cornell.gdiac.temporary.entity.Note;
 
+import javax.swing.plaf.TextUI;
+
 public class Level {
     public BandMember[] getBandMembers() {
         return bandMembers;
@@ -108,6 +110,12 @@ public class Level {
      * The last sample that health was decremented due to continuous decay
      */
     private long lastDec;
+
+    private Texture HUnit;
+    private Texture VUnit;
+    private Texture CUnit;
+
+    private Texture laneBackground;
     public Level(JsonValue data, AssetDirectory directory) {
         //Read in Json  Value and populate asset textures
         lastDec = 0;
@@ -128,7 +136,10 @@ public class Level {
         holdEndTexture = directory.getEntry("hold-end", Texture.class);
         noteIndicator = directory.getEntry("note-indicator", Texture.class);
         noteIndicatorHit = directory.getEntry("note-indicator-hit", Texture.class);
-
+        HUnit = directory.getEntry("borderHUnit", Texture.class);
+        VUnit = directory.getEntry("borderVUnit", Texture.class);
+        CUnit = directory.getEntry("borderCorner", Texture.class);
+        laneBackground = directory.getEntry("laneBackground", Texture.class);
         // preallocate band members
         bandMembers = new BandMember[data.get("bandMembers").size];
         spawnOffset = music.getSampleRate();
@@ -277,12 +288,13 @@ public class Level {
      * @param triggers - which triggers are pressed?
      * @param switches - which switches are pressed?
      */
-    public void drawEverything(GameCanvas canvas, int active, int goal, boolean[] triggers, boolean[] switches){
+    public void drawEverything(GameCanvas canvas, int active, int goal, boolean[] triggers, boolean[] switches, float borderThickness){
         //first we get the sample, since this determines where the notes will be drawn
         long sample = getCurrentSample();
         for(int i = 0; i < bandMembers.length; ++i){
             //Draw the border of each band member
-            bandMembers[i].drawBorder(canvas);
+            bandMembers[i].drawBackground(canvas, laneBackground);
+            bandMembers[i].drawBorder(canvas, HUnit, VUnit, CUnit, borderThickness);
 
             //If we are the goal of the active lane we need to draw separation lines and held/beat notes
             //We also need to draw a separate hit bar for each line
