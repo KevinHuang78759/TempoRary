@@ -367,8 +367,6 @@ public class Level {
                 bandMembers[i].drawSwitchNotes(canvas, sample, canvas.getHeight());
                 bandMembers[i].drawIndicator(canvas, switches[i], i);
             }
-            //Draw the border of each band member
-            bandMembers[i].drawBorder(canvas);
         }
 
     }

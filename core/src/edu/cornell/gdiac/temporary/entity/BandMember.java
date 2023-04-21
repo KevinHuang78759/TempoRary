@@ -12,7 +12,7 @@ import edu.cornell.gdiac.util.FilmStrip;
 
 public class BandMember {
 
-    private static float NOTE_SIZE_SCALE = 0.6f;
+    private static final float NOTE_SIZE_SCALE = 0.7f;
 
     FilmStrip hpbar;
     /**
@@ -87,7 +87,6 @@ public class BandMember {
      * Number of lines this band member has
      */
     private final int numLines = 4;
-
 
     public int getNumLines(){
         return numLines;
@@ -300,7 +299,7 @@ public class BandMember {
                 //Calculate the spawning y coordinate to be high enough such that none of the note is
                 //visible
                 n.setY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample()) *(hitY - spawnY));
-                n.draw(canvas, NOTE_SIZE_SCALE*width, NOTE_SIZE_SCALE*width);
+                n.draw(canvas, NOTE_SIZE_SCALE*width, NOTE_SIZE_SCALE*width, bottomLeftCorner.y + height, bottomLeftCorner.y);
             }
         }
     }
@@ -326,7 +325,7 @@ public class BandMember {
                     n.setY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample())*(hitY - spawnY));
                 }
 
-                n.draw(canvas, NOTE_SIZE_SCALE*width/(numLines), NOTE_SIZE_SCALE*width/(numLines));
+                n.draw(canvas, NOTE_SIZE_SCALE*width/(numLines), NOTE_SIZE_SCALE*width/(numLines), bottomLeftCorner.y + height, bottomLeftCorner.y);
             }
 
         }
@@ -387,12 +386,12 @@ public class BandMember {
     /**
      * Draw the background of this bandMember
      * @param canvas
-     * @param 背景
+     * @param background
      */
-    public void drawBackground(GameCanvas canvas, Texture 背景){
-        float xScale = width/背景.getWidth();
-        float yScale = height/背景.getHeight();
-        canvas.draw(背景, Color.WHITE, 0, 0, bottomLeftCorner.x, bottomLeftCorner.y, 0.0f, xScale, yScale);
+    public void drawBackground(GameCanvas canvas, Texture background){
+        float xScale = width/background.getWidth();
+        float yScale = height/background.getHeight();
+        canvas.draw(background, Color.WHITE, 0, 0, bottomLeftCorner.x, bottomLeftCorner.y, 0.0f, xScale, yScale);
     }
 
     public void drawHPBar(GameCanvas canvas){
