@@ -194,16 +194,13 @@ public class Level {
         }
     }
 
+    // TODO: REMOVE THIS AND REPLACE WITH ACTUAL ANIMATION BASED ON SAMPLE
     /**
      * Takes BPM and converts it to rate of animation (as all animations should be on beat)
      * @param bpm BPM of song in level
      * @return animation rate
      */
     public float getAnimationRateFromBPM(int bpm) {
-        // convert to beats per second
-        // change animation every ... frames (assuming 60 frames per second)
-        // represents value we add per frame
-        // multiply by two so it's not too slow
         return bpm * 2 / 60f / 60f;
     }
 

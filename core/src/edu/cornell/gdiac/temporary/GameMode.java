@@ -231,12 +231,6 @@ public class GameMode implements Screen {
 				o.draw(canvas);
 			}
 
-			//draw two partial backgrounds to cover up spawning/disappearing areas of notes and switches
-			canvas.drawSubsection(streetLevelBackground, Color.WHITE, canvas.getWidth() / 2, canvas.getHeight() / 2, 1,
-					0, 1, gameplayController.TOPBOUND / streetLevelBackground.getRegionHeight(), 1);
-			canvas.drawSubsection(streetLevelBackground, Color.WHITE, canvas.getWidth() / 2, canvas.getHeight() / 2, 1,
-					0, 1, 0, gameplayController.BOTTOMBOUND / streetLevelBackground.getRegionHeight());
-
 			for(BandMember bandMember : gameplayController.level.getBandMembers()){
 				//Draw the band member sprite and competency bar
 				bandMember.drawCharacterSprite(canvas);
