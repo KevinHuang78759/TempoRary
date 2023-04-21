@@ -18,6 +18,9 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     /** Internal assets for this loading screen */
     private AssetDirectory internal;
 
+    /** Internal assets for this levels screen */
+    private AssetDirectory levels;
+
     /** Whether this player mode is still active */
     private boolean active;
 
@@ -83,7 +86,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     /** Reference to GameCanvas created by the root */
     private GameCanvas canvas;
 
-    private JsonValue[] allLevels;
+    private String[] allLevels;
 
 
     private AssetDirectory directory;
@@ -131,7 +134,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         JsonReader jr = new JsonReader();
         JsonValue levelData = jr.parse(Gdx.files.internal("assets.json"));
         numLevels = levelData.get("jsons").size;
-        allLevels= new JsonValue[numLevels];
+        allLevels= new String[numLevels];
         albumCoverCoords = new Vector2[numLevels];
         System.out.println("num levels "+numLevels);
         gameplayController = new GameplayController(canvas.getWidth(),canvas.getHeight());
@@ -156,10 +159,17 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             hardButtonCoords = new Vector2(canvas.getWidth()/2+ canvas.getWidth()/4, canvas.getHeight()/3);
         }
 
+
         albumCover = internal.getEntry("play",Texture.class);
         for (int i = 0; i <numLevels;i++){
-//            todo: prob needs a better way to calculate x-coord
             albumCoverCoords[i]=new Vector2(canvas.getWidth()/2-(i*200),canvas.getHeight()/2+200);
+
+            String levelString = "levels/"+(i+1)+".json";
+//            levels = new AssetDirectory( levelString );
+//            levels.loadAssets();
+//            levels.finishLoading();
+
+            allLevels[i]=levelString;
         }
 
 
@@ -359,19 +369,29 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                 System.out.println("loading level..");
                 System.out.println("selected level:" + selectedLevel);
                 System.out.println("selected difficulty:" + selectedDifficulty);
-                int gameIdx = numLevels-selectedDifficulty; // right now we only have 2 difficulties for 1 level
+                int gameIdx = numLevels-1; // right now we only have 2 difficulties for 1 level
                 // depending on how we structure the json files,
                 // it could be (selectedDifficulty+1) * (selectedLevel+1)
-                Level l = new Level(allLevels[0], directory);
-                gameplayController.loadLevel(allLevels[gameIdx], directory);
+//                Level l = new Level(allLevels[0], directory);
+
+//                gameplayController.loadLevel(allLevels[0].getEntry("1",), directory);
 
                 playing = new GameMode(canvas);
-//                playing.setScreenListener(this);
-                playing.readLevel(directory);
+                JsonReader jr = new JsonReader();
+                JsonValue levelData = jr.parse(Gdx.files.internal(allLevels[gameIdx]));
+                gameplayController.loadLevel(levelData, directory);
+
                 playing.populate(directory);
                 playing.show();
 
-//                listener.exitScreen(this, 0);
+                listener.exitScreen(playing, 0);
+
+				playing.readLevel(directory,allLevels[gameIdx]);
+
+				playing.populate(directory);
+//				playing.initializeOffset(calibration.getOffset());
+                System.out.println("sdfasf");
+
             }
         }
     }
