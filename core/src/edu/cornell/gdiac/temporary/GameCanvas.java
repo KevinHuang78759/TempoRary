@@ -581,10 +581,44 @@ public class GameCanvas {
 	/**
 	 * Draws a proportional scaled subsection of a texture. The texture will be centered at x, y, the actual visible <br>
 	 * drawn portion is essentially "cropped" out
-	 * @param textureRegion
-	 * @param x
-	 * @param y
-	 * @param scale
+	 * @param textureRegion Texture to draw
+	 * @param x x coord of where the middle of the whole image should go
+	 * @param y y coord of where the middle of the whole image should go
+	 * @param scale scaling factor
+	 * @param xStart % of image starting from left of image of where the image should start drawing
+	 * @param xEnd % of image starting from left of image of where the image should draw to
+	 * @param yStart % of image starting from bottom of image of where the image should start drawing
+	 * @param yEnd % of image starting from bottom of image of where the image should draw to
+	 */
+	public void drawSubsection(TextureRegion textureRegion,
+							   float x, float y, float scale, float xStart, float xEnd, float yStart, float yEnd) {
+		float trueWidth = textureRegion.getRegionWidth() * scale * (xEnd - xStart);
+		float trueHeight = textureRegion.getRegionHeight() * scale * (yEnd - yStart);
+		spriteBatch.setColor(Color.WHITE);
+		spriteBatch.draw(textureRegion.getTexture(),
+				x - textureRegion.getRegionWidth() * (scale * (0.5f - xStart)),
+				y - textureRegion.getRegionHeight() * (scale * (0.5f - yStart)),
+				trueWidth,
+				trueHeight,
+				xStart,
+				1f - yStart,
+				xEnd,
+				1f - yEnd
+		);
+	}
+
+	/**
+	 * Draws a proportional scaled subsection of a texture. The texture will be centered at x, y, the actual visible <br>
+	 * drawn portion is essentially "cropped" out
+	 * @param textureRegion Texture to draw
+	 * @param tint Tint of the texture to draw
+	 * @param x x coord of where the middle of the whole image should go
+	 * @param y y coord of where the middle of the whole image should go
+	 * @param scale scaling factor
+	 * @param xStart % of image starting from left of image of where the image should start drawing
+	 * @param xEnd % of image starting from left of image of where the image should draw to
+	 * @param yStart % of image starting from bottom of image of where the image should start drawing
+	 * @param yEnd % of image starting from bottom of image of where the image should draw to
 	 */
 	public void drawSubsection(TextureRegion textureRegion, Color tint,
 							   float x, float y, float scale, float xStart, float xEnd, float yStart, float yEnd) {
