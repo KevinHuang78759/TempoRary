@@ -1,7 +1,10 @@
 package edu.cornell.gdiac.temporary;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
@@ -11,7 +14,9 @@ import com.badlogic.gdx.utils.Null;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.util.ScreenListener;
 
-public class LevelSelect implements Screen {
+public class LevelSelect implements Screen, InputProcessor, ControllerListener {
+    /** Internal assets for this loading screen */
+    private AssetDirectory internal;
 
     /** Whether this player mode is still active */
     private boolean active;
@@ -20,8 +25,6 @@ public class LevelSelect implements Screen {
     /** Pressed down button state for the play button */
     private static final int PLAY_PRESSED = 1;
 
-    /** The current state of the play button */
-    private int  pressState;
 
     /** Play button to display when done */
     private Texture playButton;
@@ -35,9 +38,16 @@ public class LevelSelect implements Screen {
     /** Play button to display hard level */
     private Texture hardButton;
 
+    /** button for a level */
+    private Texture albumCover;
+
+    /** coord for level button */
+
+    private Vector2[] albumCoverCoords;
+
     /** The background texture */
     private Texture background;
-    private float scale;
+    private float scale=1;
 
     /** Reads input from keyboard or game pad (CONTROLLER CLASS) */
     private InputController inputController;
@@ -45,6 +55,8 @@ public class LevelSelect implements Screen {
     private ScreenListener listener;
 
 
+    /** Constructs the game models and handle basic gameplay (CONTROLLER CLASS) */
+    private GameplayController gameplayController;
 
     private static float BUTTON_SCALE  = 0.75f;
 
@@ -69,10 +81,15 @@ public class LevelSelect implements Screen {
     private JsonValue[] allLevels;
 
 
-    private AssetDirectory loadDirectory;
+    private AssetDirectory directory;
     private AssetDirectory assets;
 
     private Texture levelButton;
+
+    private int EASY = 1;
+    private int MEDIUM = 2;
+    private  int HARD = 3;
+
 
     public int selectedLevel;
 
@@ -88,8 +105,9 @@ public class LevelSelect implements Screen {
         mediumButton=null;
         hardButton=null;
 
-
         hasSelectedLevel = false;
+
+
     }
 
     /**
@@ -102,44 +120,48 @@ public class LevelSelect implements Screen {
     }
 
 
-
-
     /**
      * Parse information about the levels .
      *
      */
     public void populate(AssetDirectory directory) {
+        directory  = directory;
         background  = directory.getEntry("background",Texture.class); //menu background
 
         JsonReader jr = new JsonReader();
         JsonValue levelData = jr.parse(Gdx.files.internal("assets.json"));
         numLevels = levelData.get("jsons").size;
         allLevels= new JsonValue[numLevels];
+        albumCoverCoords = new Vector2[numLevels];
         System.out.println("num levels "+numLevels);
+        gameplayController = new GameplayController(canvas.getWidth(),canvas.getHeight());
 
 
         if (playButton == null || easyButton == null || mediumButton ==null || hardButton==null) {
-            playButton = directory.getEntry("play",Texture.class);
-//          we don't currently have these in the json yet.
-            easyButton = directory.getEntry("play",Texture.class);
-            mediumButton = directory.getEntry("play",Texture.class);
-            hardButton = directory.getEntry("play",Texture.class);
+            Gdx.input.setInputProcessor( this );
 
-            playButtonCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/4);
-            easyButtonCoords = new Vector2(canvas.getWidth()/3 , canvas.getHeight()/3);
+            internal = new AssetDirectory( "loading.json" );
+            internal.loadAssets();
+            internal.finishLoading();
+
+            playButton = internal.getEntry("play",Texture.class);
+            //we don't currently have these in the json yet.
+            easyButton = internal.getEntry("play-old",Texture.class);
+            mediumButton = internal.getEntry("play-old",Texture.class);
+            hardButton = internal.getEntry("play-old",Texture.class);
+
+            playButtonCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/8);
+            easyButtonCoords = new Vector2(canvas.getWidth()/4 , canvas.getHeight()/3);
             mediumButtonCoords = new Vector2(canvas.getWidth()/2 , canvas.getHeight()/3);
-            hardButtonCoords = new Vector2(canvas.getWidth()/4 , canvas.getHeight()/3);
+            hardButtonCoords = new Vector2(canvas.getWidth()/2+ canvas.getWidth()/4, canvas.getHeight()/3);
         }
 
-//      load each level
-        for (int i=0; i<numLevels;i++ ){
-//            todo: level name is null
-//            String levelName = levelData.get(i).name();
-//            System.out.println(levelName);
-            String levelName = "test2";
-            String levelDir = "levels/"+levelName+".json";
-            allLevels[i]= jr.parse(Gdx.files.internal(levelDir));
+        albumCover = internal.getEntry("play",Texture.class);
+        for (int i = 0; i <numLevels;i++){
+//            todo: prob needs a better way to calculate x-coord
+            albumCoverCoords[i]=new Vector2(canvas.getWidth()/2-(i*200),canvas.getHeight()/2+200);
         }
+
 
     }
 
@@ -156,20 +178,24 @@ public class LevelSelect implements Screen {
         canvas.drawBackground(background,0,0);
 
         // draw easy, medium, and hard buttons
-        canvas.draw(easyButton,easyButtonCoords.x,easyButtonCoords.y);
-        canvas.draw(mediumButton,mediumButtonCoords.x,mediumButtonCoords.y);
-        canvas.draw(hardButton,hardButtonCoords.x,hardButtonCoords.y);
+        Color easyButtonTint = (selectedDifficulty == EASY ? Color.GRAY: Color.WHITE);
+        canvas.draw(easyButton, easyButtonTint, easyButton.getWidth()/2, easyButton.getHeight()/2,
+                easyButtonCoords.x, easyButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+
+        Color medButtonTint = (selectedDifficulty == MEDIUM ? Color.GRAY: Color.WHITE);
+        canvas.draw(mediumButton, medButtonTint, mediumButton.getWidth()/2, mediumButton.getHeight()/2,
+                mediumButtonCoords.x, mediumButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+
+        Color hardButtonTint = (selectedDifficulty == HARD ? Color.GRAY: Color.WHITE);
+        canvas.draw(hardButton, hardButtonTint, hardButton.getWidth()/2, hardButton.getHeight()/2,
+                hardButtonCoords.x, hardButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 
         // draw each song
-        for (JsonValue j: allLevels){
+        for (int i=0;i<numLevels;i++){
 //            Level l = new Level (j,loadDirectory);
-            // get the album art from json, right now just rectangle
-
-            canvas.drawRect(canvas.getWidth()/2, canvas.getHeight()/3, canvas.getWidth()/2+100, canvas.getHeight()/3+100, Color.GRAY, true);
-            //l.hasUnlocked()
-            Color levelButtonTint = (true ? Color.GRAY: Color.WHITE);
-            canvas.draw(playButton, levelButtonTint, 20, 20,
-                    playButtonCoords.x, playButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+            Color albumCoverTint = (selectedDifficulty == MEDIUM ? Color.GRAY: Color.WHITE);
+            canvas.draw(albumCover,albumCoverTint,albumCover.getWidth()/2,albumCover.getHeight()/2,albumCoverCoords[i].x,
+                    albumCoverCoords[i].y,0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
         }
 
         // draw play button
@@ -177,9 +203,6 @@ public class LevelSelect implements Screen {
         canvas.draw(playButton, playButtonTint, playButton.getWidth()/2, playButton.getHeight()/2,
                     playButtonCoords.x, playButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 
-        if (selectedDifficulty != -1 && selectedLevel!=-1){
-            hasSelectedLevel=true;
-        }
 
         canvas.end();
     }
@@ -200,13 +223,30 @@ public class LevelSelect implements Screen {
         // get half the x length of the button portrayed
         float xRadius = BUTTON_SCALE * scale * buttonTexture.getWidth()/2.0f;
         boolean xInBounds = buttonCoords.x - xRadius <= screenX && buttonCoords.x + xRadius >= screenX;
+//        System.out.println(xInBounds);
 
         // get half the y length of the button portrayed
         float yRadius = BUTTON_SCALE * scale * buttonTexture.getHeight()/2.0f;
         boolean yInBounds = buttonCoords.y - yRadius <= screenY && buttonCoords.y + yRadius >= screenY;
+//        System.out.println(yInBounds);
         return xInBounds && yInBounds;
     }
 
+
+    @Override
+    public boolean keyDown(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
 
     /**
      * Called when the screen was touched or a mouse button was pressed.
@@ -220,38 +260,79 @@ public class LevelSelect implements Screen {
      * @param pointer the button or touch finger number
      * @return whether to hand the event to other listeners.
      */
+    @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        System.out.println("touch down");
+        System.out.println(screenX);
+        System.out.println(screenY);
+
+        screenY = canvas.getHeight()-screenY;
+
         if (playButton == null ) {
+            System.out.println("print true");
             return true;
         }
 
         if (isButtonPressed(screenX, screenY, easyButton, easyButtonCoords)) {
-            pressState = 1;
+            selectedDifficulty = 1;
         }
 
         if (isButtonPressed(screenX, screenY, mediumButton, mediumButtonCoords)) {
-            pressState = 2;
+            selectedDifficulty = 2;
         }
 
         if (isButtonPressed(screenX, screenY, hardButton, hardButtonCoords)) {
-            pressState = 3;
+            selectedDifficulty = 3;
         }
+
+        for (int i=0;i<numLevels;i++){
+            if (isButtonPressed(screenX, screenY, albumCover, albumCoverCoords[i])){
+                System.out.println("selected song is "+i);
+                selectedLevel=i;
+            }
+        }
+
+        if (selectedDifficulty != -1 && selectedLevel!=-1){
+            hasSelectedLevel=true;
+        }
+
+        if (isButtonPressed(screenX, screenY, playButton, playButtonCoords)) {
+            System.out.println("play pressed");
+            if (getHasSelectedLevel()){
+                // go to game
+                int gameIdx = selectedDifficulty; // right now we only have 2 difficulties for 1 level
+                Level l = new Level(allLevels[gameIdx], directory);
+                gameplayController.loadLevel(allLevels[gameIdx], directory);
+
+            }
+
+        }
+
+
+        System.out.println(selectedDifficulty);
 
 //        process which level is selected
 
+        return false;
+    }
 
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
 
-//        if (isButtonPressed(screenX, screenY, levelEditorButton, levelEditorButtonCoords)) {
-//            pressState = LEVEL_EDITOR_PRESSED;
-//        }
-//
-//        float radius = BUTTON_SCALE*scale*calibrationButton.getWidth()/2.0f;
-//        float dist = (screenX-calibrationButtonCoords.x)*(screenX-calibrationButtonCoords.x)
-//                +(screenY-calibrationButtonCoords.y)*(screenY-calibrationButtonCoords.y);
-//        if (dist < radius*radius) {
-//            pressState = TO_CALIBRATION;
-//        }
-//        return false;
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(float amountX, float amountY) {
         return false;
     }
 
@@ -293,8 +374,32 @@ public class LevelSelect implements Screen {
 
     @Override
     public void dispose() {
-        loadDirectory.unloadAssets();
-        loadDirectory.dispose();
+        directory.unloadAssets();
+        directory.dispose();
     }
-    
+
+    @Override
+    public void connected(Controller controller) {
+
+    }
+
+    @Override
+    public void disconnected(Controller controller) {
+
+    }
+
+    @Override
+    public boolean buttonDown(Controller controller, int buttonCode) {
+        return false;
+    }
+
+    @Override
+    public boolean buttonUp(Controller controller, int buttonCode) {
+        return false;
+    }
+
+    @Override
+    public boolean axisMoved(Controller controller, int axisCode, float value) {
+        return false;
+    }
 }

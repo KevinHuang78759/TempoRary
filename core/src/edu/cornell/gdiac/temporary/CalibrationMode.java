@@ -103,7 +103,6 @@ public class CalibrationMode implements Screen {
 
     /** Draws elements to the screen */
     private void draw(float delta) {
-        System.out.println("start draw");
         canvas.begin();
         canvas.drawBackground(background,0,0);
 
