@@ -1,6 +1,9 @@
 {
 	"textures": {
         "background": "images/background.png",
+        "concert-background": "images/backgrounds/background_temp_concert_1.png",
+        "street-background": "images/backgrounds/background_temp_streets_1.png",
+        "cafe-background": "images/backgrounds/background_temp_cafe_1.png",
         "switch":    "images/switch.png",
         "hit":      "images/press.png",
         "hold-start":      "images/hold_note_bottom.png",
@@ -11,11 +14,16 @@
         "catnote": "images/catnote.png",
         "note-indicator": "images/note_indicator.png",
         "note-indicator-hit": "images/note_indicator_hit.png",
+        "violin-cat": "images/cats/violin_cat.png",
+        "singer-cat": "images/cats/singer_cat.png",
+        "drummer-cat": "images/cats/drummer_cat.png",
         "borderVUnit" : "images/lane_edge_unit.png",
         "borderHUnit" : "images/lane_edge_unit.png",
         "borderCorner" : "images/laneCornerBl.png",
         "laneBackground" : "images/laneBackGround.png",
-        "separationLine" : "images/lane-separation-line.png"
+        "separationLine" : "images/lane-separation-line.png",
+        "back-splash": "images/notes/hold_back.png",
+        "front-splash": "images/notes/hold_front.png"
     },
     "fonts": {
         "lucida": {

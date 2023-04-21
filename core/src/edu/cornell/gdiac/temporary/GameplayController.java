@@ -386,17 +386,19 @@ public class GameplayController {
 				: Math.abs(adjustedPosition - note.getHitSample());
 
 		// check if note was hit or on beat
-		if(dist < 25000) {
-			if (dist < 18000) {
+		if(dist < 15000) {
+			if (dist < 10000) {
 				//If so, destroy the note and set a positive hit status. Also set that we
 				//have registered a hit for this line for this click. This ensures that
 				//We do not have a single hit count for two notes that are close together
 				boolean isOnBeat = dist < baseLeniency;
-
+				note.setHolding(true);
 				note.setHitStatus(isOnBeat ? onBeatGain : offBeatGain);
 				spawnHitEffect(note.getHitStatus(), note.getX(), spawnEffectY);
 				if (note.getLine() != -1) hitReg[note.getLine()] = true;
 				note.setDestroyed(destroy);
+				// move the note to where the indicator is
+				note.setBottomY(level.getBandMembers()[0].getHitY());
 			}
 			else {
 				// lose some competency since you played a bit off beat
@@ -469,9 +471,16 @@ public class GameplayController {
 				if(triggers[n.getLine()] && !hitReg[n.getLine()]){
 					checkHit(n, currentSample, 4, 2, -1, n.getBottomY(),false, hitReg, false);
 				}
-				//check if we lifted close to the end
-				if(lifted[n.getLine()]){
-					checkHit(n, currentSample, 4, 2, -1, n.getY(),true, hitReg, true);
+				//check if we lifted close to the end (we only check if we ended up holding the note in the first place)
+				if(lifted[n.getLine()] && n.getHolding()){
+					checkHit(n, currentSample, 4, 2, -1, n.getBottomY(),true, hitReg, true);
+					// destroy (if you are already holding)
+					if (n.getHolding()) n.setDestroyed(true);
+					n.setHolding(false);
+				}
+				// destroy if the note head has gone past (will only be true while you're holding)
+				if (((currentSample - this.offset) - (n.getHitSample() + n.getHoldSamples())) > baseLeniency && n.getHolding()) {
+					n.setDestroyed(true);
 				}
 			}
 		}

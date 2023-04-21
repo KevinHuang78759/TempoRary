@@ -1,6 +1,5 @@
 package edu.cornell.gdiac.temporary;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
@@ -10,6 +9,7 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.MusicQueue;
 import edu.cornell.gdiac.temporary.entity.BandMember;
 import edu.cornell.gdiac.temporary.entity.Note;
+import edu.cornell.gdiac.util.FilmStrip;
 
 import javax.swing.plaf.TextUI;
 
@@ -98,12 +98,19 @@ public class Level {
     private Texture hpbar;
     private Texture noteIndicator;
     private Texture noteIndicatorHit;
+    private FilmStrip violinSprite;
+    private FilmStrip drummerSprite;
+    private FilmStrip voiceSprite;
+    private FilmStrip synthSprite;
+    private FilmStrip backSplash;
+    private FilmStrip frontSplash;
 
     // PROPERTIES
     private String levelName;
     private int levelNumber;
     private int maxCompetency;
     private int spawnOffset;
+    private int bpm;
     private MusicQueue music;
 
     /**
@@ -139,10 +146,12 @@ public class Level {
         levelName = data.getString("levelName");
         levelNumber = data.getInt("levelNumber");
         maxCompetency = data.getInt("maxCompetency");
+        bpm = data.getInt("bpm");
 
         // need to take from directory because this is the only way to load it into the music queue
         music = directory.getEntry("challenger", MusicQueue.class);
 
+        // load all related level textures
         hitNoteTexture = directory.getEntry("hit", Texture.class);
         switchNoteTexture = directory.getEntry("switch", Texture.class);
         holdNoteTexture = directory.getEntry("hold-start", Texture.class);
@@ -153,11 +162,19 @@ public class Level {
         holdEndTexture = directory.getEntry("hold-end", Texture.class);
         noteIndicator = directory.getEntry("note-indicator", Texture.class);
         noteIndicatorHit = directory.getEntry("note-indicator-hit", Texture.class);
+        violinSprite = new FilmStrip(directory.getEntry("violin-cat", Texture.class), 1, 1, 1);
+        voiceSprite = new FilmStrip(directory.getEntry("singer-cat", Texture.class), 1, 1, 1);
+        drummerSprite = new FilmStrip(directory.getEntry("drummer-cat", Texture.class), 1, 1, 1);
+        synthSprite = new FilmStrip(directory.getEntry("drummer-cat", Texture.class), 1, 1, 1);
+        backSplash = new FilmStrip(directory.getEntry("back-splash", Texture.class), 4, 5, 19);
+        frontSplash = new FilmStrip(directory.getEntry("front-splash", Texture.class), 4, 5, 19);
+
         HUnit = directory.getEntry("borderHUnit", Texture.class);
         VUnit = directory.getEntry("borderVUnit", Texture.class);
         CUnit = directory.getEntry("borderCorner", Texture.class);
         laneBackground = directory.getEntry("laneBackground", Texture.class);
         sepLine = directory.getEntry("separationLine", Texture.class);
+
         // preallocate band members
         bandMembers = new BandMember[data.get("bandMembers").size];
         spawnOffset = music.getSampleRate();
@@ -177,7 +194,7 @@ public class Level {
                 }
                 else {
                     n = new Note(thisNote.getInt("line"), Note.NoteType.HELD, thisNote.getLong("position") - spawnOffset, holdNoteTexture);
-                    n.setHoldTextures(holdTrailTexture,1,holdEndTexture,1);
+                    n.setHoldTextures(holdTrailTexture,1,holdEndTexture,1, backSplash, frontSplash, getAnimationRateFromBPM(bpm));
                     n.setHoldSamples(thisNote.getLong("duration"));
                 }
                 n.setHitSample(thisNote.getInt("position"));
@@ -190,8 +207,32 @@ public class Level {
             bandMembers[i].setHpBarFilmStrip(hpbar, 47);
             bandMembers[i].setFont(displayFont);
             bandMembers[i].setIndicatorTextures(noteIndicator, noteIndicatorHit);
+            switch (bandMemberData.getString("instrument")) {
+                case "violin":
+                    bandMembers[i].setCharacterTexture(violinSprite);
+                    break;
+                case "piano":
+                    bandMembers[i].setCharacterTexture(synthSprite);
+                    break;
+                case "drum":
+                    bandMembers[i].setCharacterTexture(drummerSprite);
+                    break;
+                case "voice":
+                    bandMembers[i].setCharacterTexture(voiceSprite);
+                    break;
+            }
 //            System.out.println(System.nanoTime() - t);
         }
+    }
+
+    // TODO: REMOVE THIS AND REPLACE WITH ACTUAL ANIMATION BASED ON SAMPLE
+    /**
+     * Takes BPM and converts it to rate of animation (as all animations should be on beat)
+     * @param bpm BPM of song in level
+     * @return animation rate
+     */
+    public float getAnimationRateFromBPM(int bpm) {
+        return bpm * 2 / 60f / 60f;
     }
 
     /**
@@ -319,12 +360,12 @@ public class Level {
             if(active == i || goal == i){
                 bandMembers[i].drawHitNotes(canvas, sample, canvas.getHeight());
                 bandMembers[i].drawLineSeps(canvas, sepLine);
-                bandMembers[i].drawHitBar(canvas, triggers);
+                bandMembers[i].drawIndicator(canvas, triggers);
             }
             //Otherwise just draw the switch notes, and we only have 1 hit bar to draw
             else{
                 bandMembers[i].drawSwitchNotes(canvas, sample, canvas.getHeight());
-                bandMembers[i].drawHitBar(canvas, switches[i], i);
+                bandMembers[i].drawIndicator(canvas, switches[i], i);
             }
         }
 
