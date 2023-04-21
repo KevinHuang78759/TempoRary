@@ -3,6 +3,9 @@ package edu.cornell.gdiac.temporary;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.ControllerListener;
+import com.badlogic.gdx.controllers.ControllerMapping;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
@@ -12,7 +15,7 @@ import edu.cornell.gdiac.util.ScreenListener;
 /**
  * This class is just a ported over LoadingMode without the asset loading part, only the menu part
  */
-public class MenuMode implements Screen, InputProcessor {
+public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
     /** Reference to GameCanvas created by the root */
     private GameCanvas canvas;
@@ -43,6 +46,8 @@ public class MenuMode implements Screen, InputProcessor {
     private int centerY;
     /** The x-coordinate of the center of the progress bar (artifact of LoadingMode) */
     private int centerX;
+    /** The height of the canvas window (necessary since sprite origin != screen origin) */
+    private int heightY;
 
     /** Standard window size (for scaling) */
     private static int STANDARD_WIDTH  = 1200;
@@ -167,7 +172,7 @@ public class MenuMode implements Screen, InputProcessor {
 //        this.width = (int)(BAR_WIDTH_RATIO*width);
         centerY = (int)(BAR_HEIGHT_RATIO*height);
         centerX = width/2;
-//        heightY = height;
+        heightY = height;
     }
 
     @Override
@@ -195,44 +200,242 @@ public class MenuMode implements Screen, InputProcessor {
 
     }
 
+    /**
+     * Sets the ScreenListener for this mode
+     *
+     * The ScreenListener will respond to requests to quit.
+     */
+    public void setScreenListener(ScreenListener listener) {
+        this.listener = listener;
+    }
+
     // PROCESSING PLAYER INPUT
-    @Override
-    public boolean keyDown(int i) {
+
+    /**
+     * Checks to see if the location clicked at `screenX`, `screenY` are within the bounds of the given button
+     * `buttonTexture` and `buttonCoords` should refer to the appropriate button parameters
+     *
+     * @param screenX the x-coordinate of the mouse on the screen
+     * @param screenY the y-coordinate of the mouse on the screen
+     * @param buttonTexture the specified button texture
+     * @param buttonCoords the specified button coordinates as a Vector2 object
+     * @return whether the button specified was pressed
+     */
+    public boolean isButtonPressed(int screenX, int screenY, Texture buttonTexture, Vector2 buttonCoords) {
+        // buttons are rectangles
+        // buttonCoords hold the center of the rectangle, buttonTexture has the width and height
+        // get half the x length of the button portrayed
+        float xRadius = BUTTON_SCALE * scale * buttonTexture.getWidth()/2.0f;
+        boolean xInBounds = buttonCoords.x - xRadius <= screenX && buttonCoords.x + xRadius >= screenX;
+
+        // get half the y length of the button portrayed
+        float yRadius = BUTTON_SCALE * scale * buttonTexture.getHeight()/2.0f;
+        boolean yInBounds = buttonCoords.y - yRadius <= screenY && buttonCoords.y + yRadius >= screenY;
+        return xInBounds && yInBounds;
+    }
+
+    /**
+     * Called when the screen was touched or a mouse button was pressed.
+     *
+     * This method checks to see if the play button is available and if the click
+     * is in the bounds of the play button.  If so, it signals the that the button
+     * has been pressed and is currently down. Any mouse button is accepted.
+     *
+     * @param screenX the x-coordinate of the mouse on the screen
+     * @param screenY the y-coordinate of the mouse on the screen
+     * @param pointer the button or touch finger number
+     * @return whether to hand the event to other listeners.
+     */
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        if (playButton == null || pressState == TO_GAME || pressState == TO_LEVEL_EDITOR || pressState == TO_CALIBRATION) {
+            return true;
+        }
+
+        // Flip to match graphics coordinates
+        screenY = heightY-screenY;
+
+        // TODO: Fix scaling (?)
+        // check if buttons get pressed appropriately
+        if (isButtonPressed(screenX, screenY, playButton, playButtonCoords)) {
+            pressState = PLAY_PRESSED;
+        }
+        if (isButtonPressed(screenX, screenY, levelEditorButton, levelEditorButtonCoords)) {
+            pressState = LEVEL_EDITOR_PRESSED;
+        }
+
+        float radius = BUTTON_SCALE*scale*calibrationButton.getWidth()/2.0f;
+        float dist = (screenX-calibrationButtonCoords.x)*(screenX-calibrationButtonCoords.x)
+                +(screenY-calibrationButtonCoords.y)*(screenY-calibrationButtonCoords.y);
+        if (dist < radius*radius) {
+            pressState = TO_CALIBRATION;
+        }
         return false;
     }
 
-    @Override
-    public boolean keyUp(int i) {
-        return false;
+    /**
+     * Called when a finger was lifted or a mouse button was released.
+     *
+     * This method checks to see if the play button is currently pressed down. If so,
+     * it signals the that the player is ready to go.
+     *
+     * @param screenX the x-coordinate of the mouse on the screen
+     * @param screenY the y-coordinate of the mouse on the screen
+     * @param pointer the button or touch finger number
+     * @return whether to hand the event to other listeners.
+     */
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        switch (pressState){
+            case PLAY_PRESSED:
+                pressState = TO_GAME;
+                return false;
+            case LEVEL_EDITOR_PRESSED:
+                pressState = TO_LEVEL_EDITOR;
+                return false;
+            default:
+                return true;
+        }
     }
 
-    @Override
-    public boolean keyTyped(char c) {
-        return false;
+    /**
+     * Called when a button on the Controller was pressed.
+     *
+     * The buttonCode is controller specific. This listener only supports the start
+     * button on an X-Box controller.  This outcome of this method is identical to
+     * pressing (but not releasing) the play button.
+     *
+     * @param controller The game controller
+     * @param buttonCode The button pressed
+     * @return whether to hand the event to other listeners.
+     */
+    public boolean buttonDown (Controller controller, int buttonCode) {
+        // note: does not work for level editor
+        if (pressState == INITIAL) {
+            ControllerMapping mapping = controller.getMapping();
+            if (mapping != null && buttonCode == mapping.buttonStart) {
+                pressState = PLAY_PRESSED;
+                return false;
+            }
+        }
+        return true;
     }
 
-    @Override
-    public boolean touchDown(int i, int i1, int i2, int i3) {
-        return false;
+    /**
+     * Called when a button on the Controller was released.
+     *
+     * The buttonCode is controller specific. This listener only supports the start
+     * button on an X-Box controller.  This outcome of this method is identical to
+     * releasing the the play button after pressing it.
+     *
+     * @param controller The game controller
+     * @param buttonCode The button pressed
+     * @return whether to hand the event to other listeners.
+     */
+    public boolean buttonUp (Controller controller, int buttonCode) {
+        // note: does not work for level editor
+        if (pressState == PLAY_PRESSED) {
+            ControllerMapping mapping = controller.getMapping();
+            if (mapping != null && buttonCode == mapping.buttonStart ) {
+                pressState = TO_GAME;
+                return false;
+            }
+        }
+        return true;
     }
 
-    @Override
-    public boolean touchUp(int i, int i1, int i2, int i3) {
-        return false;
+    // UNSUPPORTED METHODS FROM InputProcessor
+
+    /**
+     * Called when a key is pressed (UNSUPPORTED)
+     *
+     * @param keycode the key pressed
+     * @return whether to hand the event to other listeners.
+     */
+    public boolean keyDown(int keycode) {
+        return true;
     }
 
-    @Override
-    public boolean touchDragged(int i, int i1, int i2) {
-        return false;
+    /**
+     * Called when a key is typed (UNSUPPORTED)
+     *
+     * @param keycode the key typed
+     * @return whether to hand the event to other listeners.
+     */
+    public boolean keyTyped(char keycode) {
+        return true;
     }
 
-    @Override
-    public boolean mouseMoved(int i, int i1) {
-        return false;
+    /**
+     * Called when a key is released (UNSUPPORTED)
+     *
+     * @param keycode the key released
+     * @return whether to hand the event to other listeners.
+     */
+    public boolean keyUp(int keycode) {
+        return true;
     }
 
-    @Override
-    public boolean scrolled(float v, float v1) {
-        return false;
+    /**
+     * Called when the mouse was moved without any buttons being pressed. (UNSUPPORTED)
+     *
+     * @param screenX the x-coordinate of the mouse on the screen
+     * @param screenY the y-coordinate of the mouse on the screen
+     * @return whether to hand the event to other listeners.
+     */
+    public boolean mouseMoved(int screenX, int screenY) {
+        return true;
+    }
+
+    /**
+     * Called when the mouse wheel was scrolled. (UNSUPPORTED)
+     *
+     * @param dx the amount of horizontal scroll
+     * @param dy the amount of vertical scroll
+     *
+     * @return whether to hand the event to other listeners.
+     */
+    public boolean scrolled(float dx, float dy) {
+        return true;
+    }
+
+    /**
+     * Called when the mouse or finger was dragged. (UNSUPPORTED)
+     *
+     * @param screenX the x-coordinate of the mouse on the screen
+     * @param screenY the y-coordinate of the mouse on the screen
+     * @param pointer the button or touch finger number
+     * @return whether to hand the event to other listeners.
+     */
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return true;
+    }
+
+    // UNSUPPORTED METHODS FROM ControllerListener
+
+    /**
+     * Called when a controller is connected. (UNSUPPORTED)
+     *
+     * @param controller The game controller
+     */
+    public void connected (Controller controller) {}
+
+    /**
+     * Called when a controller is disconnected. (UNSUPPORTED)
+     *
+     * @param controller The game controller
+     */
+    public void disconnected (Controller controller) {}
+
+    /**
+     * Called when an axis on the Controller moved. (UNSUPPORTED)
+     *
+     * The axisCode is controller specific. The axis value is in the range [-1, 1].
+     *
+     * @param controller The game controller
+     * @param axisCode 	The axis moved
+     * @param value 	The axis value, -1 to 1
+     * @return whether to hand the event to other listeners.
+     */
+    public boolean axisMoved (Controller controller, int axisCode, float value) {
+        return true;
     }
 }
