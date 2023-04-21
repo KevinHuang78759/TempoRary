@@ -224,7 +224,7 @@ public class GameMode implements Screen {
 		}
 		else{
 			//Draw everything in the current level
-			gameplayController.level.drawEverything(canvas, gameplayController.activeBandMember, gameplayController.goalBandMember, inputController.triggerPress, inputController.switches(), gameplayController.inBetweenWidth/5f);
+			gameplayController.level.drawEverything(canvas, gameplayController.activeBandMember, gameplayController.goalBandMember, inputController.triggerPress, inputController.switches());
 
 			// Draw the rest of the game objects on top
 			for (Particle o : gameplayController.getParticles()) {

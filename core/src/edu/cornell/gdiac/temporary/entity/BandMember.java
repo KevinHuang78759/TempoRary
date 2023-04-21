@@ -300,7 +300,7 @@ public class BandMember {
                 //Calculate the spawning y coordinate to be high enough such that none of the note is
                 //visible
                 n.setY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample()) *(hitY - spawnY));
-                n.draw(canvas, NOTE_SIZE_SCALE*width, NOTE_SIZE_SCALE*width, bottomLeftCorner.y + height, bottomLeftCorner.y);
+                n.draw(canvas, NOTE_SIZE_SCALE*width, NOTE_SIZE_SCALE*width);
             }
         }
     }
@@ -326,7 +326,7 @@ public class BandMember {
                     n.setY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample())*(hitY - spawnY));
                 }
 
-                n.draw(canvas, NOTE_SIZE_SCALE*width/(numLines), NOTE_SIZE_SCALE*width/(numLines), bottomLeftCorner.y + height, bottomLeftCorner.y);
+                n.draw(canvas, NOTE_SIZE_SCALE*width/(numLines), NOTE_SIZE_SCALE*width/(numLines));
             }
 
         }

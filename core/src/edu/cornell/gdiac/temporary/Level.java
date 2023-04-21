@@ -162,17 +162,18 @@ public class Level {
         holdEndTexture = directory.getEntry("hold-end", Texture.class);
         noteIndicator = directory.getEntry("note-indicator", Texture.class);
         noteIndicatorHit = directory.getEntry("note-indicator-hit", Texture.class);
-        HUnit = directory.getEntry("borderHUnit", Texture.class);
-        VUnit = directory.getEntry("borderVUnit", Texture.class);
-        CUnit = directory.getEntry("borderCorner", Texture.class);
-        laneBackground = directory.getEntry("laneBackground", Texture.class);
-        sepLine = directory.getEntry("separationLine", Texture.class);
         violinSprite = new FilmStrip(directory.getEntry("violin-cat", Texture.class), 1, 1, 1);
         voiceSprite = new FilmStrip(directory.getEntry("singer-cat", Texture.class), 1, 1, 1);
         drummerSprite = new FilmStrip(directory.getEntry("drummer-cat", Texture.class), 1, 1, 1);
         synthSprite = new FilmStrip(directory.getEntry("drummer-cat", Texture.class), 1, 1, 1);
         backSplash = new FilmStrip(directory.getEntry("back-splash", Texture.class), 4, 5, 19);
         frontSplash = new FilmStrip(directory.getEntry("front-splash", Texture.class), 4, 5, 19);
+
+        HUnit = directory.getEntry("borderHUnit", Texture.class);
+        VUnit = directory.getEntry("borderVUnit", Texture.class);
+        CUnit = directory.getEntry("borderCorner", Texture.class);
+        laneBackground = directory.getEntry("laneBackground", Texture.class);
+        sepLine = directory.getEntry("separationLine", Texture.class);
 
         // preallocate band members
         bandMembers = new BandMember[data.get("bandMembers").size];
