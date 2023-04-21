@@ -125,6 +125,11 @@ public class Level {
     private Texture CUnit;
 
     /**
+     * Line separation texture
+     */
+    private Texture sepLine;
+
+    /**
      * background of each lane
      */
     private Texture laneBackground;
@@ -152,6 +157,7 @@ public class Level {
         VUnit = directory.getEntry("borderVUnit", Texture.class);
         CUnit = directory.getEntry("borderCorner", Texture.class);
         laneBackground = directory.getEntry("laneBackground", Texture.class);
+        sepLine = directory.getEntry("separationLine", Texture.class);
         // preallocate band members
         bandMembers = new BandMember[data.get("bandMembers").size];
         spawnOffset = music.getSampleRate();
@@ -312,7 +318,7 @@ public class Level {
             //We also need to draw a separate hit bar for each line
             if(active == i || goal == i){
                 bandMembers[i].drawHitNotes(canvas, sample, canvas.getHeight());
-                bandMembers[i].drawLineSeps(canvas);
+                bandMembers[i].drawLineSeps(canvas, sepLine);
                 bandMembers[i].drawHitBar(canvas, triggers);
             }
             //Otherwise just draw the switch notes, and we only have 1 hit bar to draw

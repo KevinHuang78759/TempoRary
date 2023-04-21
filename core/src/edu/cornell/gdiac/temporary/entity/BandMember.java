@@ -398,10 +398,15 @@ public class BandMember {
     /**
      * Draw separation lines to divide each line within this lane
      */
-    public void drawLineSeps(GameCanvas canvas){
+    public void drawLineSeps(GameCanvas canvas, Texture lineSep){
+        float thickness = width/50f;
+        float xScale = thickness/lineSep.getWidth();
+        float trueHeight = 0.95f*lineHeight;
+        float yScale = trueHeight/lineSep.getHeight();
+        float yCoord = ((bottomLeftCorner.y + height) + (bottomLeftCorner.y + height - lineHeight))/2f;
         Color lColor = Color.BLACK;
         for(int i = 1; i < numLines; ++i){
-            canvas.drawLine(bottomLeftCorner.x + i * (width/numLines), bottomLeftCorner.y + height, bottomLeftCorner.x + i * (width/numLines), bottomLeftCorner.y + height - lineHeight, 3, lColor);
+            canvas.draw(lineSep, Color.WHITE, lineSep.getWidth()/2f, lineSep.getHeight()/2f, bottomLeftCorner.x + i * (width/numLines), yCoord, 0.0f, xScale, yScale);
         }
     }
 

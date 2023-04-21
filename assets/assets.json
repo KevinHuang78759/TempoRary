@@ -14,7 +14,8 @@
         "borderVUnit" : "images/lane_edge_unit.png",
         "borderHUnit" : "images/lane_edge_unit.png",
         "borderCorner" : "images/laneCornerBl.png",
-        "laneBackground" : "images/laneBackGround.png"
+        "laneBackground" : "images/laneBackGround.png",
+        "separationLine" : "images/lane-separation-line.png"
     },
     "fonts": {
         "lucida": {
