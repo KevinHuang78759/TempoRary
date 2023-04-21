@@ -52,13 +52,6 @@
         "level_test_old" : "levels/test.json"
     },
     "soundEffects": [
-      ["tap", "sound/tap.ogg"],
-      ["goodHit", "sound/goodNote.ogg"],
-      ["perfectHit", "sound/perfectNote.ogg"],
-      ["goodCombo", "sound/goodCombo.ogg"],
-      ["perfectCombo", "sound/perfectCombo.ogg"],
-      ["switch", "sound/switch.ogg"],
-      ["switchGoodHit", "sound/switchGood.ogg"],
-      ["switchPerfectHit", "sound/switchPerfect.ogg"]
+      ["tap", "sound/tap.ogg"]
     ]
 }
