@@ -294,7 +294,7 @@ public class Note{
 	 *
 	 * @param canvas The drawing context
 	 */
-	public void draw(GameCanvas canvas, float widthConfine, float heightConfine) {
+	public void draw(GameCanvas canvas, float widthConfine, float heightConfine, float topbound, float lowbound) {
 		//Calculate a scale such that the entire sprite fits within both confines, but does not get distorted
 		float scale = Math.min(widthConfine/w, heightConfine/h);
 		float splashScale = scale * 3.5f;
@@ -315,35 +315,116 @@ public class Note{
 			endAnimator.setFrame((int)curEndFrame);
 			float trailScale = tailThickness / trailWidth;
 			//Start at the bottom location, then draw until we reach the top
-			float startY = holdMiddleBottomY + trailHeight*trailScale*0.5f;
-			float numSegments = ((y - holdMiddleBottomY)/(trailHeight*trailScale));
-			for (int i = 0; i < (int)numSegments; ++i) {
-				float drawY = startY + i*trailHeight*trailScale;
-				// only draw if the Y for the trail is not past the hold note bottom
-				if (drawY > bottomY)
-					canvas.draw(trailAnimator, Color.WHITE, trailOrigin.x, trailOrigin.y, x, drawY, 0f, trailScale, trailScale);
+
+			float starty = by + trailHeight*trailScale*0.5f;
+			float trueHeight = trailHeight*trailScale;
+			float numSegments = ((y - by)/(trailHeight*trailScale));
+			for(int i = 0; i < (int)numSegments; ++i){
+				//only draw if in bounds
+				float drawy = starty + i*trailHeight*trailScale;
+				if(drawy - trueHeight/2 < topbound && drawy + trueHeight/2 > topbound){
+					//we need to draw the full sprite somewhere
+					canvas.draw(trailAnimator, Color.WHITE, trailOrigin.x, trailOrigin.y, 4000, 4000, 0f, trailScale, trailScale);
+
+					float fracToDraw = (topbound - (drawy - trueHeight/2))/trueHeight;
+					canvas.drawSubsection(trailAnimator, x, drawy, trailScale, 0f, 1f, 0f, fracToDraw);
+
+				}
+				else if(drawy + trueHeight/2 <= topbound && drawy - trueHeight/2 >=lowbound){
+					canvas.draw(trailAnimator, Color.WHITE, trailOrigin.x, trailOrigin.y, x, drawy, 0f, trailScale, trailScale);
+
+				}
+				else if(drawy + trueHeight/2 > lowbound && drawy - trueHeight < lowbound){
+					//we need to draw the full sprite somewhere
+					canvas.draw(trailAnimator, Color.WHITE, trailOrigin.x, trailOrigin.y, 4000, 4000, 0f, trailScale, trailScale);
+
+					float fracToDraw = (drawy + trueHeight/2 - lowbound)/trueHeight;
+					canvas.drawSubsection(trailAnimator, x, drawy, trailScale, 0f, 1f, 1f - fracToDraw, 1.0f);
+
+				}
 			}
 
 			//We do not want to draw the tail in a way such that it will poke out of the bottom sprite
 			//Therefore, we need to draw only a vertical fraction of our trail asset for the final
 			//segment
-			canvas.drawSubsection(trailAnimator, Color.WHITE, x, startY + ((int)numSegments)*trailHeight*trailScale, trailScale, 0f, 1f, 0f, numSegments - (int)numSegments);
+
+			float lastDrawY = starty + ((int)numSegments)*trailHeight*trailScale;
+			float lastSegmentHeight = trueHeight * (numSegments - (int)numSegments);
+			float lastSegmentYCenter = lastDrawY - trueHeight/2 + lastSegmentHeight/2;
+			if(lastSegmentYCenter + lastSegmentHeight/2 > topbound && lastSegmentYCenter - lastSegmentHeight/2 < topbound){
+				float lastSegFracToDraw = (topbound - (lastDrawY - trueHeight/2))/trueHeight;
+				canvas.drawSubsection(trailAnimator, x, lastDrawY, trailScale, 0f, 1f, 0f, lastSegFracToDraw);
+
+			}
+			else if(lastSegmentYCenter + lastSegmentHeight/2 <= topbound && lastSegmentYCenter - lastSegmentHeight/2 >= lowbound){
+				canvas.drawSubsection(trailAnimator, x, lastDrawY, trailScale, 0f, 1f, 0f, numSegments - (int)numSegments);
+
+			}
+			else if(lastSegmentYCenter + lastSegmentHeight/2 > lowbound && lastSegmentYCenter - lastSegmentHeight/2 < lowbound){
+				float lastSegFracStart = (lowbound - (lastDrawY - trueHeight/2))/trueHeight;
+				canvas.drawSubsection(trailAnimator, x, lastDrawY, trailScale, 0f, 1f, lastSegFracStart, numSegments - (int)numSegments);
+
+			}
+//			canvas.drawSubsection(trailAnimator, x, lastDrawY, trailScale, 0f, 1f, 0f, numSegments - (int)numSegments);
+
+
 
 			//The head and tail are drawn after the trails to cover up the jagged ends
-			canvas.draw(animator, Color.WHITE, origin.x, origin.y, x, bottomY,
-					0.0f, scale, scale);
-			canvas.draw(endAnimator, Color.WHITE, endOrigin.x, endOrigin.y, x, y,
-					0.0f, scale, scale);
+			float headHeight = animator.getRegionHeight()*scale;
+			if(by + headHeight/2 >topbound && by - headHeight/2 < topbound){
+				canvas.draw(animator, Color.WHITE, origin.x, origin.y, 4000, 4000,
+						0.0f, scale, scale);
+				float drawFrac = (topbound - (by - headHeight/2))/headHeight;
+				canvas.drawSubsection(animator, x, by,scale, 0f, 1f, 0f, drawFrac);
+			}
+			else if(by + headHeight/2 <= topbound && by - headHeight/2 >= lowbound){
+				canvas.draw(animator, Color.WHITE, origin.x, origin.y, x, by,
+						0.0f, scale, scale);
+			}
+			else if(by + headHeight/2 >lowbound && by - headHeight/2 < lowbound){
+				canvas.draw(animator, Color.WHITE, origin.x, origin.y, 4000, 4000,
+						0.0f, scale, scale);
+				float startFrac = (lowbound - (by - headHeight/2))/headHeight;
+				canvas.drawSubsection(animator, x, by, scale, 0f, 1f, startFrac, 1f);
+			}
 
-			// draw front holding sprite
-			if (holding)
-				canvas.draw(frontSplash, Color.WHITE, frontSplash.getRegionWidth() / 2,frontSplash.getRegionHeight() / 2,
-					x, bottomY +  animator.getRegionHeight() * scale + 50, 0.0f, splashScale, splashScale);
+			float endH = endHeight*scale;
+			if(y + endH/2 > topbound && y - endH/2 < topbound){
+				canvas.draw(endAnimator, Color.WHITE, origin.x, origin.y, 4000, 4000,
+						0.0f, scale, scale);
+				float drawFrac = (topbound - (y - endH/2))/endH;
+				canvas.drawSubsection(endAnimator, x, y, scale, 0f, 1f, 0f, drawFrac);
+			}
+			else if(y + endH/2 <= topbound && y - endH/2 >= lowbound){
+				canvas.draw(endAnimator, Color.WHITE, origin.x, origin.y, x, y,
+						0.0f, scale, scale);
+			}
+			else if(y + endH/2 >lowbound && y - endH/2 < lowbound){
+				canvas.draw(endAnimator, Color.WHITE, origin.x, origin.y, 4000, 4000,
+						0.0f, scale, scale);
+				float startFrac = (lowbound - (y - endH/2))/endH;
+				canvas.drawSubsection(endAnimator, x, y, scale, 0f, 1f, startFrac, 1f);
+			}
 		}
 		else{
 			animator.setFrame((int)animeframe);
-			canvas.draw(animator, Color.WHITE, origin.x, origin.y, x, y,
-					0.0f, scale, scale);
+			float headHeight = animator.getRegionHeight()*scale;
+			if(y + headHeight/2 >topbound && y - headHeight/2 < topbound){
+				canvas.draw(animator, Color.WHITE, origin.x, origin.y, 4000, 4000,
+						0.0f, scale, scale);
+				float drawFrac = (topbound - (y - headHeight/2))/headHeight;
+				canvas.drawSubsection(animator, x, y,scale, 0f, 1f, 0f, drawFrac);
+			}
+			else if(y + headHeight/2 <= topbound && y - headHeight/2 >= lowbound){
+				canvas.draw(animator, Color.WHITE, origin.x, origin.y, x, y,
+						0.0f, scale, scale);
+			}
+			else if(y + headHeight/2 >lowbound && y - headHeight/2 < lowbound){
+				canvas.draw(animator, Color.WHITE, origin.x, origin.y, 4000, 4000,
+						0.0f, scale, scale);
+				float startFrac = (lowbound - (y - headHeight/2))/headHeight;
+				canvas.drawSubsection(animator, x, y, scale, 0f, 1f, startFrac, 1f);
+			}
 		}
 	}
 }

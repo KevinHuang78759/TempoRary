@@ -224,13 +224,12 @@ public class GameMode implements Screen {
 		}
 		else{
 			//Draw everything in the current level
-			gameplayController.level.drawEverything(canvas, gameplayController.activeBandMember, gameplayController.goalBandMember, inputController.triggerPress, inputController.switches());
+			gameplayController.level.drawEverything(canvas, gameplayController.activeBandMember, gameplayController.goalBandMember, inputController.triggerPress, inputController.switches(), gameplayController.inBetweenWidth/5f);
 
 			// Draw the rest of the game objects on top
 			for (Particle o : gameplayController.getParticles()) {
 				o.draw(canvas);
 			}
-
 			for(BandMember bandMember : gameplayController.level.getBandMembers()){
 				//Draw the band member sprite and competency bar
 				bandMember.drawCharacterSprite(canvas);
