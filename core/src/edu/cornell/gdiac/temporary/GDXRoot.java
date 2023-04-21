@@ -79,7 +79,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			throw new RuntimeException(e);
 		}
 		calibration = new CalibrationMode(canvas);
-		levelscreen = new LevelSelect("loading.json", canvas);
+		levelscreen = new LevelSelect(canvas);
 
 		loading.setScreenListener(this);
 		setScreen(loading);

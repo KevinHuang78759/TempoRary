@@ -36,7 +36,7 @@
         }
     },
     "jsons": {
-        "level_test": "levels/test2.json",
-        "level_test_old" : "levels/test.json"
+        "1": "levels/test2.json",
+        "2" : "levels/test.json"
     }
 }
