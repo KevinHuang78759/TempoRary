@@ -1,5 +1,35 @@
 {
 	"textures": {
+        "loading-background": {
+          "file":     "images/background.png",
+          "minFilter": "linear",
+          "magFilter": "linear"
+        },
+        "title": {
+          "file": "images/title_v1.png",
+          "minFilter": "linear",
+          "magFilter": "linear"
+        },
+        "ghost-cat": {
+          "file": "images/ghost_cat.jpg",
+          "minFilter": "linear",
+          "maxFilter": "linear"
+        },
+        "play-old": {
+          "file": "images/play.png",
+          "minFilter": "linear",
+          "maxFilter": "linear"
+        },
+        "play": {
+          "file":     "images/play_button_v1.png",
+          "minFilter": "linear",
+          "magFilter": "linear"
+        },
+        "level-editor": {
+          "file": "images/leveleditor_button_v1.png",
+          "minFilter": "linear",
+          "maxFilter": "linear"
+        },
         "background": "images/background.png",
         "concert-background": "images/backgrounds/background_temp_concert_1.png",
         "street-background": "images/backgrounds/background_temp_streets_1.png",

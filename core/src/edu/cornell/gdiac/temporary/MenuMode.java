@@ -78,6 +78,8 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     /** Exit code for the button to go to the level editor */
     public static final int TO_CALIBRATION = 5;
 
+    public static final int TO_MENU = 6;
+
     /**
      * Populates this mode from the given the directory.
      *
@@ -89,11 +91,11 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
      */
     public void populate(AssetDirectory directory) {
         logo = directory.getEntry("title", Texture.class);
-        background = directory.getEntry( "background", Texture.class );
+        background = directory.getEntry( "loading-background", Texture.class );
         background.setFilter( Texture.TextureFilter.Linear, Texture.TextureFilter.Linear );
-        playButton = directory.getEntry("play",Texture.class);
-        levelEditorButton = directory.getEntry("level-editor",Texture.class);
-        calibrationButton = directory.getEntry("play-old",Texture.class);
+        playButton = directory.getEntry("play", Texture.class);
+        levelEditorButton = directory.getEntry("level-editor", Texture.class);
+        calibrationButton = directory.getEntry("play-old", Texture.class);
         playButtonCoords = new Vector2(centerX + levelEditorButton.getWidth(), canvas.getHeight()/2 + 200);
         levelEditorButtonCoords = new Vector2(centerX + levelEditorButton.getWidth(), canvas.getHeight()/2);
         calibrationButtonCoords = new Vector2(centerX + calibrationButton.getWidth()*2 , centerY);
@@ -109,6 +111,22 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     }
 
     /**
+     * Getter for the press state of the buttons on the screen
+     * @return value of `pressState`
+     */
+    public int getPressState() {
+        return pressState;
+    }
+
+    /**
+     * Resets the MenuMode
+     */
+    public void reset() {
+        pressState = INITIAL;
+        Gdx.input.setInputProcessor( this );
+    }
+
+    /**
      * Creates a MenuMode
      *
      * @param canvas 	The game canvas to draw to
@@ -117,18 +135,19 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         this.canvas  = canvas;
         // Compute the dimensions from the canvas
         resize(canvas.getWidth(),canvas.getHeight());
-        pressState = INITIAL;
-        Gdx.input.setInputProcessor( this );
+        active = false;
+        reset();
     }
 
     @Override
     public void render(float v) {
         if (active) {
             draw();
-
+            System.out.println("rendering menu");
             // We are ready, notify our listener
+            // TODO: use escape to also quit the game
             if (isReady() && listener != null) {
-                listener.exitScreen(this, 0);
+                listener.exitScreen(this, 1);
             }
         }
     }
@@ -197,7 +216,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
     @Override
     public void dispose() {
-
+        canvas = null;
     }
 
     /**

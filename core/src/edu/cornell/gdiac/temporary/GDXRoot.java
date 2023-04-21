@@ -23,6 +23,7 @@ import edu.cornell.gdiac.temporary.editor.*;
 import com.badlogic.gdx.*;
 import edu.cornell.gdiac.assets.*;
 
+import java.awt.*;
 import java.io.FileNotFoundException;
 
 import java.io.IOException;
@@ -45,13 +46,14 @@ public class GDXRoot extends Game implements ScreenListener {
 	// SCREEN MODES
 	/** Player mode for the asset loading screen (CONTROLLER CLASS) */
 	private LoadingMode loading;
+	/** Player mode for viewing the menu (CONTROLLER CLASS) */
+	private MenuMode menu;
 	/** Player mode for the game proper (CONTROLLER CLASS) */
 	private GameMode playing;
 	/** Player mode for the level editor (CONTROLLER CLASS) */
 	private EditorMode editing;
 	/** Player mode for getting calibration (CONTROLLER CLASS) */
 	private CalibrationMode calibration;
-
 
 	/**
 	 * Creates a new game from the configuration settings.
@@ -70,6 +72,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	public void create() {
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("assets.json", canvas,1);
+		menu = new MenuMode(canvas);
 		playing = new GameMode(canvas);
 		try {
 			editing = new EditorMode(canvas);
@@ -101,6 +104,8 @@ public class GDXRoot extends Game implements ScreenListener {
 		calibration = null;
 		editing.dispose();
 		editing = null;
+		menu.dispose();
+		menu = null;
 
 		// Unload all of the resources
 		if (directory != null) {
@@ -134,47 +139,60 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * @param exitCode The state of the screen upon exit
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
-		if (exitCode != 0) {
-			Gdx.app.error("GDXRoot", "Exit with error code "+exitCode, new RuntimeException());
-			Gdx.app.exit();
-		} else if (screen == loading) {
+		System.out.println("exiting: " + screen + " " + exitCode);
+		if (screen == loading) {
 			directory = loading.getAssets();
-			if (loading.getPressState() == LoadingMode.TO_GAME) {
+			menu.setScreenListener(this);
+			menu.populate(directory);
+			setScreen(menu);
+			loading.dispose();
+			loading = null;
+		} else if (exitCode == 1 && screen == menu) {
+			System.out.println("leaving menu");
+			if (menu.getPressState() == MenuMode.TO_GAME) {
 				playing.setScreenListener(this);
 				playing.readLevel(directory);
 				playing.populate(directory);
 				playing.initializeOffset(calibration.getOffset());
 				setScreen(playing);
-			} else if (screen == loading && loading.getPressState() == LoadingMode.TO_LEVEL_EDITOR) {
+			} else if (menu.getPressState() == MenuMode.TO_LEVEL_EDITOR) {
 				editing.setScreenListener(this);
 				editing.populate(directory);
 				setScreen(editing);
-			} else if (screen == loading && loading.getPressState() == LoadingMode.TO_CALIBRATION) {
+				editing.show();
+			} else if (menu.getPressState() == MenuMode.TO_CALIBRATION) {
 				calibration.setScreenListener(this);
 				calibration.populate(directory);
 				setScreen(calibration);
+				calibration.show();
 			}
-			loading.dispose();
-			loading = null;
-		} else if (screen == playing){
-			loading = new LoadingMode("assets.json", canvas,1);
-			loading.setScreenListener(this);
-			setScreen(loading);
-		} else if (screen == editing){
-			loading = new LoadingMode("assets.json", canvas,1);
-			loading.setScreenListener(this);
-			setScreen(loading);
-		} else if (screen == calibration) {
-			loading = new LoadingMode("assets.json", canvas,1);
-			loading.setScreenListener(this);
-			setScreen(loading);
-
-			System.out.println("Offset from CalibrationMode: " + calibration.getOffset());
+			menu.reset();
+			menu.hide();
+		} else if (exitCode == MenuMode.TO_MENU) {
+			System.out.println("going back to menu");
+			if (screen == playing)
+				playing.hide();
+			else if (screen == editing) {
+				System.out.println("leaving editing");
+				editing.hide();
+			}
+			else {
+				calibration.hide();
+				System.out.println(calibration.getOffset());
+			}
+			menu.setScreenListener(this);
+			setScreen(menu);
+			menu.reset();
+			menu.show();
 		}
 		else {
 			// We quit the main application
 			Gdx.app.exit();
 		}
+
+		// errors here
+		// Gdx.app.error("GDXRoot", "Exit with error code "+exitCode, new RuntimeException());
+		//			Gdx.app.exit();
 	}
 
 }

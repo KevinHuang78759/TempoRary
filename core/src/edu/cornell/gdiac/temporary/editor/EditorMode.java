@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.temporary.GameCanvas;
 import edu.cornell.gdiac.temporary.InputController;
+import edu.cornell.gdiac.temporary.MenuMode;
 import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.ScreenListener;
 import edu.cornell.gdiac.audio.*;
@@ -778,10 +779,6 @@ public class EditorMode implements Screen {
             note.setY(songPosToScreenY(note.getPos()));
             note.setOnScreen(onScreen(note.getPos()));
         }
-
-        if (inputController.didExit()) {
-            listener.exitScreen(this, 0);
-        }
     }
 
     /**
@@ -1369,7 +1366,8 @@ public class EditorMode implements Screen {
             update(delta);
             draw(delta);
             if (inputController.didExit() && listener != null) {
-                listener.exitScreen(this, 0);
+                System.out.println("leaving the editor");
+                listener.exitScreen(this, MenuMode.TO_MENU);
             }
         }
     }

@@ -186,7 +186,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @return true if the player is ready to go
 	 */
 	public boolean isReady() {
-		return pressState == TO_GAME || pressState == TO_LEVEL_EDITOR || pressState == TO_CALIBRATION;
+//		return pressState == TO_GAME || pressState == TO_LEVEL_EDITOR || pressState == TO_CALIBRATION;
+		return progress >= 1.0f;
 	}
 
 	/**
@@ -298,19 +299,19 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @param delta Number of seconds since last animation frame
 	 */
 	private void update(float delta) {
-		if (playButton == null || levelEditorButton == null) {
+//		if (playButton == null || levelEditorButton == null) {
 			assets.update(budget);
 			this.progress = assets.getProgress();
-			if (progress >= 1.0f) {
-				this.progress = 1.0f;
-				playButton = internal.getEntry("play",Texture.class);
-				levelEditorButton = internal.getEntry("level-editor",Texture.class);
-				calibrationButton = internal.getEntry("play-old",Texture.class);
-				playButtonCoords = new Vector2(centerX + levelEditorButton.getWidth(), canvas.getHeight()/2 + 200);
-				levelEditorButtonCoords = new Vector2(centerX + levelEditorButton.getWidth(), canvas.getHeight()/2);
-				calibrationButtonCoords = new Vector2(centerX + calibrationButton.getWidth()*2 , centerY);
-			}
-		}
+//			if (progress >= 1.0f) {
+//				this.progress = 1.0f;
+//				playButton = internal.getEntry("play",Texture.class);
+//				levelEditorButton = internal.getEntry("level-editor",Texture.class);
+//				calibrationButton = internal.getEntry("play-old",Texture.class);
+//				playButtonCoords = new Vector2(centerX + levelEditorButton.getWidth(), canvas.getHeight()/2 + 200);
+//				levelEditorButtonCoords = new Vector2(centerX + levelEditorButton.getWidth(), canvas.getHeight()/2);
+//				calibrationButtonCoords = new Vector2(centerX + calibrationButton.getWidth()*2 , centerY);
+//			}
+//		}
 	}
 
 	/**
@@ -494,6 +495,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @return whether to hand the event to other listeners. 
 	 */
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		System.out.println("touched");
+
 		if (playButton == null || pressState == TO_GAME || pressState == TO_LEVEL_EDITOR || pressState == TO_CALIBRATION) {
 			return true;
 		}
