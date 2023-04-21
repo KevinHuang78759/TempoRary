@@ -225,18 +225,12 @@ public class GameMode implements Screen {
 		}
 		else{
 			//Draw everything in the current level
-			gameplayController.level.drawEverything(canvas, gameplayController.activeBandMember, gameplayController.goalBandMember, inputController.triggerPress, inputController.switches());
+			gameplayController.level.drawEverything(canvas, gameplayController.activeBandMember, gameplayController.goalBandMember, inputController.triggerPress, inputController.switches(), gameplayController.inBetweenWidth/5f);
 
 			// Draw the rest of the game objects on top
 			for (Particle o : gameplayController.getParticles()) {
 				o.draw(canvas);
 			}
-
-			//obtain background color
-			Color bkgC = new Color(237f/255f, 224f/255f, 1f, 1.0f);
-			//draw two rectangles to cover up spawning/disappearing areas of notes and switches
-			canvas.drawRect(0, gameplayController.TOPBOUND, canvas.getWidth(), canvas.getHeight(), bkgC, true);
-			canvas.drawRect(0, 0, canvas.getWidth(), gameplayController.BOTTOMBOUND, bkgC, true);
 			for(BandMember bandMember : gameplayController.level.getBandMembers()){
 				//Draw the competency bar
 				bandMember.drawHPBar(canvas);
