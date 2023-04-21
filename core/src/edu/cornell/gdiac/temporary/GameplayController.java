@@ -20,6 +20,7 @@
  */
 package edu.cornell.gdiac.temporary;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.graphics.Texture;
@@ -94,6 +95,7 @@ public class GameplayController {
 	/** Y value of the hit bar */
 	public float hitbarY;
 
+	private SoundController sfx;
 
 	/**
 	 * Create gameplaycontroler
@@ -110,7 +112,10 @@ public class GameplayController {
 		RIGHTBOUND = 9*width/10f;
 		TOPBOUND = 19f*height/20f;
 		BOTTOMBOUND = height/5f;
+		sfx = new SoundController();
 	}
+
+
 
 	/**
 	 * Loads a level
@@ -138,6 +143,15 @@ public class GameplayController {
 		noteDieY = BOTTOMBOUND - smallwidth/2;
 		switches = new boolean[NUM_LANES];
 		triggers = new boolean[lpl];
+
+		//populate sound effects
+		JsonReader jr = new JsonReader();
+		JsonValue allSounds = jr.parse(Gdx.files.internal("assets.json"));
+		allSounds = allSounds.get("soundEffects");
+		for(int i = 0; i < allSounds.size; ++i){
+			JsonValue cur = allSounds.get(i);
+			sfx.addSound(cur.getString(0), cur.getString(1));
+		}
 	}
 
 	/**
@@ -416,6 +430,11 @@ public class GameplayController {
 		//Read in inputs
 		switches = input.switches();
 		triggers = input.didTrigger();
+		for (boolean trigger : triggers) {
+			if (trigger) {
+				sfx.playSound("tap");
+			}
+		}
 		boolean[] lifted = input.triggerLifted;
 		long currentSample = level.getCurrentSample();
 
