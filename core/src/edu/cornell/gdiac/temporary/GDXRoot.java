@@ -158,6 +158,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			// TODO: probably add the level populate here
 //			to playing is now to level select
 			levelscreen.setScreenListener(this);
+			System.out.println("to level again");
 			levelscreen.populate(directory);
 			setScreen(levelscreen);
 			levelscreen.show();
