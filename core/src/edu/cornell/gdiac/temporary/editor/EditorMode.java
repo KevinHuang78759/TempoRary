@@ -1,7 +1,6 @@
 package edu.cornell.gdiac.temporary.editor;
 
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.math.Vector2;
@@ -9,9 +8,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.*;
 
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.temporary.ExitCode;
 import edu.cornell.gdiac.temporary.GameCanvas;
 import edu.cornell.gdiac.temporary.InputController;
-import edu.cornell.gdiac.temporary.MenuMode;
 import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.ScreenListener;
 import edu.cornell.gdiac.audio.*;
@@ -1366,8 +1365,7 @@ public class EditorMode implements Screen {
             update(delta);
             draw(delta);
             if (inputController.didExit() && listener != null) {
-                System.out.println("leaving the editor");
-                listener.exitScreen(this, MenuMode.TO_MENU);
+                listener.exitScreen(this, ExitCode.TO_MENU);
             }
         }
     }

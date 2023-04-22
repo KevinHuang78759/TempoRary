@@ -23,9 +23,6 @@ import edu.cornell.gdiac.temporary.editor.*;
 import com.badlogic.gdx.*;
 import edu.cornell.gdiac.assets.*;
 
-import java.awt.*;
-import java.io.FileNotFoundException;
-
 import java.io.IOException;
 
 /**
@@ -132,6 +129,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	
 	/**
 	 * The given screen has made a request to exit its player mode.
+	 * This is where most of the screen switching logic is done.
 	 *
 	 * The value exitCode can be used to implement menu options.
 	 *
@@ -147,52 +145,40 @@ public class GDXRoot extends Game implements ScreenListener {
 			setScreen(menu);
 			loading.dispose();
 			loading = null;
-		} else if (exitCode == 1 && screen == menu) {
-			System.out.println("leaving menu");
-			if (menu.getPressState() == MenuMode.TO_GAME) {
-				playing.setScreenListener(this);
-				playing.readLevel(directory);
-				playing.populate(directory);
-				playing.initializeOffset(calibration.getOffset());
-				setScreen(playing);
-			} else if (menu.getPressState() == MenuMode.TO_LEVEL_EDITOR) {
-				editing.setScreenListener(this);
-				editing.populate(directory);
-				setScreen(editing);
-				editing.show();
-			} else if (menu.getPressState() == MenuMode.TO_CALIBRATION) {
-				calibration.setScreenListener(this);
-				calibration.populate(directory);
-				setScreen(calibration);
-				calibration.show();
-			}
-			menu.reset();
-			menu.hide();
-		} else if (exitCode == MenuMode.TO_MENU) {
-			System.out.println("going back to menu");
-			if (screen == playing)
-				playing.hide();
-			else if (screen == editing) {
-				System.out.println("leaving editing");
-				editing.hide();
-			}
-			else {
-				calibration.hide();
-				System.out.println(calibration.getOffset());
-			}
+		} else if (exitCode == ExitCode.TO_PLAYING) {
+			screen.hide();
+			playing.setScreenListener(this);
+			playing.readLevel(directory);
+			playing.populate(directory);
+			playing.initializeOffset(calibration.getOffset());
+			setScreen(playing);
+			playing.show();
+		} else if (exitCode == ExitCode.TO_EDITOR) {
+			screen.hide();
+			editing.setScreenListener(this);
+			editing.populate(directory);
+			setScreen(editing);
+			editing.show();
+		} else if (exitCode == ExitCode.TO_CALIBRATION) {
+			screen.hide();
+			calibration.setScreenListener(this);
+			calibration.populate(directory);
+			setScreen(calibration);
+			calibration.show();
+		} else if (exitCode == ExitCode.TO_MENU) {
+			System.out.println(calibration.getOffset());
+			screen.hide();
 			menu.setScreenListener(this);
 			setScreen(menu);
 			menu.reset();
 			menu.show();
-		}
-		else {
+		} else if (exitCode == ExitCode.TO_EXIT) {
 			// We quit the main application
 			Gdx.app.exit();
+		} else {
+			 Gdx.app.error("GDXRoot", "Exit with error code "+exitCode, new RuntimeException());
+			 Gdx.app.exit();
 		}
-
-		// errors here
-		// Gdx.app.error("GDXRoot", "Exit with error code "+exitCode, new RuntimeException());
-		//			Gdx.app.exit();
 	}
 
 }

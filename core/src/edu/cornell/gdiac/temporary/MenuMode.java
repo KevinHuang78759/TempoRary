@@ -64,21 +64,14 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private int pressState;
 
     /* PRESS STATES **/
-    // TODO: potentially change this to enums
     /** Initial button state */
-    private static final int INITIAL = 0;
+    private static final int NO_BUTTON_PRESSED = 0;
     /** Pressed down button state for the play button */
-    private static final int PLAY_PRESSED = 1;
-    /** Exit code for button to go to the game */
-    public static final int TO_GAME = 2;
+    private static final int PLAY_PRESSED = 101;
     /** Pressed down button state for the level editor button */
-    private static final int LEVEL_EDITOR_PRESSED = 3;
-    /** Exit code for the button to go to the level editor */
-    public static final int TO_LEVEL_EDITOR = 4;
-    /** Exit code for the button to go to the level editor */
-    public static final int TO_CALIBRATION = 5;
-
-    public static final int TO_MENU = 6;
+    private static final int LEVEL_EDITOR_PRESSED = 102;
+    /** Pressed down button state for the calibration button */
+    private static final int CALIBRATION_PRESSED = 103;
 
     /**
      * Populates this mode from the given the directory.
@@ -107,22 +100,16 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
      * @return true if the player is ready to go
      */
     public boolean isReady() {
-        return pressState == TO_GAME || pressState == TO_LEVEL_EDITOR || pressState == TO_CALIBRATION;
-    }
-
-    /**
-     * Getter for the press state of the buttons on the screen
-     * @return value of `pressState`
-     */
-    public int getPressState() {
-        return pressState;
+        return pressState == ExitCode.TO_PLAYING
+                || pressState == ExitCode.TO_EDITOR
+                || pressState == ExitCode.TO_CALIBRATION;
     }
 
     /**
      * Resets the MenuMode
      */
     public void reset() {
-        pressState = INITIAL;
+        pressState = NO_BUTTON_PRESSED;
         Gdx.input.setInputProcessor( this );
     }
 
@@ -143,11 +130,9 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     public void render(float v) {
         if (active) {
             draw();
-            System.out.println("rendering menu");
             // We are ready, notify our listener
-            // TODO: use escape to also quit the game
             if (isReady() && listener != null) {
-                listener.exitScreen(this, 1);
+                listener.exitScreen(this, pressState);
             }
         }
     }
@@ -174,7 +159,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
                     logo.getWidth()/2+50, centerY+300, 0,scale, scale);
 
         //draw calibration button
-        Color tintCalibration = (pressState == TO_CALIBRATION ? Color.GRAY: Color.RED);
+        Color tintCalibration = (pressState == CALIBRATION_PRESSED ? Color.GRAY: Color.RED);
         canvas.draw(calibrationButton, tintCalibration, calibrationButton.getWidth()/2, calibrationButton.getHeight()/2,
                     calibrationButtonCoords.x, calibrationButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
         canvas.end();
@@ -266,14 +251,15 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
      * @return whether to hand the event to other listeners.
      */
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if (playButton == null || pressState == TO_GAME || pressState == TO_LEVEL_EDITOR || pressState == TO_CALIBRATION) {
+        if (pressState == ExitCode.TO_PLAYING
+                || pressState == ExitCode.TO_EDITOR
+                || pressState == ExitCode.TO_CALIBRATION) {
             return true;
         }
 
         // Flip to match graphics coordinates
         screenY = heightY-screenY;
 
-        // TODO: Fix scaling (?)
         // check if buttons get pressed appropriately
         if (isButtonPressed(screenX, screenY, playButton, playButtonCoords)) {
             pressState = PLAY_PRESSED;
@@ -286,7 +272,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         float dist = (screenX-calibrationButtonCoords.x)*(screenX-calibrationButtonCoords.x)
                 +(screenY-calibrationButtonCoords.y)*(screenY-calibrationButtonCoords.y);
         if (dist < radius*radius) {
-            pressState = TO_CALIBRATION;
+            pressState = ExitCode.TO_CALIBRATION;
         }
         return false;
     }
@@ -305,11 +291,13 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         switch (pressState){
             case PLAY_PRESSED:
-                pressState = TO_GAME;
+                pressState = ExitCode.TO_PLAYING;
                 return false;
             case LEVEL_EDITOR_PRESSED:
-                pressState = TO_LEVEL_EDITOR;
+                pressState = ExitCode.TO_EDITOR;
                 return false;
+            case CALIBRATION_PRESSED:
+                pressState = ExitCode.TO_CALIBRATION;
             default:
                 return true;
         }
@@ -328,7 +316,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
      */
     public boolean buttonDown (Controller controller, int buttonCode) {
         // note: does not work for level editor
-        if (pressState == INITIAL) {
+        if (pressState == NO_BUTTON_PRESSED) {
             ControllerMapping mapping = controller.getMapping();
             if (mapping != null && buttonCode == mapping.buttonStart) {
                 pressState = PLAY_PRESSED;
@@ -354,7 +342,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         if (pressState == PLAY_PRESSED) {
             ControllerMapping mapping = controller.getMapping();
             if (mapping != null && buttonCode == mapping.buttonStart ) {
-                pressState = TO_GAME;
+                pressState = ExitCode.TO_PLAYING;
                 return false;
             }
         }

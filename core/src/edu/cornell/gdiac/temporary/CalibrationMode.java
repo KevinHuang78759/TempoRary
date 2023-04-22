@@ -101,7 +101,7 @@ public class CalibrationMode implements Screen {
             update(delta);
             draw(delta);
             if (isReady() && listener != null) {
-                listener.exitScreen(this, MenuMode.TO_MENU);
+                listener.exitScreen(this, ExitCode.TO_MENU);
             }
         }
     }
@@ -111,8 +111,8 @@ public class CalibrationMode implements Screen {
         canvas.begin();
         canvas.drawBackground(background,0,0);
 
-        //        // draw a hit bar
-//        // Change line color if it is triggered
+        // draw a hit bar
+        // Change line color if it is triggered
         Color lineColor = inputController.didHoldPlay() ? Color.TEAL : Color.NAVY;
         canvas.drawLine(canvas.getWidth()/2-canvas.getWidth()/12, canvas.getHeight()/2, canvas.getWidth()/2-canvas.getWidth()/12+(canvas.getWidth()/6), canvas.getHeight()/2, 200, lineColor);
 
