@@ -17,8 +17,6 @@
  * LibGDX version, 2/2/2015
  */
 package edu.cornell.gdiac.temporary;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.temporary.editor.*;
 
@@ -153,7 +151,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		}
 		// TODO: @Melanie, modify this condition to include the playing
 		// TODO: also add a new else-if branch condition for exit code to the level screen
-		else if (exitCode == ExitCode.TO_PLAYING) {
+		else if (exitCode == ExitCode.TO_LEVEL) {
 //			screen.hide();
 			// TODO: probably add the level populate here
 //			to playing is now to level select
@@ -164,10 +162,8 @@ public class GDXRoot extends Game implements ScreenListener {
 			levelscreen.show();
 
 
-		} else if (exitCode ==ExitCode.TO_LEVEL){
+		} else if (exitCode ==ExitCode.TO_PLAYING){
 //			to level is right now to game
-
-
 			playing.setScreenListener(this);
 			String fileName = levelscreen.getSelectedJson();
 //			System.out.println(fileName);
@@ -198,7 +194,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			menu.show();
 		}
 		// TODO: @Melanie, make this use exit code
-		else if (exitCode==ExitCode.TO_LEVEL){
+		else if (exitCode==ExitCode.TO_PLAYING){
 			loading = new LoadingMode("assets.json", canvas,1);
 			loading.setScreenListener(this);
 			setScreen(loading);

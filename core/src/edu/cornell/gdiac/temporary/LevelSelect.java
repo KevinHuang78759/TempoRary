@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.Null;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.util.ScreenListener;
 
@@ -358,7 +357,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                 System.out.println("file name:"+allLevels[gameIdx-1]);
 
                 selectedJson=allLevels[gameIdx-1];
-                listener.exitScreen(playing, ExitCode.TO_LEVEL);
+                listener.exitScreen(playing, ExitCode.TO_PLAYING);
             }
         }
     }
