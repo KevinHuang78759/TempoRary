@@ -17,4 +17,6 @@ public class ExitCode {
     public static final int TO_EDITOR = 3;
     // exit to menu
     public static final int TO_MENU = 4;
+    // exit to pause
+    public static final int TO_PAUSE = 5;
 }
