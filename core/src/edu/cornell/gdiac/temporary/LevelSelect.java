@@ -384,7 +384,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                 playing.populate(directory);
                 playing.show();
 
-                listener.exitScreen(playing, 0);
+                listener.exitScreen(playing, 1);
 
 				playing.readLevel(directory,allLevels[gameIdx]);
 
