@@ -425,29 +425,27 @@ public class GameplayController {
 				: Math.abs(adjustedPosition - note.getHitSample());
 
 		// check if note was hit or on beat
-		if(dist < 15000) {
-			if (dist < 10000) {
-				//If so, destroy the note and set a positive hit status. Also set that we
-				//have registered a hit for this line for this click. This ensures that
-				//We do not have a single hit count for two notes that are close together
-				boolean isOnBeat = dist < baseLeniency;
-				note.setHolding(true);
-				note.setHitStatus(isOnBeat ? onBeatGain : offBeatGain);
-				spawnHitEffect(note.getHitStatus(), note.getX(), spawnEffectY);
-				if (note.getLine() != -1) hitReg[note.getLine()] = true;
-				note.setDestroyed(destroy);
-				// move the note to where the indicator is
-				note.setBottomY(level.getBandMembers()[0].getHitY());
-				sfx.playSound(isOnBeat ? (nt == Note.NoteType.SWITCH ? "switchHit" : "perfectHit") : "goodHit", 0.2f);
-				sb.recieveHit(isOnBeat ? 2000 : 1000);
-			}
-			else {
-				// lose some competency since you played a bit off beat
-				// TODO: REWORK THIS
-				sb.resetCombo();
-				note.setHitStatus(offBeatLoss);
-			}
 
+		if (dist < 10000) {
+			//If so, destroy the note and set a positive hit status. Also set that we
+			//have registered a hit for this line for this click. This ensures that
+			//We do not have a single hit count for two notes that are close together
+			boolean isOnBeat = dist < baseLeniency;
+			note.setHolding(true);
+			note.setHitStatus(isOnBeat ? onBeatGain : offBeatGain);
+			spawnHitEffect(note.getHitStatus(), note.getX(), spawnEffectY);
+			if (note.getLine() != -1) hitReg[note.getLine()] = true;
+			note.setDestroyed(destroy);
+			// move the note to where the indicator is
+			note.setBottomY(level.getBandMembers()[0].getHitY());
+			sfx.playSound(isOnBeat ? (nt == Note.NoteType.SWITCH ? "switchHit" : "perfectHit") : "goodHit", 0.2f);
+			sb.recieveHit(isOnBeat ? 2000 : 1000);
+		}
+		else {
+			// lose some competency since you played a bit off beat
+			// TODO: REWORK THIS
+			sb.resetCombo();
+			note.setHitStatus(offBeatLoss);
 		}
 	}
 	/**
