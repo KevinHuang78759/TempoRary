@@ -20,6 +20,8 @@ import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.temporary.entity.BandMember;
+import edu.cornell.gdiac.temporary.entity.Particle;
+import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.ScreenListener;
 
 /**
@@ -44,15 +46,12 @@ public class GameMode implements Screen {
 	}
 
 	// Loaded assets
-	private Texture background;
+	// background images
+	private FilmStrip streetLevelBackground;
 	/** The font for giving messages to the player */
 	private BitmapFont displayFont;
 
 	/// CONSTANTS
-	/** Factor used to compute where we are in scrolling process */
-	private static final float TIME_MODIFIER    = 0.00f;
-	/** Offset for the shell counter message on the screen */
-	private static final float COUNTER_OFFSET   = 5.0f;
 	/** Offset for the game over message on the screen */
 	private static final float GAME_OVER_OFFSET = 40.0f;
 
@@ -102,7 +101,7 @@ public class GameMode implements Screen {
 		gameplayController.setOffset(offset);
 	}
 
-	public void readLevel(AssetDirectory directory, String level){
+	public void readLevel(AssetDirectory directory, String level) {
 		JsonReader jr = new JsonReader();
 		JsonValue levelData = jr.parse(Gdx.files.internal(level));
 		gameplayController.loadLevel(levelData, directory);
@@ -133,7 +132,7 @@ public class GameMode implements Screen {
 	 * @param directory 	Reference to the asset directory.
 	 */
 	public void populate(AssetDirectory directory) {
-		background  = directory.getEntry("background",Texture.class);
+		streetLevelBackground = new FilmStrip(directory.getEntry("street-background", Texture.class), 1, 1);
 		displayFont = directory.getEntry("times",BitmapFont.class);
 		gameplayController.populate(directory);
 	}
@@ -211,34 +210,34 @@ public class GameMode implements Screen {
 	 * of using the single render() method that LibGDX does.  We will talk about why we
 	 * prefer this in lecture.
 	 */
-	private void draw(long sample) {
+	private void draw() {
 		canvas.begin();
-		//First draw the background
-		canvas.drawBackground(background,0,0);
+		// First draw the background
+		// TODO: SWITCH BACKGROUND BASED ON LEVEL JSON (may need to move this to a different location)
+		canvas.drawBackground(streetLevelBackground.getTexture(),0,0);
 		if (gameState == GameState.OVER) {
 			//Draw game over text
 			displayFont.setColor(Color.NAVY);
-			canvas.drawTextCentered("Game Over!",displayFont, GAME_OVER_OFFSET+50);
+			canvas.drawTextCentered("Game Over!", displayFont, GAME_OVER_OFFSET+50);
 			displayFont.setColor(Color.NAVY);
 			canvas.drawTextCentered("Press ENTER to Restart", displayFont, 0);
 		}
 		else{
 			//Draw everything in the current level
-			gameplayController.level.drawEverything(canvas, gameplayController.activeBM, gameplayController.goalBM, inputController.triggerPress, inputController.switches());
+			gameplayController.level.drawEverything(canvas,
+					gameplayController.activeBandMember, gameplayController.goalBandMember,
+					inputController.triggerPress, inputController.switches(),
+					gameplayController.inBetweenWidth/5f);
 
-			// Draw the rest of the game objects on top
-			for (GameObject o : gameplayController.getObjects()) {
+			// Draw the particles on top
+			for (Particle o : gameplayController.getParticles()) {
 				o.draw(canvas);
 			}
 
-			//obtain background color
-			Color bkgC = new Color(237f/255f, 224f/255f, 1f, 1.0f);
-			//draw two rectangles to cover up spawning/disappearing areas of notes and switches
-			canvas.drawRect(0, gameplayController.TOPBOUND, canvas.getWidth(), canvas.getHeight(), bkgC, true);
-			canvas.drawRect(0, 0, canvas.getWidth(), gameplayController.BOTTOMBOUND, bkgC, true);
-			for(BandMember bm : gameplayController.level.getBandMembers()){
-				//Draw the competency bar
-				bm.drawHPBar(canvas);
+			for(BandMember bandMember : gameplayController.level.getBandMembers()){
+				//Draw the band member sprite and competency bar
+				bandMember.drawCharacterSprite(canvas);
+				bandMember.drawHPBar(canvas);
 			}
 			// draw the countdown
 			if (gameState == GameState.INTRO) {
@@ -272,9 +271,9 @@ public class GameMode implements Screen {
 	public void render(float delta) {
 		if (active) {
 			update(delta);
-			draw(0);
+			draw();
 			if (inputController.didExit() && listener != null) {
-				listener.exitScreen(this, 0);
+				listener.exitScreen(this, ExitCode.TO_MENU);
 			}
 		}
 	}

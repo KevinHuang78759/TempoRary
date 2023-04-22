@@ -1,7 +1,6 @@
 package edu.cornell.gdiac.temporary.editor;
 
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.math.Vector2;
@@ -9,10 +8,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.*;
 
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.temporary.ExitCode;
 import edu.cornell.gdiac.temporary.GameCanvas;
 import edu.cornell.gdiac.temporary.InputController;
-import edu.cornell.gdiac.temporary.entity.*;
-import edu.cornell.gdiac.temporary.GameObject.ObjectType;
 import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.ScreenListener;
 import edu.cornell.gdiac.audio.*;
@@ -21,7 +19,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Collections;
 
@@ -781,10 +778,6 @@ public class EditorMode implements Screen {
             note.setY(songPosToScreenY(note.getPos()));
             note.setOnScreen(onScreen(note.getPos()));
         }
-
-        if (inputController.didExit()) {
-            listener.exitScreen(this, 0);
-        }
     }
 
     /**
@@ -1373,7 +1366,7 @@ public class EditorMode implements Screen {
             update(delta);
             draw(delta);
             if (inputController.didExit() && listener != null) {
-                listener.exitScreen(this, 0);
+                listener.exitScreen(this, ExitCode.TO_MENU);
             }
         }
     }

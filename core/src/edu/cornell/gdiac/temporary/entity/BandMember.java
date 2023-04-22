@@ -12,6 +12,8 @@ import edu.cornell.gdiac.util.FilmStrip;
 
 public class BandMember {
 
+    private static final float NOTE_SIZE_SCALE = 0.7f;
+
     FilmStrip hpbar;
     /**
      * Number of frames in HP bar animation
@@ -21,17 +23,20 @@ public class BandMember {
     /**
      * Bottom left corner
      */
-    private Vector2 BL;
+    private Vector2 bottomLeftCorner;
+
+    /** Textures */
     private BitmapFont displayFont;
     private Texture noteIndicator;
     private Texture noteIndicatorHit;
+    private FilmStrip characterSprite;
 
     public void setBottomLeft(Vector2 V){
-        BL = V;
+        bottomLeftCorner = V;
     }
 
     public Vector2 getBottomLeft(){
-        return BL;
+        return bottomLeftCorner;
     }
 
     /**
@@ -63,7 +68,7 @@ public class BandMember {
     private float height;
     public void setHeight(float l){
         height = l;
-        setHitY(BL.y + l/4);
+        setHitY(bottomLeftCorner.y + l/4);
     }
 
     public float getHeight(){
@@ -78,12 +83,10 @@ public class BandMember {
         return hitY;
     }
 
-
     /**
      * Number of lines this band member has
      */
     private final int numLines = 4;
-
 
     public int getNumLines(){
         return numLines;
@@ -171,11 +174,12 @@ public class BandMember {
     public int getCurComp(){
         return curComp;
     }
+
     /**
      * Constructor
      */
     public BandMember(){
-        BL = new Vector2();
+        bottomLeftCorner = new Vector2();
         hitNotes = new Array<>();
         switchNotes = new Array<>();
         allNotes = new Queue<>();
@@ -251,9 +255,6 @@ public class BandMember {
      * Update competency by the specified amount but will not go below 0 or exceed the max
      */
     public void compUpdate(int amount){
-        if (amount >= 1){
-//            System.out.println(amount);
-        }
         curComp = Math.min(Math.max(0, curComp + amount), maxComp);
         hpbar.setFrame(Math.min((int)((1 - (float)curComp/maxComp)*(hpbarFrames)), hpbarFrames - 1));
     }
@@ -261,17 +262,16 @@ public class BandMember {
     // DRAWING METHODS
 
     /**
-     * Draw the hit bar in a certain color according to if we triggered the line. Pass in an array for the active
-     * lane
-     * also draw the keyBind
+     * Draw the indicator in a certain color according to if we triggered the line. Pass in an array for the active lane
      */
-    public void drawHitBar(GameCanvas canvas, Color hitColor, boolean[] hits){
+    public void drawIndicator(GameCanvas canvas, boolean[] hits){
         //If we get passed an array we must draw 4 hit bars
+        float scale = NOTE_SIZE_SCALE*(width/4)/noteIndicatorHit.getWidth();
         for(int i = 0; i < numLines; ++i){
             canvas.draw(hits[i] ? noteIndicatorHit : noteIndicator, Color.WHITE, noteIndicatorHit.getWidth() / 2, noteIndicatorHit.getHeight() / 2,
-                    ((BL.x + i * width/numLines) + (BL.x +(i+1) * width/numLines)) / 2 - 5, hitY,
-                    0.0f,0.45f, 0.45f);
-            canvas.drawText(InputController.triggerKeyBinds()[i], displayFont, (BL.x + i * width/numLines + BL.x +(i+1) * width/numLines) / 2, hitY - 80);
+                    ((bottomLeftCorner.x + i * width/numLines) + (bottomLeftCorner.x +(i+1) * width/numLines)) / 2 - 5, hitY,
+                    0.0f, scale, scale);
+//            canvas.drawText(InputController.triggerKeyBinds()[i], displayFont, (bottomLeftCorner.x + i * width/numLines + bottomLeftCorner.x +(i+1) * width/numLines) / 2, hitY - 80);
         }
     }
 
@@ -279,14 +279,12 @@ public class BandMember {
      * Draw the hit bar in a certain color according to if we triggered the line. Pass in a value for a switchable lane
      * also draw the keyBind
      */
-    public void drawHitBar(GameCanvas canvas, Color hitColor, boolean hit, int i){
-        //If we get passed a single value then we're in a switch lane
-        // commenting out now because I'm not too sure about it
-//        canvas.drawLine(BL.x, hitY, BL.x + width, hitY, 3, hit ? hitColor : Color.BLACK);
+    public void drawIndicator(GameCanvas canvas, boolean hit, int i){
+       float scale = NOTE_SIZE_SCALE*width/noteIndicatorHit.getWidth();
         canvas.draw(hit ? noteIndicatorHit : noteIndicator, Color.WHITE, noteIndicatorHit.getWidth() / 2, noteIndicatorHit.getHeight() / 2,
-                (BL.x + BL.x + width) / 2 - 2, hitY,
-                0.0f,0.20f, 0.20f);
-        canvas.drawText(InputController.switchKeyBinds()[i], displayFont, ( BL.x + BL.x + width) / 2f, hitY - 80);
+                bottomLeftCorner.x + width/2, hitY,
+                0.0f,scale, scale);
+//        canvas.drawText(InputController.switchKeyBinds()[i], displayFont, ( bottomLeftCorner.x + bottomLeftCorner.x + width) / 2f, hitY - 80);
     }
 
     /**
@@ -296,34 +294,38 @@ public class BandMember {
         for(Note n : switchNotes){
             if(!n.isDestroyed()){
                 //Switch notes should just appear in the middle of the lane
-                n.setX(BL.x + width/2);
+                n.setX(bottomLeftCorner.x + width/2);
                 //Set the Y coordinate according to sampleProgression
                 //Calculate the spawning y coordinate to be high enough such that none of the note is
                 //visible
                 n.setY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample()) *(hitY - spawnY));
-                n.draw(canvas, 3*width/4, 3*width/4);
+                n.draw(canvas, NOTE_SIZE_SCALE*width, NOTE_SIZE_SCALE*width, bottomLeftCorner.y + height, bottomLeftCorner.y);
             }
         }
     }
 
     /**
      * Draw the held and beat notes
+     * Updates the notes
      */
     public void drawHitNotes(GameCanvas canvas, long currentSample, float spawnY){
         for(Note n : hitNotes){
             if(!n.isDestroyed()){
                 //Hitnotes will be based on what line we are on
-                n.setX(BL.x + width/(2*numLines) + n.getLine()*(width/numLines));
+                n.setX(bottomLeftCorner.x + width/(2*numLines) + n.getLine()*(width/numLines));
                 if(n.getNoteType() == Note.NoteType.HELD){
                     //Y coordinates based on formula mentioned in discord.
-                    n.setBottomY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample()) *(hitY - spawnY));
+                    float bottomYCalc = spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample()) *(hitY - spawnY);
+                    if (!n.getHolding())
+                        n.setBottomY(bottomYCalc);
+                    n.setHoldMiddleBottomY(bottomYCalc);
                     n.setY(spawnY + Math.max(0, (float)(currentSample - n.getStartSample() - n.getHoldSamples())/(n.getHitSample() - n.getStartSample()))*(hitY - spawnY));
                 }
                 else{
                     n.setY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample())*(hitY - spawnY));
                 }
 
-                n.draw(canvas, 3*width/(4*numLines), 3*width/(4*numLines));
+                n.draw(canvas, NOTE_SIZE_SCALE*width/(numLines), NOTE_SIZE_SCALE*width/(numLines), bottomLeftCorner.y + height, bottomLeftCorner.y);
             }
 
         }
@@ -332,24 +334,92 @@ public class BandMember {
     /**
      * Draw the border
      */
-    public void drawBorder(GameCanvas canvas){
-        canvas.drawRect(BL, width, height, borderColor, false);
+    public void drawBorder(GameCanvas canvas, Texture HorizontalUnit, Texture VerticalUnit, Texture Corner, float thickness){
+        Vector2 HOrigin = new Vector2(HorizontalUnit.getWidth()/2f, HorizontalUnit.getHeight()/2f);
+        Vector2 VOrigin = new Vector2(VerticalUnit.getWidth()/2f, VerticalUnit.getHeight()/2f);
+        Vector2 COrigin = new Vector2(Corner.getWidth()/2f, Corner.getHeight()/2f);
+
+        //First, calculate 4 borderline coordinates
+        float xLocBottom = bottomLeftCorner.x + width/2;
+        float yLocBottom = bottomLeftCorner.y - thickness/2;
+        float xScaleBottom = width/HorizontalUnit.getWidth();
+        float yScaleBottom = thickness/VerticalUnit.getHeight();
+
+        float xLocTop = bottomLeftCorner.x + width/2;
+        float yLocTop = bottomLeftCorner.y + height + thickness/2;
+        float xScaleTop = width/HorizontalUnit.getWidth();
+        float yScaleTop = thickness/VerticalUnit.getHeight();
+
+        float xLocLeft = bottomLeftCorner.x - thickness/2;
+        float yLocLeft = bottomLeftCorner.y + height/2;
+        float xScaleLeft = thickness/HorizontalUnit.getWidth();
+        float yScaleLeft = height/VerticalUnit.getHeight();
+
+        float xLocRight = bottomLeftCorner.x + width + thickness/2;
+        float yLocRight = bottomLeftCorner.y + height/2;
+        float xScaleRight = thickness/HorizontalUnit.getWidth();
+        float yScaleRight = height/VerticalUnit.getHeight();
+
+        //Now, draw the 4 corners
+
+        canvas.draw(Corner, Color.WHITE, COrigin.x, COrigin.y, xLocLeft, yLocBottom, 0.0f, xScaleLeft, yScaleBottom);
+
+        canvas.draw(Corner, Color.WHITE, COrigin.x, COrigin.y, xLocRight, yLocBottom, 90.0f, xScaleRight, yScaleBottom);
+
+        canvas.draw(Corner, Color.WHITE, COrigin.x, COrigin.y, xLocRight, yLocTop, 180.0f, xScaleRight, yScaleTop);
+
+        canvas.draw(Corner, Color.WHITE, COrigin.x, COrigin.y, xLocLeft, yLocTop, 270.0f, xScaleLeft, yScaleTop);
+
+        //Now, draw the sidebars such that they don't intersect the corners
+        float barHeight = (yLocTop - (Corner.getHeight()*yScaleTop/2)) - (yLocBottom + (Corner.getHeight()*yScaleBottom/2));
+        float barWidth = (xLocRight - (Corner.getWidth()*xScaleRight/2)) - (xLocLeft + (Corner.getWidth()*xScaleLeft/2));
+        float lengthScale = barWidth/HorizontalUnit.getWidth();
+        canvas.draw(HorizontalUnit, Color.WHITE, HOrigin.x, HOrigin.y, xLocBottom, yLocBottom, 0.0f, lengthScale, yScaleBottom);
+        canvas.draw(HorizontalUnit, Color.WHITE, HOrigin.x, HOrigin.y, xLocTop, yLocTop, 0.0f, lengthScale, yScaleTop);
+
+        float heightScale = barHeight/VerticalUnit.getWidth();
+        canvas.draw(VerticalUnit, Color.WHITE, VOrigin.x, VOrigin.y, xLocLeft, yLocLeft, 0.0f, xScaleLeft, heightScale);
+
+        canvas.draw(VerticalUnit, Color.WHITE, VOrigin.x, VOrigin.y, xLocRight, yLocRight, 0.0f, xScaleRight, heightScale);
+    }
+
+    /**
+     * Draw the background of this bandMember
+     * @param canvas
+     * @param background
+     */
+    public void drawBackground(GameCanvas canvas, Texture background){
+        float xScale = width/background.getWidth();
+        float yScale = height/background.getHeight();
+        canvas.draw(background, Color.WHITE, 0, 0, bottomLeftCorner.x, bottomLeftCorner.y, 0.0f, xScale, yScale);
     }
 
     public void drawHPBar(GameCanvas canvas){
-        float scale = (BL.y*4/5)/hpbar.getRegionHeight();
+        float scale = (bottomLeftCorner.y*4/5)/hpbar.getRegionHeight();
         float trueHeight = scale*hpbar.getRegionHeight();
-        canvas.draw(hpbar, Color.WHITE, 0, 0,BL.x + width/10, (BL.y - trueHeight)/2,
+        canvas.draw(hpbar, Color.WHITE, 0, 0, bottomLeftCorner.x + width/10, (bottomLeftCorner.y - trueHeight)/2,
                 0.0f, scale, scale);
+    }
+
+    public void drawCharacterSprite(GameCanvas canvas) {
+        float scale = (bottomLeftCorner.y*4/5)/characterSprite.getRegionHeight();
+        float trueHeight = scale*characterSprite.getRegionHeight();
+        canvas.draw(characterSprite, Color.WHITE, characterSprite.getRegionWidth() / 2, characterSprite.getRegionY() / 2,
+                bottomLeftCorner.x + width/10 + scale * characterSprite.getRegionWidth() / 2 + 20, (bottomLeftCorner.y - trueHeight)/2, 0.0f, scale, scale);
     }
 
     /**
      * Draw separation lines to divide each line within this lane
      */
-    public void drawLineSeps(GameCanvas canvas){
+    public void drawLineSeps(GameCanvas canvas, Texture lineSep){
+        float thickness = width/50f;
+        float xScale = thickness/lineSep.getWidth();
+        float trueHeight = 0.95f*lineHeight;
+        float yScale = trueHeight/lineSep.getHeight();
+        float yCoord = ((bottomLeftCorner.y + height) + (bottomLeftCorner.y + height - lineHeight))/2f;
         Color lColor = Color.BLACK;
         for(int i = 1; i < numLines; ++i){
-            canvas.drawLine(BL.x + i * (width/numLines), BL.y + height, BL.x + i * (width/numLines), BL.y + height - lineHeight, 3, lColor);
+            canvas.draw(lineSep, Color.WHITE, lineSep.getWidth()/2f, lineSep.getHeight()/2f, bottomLeftCorner.x + i * (width/numLines), yCoord, 0.0f, xScale, yScale);
         }
     }
 
@@ -361,4 +431,9 @@ public class BandMember {
         noteIndicator = texture;
         noteIndicatorHit = textureHit;
     }
+
+    public void setCharacterTexture(FilmStrip characterSprite) {
+        this.characterSprite = characterSprite;
+    }
+
 }

@@ -1,6 +1,39 @@
 {
 	"textures": {
+        "loading-background": {
+          "file":     "images/background.png",
+          "minFilter": "linear",
+          "magFilter": "linear"
+        },
+        "title": {
+          "file": "images/title_v1.png",
+          "minFilter": "linear",
+          "magFilter": "linear"
+        },
+        "ghost-cat": {
+          "file": "images/ghost_cat.jpg",
+          "minFilter": "linear",
+          "maxFilter": "linear"
+        },
+        "play-old": {
+          "file": "images/play.png",
+          "minFilter": "linear",
+          "maxFilter": "linear"
+        },
+        "play": {
+          "file":     "images/play_button_v1.png",
+          "minFilter": "linear",
+          "magFilter": "linear"
+        },
+        "level-editor": {
+          "file": "images/leveleditor_button_v1.png",
+          "minFilter": "linear",
+          "maxFilter": "linear"
+        },
         "background": "images/background.png",
+        "concert-background": "images/backgrounds/background_temp_concert_1.png",
+        "street-background": "images/backgrounds/background_temp_streets_1.png",
+        "cafe-background": "images/backgrounds/background_temp_cafe_1.png",
         "switch":    "images/switch.png",
         "hit":      "images/press.png",
         "hold-start":      "images/hold_note_bottom.png",
@@ -11,7 +44,17 @@
         "catnote": "images/catnote.png",
         "note-indicator": "images/note_indicator.png",
         "note-indicator-hit": "images/note_indicator_hit.png",
-        "play": "images/leveleditor_button_v1.png"
+        "play": "images/leveleditor_button_v1.png",
+        "violin-cat": "images/cats/violin_cat.png",
+        "singer-cat": "images/cats/singer_cat.png",
+        "drummer-cat": "images/cats/drummer_cat.png",
+        "borderVUnit" : "images/lane_edge_unit.png",
+        "borderHUnit" : "images/lane_edge_unit.png",
+        "borderCorner" : "images/laneCornerBl.png",
+        "laneBackground" : "images/laneBackGround.png",
+        "separationLine" : "images/lane-separation-line.png",
+        "back-splash": "images/notes/hold_back.png",
+        "front-splash": "images/notes/hold_front.png"
     },
     "fonts": {
         "lucida": {

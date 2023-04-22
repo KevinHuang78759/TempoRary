@@ -59,6 +59,11 @@ public class CalibrationMode implements Screen {
         this.canvas = canvas;
         userHitBeats = new LinkedList<>();
         offset = 0;
+        reset();
+    }
+
+    private void reset() {
+        userHitBeats.clear();
         isCalibrated = false;
     }
 
@@ -87,7 +92,7 @@ public class CalibrationMode implements Screen {
     public void populate(AssetDirectory directory) {
         displayFont = directory.getEntry("times", BitmapFont.class);
         music = directory.getEntry("calibration", MusicQueue.class);
-        background  = directory.getEntry("background",Texture.class); //calibration background?
+        background  = directory.getEntry("background", Texture.class); //calibration background?
     }
 
     @Override
@@ -96,7 +101,7 @@ public class CalibrationMode implements Screen {
             update(delta);
             draw(delta);
             if (isReady() && listener != null) {
-                listener.exitScreen(this, 0);
+                listener.exitScreen(this, ExitCode.TO_MENU);
             }
         }
     }
@@ -152,7 +157,7 @@ public class CalibrationMode implements Screen {
         }
         this.offset = userHitBeats.size() > 0 ? sum / userHitBeats.size() : 0;
         isCalibrated = true;
-        System.out.println("offset: " + offset);
+        //System.out.println("offset: " + offset);
     }
 
     /** Resolves inputs from the input controller */
@@ -176,21 +181,20 @@ public class CalibrationMode implements Screen {
             }
             else {
                 userHitBeats.add(diff);
-                System.out.println("hit at pos: " + currPosInMs + " attempted beat hit: " + actualBeat + " diff: " + diff);
+                //System.out.println("hit at pos: " + currPosInMs + " attempted beat hit: " + actualBeat + " diff: " + diff);
             }
         }
     }
 
     /**
      * checks whether use is on beat or not
-     * TODO: move this someplace else???
      * currentHitPosition should be the song position at which you hit the "beat"
      */
     public boolean isOnBeat(int actualBeatPosition, int currentHitPosition) {
         int adjustedPosition = currentHitPosition - this.offset;
         int lowerRange = actualBeatPosition - BASE_OFFSET;
         int higherRange = actualBeatPosition + BASE_OFFSET;
-        System.out.println(lowerRange + ", " + higherRange + "; " + adjustedPosition +  " " + actualBeatPosition + " " + (adjustedPosition >= lowerRange && adjustedPosition <= higherRange));
+        //System.out.println(lowerRange + ", " + higherRange + "; " + adjustedPosition +  " " + actualBeatPosition + " " + (adjustedPosition >= lowerRange && adjustedPosition <= higherRange));
         return adjustedPosition >= lowerRange && adjustedPosition <= higherRange;
     }
 
@@ -198,6 +202,7 @@ public class CalibrationMode implements Screen {
     public void show() {
         active = true;
         music.play();
+        reset();
     }
 
     @Override

@@ -26,15 +26,8 @@ import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.controllers.Controller;
-import com.badlogic.gdx.controllers.ControllerListener;
-import com.badlogic.gdx.controllers.ControllerMapping;
-
-import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.assets.*;
 import edu.cornell.gdiac.util.*;
-
-import java.util.logging.Level;
 
 /**
  * Class that provides a loading screen for the state of the game.
@@ -49,28 +42,16 @@ import java.util.logging.Level;
  * the application.  That is why we try to have as few resources as possible for this
  * loading screen.
  */
-public class LoadingMode implements Screen, InputProcessor, ControllerListener {
+public class LoadingMode implements Screen {
 	// There are TWO asset managers.  One to load the loading screen.  The other to load the assets
 	/** Internal assets for this loading screen */
 	private AssetDirectory internal;
 	/** The actual assets to be loaded */
 	private AssetDirectory assets;
-	
+
 	/** Background texture for start-up */
 	private Texture background;
-	/** Play button to display when done */
-	private Texture playButton;
-	private Texture calibrationButton;
 
-	/** Texture atlas to support a progress bar */
-	private Texture statusBar;
-
-	/** Tempo-Rary logo */
-	private Texture title;
-
-	/** button to transition to level editor */
-	private Texture levelEditorButton;
-	
 	// statusBar is a "texture atlas." Break it up into parts.
 	/** Left cap to the status background (grey region) */
 	private TextureRegion statusBkgLeft;
@@ -129,29 +110,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	/** Whether or not this player mode is still active */
 	private boolean active;
 
-	/* BUTTON LOCATIONS */
-	/** Play button x and y coordinates represented as a vector */
-	private Vector2 playButtonCoords;
-	/** Level editor button x and y coordinates represented as a vector */
-	private Vector2 levelEditorButtonCoords;
-	/** Calibration button x and y coordinates represented as a vector */
-	private Vector2 calibrationButtonCoords;
-
-	/* PRESS STATES **/
-	// TODO: potentially change this to enums
-	/** Initial button state */
-	private static final int INITIAL = 0;
-	/** Pressed down button state for the play button */
-	private static final int PLAY_PRESSED = 1;
-	/** Exit code for button to go to the game */
-	public static final int TO_GAME = 2;
-	/** Pressed down button state for the level editor button */
-	private static final int LEVEL_EDITOR_PRESSED = 3;
-	/** Exit code for the button to go to the level editor */
-	public static final int TO_LEVEL_EDITOR = 4;
-	/** Exit code for the button to go to the level editor */
-	public static final int TO_CALIBRATION = 5;
-
 	/**
 	 * Returns the budget for the asset loader.
 	 *
@@ -186,7 +144,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @return true if the player is ready to go
 	 */
 	public boolean isReady() {
-		return pressState == TO_GAME || pressState == TO_LEVEL_EDITOR || pressState == TO_CALIBRATION;
+		return progress >= 1.0f;
 	}
 
 	/**
@@ -236,15 +194,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		internal.loadAssets();
 		internal.finishLoading();
 
-		// Load the next two images immediately.
-		playButton = null;
-		levelEditorButton = null;
-		calibrationButton = null;
-
-		title = internal.getEntry("title", Texture.class);
 		background = internal.getEntry( "background", Texture.class );
 		background.setFilter( TextureFilter.Linear, TextureFilter.Linear );
-		statusBar = internal.getEntry( "progress", Texture.class );
 
 		// Break up the status bar texture into regions
 		statusBkgLeft = internal.getEntry( "progress.backleft", TextureRegion.class );
@@ -257,14 +208,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 		// No progress so far.
 		progress = 0;
-		pressState = INITIAL;
-
-		Gdx.input.setInputProcessor( this );
-
-		// Let ANY connected controller start the game.
-		for (XBoxController controller : Controllers.get().getXBoxControllers()) {
-			controller.addListener( this );
-		}
 
 		// Start loading the real assets
 		assets = new AssetDirectory( file );
@@ -298,19 +241,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @param delta Number of seconds since last animation frame
 	 */
 	private void update(float delta) {
-		if (playButton == null || levelEditorButton == null) {
+//		if (playButton == null || levelEditorButton == null) {
 			assets.update(budget);
 			this.progress = assets.getProgress();
-			if (progress >= 1.0f) {
-				this.progress = 1.0f;
-				playButton = internal.getEntry("play",Texture.class);
-				levelEditorButton = internal.getEntry("level-editor",Texture.class);
-				calibrationButton = internal.getEntry("play-old",Texture.class);
-				playButtonCoords = new Vector2(centerX + levelEditorButton.getWidth(), canvas.getHeight()/2 + 200);
-				levelEditorButtonCoords = new Vector2(centerX + levelEditorButton.getWidth(), canvas.getHeight()/2);
-				calibrationButtonCoords = new Vector2(centerX + calibrationButton.getWidth()*2 , centerY);
-			}
-		}
 	}
 
 	/**
@@ -323,25 +256,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private void draw() {
 		canvas.begin();
 		canvas.draw(background, 0, 0, canvas.getWidth(), canvas.getHeight());
-		if (playButton == null) {
-			drawProgress(canvas);
-		} else {
-			Color playButtonTint = (pressState == PLAY_PRESSED ? Color.GRAY: Color.WHITE);
-			canvas.draw(playButton, playButtonTint, playButton.getWidth()/2, playButton.getHeight()/2,
-					playButtonCoords.x, playButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
-
-			Color levelEditorButtonTint = (pressState == LEVEL_EDITOR_PRESSED ? Color.GREEN: Color.WHITE);
-			canvas.draw(levelEditorButton, levelEditorButtonTint, levelEditorButton.getWidth()/2, levelEditorButton.getHeight()/2,
-					levelEditorButtonCoords.x, levelEditorButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
-
-			canvas.draw(title, Color.WHITE, title.getWidth()/2, title.getHeight()/2,
-					title.getWidth()/2+50, centerY+300, 0,scale, scale);
-
-			//draw calibration button
-			Color tintCalibration = (pressState == TO_CALIBRATION ? Color.GRAY: Color.RED);
-			canvas.draw(calibrationButton, tintCalibration, calibrationButton.getWidth()/2, calibrationButton.getHeight()/2,
-					calibrationButtonCoords.x, calibrationButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
-		}
+		drawProgress(canvas);
 		canvas.end();
 	}
 	
@@ -385,7 +300,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 			// We are ready, notify our listener
 			if (isReady() && listener != null) {
-				listener.exitScreen(this, 0);
+				listener.exitScreen(this, ExitCode.TO_MENU);
 			}
 		}
 	}
@@ -456,234 +371,4 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	public void setScreenListener(ScreenListener listener) {
 		this.listener = listener;
 	}
-	
-	// PROCESSING PLAYER INPUT
-	/**
-	 * Checks to see if the location clicked at `screenX`, `screenY` are within the bounds of the given button
-	 * `buttonTexture` and `buttonCoords` should refer to the appropriate button parameters
-	 *
-	 * @param screenX the x-coordinate of the mouse on the screen
-	 * @param screenY the y-coordinate of the mouse on the screen
-	 * @param buttonTexture the specified button texture
-	 * @param buttonCoords the specified button coordinates as a Vector2 object
-	 * @return whether the button specified was pressed
-	 */
-	public boolean isButtonPressed(int screenX, int screenY, Texture buttonTexture, Vector2 buttonCoords) {
-		// buttons are rectangles
-		// buttonCoords hold the center of the rectangle, buttonTexture has the width and height
-		// get half the x length of the button portrayed
-		float xRadius = BUTTON_SCALE * scale * buttonTexture.getWidth()/2.0f;
-		boolean xInBounds = buttonCoords.x - xRadius <= screenX && buttonCoords.x + xRadius >= screenX;
-
-		// get half the y length of the button portrayed
-		float yRadius = BUTTON_SCALE * scale * buttonTexture.getHeight()/2.0f;
-		boolean yInBounds = buttonCoords.y - yRadius <= screenY && buttonCoords.y + yRadius >= screenY;
-		return xInBounds && yInBounds;
-	}
-
-	/**
-	 * Called when the screen was touched or a mouse button was pressed.
-	 *
-	 * This method checks to see if the play button is available and if the click
-	 * is in the bounds of the play button.  If so, it signals the that the button
-	 * has been pressed and is currently down. Any mouse button is accepted.
-	 *
-	 * @param screenX the x-coordinate of the mouse on the screen
-	 * @param screenY the y-coordinate of the mouse on the screen
-	 * @param pointer the button or touch finger number
-	 * @return whether to hand the event to other listeners. 
-	 */
-	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		if (playButton == null || pressState == TO_GAME || pressState == TO_LEVEL_EDITOR || pressState == TO_CALIBRATION) {
-			return true;
-		}
-		
-		// Flip to match graphics coordinates
-		screenY = heightY-screenY;
-		
-		// TODO: Fix scaling (?)
-		// check if buttons get pressed appropriately
-		if (isButtonPressed(screenX, screenY, playButton, playButtonCoords)) {
-			pressState = PLAY_PRESSED;
-		}
-		if (isButtonPressed(screenX, screenY, levelEditorButton, levelEditorButtonCoords)) {
-			pressState = LEVEL_EDITOR_PRESSED;
-		}
-
-		float radius = BUTTON_SCALE*scale*calibrationButton.getWidth()/2.0f;
-		float dist = (screenX-calibrationButtonCoords.x)*(screenX-calibrationButtonCoords.x)
-				+(screenY-calibrationButtonCoords.y)*(screenY-calibrationButtonCoords.y);
-		if (dist < radius*radius) {
-			pressState = TO_CALIBRATION;
-		}
-		return false;
-	}
-	
-	/** 
-	 * Called when a finger was lifted or a mouse button was released.
-	 *
-	 * This method checks to see if the play button is currently pressed down. If so, 
-	 * it signals the that the player is ready to go.
-	 *
-	 * @param screenX the x-coordinate of the mouse on the screen
-	 * @param screenY the y-coordinate of the mouse on the screen
-	 * @param pointer the button or touch finger number
-	 * @return whether to hand the event to other listeners. 
-	 */	
-	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		switch (pressState){
-			case PLAY_PRESSED:
-				pressState = TO_GAME;
-				return false;
-			case LEVEL_EDITOR_PRESSED:
-				pressState = TO_LEVEL_EDITOR;
-				return false;
-			default:
-				return true;
-		}
-	}
-	
-	/** 
-	 * Called when a button on the Controller was pressed. 
-	 *
-	 * The buttonCode is controller specific. This listener only supports the start
-	 * button on an X-Box controller.  This outcome of this method is identical to 
-	 * pressing (but not releasing) the play button.
-	 *
-	 * @param controller The game controller
-	 * @param buttonCode The button pressed
-	 * @return whether to hand the event to other listeners. 
-	 */
-	public boolean buttonDown (Controller controller, int buttonCode) {
-		// note: does not work for level editor
-		if (pressState == INITIAL) {
-			ControllerMapping mapping = controller.getMapping();
-			if (mapping != null && buttonCode == mapping.buttonStart) {
-				pressState = PLAY_PRESSED;
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	/** 
-	 * Called when a button on the Controller was released. 
-	 *
-	 * The buttonCode is controller specific. This listener only supports the start
-	 * button on an X-Box controller.  This outcome of this method is identical to 
-	 * releasing the the play button after pressing it.
-	 *
-	 * @param controller The game controller
-	 * @param buttonCode The button pressed
-	 * @return whether to hand the event to other listeners. 
-	 */
-	public boolean buttonUp (Controller controller, int buttonCode) {
-		// note: does not work for level editor
-		if (pressState == PLAY_PRESSED) {
-			ControllerMapping mapping = controller.getMapping();
-			if (mapping != null && buttonCode == mapping.buttonStart ) {
-				pressState = TO_GAME;
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	// UNSUPPORTED METHODS FROM InputProcessor
-
-	/** 
-	 * Called when a key is pressed (UNSUPPORTED)
-	 *
-	 * @param keycode the key pressed
-	 * @return whether to hand the event to other listeners. 
-	 */
-	public boolean keyDown(int keycode) { 
-		return true; 
-	}
-
-	/** 
-	 * Called when a key is typed (UNSUPPORTED)
-	 *
-	 * @param keycode the key typed
-	 * @return whether to hand the event to other listeners. 
-	 */
-	public boolean keyTyped(char keycode) {
-		return true; 
-	}
-
-	/** 
-	 * Called when a key is released (UNSUPPORTED)
-	 *
-	 * @param keycode the key released
-	 * @return whether to hand the event to other listeners. 
-	 */	
-	public boolean keyUp(int keycode) { 
-		return true; 
-	}
-	
-	/** 
-	 * Called when the mouse was moved without any buttons being pressed. (UNSUPPORTED)
-	 *
-	 * @param screenX the x-coordinate of the mouse on the screen
-	 * @param screenY the y-coordinate of the mouse on the screen
-	 * @return whether to hand the event to other listeners. 
-	 */	
-	public boolean mouseMoved(int screenX, int screenY) { 
-		return true; 
-	}
-
-	/**
-	 * Called when the mouse wheel was scrolled. (UNSUPPORTED)
-	 *
-	 * @param dx the amount of horizontal scroll
-	 * @param dy the amount of vertical scroll
-	 *
-	 * @return whether to hand the event to other listeners.
-	 */
-	public boolean scrolled(float dx, float dy) {
-		return true;
-	}
-
-	/** 
-	 * Called when the mouse or finger was dragged. (UNSUPPORTED)
-	 *
-	 * @param screenX the x-coordinate of the mouse on the screen
-	 * @param screenY the y-coordinate of the mouse on the screen
-	 * @param pointer the button or touch finger number
-	 * @return whether to hand the event to other listeners. 
-	 */		
-	public boolean touchDragged(int screenX, int screenY, int pointer) { 
-		return true; 
-	}
-	
-	// UNSUPPORTED METHODS FROM ControllerListener
-	
-	/**
-	 * Called when a controller is connected. (UNSUPPORTED)
-	 *
-	 * @param controller The game controller
-	 */
-	public void connected (Controller controller) {}
-
-	/**
-	 * Called when a controller is disconnected. (UNSUPPORTED)
-	 *
-	 * @param controller The game controller
-	 */
-	public void disconnected (Controller controller) {}
-
-	/** 
-	 * Called when an axis on the Controller moved. (UNSUPPORTED) 
-	 *
-	 * The axisCode is controller specific. The axis value is in the range [-1, 1]. 
-	 *
-	 * @param controller The game controller
-	 * @param axisCode 	The axis moved
-	 * @param value 	The axis value, -1 to 1
-	 * @return whether to hand the event to other listeners. 
-	 */
-	public boolean axisMoved (Controller controller, int axisCode, float value) {
-		return true;
-	}
-
 }
