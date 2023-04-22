@@ -264,7 +264,7 @@ public class GameMode implements Screen {
 	 * @param height The new height in pixels
 	 */
 	public void resize(int width, int height) {
-		// IGNORE FOR NOW
+		gameplayController.resize(width, height);
 	}
 
 	/**

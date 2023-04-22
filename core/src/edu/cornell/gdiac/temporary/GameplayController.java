@@ -158,6 +158,24 @@ public class GameplayController {
 	}
 
 	/**
+	 * Resizing screen to new width and height
+	 */
+	public void resize(int width, int height){
+		System.out.println(width + "  " + height);
+		LEFTBOUND = width/10f;
+		RIGHTBOUND = 9*width/10f;
+		TOPBOUND = 17f*height/20f;
+		BOTTOMBOUND = height/5f;
+		smallwidth = (RIGHTBOUND - LEFTBOUND)/(NUM_LANES - 1 + (NUM_LANES - 1)*0.25f + 4);
+		inBetweenWidth = smallwidth/4f;
+		largewidth = 4f*smallwidth;
+		//Have the y value be a bit above the bottom of the play area, but not too close
+		hitbarY = BOTTOMBOUND + 3*(TOPBOUND - BOTTOMBOUND)/20f;
+		//instantiate other variables
+		noteSpawnY = TOPBOUND + smallwidth/2;
+		updateBandMemberCoords();
+	}
+	/**
 	 * Sets the offset in determining beat calculation, converting it to samples
 	 * @param offset offset from CalibrationMode in milliseconds
 	 */
