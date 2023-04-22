@@ -95,7 +95,9 @@ public class GameplayController {
 	/** Y value of the hit bar */
 	public float hitbarY;
 
-	public SoundController sfx;
+	public SoundController<String> sfx;
+
+	public Scoreboard sb;
 
 	/**
 	 * Create gameplaycontroler
@@ -103,6 +105,7 @@ public class GameplayController {
 	 * @param height
 	 */
 	public GameplayController(float width, float height){
+		sb = new Scoreboard(4, new int[]{1, 2, 3, 5}, new long[]{10000, 20000, 40000});
 		particles = new Array<>();
 		backing = new Array<>();
 		randomNotes = true;
@@ -110,10 +113,9 @@ public class GameplayController {
 		//Values decided by pure look
 		LEFTBOUND = width/10f;
 		RIGHTBOUND = 9*width/10f;
-		TOPBOUND = 19f*height/20f;
+		TOPBOUND = 17f*height/20f;
 		BOTTOMBOUND = height/5f;
-		sfx = new SoundController();
-		soundToPlay = "";
+		sfx = new SoundController<>();
 	}
 
 
@@ -184,6 +186,9 @@ public class GameplayController {
 				if(n.getY() < noteDieY && !n.isDestroyed()){
 //					n.setHitStatus(-2);
 					n.setDestroyed(true);
+					if(i == activeBandMember){
+						sb.resetCombo();
+					}
 				}
 				if(n.isDestroyed()){
 					//if this note is destroyed we need to increment the competency of the
@@ -415,17 +420,18 @@ public class GameplayController {
 				note.setDestroyed(destroy);
 				// move the note to where the indicator is
 				note.setBottomY(level.getBandMembers()[0].getHitY());
-				sfx.playSound(isOnBeat ? (nt == Note.NoteType.SWITCH ? "switchHit" : "perfectHit") : "goodHit");
+				sfx.playSound(isOnBeat ? (nt == Note.NoteType.SWITCH ? "switchHit" : "perfectHit") : "goodHit", 0.2f);
+				sb.recieveHit(isOnBeat ? 2000 : 1000);
 			}
 			else {
 				// lose some competency since you played a bit off beat
 				// TODO: REWORK THIS
+				sb.resetCombo();
 				note.setHitStatus(offBeatLoss);
 			}
 
 		}
 	}
-	String soundToPlay;
 	/**
 	 * Handle transitions and inputs
 	 * @param input
@@ -437,7 +443,7 @@ public class GameplayController {
 
 		for (boolean trigger : triggers) {
 			if (trigger) {
-				sfx.playSound("tap");
+				sfx.playSound("tap", 0.2f);
 				break;
 			}
 		}
@@ -453,7 +459,7 @@ public class GameplayController {
 		if (curP == PlayPhase.NOTES){
 			for (boolean trigger : switches) {
 				if (trigger) {
-					sfx.playSound("switch");
+					sfx.playSound("switch", 0.2f);
 					break;
 				}
 			}

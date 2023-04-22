@@ -9,24 +9,25 @@ import java.util.HashMap;
 
 /**
  * Controller for sound effects
+ * @param <T> key type
  */
-public class SoundController {
-    private HashMap<String, Sound> effectList;
+public class SoundController <T>{
+    private HashMap<T, Sound> effectList;
 
     private Sound curSound;
     public SoundController(){
         effectList = new HashMap<>();
     }
-    public void addSound(String id, String fileName){
+    public void addSound(T id, String fileName){
         Sound nextSound = Gdx.audio.newSound(Gdx.files.internal(fileName));
         effectList.put(id, nextSound);
     }
-    public void playSound(String id){
+    public void playSound(T id, float vol){
         if(curSound != null){
             curSound.stop();
         }
         curSound = effectList.get(id);
-        curSound.play(0.2f);
+        curSound.play(vol);
     }
     public void dispose(){
         for (Sound sound : effectList.values()) {

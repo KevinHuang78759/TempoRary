@@ -157,7 +157,7 @@ public class GameMode implements Screen {
 			case INTRO:
 				for(boolean k : inputController.getTriggers()){
 					if (k){
-						gameplayController.sfx.playSound("tap");
+						gameplayController.sfx.playSound("tap", 0.2f);
 					}
 				}
 				// wait a few frames before starting
