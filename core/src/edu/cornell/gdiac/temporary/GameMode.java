@@ -119,6 +119,7 @@ public class GameMode implements Screen {
 	public void dispose() {
 		inputController = null;
 		gameplayController.sfx.dispose();
+		gameplayController.sb.dispose();
 		gameplayController = null;
 		canvas = null;
 	}

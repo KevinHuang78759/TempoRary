@@ -69,4 +69,11 @@ public class Scoreboard {
         totalScore += (long) hitVal* (long)levelMultipliers[level];
         System.out.println("Current Combo:" + level + "Current Score:" + totalScore);
     }
+
+    public long getScore(){
+        return totalScore;
+    }
+    public void dispose(){
+        sfx.dispose();
+    }
 }
