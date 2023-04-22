@@ -137,8 +137,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * @param exitCode The state of the screen upon exit
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
-		System.out.println("exiting: " + screen + " " + exitCode);
-		if (screen == loading) {
+		if (screen == loading && exitCode == ExitCode.TO_MENU) {
 			directory = loading.getAssets();
 			menu.setScreenListener(this);
 			menu.populate(directory);
@@ -176,8 +175,8 @@ public class GDXRoot extends Game implements ScreenListener {
 			// We quit the main application
 			Gdx.app.exit();
 		} else {
-			 Gdx.app.error("GDXRoot", "Exit with error code "+exitCode, new RuntimeException());
-			 Gdx.app.exit();
+			Gdx.app.error("GDXRoot", "Exit with error code "+exitCode, new RuntimeException());
+			Gdx.app.exit();
 		}
 	}
 
