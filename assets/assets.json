@@ -80,6 +80,7 @@
     },
     "jsons": {
         "1": "levels/test2.json",
-        "2" : "levels/test.json"
+        "2" : "levels/test.json",
+        "3" : "levels/test.json"
     }
 }

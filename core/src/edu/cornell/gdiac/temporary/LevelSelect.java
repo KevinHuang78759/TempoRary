@@ -139,7 +139,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         JsonReader jr = new JsonReader();
         JsonValue levelData = jr.parse(Gdx.files.internal("assets.json"));
         numLevels = levelData.get("jsons").size;
-        allLevels= new String[numLevels];
+        allLevels= new String[numLevels*3];
         albumCoverCoords = new Vector2[numLevels];
         System.out.println("num levels "+numLevels);
         gameplayController = new GameplayController(canvas.getWidth(),canvas.getHeight());
@@ -169,11 +169,10 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         for (int i = 0; i <numLevels;i++){
             albumCoverCoords[i]=new Vector2(canvas.getWidth()/2-(i*200),canvas.getHeight()/2+200);
 
-            String levelString = "levels/"+(i+1)+".json";
-//            levels = new AssetDirectory( levelString );
-//            levels.loadAssets();
-//            levels.finishLoading();
+        }
 
+        for (int i = 0; i <numLevels*3;i++){
+            String levelString = "levels/"+(i+1)+".json";
             allLevels[i]=levelString;
         }
 
@@ -208,7 +207,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         // draw each song
         for (int i=0;i<numLevels;i++){
 //            Level l = new Level (j,loadDirectory);
-            Color albumCoverTint = (selectedLevel == (numLevels-i) ? Color.GRAY: Color.WHITE);
+            Color albumCoverTint = (selectedLevel == (numLevels-i-1) ? Color.GRAY: Color.WHITE);
             canvas.draw(albumCover,albumCoverTint,albumCover.getWidth()/2,albumCover.getHeight()/2,albumCoverCoords[i].x,
                     albumCoverCoords[i].y,0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
         }
@@ -300,9 +299,10 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         System.out.println("selected difficulty is: " + selectedDifficulty);
 
         for (int i=0;i<numLevels;i++){
+            System.out.println("numLevels is "+(numLevels));
             if (isButtonPressed(screenX, screenY, albumCover, albumCoverCoords[i])){
-                System.out.println("selected song is "+(numLevels-i));
-                selectedLevel=numLevels-i;
+                System.out.println("selected song is "+(numLevels-i-1));
+                selectedLevel=numLevels-i-1;
             }
         }
 
@@ -314,28 +314,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             System.out.println("play pressed");
             playPressed=true;
 
-//            if (getHasSelectedLevel()){
-//                // go to game
-//                System.out.println("loading level:");
-//                System.out.println("selected level:" +selectedLevel);
-//                System.out.println("selected difficulty:" + selectedDifficulty);
-//                int gameIdx = selectedDifficulty; // right now we only have 2 difficulties for 1 level
-//                                                // depending on how we structure the json files,
-//                                                // it could be (selectedDifficulty+1) * (selectedLevel+1)
-//                Level l = new Level(allLevels[gameIdx], directory);
-//                gameplayController.loadLevel(allLevels[gameIdx], directory);
-//
-//                playing = new GameMode(canvas);
-////                playing.setScreenListener(this);
-//				playing.readLevel(directory);
-//				playing.populate(directory);
-//                playing.show();
-
-//            }
-
         }
-
-//        process which level is selected
 
         return false;
     }
@@ -374,36 +353,12 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                 System.out.println("loading level..");
                 System.out.println("selected level:" + selectedLevel);
                 System.out.println("selected difficulty:" + selectedDifficulty);
-                int gameIdx = selectedDifficulty*selectedLevel;
+                int gameIdx = selectedDifficulty+(selectedLevel*3);
                 System.out.println("index of json is:" + gameIdx);
                 System.out.println("file name:"+allLevels[gameIdx-1]);
-                // right now we only have 2 difficulties for 1 level
-                // depending on how we structure the json files,
-                // it could be (selectedDifficulty+1) * (selectedLevel+1)
-//                Level l = new Level(allLevels[0], directory);
-
-//                gameplayController.loadLevel(allLevels[0].getEntry("1",), directory);
-
-//                playing = new GameMode(canvas);
-//                JsonReader jr = new JsonReader();
-//                JsonValue levelData = jr.parse(Gdx.files.internal(allLevels[gameIdx-1]));
-//                gameplayController.loadLevel(levelData, directory);
-//
-//                playing.populate(directory);
-//                playing.show();
 
                 selectedJson=allLevels[gameIdx-1];
                 listener.exitScreen(playing, ExitCode.TO_LEVEL);
-
-
-                // TODO: fix the exit screen condition (and remove the bottom code)
-//                listener.exitScreen(playing, 1);
-//
-//				playing.readLevel(directory,allLevels[gameIdx]);
-//
-//				playing.populate(directory);
-//				playing.initializeOffset(calibration.getOffset());
-
             }
         }
     }
