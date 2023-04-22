@@ -148,8 +148,12 @@ public class GDXRoot extends Game implements ScreenListener {
 			setScreen(menu);
 			loading.dispose();
 			loading = null;
-		} else if (exitCode == ExitCode.TO_PLAYING) {
+		}
+		// TODO: @Melanie, modify this condition to include the playing
+		// TODO: also add a new else-if branch condition for exit code to the level screen
+		else if (exitCode == ExitCode.TO_PLAYING) {
 			screen.hide();
+			// TODO: probably add the level populate here
 //				playing.setScreenListener(this);
 //				playing.readLevel(directory);
 //				playing.populate(directory);
@@ -178,7 +182,9 @@ public class GDXRoot extends Game implements ScreenListener {
 			setScreen(menu);
 			menu.reset();
 			menu.show();
-		} else if (screen==levelscreen){
+		}
+		// TODO: @Melanie, make this use exit code
+		else if (screen==levelscreen){
 			loading = new LoadingMode("assets.json", canvas,1);
 			loading.setScreenListener(this);
 			setScreen(loading);

@@ -384,6 +384,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                 playing.populate(directory);
                 playing.show();
 
+                // TODO: fix the exit screen condition (and remove the bottom code)
                 listener.exitScreen(playing, 1);
 
 				playing.readLevel(directory,allLevels[gameIdx]);
