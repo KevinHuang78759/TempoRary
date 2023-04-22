@@ -51,6 +51,8 @@ public class GDXRoot extends Game implements ScreenListener {
 	private EditorMode editing;
 	/** Player mode for getting calibration (CONTROLLER CLASS) */
 	private CalibrationMode calibration;
+	/** Player mode for the pause menu (CONTROLLER CLASS) */
+	private PauseMode pausing;
 
 	/**
 	 * Creates a new game from the configuration settings.
@@ -71,6 +73,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		loading = new LoadingMode("assets.json", canvas,1);
 		menu = new MenuMode(canvas);
 		playing = new GameMode(canvas);
+//		pausing = new PauseMode(canvas);
 		try {
 			editing = new EditorMode(canvas);
 		} catch (IOException e) {
@@ -103,6 +106,8 @@ public class GDXRoot extends Game implements ScreenListener {
 		editing = null;
 		menu.dispose();
 		menu = null;
+		pausing.dispose();
+		pausing = null;
 
 		// Unload all of the resources
 		if (directory != null) {
@@ -171,6 +176,12 @@ public class GDXRoot extends Game implements ScreenListener {
 			setScreen(menu);
 			menu.reset();
 			menu.show();
+		} else if (exitCode == ExitCode.TO_PAUSE) {
+			screen.hide();
+			pausing.setScreenListener(this);
+			setScreen(pausing);
+			pausing.reset();
+			pausing.show();
 		} else if (exitCode == ExitCode.TO_EXIT) {
 			// We quit the main application
 			Gdx.app.exit();

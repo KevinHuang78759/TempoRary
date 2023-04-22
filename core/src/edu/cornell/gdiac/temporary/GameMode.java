@@ -167,12 +167,18 @@ public class GameMode implements Screen {
 				}
 				break;
 			case OVER:
+				if (inputController.didReset()) {
+					gameplayController.reset();
+					gameplayController.start();
+					listener.exitScreen(this, 1);
+				}
+				break;
 			case PLAY:
 				if (inputController.didReset()) {
 					gameplayController.reset();
 					gameplayController.start();
 				} else if (inputController.didPause()){
-					listener.exitScreen(this, 0);
+					listener.exitScreen(this, 5);
 				}
 				else {
 					play(delta);
