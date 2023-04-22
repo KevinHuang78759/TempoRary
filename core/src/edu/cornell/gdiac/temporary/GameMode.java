@@ -42,7 +42,9 @@ public class GameMode implements Screen {
 		/** While we are playing the game */
 		PLAY,
 		/** When the ships is dead (but shells still work) */
-		OVER
+		OVER,
+		/** When there are no more notes and competency bar is not zero */
+		WON
 	}
 
 	// Loaded assets
@@ -199,6 +201,11 @@ public class GameMode implements Screen {
 			gameplayController.level.stopMusic();
 		}
 
+		if (gameplayController.checkWinCon()){
+			gameState = GameState.WON;
+			gameplayController.level.stopMusic();
+		}
+
 		// Clean up destroyed objects
 		gameplayController.garbageCollect();
 	}
@@ -221,8 +228,10 @@ public class GameMode implements Screen {
 			canvas.drawTextCentered("Game Over!", displayFont, GAME_OVER_OFFSET+50);
 			displayFont.setColor(Color.NAVY);
 			canvas.drawTextCentered("Press ENTER to Restart", displayFont, 0);
-		}
-		else{
+		} else if (gameState == GameState.WON) {
+			displayFont.setColor(Color.NAVY);
+			canvas.drawTextCentered("You won!", displayFont, GAME_OVER_OFFSET+50);
+		} else{
 			//Draw everything in the current level
 			gameplayController.level.drawEverything(canvas,
 					gameplayController.activeBandMember, gameplayController.goalBandMember,

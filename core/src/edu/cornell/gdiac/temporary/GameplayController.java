@@ -200,6 +200,21 @@ public class GameplayController {
 		}
 	}
 
+
+	/**
+	 * Check if the player has won the game.
+	 * @return true if there are no more active and loading notes,
+	 * and all band members have competency bar > 0.
+	 */
+	public boolean checkWinCon(){
+		if (particles.size ==0 && !hasZeroCompetency()){
+			return true;
+		}else{
+			return false;
+		}
+
+	}
+
 	/**
 	 * Helper function to determine whether a band member has 0 competency for losing
 	 * @return returns if at least bone band members has 0 competency
