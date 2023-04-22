@@ -384,12 +384,15 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                 playing.populate(directory);
                 playing.show();
 
+
+                listener.exitScreen(this, ExitCode.TO_PLAYING);
+
                 // TODO: fix the exit screen condition (and remove the bottom code)
-                listener.exitScreen(playing, 1);
-
-				playing.readLevel(directory,allLevels[gameIdx]);
-
-				playing.populate(directory);
+//                listener.exitScreen(playing, 1);
+//
+//				playing.readLevel(directory,allLevels[gameIdx]);
+//
+//				playing.populate(directory);
 //				playing.initializeOffset(calibration.getOffset());
                 System.out.println("sdfasf");
 
