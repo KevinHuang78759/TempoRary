@@ -439,7 +439,7 @@ public class GameplayController {
 			// move the note to where the indicator is
 			note.setBottomY(level.getBandMembers()[0].getHitY());
 			sfx.playSound(isOnBeat ? (nt == Note.NoteType.SWITCH ? "switchHit" : "perfectHit") : "goodHit", 0.2f);
-			sb.recieveHit(isOnBeat ? 2000 : 1000);
+			sb.recieveHit(isOnBeat ? 1000 : 500);
 		}
 		else {
 			// lose some competency since you played a bit off beat
