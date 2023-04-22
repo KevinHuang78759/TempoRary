@@ -118,6 +118,7 @@ public class GameMode implements Screen {
 	 */
 	public void dispose() {
 		inputController = null;
+		gameplayController.sfx.dispose();
 		gameplayController = null;
 		canvas = null;
 	}
@@ -154,6 +155,11 @@ public class GameMode implements Screen {
 		// Test whether to reset the game.
 		switch (gameState) {
 			case INTRO:
+				for(boolean k : inputController.getTriggers()){
+					if (k){
+						gameplayController.sfx.playSound("tap");
+					}
+				}
 				// wait a few frames before starting
 				if (waiting == 4f) {
 					gameplayController.reset();

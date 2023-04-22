@@ -12,6 +12,8 @@ import java.util.HashMap;
  */
 public class SoundController {
     private HashMap<String, Sound> effectList;
+
+    private Sound curSound;
     public SoundController(){
         effectList = new HashMap<>();
     }
@@ -20,7 +22,11 @@ public class SoundController {
         effectList.put(id, nextSound);
     }
     public void playSound(String id){
-        effectList.get(id).play(0.25f);
+        if(curSound != null){
+            curSound.stop();
+        }
+        curSound = effectList.get(id);
+        curSound.play(0.2f);
     }
     public void dispose(){
         for (Sound sound : effectList.values()) {

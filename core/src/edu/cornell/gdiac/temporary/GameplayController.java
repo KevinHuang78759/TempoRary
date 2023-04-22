@@ -95,7 +95,7 @@ public class GameplayController {
 	/** Y value of the hit bar */
 	public float hitbarY;
 
-	private SoundController sfx;
+	public SoundController sfx;
 
 	/**
 	 * Create gameplaycontroler
@@ -113,6 +113,7 @@ public class GameplayController {
 		TOPBOUND = 19f*height/20f;
 		BOTTOMBOUND = height/5f;
 		sfx = new SoundController();
+		soundToPlay = "";
 	}
 
 
@@ -390,8 +391,9 @@ public class GameplayController {
 						 boolean destroy,
 						 boolean[] hitReg,
 						 boolean lifted) {
+		Note.NoteType nt = note.getNoteType();
 		// check for precondition that lifted is true iff note type is HELD
-		assert !lifted || note.getNoteType() == Note.NoteType.HELD;
+		assert !lifted || nt == Note.NoteType.HELD;
 
 		//Check for all the switch notes of this lane, if one is close enough destroy it and
 		//give it positive hit status
@@ -413,15 +415,17 @@ public class GameplayController {
 				note.setDestroyed(destroy);
 				// move the note to where the indicator is
 				note.setBottomY(level.getBandMembers()[0].getHitY());
+				sfx.playSound(isOnBeat ? (nt == Note.NoteType.SWITCH ? "switchHit" : "perfectHit") : "goodHit");
 			}
 			else {
 				// lose some competency since you played a bit off beat
 				// TODO: REWORK THIS
 				note.setHitStatus(offBeatLoss);
 			}
+
 		}
 	}
-
+	String soundToPlay;
 	/**
 	 * Handle transitions and inputs
 	 * @param input
@@ -430,11 +434,14 @@ public class GameplayController {
 		//Read in inputs
 		switches = input.switches();
 		triggers = input.didTrigger();
+
 		for (boolean trigger : triggers) {
 			if (trigger) {
 				sfx.playSound("tap");
+				break;
 			}
 		}
+
 		boolean[] lifted = input.triggerLifted;
 		long currentSample = level.getCurrentSample();
 
@@ -444,6 +451,12 @@ public class GameplayController {
 
 		// SWITCH NOTE HIT HANDLING
 		if (curP == PlayPhase.NOTES){
+			for (boolean trigger : switches) {
+				if (trigger) {
+					sfx.playSound("switch");
+					break;
+				}
+			}
 			for (int i = 0; i < switches.length; ++i){
 				if (switches[i] && i != activeBandMember){
 					//Check only the lanes that are not the current active lane
