@@ -18,6 +18,8 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     /** Internal assets for this loading screen */
     private AssetDirectory internal;
 
+    private String selectedJson;
+
     /** Internal assets for this levels screen */
     private AssetDirectory levels;
 
@@ -122,6 +124,9 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         this.listener = listener;
     }
 
+    public String getSelectedJson(){
+        return selectedJson;
+    }
 
     /**
      * Parse information about the levels .
@@ -369,23 +374,27 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                 System.out.println("loading level..");
                 System.out.println("selected level:" + selectedLevel);
                 System.out.println("selected difficulty:" + selectedDifficulty);
-                int gameIdx = numLevels-1; // right now we only have 2 difficulties for 1 level
+                int gameIdx = selectedDifficulty*selectedLevel;
+                System.out.println("index of json is:" + gameIdx);
+                System.out.println("file name:"+allLevels[gameIdx-1]);
+                // right now we only have 2 difficulties for 1 level
                 // depending on how we structure the json files,
                 // it could be (selectedDifficulty+1) * (selectedLevel+1)
 //                Level l = new Level(allLevels[0], directory);
 
 //                gameplayController.loadLevel(allLevels[0].getEntry("1",), directory);
 
-                playing = new GameMode(canvas);
-                JsonReader jr = new JsonReader();
-                JsonValue levelData = jr.parse(Gdx.files.internal(allLevels[gameIdx]));
-                gameplayController.loadLevel(levelData, directory);
+//                playing = new GameMode(canvas);
+//                JsonReader jr = new JsonReader();
+//                JsonValue levelData = jr.parse(Gdx.files.internal(allLevels[gameIdx-1]));
+//                gameplayController.loadLevel(levelData, directory);
+//
+//                playing.populate(directory);
+//                playing.show();
 
-                playing.populate(directory);
-                playing.show();
+                selectedJson=allLevels[gameIdx-1];
+                listener.exitScreen(playing, ExitCode.TO_LEVEL);
 
-
-                listener.exitScreen(this, ExitCode.TO_PLAYING);
 
                 // TODO: fix the exit screen condition (and remove the bottom code)
 //                listener.exitScreen(playing, 1);
@@ -394,7 +403,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 //
 //				playing.populate(directory);
 //				playing.initializeOffset(calibration.getOffset());
-                System.out.println("sdfasf");
 
             }
         }

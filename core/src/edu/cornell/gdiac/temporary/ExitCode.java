@@ -17,4 +17,7 @@ public class ExitCode {
     public static final int TO_EDITOR = 3;
     // exit to menu
     public static final int TO_MENU = 4;
+
+    // exit to level selection
+    public static final int TO_LEVEL = 5;
 }
