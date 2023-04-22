@@ -273,7 +273,7 @@ public class GameMode implements Screen {
 			update(delta);
 			draw();
 			if (inputController.didExit() && listener != null) {
-				listener.exitScreen(this, 0);
+				listener.exitScreen(this, ExitCode.TO_MENU);
 			}
 		}
 	}

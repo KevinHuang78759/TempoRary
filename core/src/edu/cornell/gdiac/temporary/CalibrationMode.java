@@ -92,7 +92,7 @@ public class CalibrationMode implements Screen {
     public void populate(AssetDirectory directory) {
         displayFont = directory.getEntry("times", BitmapFont.class);
         music = directory.getEntry("calibration", MusicQueue.class);
-        background  = directory.getEntry("background",Texture.class); //calibration background?
+        background  = directory.getEntry("background", Texture.class); //calibration background?
     }
 
     @Override
@@ -101,7 +101,7 @@ public class CalibrationMode implements Screen {
             update(delta);
             draw(delta);
             if (isReady() && listener != null) {
-                listener.exitScreen(this, 0);
+                listener.exitScreen(this, ExitCode.TO_MENU);
             }
         }
     }
