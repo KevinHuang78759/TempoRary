@@ -33,8 +33,7 @@ import edu.cornell.gdiac.temporary.entity.*;
  * This controller also acts as the root class for all the models.
  */
 public class GameplayController {
-	// note, currently not being used
-	int curframe;
+
 	// Graphics assets for the entities
 	/** Texture for all stars, as they look the same */
 	private Texture particleTexture;
@@ -288,7 +287,6 @@ public class GameplayController {
 		activeBandMember = 0;
 		goalBandMember = 0;
 		updateBandMemberCoords();
-		curframe = 0;
 	}
 
 	/**
@@ -305,8 +303,6 @@ public class GameplayController {
 		for(Particle o : particles){
 			o.update(0f);
 		}
-		//increment the current frame.
-		++curframe;
 
 	}
 
@@ -331,7 +327,6 @@ public class GameplayController {
 	 * Resets the game, deleting all objects.
 	 */
 	public void reset() {
-		curframe = 0;
 		particles.clear();
 		curP = PlayPhase.NOTES;
 	}
@@ -453,7 +448,7 @@ public class GameplayController {
 				note.setHitStatus(isOnBeat ? onBeatGain : offBeatGain);
 				spawnHitEffect(note.getHitStatus(), note.getX(), spawnEffectY);
 				if (isOnBeat) {
-					spawnEnhancedHitEffect(note.getX(), note.getY());
+					spawnEnhancedHitEffect(note.getX(), spawnEffectY);
 				}
 				if (note.getLine() != -1) hitReg[note.getLine()] = true;
 				note.setDestroyed(destroy);
