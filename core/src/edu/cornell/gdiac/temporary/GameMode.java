@@ -16,6 +16,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
@@ -52,10 +53,59 @@ public class GameMode implements Screen {
 	private FilmStrip streetLevelBackground;
 	/** The font for giving messages to the player */
 	private BitmapFont displayFont;
+	/** Button textures */
+	private Texture resumeButton;
+	private Texture restartButton;
+	private Texture levelButton;
+	private Texture menuButton;
 
-	/// CONSTANTS
+	/* BUTTON LOCATIONS */
+	/** Resume button x and y coordinates represented as a vector */
+	private Vector2 resumeCoords;
+	/** Restart button x and y coordinates represented as a vector */
+	private Vector2 restartCoords;
+	/** Level select button x and y coordinates represented as a vector */
+	private Vector2 levelCoords;
+	/** Main menu button x and y coordinates represented as a vector */
+	private Vector2 menuCoords;
+
+
+	/* CONSTANTS */
+	/** Scale at which to draw the buttons */
+	private static float BUTTON_SCALE  = 0.75f;
 	/** Offset for the game over message on the screen */
 	private static final float GAME_OVER_OFFSET = 40.0f;
+	/** The y-coordinate of the center of the progress bar (artifact of LoadingMode) */
+	private int centerY;
+	/** The x-coordinate of the center of the progress bar (artifact of LoadingMode) */
+	private int centerX;
+	/** The height of the canvas window (necessary since sprite origin != screen origin) */
+	private int heightY;
+	/** Standard window size (for scaling) */
+	private static int STANDARD_WIDTH  = 1200;
+	/** Standard window height (for scaling) */
+	private static int STANDARD_HEIGHT = 800;
+	/** Ratio of the bar width to the screen (artifact of LoadingMode) */
+	private static float BAR_WIDTH_RATIO  = 0.66f;
+	/** Ration of the bar height to the screen (artifact of LoadingMode) */
+	private static float BAR_HEIGHT_RATIO = 0.25f;
+	/** Scaling factor for when the student changes the resolution. */
+	private float scale;
+
+	/** The current state of each button */
+	private int pressState;
+
+	/* PRESS STATES **/
+	/** Initial button state */
+	private static final int NO_BUTTON_PRESSED = 0;
+	/** Pressed down button state for the resume button */
+	private static final int RESUME_PRESSED = 101;
+	/** Pressed down button state for the restart button */
+	private static final int RESTART_PRESSED = 102;
+	/** Pressed down button state for the level select button */
+	private static final int LEVEL_PRESSED = 103;
+	/** Pressed down button state for the main menu button */
+	private static final int MENU_PRESSED = 104;
 
 	/** Reference to drawing context to display graphics (VIEW CLASS) */
 	private GameCanvas canvas;
@@ -143,6 +193,11 @@ public class GameMode implements Screen {
 		streetLevelBackground = new FilmStrip(directory.getEntry("street-background", Texture.class), 1, 1);
 		displayFont = directory.getEntry("times",BitmapFont.class);
 		gameplayController.populate(directory);
+
+		resumeButton = directory.getEntry("play", Texture.class);
+		menuButton = directory.getEntry("level-editor", Texture.class);
+		resumeCoords = new Vector2(centerX + resumeButton.getWidth(), canvas.getHeight()/2 + 200);
+		menuCoords = new Vector2(centerX + menuButton.getWidth(), canvas.getHeight()/2);
 	}
 
 	/**
@@ -176,23 +231,27 @@ public class GameMode implements Screen {
 				break;
 			case OVER:
 				if (inputController.didReset()) {
+					gameplayController.reset();
 					gameplayController.loadLevel(levelData, assetDirectory);
 					waiting = 4f;
 					gameState = GameState.INTRO;
 				}
 				break;
 			case PLAY:
-				if (inputController.didReset()) {
-					gameplayController.reset();
-					gameplayController.start();
-				} else if (inputController.didPause()){
-					listener.exitScreen(this, 5);
+				if (inputController.didPause()) {
+					gameplayController.level.pauseMusic();
+					gameState = GameState.PAUSE;
 				}
 				else {
 					play(delta);
 				}
 				break;
 			case PAUSE:
+				if (inputController.didClick()) {
+					int screenX = (int) inputController.getMouseX();
+					int screenY = (int) inputController.getMouseY();
+					isButtonPressed(screenX, screenY, resumeButton, resumeCoords);
+				}
 				break;
 			default:
 				break;
@@ -237,6 +296,11 @@ public class GameMode implements Screen {
 			canvas.drawTextCentered("Game Over!", displayFont, GAME_OVER_OFFSET+50);
 			displayFont.setColor(Color.NAVY);
 			canvas.drawTextCentered("Press ENTER to Restart", displayFont, 0);
+		} else if (gameState == GameState.PAUSE) {
+			canvas.draw(resumeButton, Color.WHITE, resumeButton.getWidth()/2, resumeButton.getHeight()/2,
+					resumeCoords.x, resumeCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+			canvas.draw(menuButton, Color.WHITE, resumeButton.getWidth()/2, resumeButton.getHeight()/2,
+					resumeCoords.x, resumeCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 		}
 		else{
 			//Draw everything in the current level
@@ -264,6 +328,45 @@ public class GameMode implements Screen {
 	}
 
 	/**
+	 * Returns true if all assets are loaded and the player presses on a button
+	 *
+	 * @return true if the player is ready to go
+	 */
+	public boolean isReady() {
+		return pressState == ExitCode.TO_MENU;
+	}
+
+	/**
+	 * Resets the PauseMode
+	 */
+	public void reset() {
+		pressState = NO_BUTTON_PRESSED;
+	}
+
+	/**
+	 * Checks to see if the location clicked at `screenX`, `screenY` are within the bounds of the given button
+	 * `buttonTexture` and `buttonCoords` should refer to the appropriate button parameters
+	 *
+	 * @param screenX the x-coordinate of the mouse on the screen
+	 * @param screenY the y-coordinate of the mouse on the screen
+	 * @param buttonTexture the specified button texture
+	 * @param buttonCoords the specified button coordinates as a Vector2 object
+	 * @return whether the button specified was pressed
+	 */
+	public boolean isButtonPressed(int screenX, int screenY, Texture buttonTexture, Vector2 buttonCoords) {
+		// buttons are rectangles
+		// buttonCoords hold the center of the rectangle, buttonTexture has the width and height
+		// get half the x length of the button portrayed
+		float xRadius = BUTTON_SCALE * scale * buttonTexture.getWidth()/2.0f;
+		boolean xInBounds = buttonCoords.x - xRadius <= screenX && buttonCoords.x + xRadius >= screenX;
+
+		// get half the y length of the button portrayed
+		float yRadius = BUTTON_SCALE * scale * buttonTexture.getHeight()/2.0f;
+		boolean yInBounds = buttonCoords.y - yRadius <= screenY && buttonCoords.y + yRadius >= screenY;
+		return xInBounds && yInBounds;
+	}
+
+	/**
 	 * Called when the Screen is resized.
 	 *
 	 * This can happen at any point during a non-paused state but will never happen
@@ -273,7 +376,15 @@ public class GameMode implements Screen {
 	 * @param height The new height in pixels
 	 */
 	public void resize(int width, int height) {
-		// IGNORE FOR NOW
+		// Compute the drawing scale
+		float sx = ((float)width)/STANDARD_WIDTH;
+		float sy = ((float)height)/STANDARD_HEIGHT;
+		scale = (sx < sy ? sx : sy);
+
+//        this.width = (int)(BAR_WIDTH_RATIO*width);
+		centerY = (int)(BAR_HEIGHT_RATIO*height);
+		centerX = width/2;
+		heightY = height;
 	}
 
 	/**
