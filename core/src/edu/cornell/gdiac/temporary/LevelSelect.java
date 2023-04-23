@@ -153,7 +153,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
             playButton = internal.getEntry("play",Texture.class);
             //we don't currently have these in the json yet.
-            easyButton = internal.getEntry("play-old",Texture.class);
+            easyButton = internal.getEntry("easy",Texture.class);
             mediumButton = internal.getEntry("play-old",Texture.class);
             hardButton = internal.getEntry("play-old",Texture.class);
 

@@ -99,12 +99,17 @@ public class InputController {
 				Input.Keys.J,
 				Input.Keys.K
 		};
-
 		switchesBindings = new int[]{
 				Input.Keys.E,
 				Input.Keys.R,
 				Input.Keys.U,
 				Input.Keys.I,
+		};
+		switchesOrder = new int[] {
+				1,
+				2,
+				3,
+				4,
 		};
 	}
 

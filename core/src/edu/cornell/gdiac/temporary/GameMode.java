@@ -105,10 +105,12 @@ public class GameMode implements Screen {
 		JsonReader jr = new JsonReader();
 		JsonValue levelData = jr.parse(Gdx.files.internal(level));
 		gameplayController.loadLevel(levelData, directory);
+		System.out.println(gameplayController.NUM_LANES);
 		if (gameplayController.NUM_LANES == 2) {
 			inputController = new InputController(new int[]{1, 2},  new int[gameplayController.lpl]);
 		}
 		else {
+			System.out.println("new input controller");
 			inputController = new InputController(gameplayController.NUM_LANES, gameplayController.lpl);
 		}
 	}
