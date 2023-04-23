@@ -67,7 +67,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
     /* PRESS STATES **/
     /** Initial button state */
-    private static final int NO_BUTTON_PRESSED = 0;
+    private static final int NO_BUTTON_PRESSED = 100;
     /** Pressed down button state for the play button */
     private static final int PLAY_PRESSED = 101;
     /** Pressed down button state for the level editor button */
@@ -75,8 +75,9 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     /** Pressed down button state for the calibration button */
     private static final int CALIBRATION_PRESSED = 103;
     private static final int SETTINGS_PRESSED = 104;
+    private static final int EXIT_PRESSED = 105;
 
-    private MenuState currentState;
+    private MenuState currentMenuState;
 
     // MenuState
     private enum MenuState {
@@ -101,6 +102,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         levelEditorButton = directory.getEntry("level-editor", Texture.class);
         calibrationButton = directory.getEntry("play-old", Texture.class);
         settingsButton = directory.getEntry("play-old", Texture.class);
+        exitButton = directory.getEntry("play-old", Texture.class);
         playButtonCoords = new Vector2(centerX + levelEditorButton.getWidth(), canvas.getHeight()/2 + 200);
         levelEditorButtonCoords = new Vector2(centerX + levelEditorButton.getWidth(), canvas.getHeight()/2);
         calibrationButtonCoords = new Vector2(centerX + calibrationButton.getWidth()*2 , centerY);
@@ -114,14 +116,15 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     public boolean isReady() {
         return pressState == ExitCode.TO_PLAYING
                 || pressState == ExitCode.TO_EDITOR
-                || pressState == ExitCode.TO_CALIBRATION;
+                || pressState == ExitCode.TO_CALIBRATION
+                || pressState == ExitCode.TO_EXIT;
     }
 
     /**
      * Resets the MenuMode
      */
     public void reset() {
-        currentState = MenuState.HOME;
+        currentMenuState = MenuState.HOME;
         pressState = NO_BUTTON_PRESSED;
     }
 
@@ -141,7 +144,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     @Override
     public void render(float v) {
         if (active) {
-            switch (currentState) {
+            switch (currentMenuState) {
                 case HOME:
                     draw();
                     break;
@@ -165,6 +168,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
      */
     private void draw() {
         canvas.begin();
+        // TODO: make these methods instead
         canvas.draw(background, 0, 0, canvas.getWidth(), canvas.getHeight());
         Color playButtonTint = (pressState == PLAY_PRESSED ? Color.GRAY: Color.WHITE);
         canvas.draw(playButton, playButtonTint, playButton.getWidth()/2, playButton.getHeight()/2,
@@ -185,6 +189,10 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         Color settingsButtonTint = (pressState == SETTINGS_PRESSED ? Color.GRAY: Color.WHITE);
         canvas.draw(settingsButton, settingsButtonTint, settingsButton.getWidth()/2, settingsButton.getHeight()/2,
                 calibrationButtonCoords.x - settingsButton.getWidth(), calibrationButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+
+        Color exitButtonTint = (pressState == EXIT_PRESSED ? Color.GRAY: Color.WHITE);
+        canvas.draw(exitButton, exitButtonTint, exitButton.getWidth()/2, exitButton.getHeight()/2,
+                calibrationButtonCoords.x - 2 * exitButton.getWidth(), calibrationButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
         canvas.end();
     }
 
@@ -294,7 +302,8 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if (pressState == ExitCode.TO_PLAYING
                 || pressState == ExitCode.TO_EDITOR
-                || pressState == ExitCode.TO_CALIBRATION) {
+                || pressState == ExitCode.TO_CALIBRATION
+                || pressState == ExitCode.TO_EXIT) {
             return true;
         }
 
@@ -320,6 +329,12 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
                 +(screenY-calibrationButtonCoords.y)*(screenY-calibrationButtonCoords.y);
         if (distSettings < radius*radius) {
             pressState = SETTINGS_PRESSED;
+        }
+
+        float distExit = (screenX-(calibrationButtonCoords.x - 2 * calibrationButton.getWidth()))*(screenX-(calibrationButtonCoords.x - 2 * calibrationButton.getWidth()))
+                +(screenY-calibrationButtonCoords.y)*(screenY-calibrationButtonCoords.y);
+        if (distExit < radius*radius) {
+            pressState = EXIT_PRESSED;
         }
         return false;
     }
@@ -347,8 +362,10 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
                 pressState = ExitCode.TO_CALIBRATION;
                 return false;
             case SETTINGS_PRESSED:
-                currentState = MenuState.SETTINGS;
+                currentMenuState = MenuState.SETTINGS;
                 break;
+            case EXIT_PRESSED:
+                pressState = ExitCode.TO_EXIT;
             default:
                 return true;
         }
