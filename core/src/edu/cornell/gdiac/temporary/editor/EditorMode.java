@@ -59,6 +59,39 @@ public class EditorMode implements Screen {
     private Vector2 redoButtonLocation;
     private float undoButtonSize;
 
+    /** Location and size of the UI button for opening level settings menu */
+
+    private Vector2 settingsButtonLocation;
+    private float settingsButtonSize;
+
+    /** Location and dimensions of the settings screen */
+    private Vector2 settingsScreenLocation;
+    private Vector2 settingsScreenDimensions;
+
+    /** Location and size of the settings UI buttons */
+    private Vector2 changeBPMButtonLocation;
+    private Vector2 changeLaneButtonLocation;
+    private Vector2 changeLineButtonLocation;
+    private Vector2 changeNameButtonLocation;
+    private Vector2 changeMaxCompButtonLocation;
+    private Vector2 closeSettingsButtonLocation;
+    private float settingsButtonsSize;
+
+    /** Location of the settings text */
+
+    private Vector2 settingsTitleTextLocation;
+    private Vector2 nameTextLocation;
+    private Vector2 BPMTextLocation;
+    private Vector2 maxCompTextLocation;
+    private Vector2 laneTextLocation;
+    private Vector2 lineTextLocation;
+
+    /** Location and dimensions of the text prompt bar */
+    private Vector2 textPromptBarLocation;
+    private Vector2 textPromptBarDimensions;
+
+    private Vector2 promptTextLocation;
+
     /** File Writer for writing level to JSON*/
     private FileWriter file;
 
@@ -95,7 +128,7 @@ public class EditorMode implements Screen {
     /** Reads input from keyboard or game pad (CONTROLLER CLASS) */
     private InputController inputController;
 
-    /** Whether or not this player mode is still active */
+    /** Whether this player mode is still active */
     private boolean active;
 
     /** Listener that will update the player mode when we are done */
@@ -148,11 +181,47 @@ public class EditorMode implements Screen {
     /** Selected duration of held notes to be placed*/
     private int selectedDuration;
 
+    /** Selected probability distribution of random hits to be placed */
+    private int[] selectedProbabilities;
+
+    /** Selected loss rate of competency drain flags to be placed */
+    private int selectedLossRate;
+
     /** True if the user is placing the start location*/
     private boolean placing_start;
 
+    /** True if the user is placing competency drain flags*/
+    private boolean placing_flags;
+
+    /** True if the user is placing random hits*/
+    private boolean placing_hits;
+
     /** True if the song is playing and the song bar is progressing through the level*/
     private boolean playing;
+
+    /** True if the user is in the level settings */
+    private boolean setting;
+
+    /** True if the user is typing in any text prompt */
+    private boolean typing;
+
+    /** True if the user is typing in the BPM text prompt */
+    private boolean typingBPM;
+
+    /** True if the user is typing in the lane number text prompt */
+    private boolean typingLaneNum;
+
+    /** True if the user is typing in the line number text prompt */
+    private boolean typingLineNum;
+
+    /** True if the user is typing in the level name text prompt */
+    private boolean typingName;
+
+    /** True if the user is typing in the max competency text prompt */
+    private boolean typingMaxComp;
+
+    /** String the user is typing in a text prompt */
+    private String typedString;
 
     /** Location in the song (in samples) the song bar is at */
     private int playPosition;
@@ -262,10 +331,24 @@ public class EditorMode implements Screen {
      */
     private LinkedList<EditorNote> Notes;
 
+    /**
+     * Array of all competency loss rate flags in the level
+     */
+    private LinkedList<EditorFlag> Flags;
+
+    /**
+     * Array of all random hits in the level
+     */
+    private LinkedList<EditorHit> Hits;
+
     private void defineSongCharacteristics() {
         beat = (int) (((float) sampleRate)/(((float) BPM)/60f));
         samplesPerFrame = sampleRate/frameRate;
     }
+
+    /** array of the horizontal locations of all the left edges of the lane rectangles */
+    private float[] laneEdges;
+
     /**
      * Initializes the dimensions of the lane rectangles on the screen
      *
@@ -283,6 +366,12 @@ public class EditorMode implements Screen {
         laneHeight = height/1.25f;
         laneBorderColor = new Color(Color.BLACK);
         laneBackColor = new Color(Color.PINK);
+        laneEdges = new float[laneNumber];
+        float x = leftBound;
+        for (int lane = 0; lane< laneNumber; lane++){
+            laneEdges[lane] = x;
+            x += laneWidth + laneSpacing;
+        }
     }
 
     private void defineButtonLocations(){
@@ -301,13 +390,13 @@ public class EditorMode implements Screen {
 
         //Note Type Buttons
         beatButtonLocation.set(width*0.05f, height*0.7f);
-        heldButtonLocation.set(width*0.05f, height*0.7f - width*0.15f);
-        switchButtonLocation.set(width*0.05f, height*0.7f - width*0.3f);
+        heldButtonLocation.set(width*0.05f, height*0.7f - width*0.10f);
+        switchButtonLocation.set(width*0.05f, height*0.7f - width*0.2f);
         noteButtonSize = (1f/15f)*width*0.05f;
 
         //Duration Type Buttons
-        upDurationButtonLocation.set(width*0.09f,  height*0.7f - width*0.14f);
-        downDurationButtonLocation.set(width*0.09f,  height*0.7f - width*0.18f);
+        upDurationButtonLocation.set(width*0.09f,  height*0.7f - width*0.09f);
+        downDurationButtonLocation.set(width*0.09f,  height*0.7f - width*0.13f);
         durationButtonSize = width*0.02f;
 
         //Play and Track Buttons
@@ -322,6 +411,34 @@ public class EditorMode implements Screen {
         undoButtonLocation.set(width*0.85f, height*0.90f);
         redoButtonLocation.set(width*0.90f, height*0.90f);
         undoButtonSize = width*0.035f;
+
+        //Open Settings Button
+        settingsButtonLocation.set(width*0.05f, height*0.90f);
+        settingsButtonSize = width*0.045f;
+
+        //Settings
+        settingsScreenLocation.set(width*0.2f, height*0.1f);
+        settingsScreenDimensions.set(width*0.6f, height*0.8f);
+        changeNameButtonLocation.set(width*0.25f, height*0.6f);
+        changeBPMButtonLocation.set(width*0.25f, height*0.5f);
+        changeMaxCompButtonLocation.set(width*0.25f, height*0.4f);
+        changeLaneButtonLocation.set(width*0.25f, height*0.3f);
+        changeLineButtonLocation.set(width*0.25f, height*0.2f);
+        closeSettingsButtonLocation.set(width*0.21f, height*0.825f);
+        settingsButtonsSize = width*0.04f;
+
+        //Settings Text
+        settingsTitleTextLocation.set(width*0.45f, height*0.85f);
+        nameTextLocation.set(width*0.3f, height*0.64f);
+        BPMTextLocation.set(width*0.3f, height*0.54f);
+        maxCompTextLocation.set(width*0.3f, height*0.44f);
+        laneTextLocation.set(width*0.3f, height*0.34f);
+        lineTextLocation.set(width*0.3f, height*0.24f);
+
+        //Text Prompt Bar
+        textPromptBarLocation.set(width*0.3f, height*0.45f);
+        textPromptBarDimensions.set(width*0.4f, height*0.06f);
+        promptTextLocation.set(width*0.45f, height*0.495f);
     }
 
 
@@ -341,9 +458,21 @@ public class EditorMode implements Screen {
         currentPlaceType = PlaceType.QUARTER;
         precision = 2;
         selectedNoteType = EditorNote.NoteType.BEAT;
+        selectedLossRate = 3;
         placing_start = false;
+        placing_flags = false;
+        placing_hits = false;
         playing = false;
+        setting = false;
+        typing = false;
+        typingBPM = false;
+        typingLaneNum = false;
+        typingLineNum = false;
+        typingName = false;
+        typingMaxComp = false;
+        typedString = "";
         trackSong = true;
+        levelName = "New Level";
         BPM = 144;
         maxCompetency = 100;
 
@@ -367,6 +496,24 @@ public class EditorMode implements Screen {
         trackButtonDimensions = new Vector2();
         undoButtonLocation = new Vector2();
         redoButtonLocation = new Vector2();
+        settingsButtonLocation = new Vector2();
+        settingsScreenLocation = new Vector2();
+        settingsScreenDimensions = new Vector2();
+        changeNameButtonLocation = new Vector2();
+        changeBPMButtonLocation = new Vector2();
+        changeMaxCompButtonLocation = new Vector2();
+        changeLaneButtonLocation = new Vector2();
+        changeLineButtonLocation = new Vector2();
+        closeSettingsButtonLocation = new Vector2();
+        settingsTitleTextLocation = new Vector2();
+        nameTextLocation = new Vector2();
+        BPMTextLocation = new Vector2();
+        maxCompTextLocation = new Vector2();
+        laneTextLocation = new Vector2();
+        lineTextLocation = new Vector2();
+        textPromptBarLocation = new Vector2();
+        textPromptBarDimensions = new Vector2();
+        promptTextLocation = new Vector2();
         defineButtonLocations();
 
         //initialize actions list
@@ -384,12 +531,19 @@ public class EditorMode implements Screen {
         playPosition = startPosition;
         this.laneNumber = laneNumber;
         this.lineNumber = lineNumber;
+        selectedProbabilities = new int[laneNumber];
+        for (int i = 0; i < laneNumber; i++){
+            selectedProbabilities[i] = 10;
+        }
 
         //initialize band member lanes
         defineRectangles(laneNumber);
 
         //initialize level data lists
         Notes = new LinkedList();
+        Flags = new LinkedList();
+        Hits = new LinkedList();
+        EditorHit.setLaneNumber(laneNumber);
         beatNotes = new LinkedList[laneNumber][lineNumber];
         heldNotes = new LinkedList[laneNumber][lineNumber];
         switchNotes = new LinkedList[laneNumber];
@@ -419,6 +573,10 @@ public class EditorMode implements Screen {
         playPosition = startPosition;
         laneNumber = level.get("bandMembers").size;
         lineNumber = level.getInt("linesPerMember");
+        selectedProbabilities = new int[laneNumber];
+        for (int i = 0; i < laneNumber; i++){
+            selectedProbabilities[i] = 10;
+        }
         maxCompetency = level.getInt("maxCompetency");
 
 
@@ -427,6 +585,9 @@ public class EditorMode implements Screen {
 
         //initialize level data lists
         Notes = new LinkedList();
+        Flags = new LinkedList();
+        Hits = new LinkedList();
+        EditorHit.setLaneNumber(laneNumber);
         beatNotes = new LinkedList[laneNumber][lineNumber];
         heldNotes = new LinkedList[laneNumber][lineNumber];
         switchNotes = new LinkedList[laneNumber];
@@ -478,7 +639,6 @@ public class EditorMode implements Screen {
         }
         class BandMember {
             public int competencyLossRate;
-            public String state;
             public ArrayList<Note> notes;
         }
         class Level {
@@ -495,7 +655,6 @@ public class EditorMode implements Screen {
         // first sort all the notes
         Collections.sort(Notes);
 
-
         Level l = new Level();
         l.levelName = this.levelName;
         l.levelNumber = 1;
@@ -508,7 +667,6 @@ public class EditorMode implements Screen {
         for (int lane = 0; lane < laneNumber; lane++){
             BandMember b = new BandMember();
             b.competencyLossRate = 10;
-            b.state = "Active";
             b.notes = new ArrayList<Note>();
             l.bandMembers.add(b);
         }
@@ -562,7 +720,7 @@ public class EditorMode implements Screen {
         catNoteTexture = directory.getEntry("catnote", Texture.class);
         animator = new FilmStrip(catNoteTexture, 1, 4,4);
         origin = new Vector2(animator.getRegionWidth()/2.0f, animator.getRegionHeight()/2.0f);
-        displayFont = directory.getEntry("lucida", BitmapFont.class);
+        displayFont = directory.getEntry("times", BitmapFont.class);
         inputController.setEditorProcessor();
         defaultLevel = directory.getEntry("level_test", JsonValue.class);
         music = directory.getEntry("challenger", MusicQueue.class);
@@ -636,6 +794,70 @@ public class EditorMode implements Screen {
     }
 
     /**
+     * Adds a competency drain flag into the level. Updates level data lists.
+     *
+     * @param lane band member lane selected for the flag to be placed
+     * @param songPos song position (in samples) selected for the flag to be placed
+     * @param lossRate new rate of competency loss
+     * @return flag which was added
+     *
+     */
+    public EditorFlag addFlag(int lane, int songPos, int lossRate){
+        int PlacePos = PlacePosition(songPos, currentPlaceType);
+        boolean flagConflict = false;
+        for (EditorFlag flag : Flags){
+            if (flag.getLane() == lane) {
+                if (currentPlaceType == PlaceType.FREE && flag.getPos() < PlacePos + (int) ((1 / (4 * zoom) * beat)) && flag.getPos() > PlacePos - (int) ((1 / (4 * zoom) * beat))) {
+                    flagConflict = true;
+                    System.out.println("Flag Conflict");
+                }
+                if (currentPlaceType != PlaceType.FREE && flag.getPos() == PlacePos){
+                    flagConflict = true;
+                    System.out.println("Flag Conflict");
+                }
+            }
+        }
+        if (!flagConflict) {
+            System.out.println("No Flag Conflict");
+            EditorFlag f = new EditorFlag(lane, PlacePos, lossRate);
+            Flags.add(f);
+            return f;
+        }
+        return null;
+    }
+
+    /**
+     * Adds a random hit into the level. Updates level data lists.
+     *
+     * @param songPos song position (in samples) selected for the hit to be placed
+     * @param probabilities probability for each band member to be targeted notes
+     * @return hit which was added
+     *
+     */
+    public EditorHit addHit(int songPos, int[] probabilities){
+        int PlacePos = PlacePosition(songPos, currentPlaceType);
+        boolean hitConflict = false;
+        for (EditorHit hit : Hits){
+            if (currentPlaceType == PlaceType.FREE && hit.getPos() < PlacePos + (int) ((1 / (4 * zoom) * beat)) && hit.getPos() > PlacePos - (int) ((1 / (4 * zoom) * beat))) {
+                hitConflict = true;
+                System.out.println("Hit Conflict");
+            }
+            if (currentPlaceType != PlaceType.FREE && hit.getPos() == PlacePos){
+                hitConflict = true;
+                System.out.println("Hit Conflict");
+            }
+
+        }
+        if (!hitConflict) {
+            System.out.println("No Hit Conflict");
+            EditorHit h = new EditorHit(PlacePos, probabilities);
+            Hits.add(h);
+            return h;
+        }
+        return null;
+    }
+
+    /**
      * Deletes a note from the level. Updates the level data lists.
      *
      * @param lane band member lane selected for note to be removed
@@ -669,6 +891,55 @@ public class EditorMode implements Screen {
             }
         }
         return minNote;
+    }
+
+    /**
+     * Deletes a competency drain flag from the level. Updates the level data lists.
+     *
+     * @param lane band member lane selected for flag to be removed
+     * @param songPos song position (in samples) selected for flag to be removed
+     * @return flag which was removed
+     */
+    public EditorFlag deleteFlag(int lane, int songPos){
+        int minDistance = Integer.MAX_VALUE;
+        EditorFlag minFlag = null;
+        for (EditorFlag flag : Flags){
+            if (flag.getLane() == lane) {
+                if (flag.getPos() < songPos + (int) ((1 / (4 * zoom) * beat)) && flag.getPos() > songPos - (int) ((1 / (4 * zoom) * beat))) {
+                    if (Math.abs(flag.getPos() - songPos) < minDistance){
+                        minDistance = Math.abs(flag.getPos());
+                        minFlag = flag;
+                    }
+                }
+            }
+        }
+        if (minFlag != null){
+            Flags.removeFirstOccurrence(minFlag);
+        }
+        return minFlag;
+    }
+
+    /**
+     * Deletes a random hit from the level. Updates the level data lists.
+     *
+     * @param songPos song position (in samples) selected for hit to be removed
+     * @return hit which was removed
+     */
+    public EditorHit deleteHit(int songPos){
+        int minDistance = Integer.MAX_VALUE;
+        EditorHit minHit = null;
+        for (EditorHit hit : Hits){
+            if (hit.getPos() < songPos + (int) ((1 / (4 * zoom) * beat)) && hit.getPos() > songPos - (int) ((1 / (4 * zoom) * beat))) {
+                if (Math.abs(hit.getPos() - songPos) < minDistance){
+                    minDistance = Math.abs(hit.getPos());
+                    minHit = hit;
+                }
+            }
+        }
+        if (minHit != null){
+            Hits.removeFirstOccurrence(minHit);
+        }
+        return minHit;
     }
 
     private void undo(){
@@ -772,11 +1043,25 @@ public class EditorMode implements Screen {
             songPosition = (int) ((4/zoom)*beat) - 2*beat;
         }
 
+        typing = typingName || typingMaxComp || typingBPM || typingLaneNum || typingLineNum;
+
         //update note positions
         for (EditorNote note : Notes){
             note.setX(lineToScreenX(note.getLane(), note.getLine()));
             note.setY(songPosToScreenY(note.getPos()));
             note.setOnScreen(onScreen(note.getPos()));
+        }
+        //update flag positions
+        for (EditorFlag flag : Flags){
+            flag.setX(lineToScreenX(flag.getLane(), 0));
+            flag.setY(songPosToScreenY(flag.getPos()));
+            flag.setOnScreen(onScreen(flag.getPos()));
+        }
+        //update hit positions
+        for (EditorHit hit : Hits){
+            hit.setX(leftBound);
+            hit.setY(songPosToScreenY(hit.getPos()));
+            hit.setOnScreen(onScreen(hit.getPos()));
         }
     }
 
@@ -852,106 +1137,222 @@ public class EditorMode implements Screen {
     }
 
     /**
+     * Process user keyboard inputs into a typed string
+     * @param digits True if the text prompt should only accept digits
+     */
+    private void typePrompt(boolean digits) {
+        if (inputController.didType()){
+            char ch = inputController.getCharTyped();
+            if (((int) ch) == 8) {
+                if (typedString.length() >= 1) {
+                    typedString = typedString.substring(0, typedString.length() - 1);
+                }
+            } else if (!digits || Character.isDigit(ch)){
+                typedString = typedString.concat(String.valueOf(ch));
+            }
+        }
+    }
+
+    /**
+     * Resolves the typed string from the text prompt
+     */
+    private void resolveTypePrompt() {
+        if (typingBPM) {
+            typingBPM = false;
+            if (typedString.equals("")) {
+                BPM = 1;
+            } else {
+                BPM = Integer.parseInt(typedString);
+            }
+            typedString = "";
+            defineSongCharacteristics();
+        }
+        if (typingMaxComp) {
+            typingMaxComp = false;
+            if (typedString.equals("")) {
+                maxCompetency = 1;
+            } else {
+                maxCompetency = Integer.parseInt(typedString);
+            }
+            typedString = "";
+            initializeLevel(laneNumber, lineNumber);
+        }
+        if (typingLaneNum) {
+            typingLaneNum = false;
+            if (typedString.equals("")) {
+                laneNumber = 4;
+            } else {
+                laneNumber = Integer.parseInt(typedString);
+                if (laneNumber > 4) {
+                    laneNumber = 4;
+                    System.out.println("maximum lane number is 4");
+                }
+            }
+            typedString = "";
+            initializeLevel(laneNumber, lineNumber);
+        }
+        if (typingLineNum) {
+            typingLineNum = false;
+            if (typedString.equals("")) {
+                lineNumber = 4;
+            } else {
+                lineNumber = Integer.parseInt(typedString);
+                if (lineNumber > 4) {
+                    lineNumber = 4;
+                    System.out.println("maximum line number is 4");
+                }
+            }
+            typedString = "";
+            initializeLevel(laneNumber, lineNumber);
+        }
+        if (typingName) {
+            typingName = false;
+            levelName = typedString;
+            typedString = "";
+        }
+    }
+
+
+    /**
      * Checks if the given screen location is on a UI button and if so activates the button effect.
      * @param x the horizontal screen location
      * @param y the vertical screen location
+     * @param setting true if the user is in the settings screen
      */
-    private void buttonClick(float x, float y){
-        if (x >= quarterPrecision1ButtonLocation.x && x <= quarterPrecision1ButtonLocation.x + buttonSize){
-            if (y >= quarterPrecision1ButtonLocation.y && y <= quarterPrecision1ButtonLocation.y + buttonSize){
-                currentPlaceType = PlaceType.QUARTER;
-                precision = 1;
-            }
-        }
-        if (x >= quarterPrecision2ButtonLocation.x && x <= quarterPrecision2ButtonLocation.x + buttonSize){
-            if (y >= quarterPrecision2ButtonLocation.y && y <= quarterPrecision2ButtonLocation.y + buttonSize){
-                currentPlaceType = PlaceType.QUARTER;
-                precision = 2;
-            }
-        }
-        if (x >= quarterPrecision3ButtonLocation.x && x <= quarterPrecision3ButtonLocation.x + buttonSize){
-            if (y >= quarterPrecision3ButtonLocation.y && y <= quarterPrecision3ButtonLocation.y + buttonSize){
-                currentPlaceType = PlaceType.QUARTER;
-                precision = 3;
-            }
-        }
-        if (x >= thirdPrecision1ButtonLocation.x && x <= thirdPrecision1ButtonLocation.x + buttonSize){
-            if (y >= thirdPrecision1ButtonLocation.y && y <= thirdPrecision1ButtonLocation.y + buttonSize){
-                currentPlaceType = PlaceType.THIRD;
-                precision = 1;
-            }
-        }
-        if (x >= thirdPrecision2ButtonLocation.x && x <= thirdPrecision2ButtonLocation.x + buttonSize){
-            if (y >= thirdPrecision2ButtonLocation.y && y <= thirdPrecision2ButtonLocation.y + buttonSize){
-                currentPlaceType = PlaceType.THIRD;
-                precision = 2;
-            }
-        }
-        if (x >= thirdPrecision3ButtonLocation.x && x <= thirdPrecision3ButtonLocation.x + buttonSize){
-            if (y >= thirdPrecision3ButtonLocation.y && y <= thirdPrecision3ButtonLocation.y + buttonSize){
-                currentPlaceType = PlaceType.THIRD;
-                precision = 3;
-            }
-        }
-        if (x >= freeButtonLocation.x && x <= freeButtonLocation.x + buttonSize){
-            if (y >= freeButtonLocation.y && y <= freeButtonLocation.y + buttonSize){
-                currentPlaceType = PlaceType.FREE;
-                precision = 1;
-            }
-        }
-        if (x >=  beatButtonLocation.x - 7.5f*noteButtonSize && x <= beatButtonLocation.x + 7.5f*noteButtonSize){
-            if (y >= beatButtonLocation.y - 7.5f*noteButtonSize && y <= beatButtonLocation.y + 7.5f*noteButtonSize){
-                selectedNoteType = EditorNote.NoteType.BEAT;
-            }
-        }
-        if (x >=  heldButtonLocation.x - 7.5f*noteButtonSize && x <= heldButtonLocation.x + 7.5f*noteButtonSize){
-            if (y >= heldButtonLocation.y - 7.5f*noteButtonSize && y <= heldButtonLocation.y + 7.5f*noteButtonSize){
-                selectedNoteType = EditorNote.NoteType.HELD;
-            }
-        }
-        if (x >=  switchButtonLocation.x - 7.5f*noteButtonSize && x <= switchButtonLocation.x + 7.5f*noteButtonSize){
-            if (y >= switchButtonLocation.y - 7.5f*noteButtonSize && y <= switchButtonLocation.y + 7.5f*noteButtonSize){
-                selectedNoteType = EditorNote.NoteType.SWITCH;
-            }
-        }
-
-        if (x >= upDurationButtonLocation.x && x <= upDurationButtonLocation.x + durationButtonSize){
-            if (y >= upDurationButtonLocation.y && y <= upDurationButtonLocation.y + durationButtonSize){
-                incrementDuration(true);
-            }
-        }
-        if (x >= downDurationButtonLocation.x && x <= downDurationButtonLocation.x + durationButtonSize){
-            if (y >= downDurationButtonLocation.y && y <= downDurationButtonLocation.y + durationButtonSize){
-                incrementDuration(false);
-            }
-        }
-
-        if (x >= playButtonLocation.x && x <= playButtonLocation.x + playButtonDimensions.x){
-            if (y >= playButtonLocation.y && y <= playButtonLocation.y + playButtonDimensions.y){
-                togglePlay(false);
-            }
-        }
-        if (x >= trackButtonLocation.x && x <= trackButtonLocation.x + trackButtonDimensions.x){
-            if (y >= trackButtonLocation.y && y <= trackButtonLocation.y + trackButtonDimensions.y){
-                trackSong = !trackSong;
-                if (playing) {
-                    songPosition = playPosition;
+    private void buttonClick(float x, float y, boolean setting){
+        if (!setting) {
+            if (x >= quarterPrecision1ButtonLocation.x && x <= quarterPrecision1ButtonLocation.x + buttonSize) {
+                if (y >= quarterPrecision1ButtonLocation.y && y <= quarterPrecision1ButtonLocation.y + buttonSize) {
+                    currentPlaceType = PlaceType.QUARTER;
+                    precision = 1;
                 }
             }
-        }
-        if (x >= resetButtonLocation.x && x <= resetButtonLocation.x + resetButtonSize){
-            if (y >= resetButtonLocation.y && y <= resetButtonLocation.y + resetButtonSize){
-                resetSong();
+            if (x >= quarterPrecision2ButtonLocation.x && x <= quarterPrecision2ButtonLocation.x + buttonSize) {
+                if (y >= quarterPrecision2ButtonLocation.y && y <= quarterPrecision2ButtonLocation.y + buttonSize) {
+                    currentPlaceType = PlaceType.QUARTER;
+                    precision = 2;
+                }
             }
-        }
-        if (x >= undoButtonLocation.x && x <= undoButtonLocation.x + undoButtonSize){
-            if (y >= undoButtonLocation.y && y <= undoButtonLocation.y + undoButtonSize){
-                undo();
+            if (x >= quarterPrecision3ButtonLocation.x && x <= quarterPrecision3ButtonLocation.x + buttonSize) {
+                if (y >= quarterPrecision3ButtonLocation.y && y <= quarterPrecision3ButtonLocation.y + buttonSize) {
+                    currentPlaceType = PlaceType.QUARTER;
+                    precision = 3;
+                }
             }
-        }
-        if (x >= redoButtonLocation.x && x <= redoButtonLocation.x + undoButtonSize){
-            if (y >= redoButtonLocation.y && y <= redoButtonLocation.y + undoButtonSize){
-                redo();
+            if (x >= thirdPrecision1ButtonLocation.x && x <= thirdPrecision1ButtonLocation.x + buttonSize) {
+                if (y >= thirdPrecision1ButtonLocation.y && y <= thirdPrecision1ButtonLocation.y + buttonSize) {
+                    currentPlaceType = PlaceType.THIRD;
+                    precision = 1;
+                }
+            }
+            if (x >= thirdPrecision2ButtonLocation.x && x <= thirdPrecision2ButtonLocation.x + buttonSize) {
+                if (y >= thirdPrecision2ButtonLocation.y && y <= thirdPrecision2ButtonLocation.y + buttonSize) {
+                    currentPlaceType = PlaceType.THIRD;
+                    precision = 2;
+                }
+            }
+            if (x >= thirdPrecision3ButtonLocation.x && x <= thirdPrecision3ButtonLocation.x + buttonSize) {
+                if (y >= thirdPrecision3ButtonLocation.y && y <= thirdPrecision3ButtonLocation.y + buttonSize) {
+                    currentPlaceType = PlaceType.THIRD;
+                    precision = 3;
+                }
+            }
+            if (x >= freeButtonLocation.x && x <= freeButtonLocation.x + buttonSize) {
+                if (y >= freeButtonLocation.y && y <= freeButtonLocation.y + buttonSize) {
+                    currentPlaceType = PlaceType.FREE;
+                    precision = 1;
+                }
+            }
+            if (x >= beatButtonLocation.x - 7.5f * noteButtonSize && x <= beatButtonLocation.x + 7.5f * noteButtonSize) {
+                if (y >= beatButtonLocation.y - 7.5f * noteButtonSize && y <= beatButtonLocation.y + 7.5f * noteButtonSize) {
+                    selectedNoteType = EditorNote.NoteType.BEAT;
+                }
+            }
+            if (x >= heldButtonLocation.x - 7.5f * noteButtonSize && x <= heldButtonLocation.x + 7.5f * noteButtonSize) {
+                if (y >= heldButtonLocation.y - 7.5f * noteButtonSize && y <= heldButtonLocation.y + 7.5f * noteButtonSize) {
+                    selectedNoteType = EditorNote.NoteType.HELD;
+                }
+            }
+            if (x >= switchButtonLocation.x - 7.5f * noteButtonSize && x <= switchButtonLocation.x + 7.5f * noteButtonSize) {
+                if (y >= switchButtonLocation.y - 7.5f * noteButtonSize && y <= switchButtonLocation.y + 7.5f * noteButtonSize) {
+                    selectedNoteType = EditorNote.NoteType.SWITCH;
+                }
+            }
+
+            if (x >= upDurationButtonLocation.x && x <= upDurationButtonLocation.x + durationButtonSize) {
+                if (y >= upDurationButtonLocation.y && y <= upDurationButtonLocation.y + durationButtonSize) {
+                    incrementDuration(true);
+                }
+            }
+            if (x >= downDurationButtonLocation.x && x <= downDurationButtonLocation.x + durationButtonSize) {
+                if (y >= downDurationButtonLocation.y && y <= downDurationButtonLocation.y + durationButtonSize) {
+                    incrementDuration(false);
+                }
+            }
+
+            if (x >= playButtonLocation.x && x <= playButtonLocation.x + playButtonDimensions.x) {
+                if (y >= playButtonLocation.y && y <= playButtonLocation.y + playButtonDimensions.y) {
+                    togglePlay(false);
+                }
+            }
+            if (x >= trackButtonLocation.x && x <= trackButtonLocation.x + trackButtonDimensions.x) {
+                if (y >= trackButtonLocation.y && y <= trackButtonLocation.y + trackButtonDimensions.y) {
+                    trackSong = !trackSong;
+                    if (playing) {
+                        songPosition = playPosition;
+                    }
+                }
+            }
+            if (x >= resetButtonLocation.x && x <= resetButtonLocation.x + resetButtonSize) {
+                if (y >= resetButtonLocation.y && y <= resetButtonLocation.y + resetButtonSize) {
+                    resetSong();
+                }
+            }
+            if (x >= undoButtonLocation.x && x <= undoButtonLocation.x + undoButtonSize) {
+                if (y >= undoButtonLocation.y && y <= undoButtonLocation.y + undoButtonSize) {
+                    undo();
+                }
+            }
+            if (x >= redoButtonLocation.x && x <= redoButtonLocation.x + undoButtonSize) {
+                if (y >= redoButtonLocation.y && y <= redoButtonLocation.y + undoButtonSize) {
+                    redo();
+                }
+            }
+            if (x >= settingsButtonLocation.x && x <= settingsButtonLocation.x + settingsButtonSize) {
+                if (y >= settingsButtonLocation.y && y <= settingsButtonLocation.y + settingsButtonSize) {
+                    this.setting = true;
+                }
+            }
+        } else {
+            if (x >= closeSettingsButtonLocation.x && x <= closeSettingsButtonLocation.x + settingsButtonsSize) {
+                if (y >= closeSettingsButtonLocation.y && y <= closeSettingsButtonLocation.y + settingsButtonsSize) {
+                    this.setting = false;
+                }
+            }
+            if (x >= changeNameButtonLocation.x && x <= changeNameButtonLocation.x + settingsButtonsSize) {
+                if (y >= changeNameButtonLocation.y && y <= changeNameButtonLocation.y + settingsButtonsSize) {
+                    typingName = true;
+                }
+            }
+            if (x >= changeBPMButtonLocation.x && x <= changeBPMButtonLocation.x + settingsButtonsSize) {
+                if (y >= changeBPMButtonLocation.y && y <= changeBPMButtonLocation.y + settingsButtonsSize) {
+                    typingBPM = true;
+                }
+            }
+            if (x >= changeMaxCompButtonLocation.x && x <= changeMaxCompButtonLocation.x + settingsButtonsSize) {
+                if (y >= changeMaxCompButtonLocation.y && y <= changeMaxCompButtonLocation.y + settingsButtonsSize) {
+                    typingMaxComp = true;
+                }
+            }
+            if (x >= changeLaneButtonLocation.x && x <= changeLaneButtonLocation.x + settingsButtonsSize) {
+                if (y >= changeLaneButtonLocation.y && y <= changeLaneButtonLocation.y + settingsButtonsSize) {
+                    typingLaneNum = true;
+                }
+            }
+            if (x >= changeLineButtonLocation.x && x <= changeLineButtonLocation.x + settingsButtonsSize) {
+                if (y >= changeLineButtonLocation.y && y <= changeLineButtonLocation.y + settingsButtonsSize) {
+                    typingLineNum = true;
+                }
             }
         }
     }
@@ -979,155 +1380,207 @@ public class EditorMode implements Screen {
     }
 
     private void resolveAction(){
-        //Get Movement Input
-        moves = inputController.getMoves();
-        if (moves[0]){
-            songPosition -= (int) ((speed/20f)*beat*(1/zoom));
-        }
-        if (moves[1]){
-            songPosition += (int) ((speed/20f)*beat*(1/zoom));
-        }
-        if (moves[2]){
-            zoom *= 1.01f;
-        }
-        if (moves[3]){
-            zoom *= 0.99f;
-        }
+        if (!(typing || setting)) {
+            //Get Movement Input
+            moves = inputController.getMoves();
+            if (moves[0]) {
+                songPosition -= (int) ((speed / 20f) * beat * (1 / zoom));
+            }
+            if (moves[1]) {
+                songPosition += (int) ((speed / 20f) * beat * (1 / zoom));
+            }
+            if (moves[2]) {
+                zoom *= 1.01f;
+            }
+            if (moves[3]) {
+                zoom *= 0.99f;
+            }
 
-        //Get Place Note Input
-        if (inputController.didClick()){
-            float mouseX = inputController.getMouseX();
-            float mouseY = canvas.getHeight() - inputController.getMouseY();
-            int clickedLane = screenXtoline(mouseX)[0];
-            int clickedLine = screenXtoline(mouseX)[1];
-            int clickedSongPosition = screenYtoSongPos(mouseY);
-            int duration = 0;
-            if (!placing_start && clickedLane != -1 && clickedSongPosition != -3*beat && clickedSongPosition >= 0) {
-                if (selectedNoteType == EditorNote.NoteType.SWITCH){
-                    clickedLine = -1;
+            //Get Place Note Input
+            if (inputController.didClick()) {
+                float mouseX = inputController.getMouseX();
+                float mouseY = canvas.getHeight() - inputController.getMouseY();
+                int clickedLane = screenXtoline(mouseX)[0];
+                int clickedLine = screenXtoline(mouseX)[1];
+                int clickedSongPosition = screenYtoSongPos(mouseY);
+                int duration = 0;
+                if (!placing_start && !placing_flags && !placing_hits && clickedLane != -1 && clickedSongPosition != -3 * beat && clickedSongPosition >= 0) {
+                    if (selectedNoteType == EditorNote.NoteType.SWITCH) {
+                        clickedLine = -1;
+                    }
+                    if (selectedNoteType == EditorNote.NoteType.HELD) {
+                        duration = selectedDuration;
+                    }
+                    EditorNote note = addNote(selectedNoteType, clickedLane, clickedLine, clickedSongPosition, duration);
+                    if (note != null) {
+                        lastActions.add(Action.PLACE);
+                        lastNotes.add(note);
+                        undoActions.clear();
+                        undoNotes.clear();
+                    }
                 }
-                if (selectedNoteType == EditorNote.NoteType.HELD){
-                    duration = selectedDuration;
+                if (placing_start && clickedLane != -1 && clickedSongPosition != -3 * beat && clickedSongPosition <= 0) {
+                    startPosition = PlacePosition(clickedSongPosition, currentPlaceType);
                 }
-                EditorNote note = addNote(selectedNoteType, clickedLane, clickedLine, clickedSongPosition, duration);
-                if (note != null){
-                    lastActions.add(Action.PLACE);
-                    lastNotes.add(note);
-                    undoActions.clear();
-                    undoNotes.clear();
+                if (placing_flags && clickedLane != -1 && clickedSongPosition != -3 * beat && clickedSongPosition > 0) {
+                    addFlag(clickedLane, clickedSongPosition, selectedLossRate);
+                }
+                if (placing_hits  && clickedLane != -1 && clickedSongPosition != -3 * beat && clickedSongPosition > 0) {
+                    addHit(clickedSongPosition, selectedProbabilities);
+                }
+                buttonClick(mouseX, mouseY, false);
+            }
+
+            //Get Erase Note Input
+            if (inputController.didErase()) {
+                float mouseX = inputController.getMouseX();
+                float mouseY = canvas.getHeight() - inputController.getMouseY();
+                int clickedLane = screenXtoline(mouseX)[0];
+                int clickedLine = screenXtoline(mouseX)[1];
+                int clickedSongPosition = screenYtoSongPos(mouseY);
+                if (!placing_start && !placing_flags && !placing_hits && clickedLane != -1 && clickedSongPosition != -1) {
+                    if (selectedNoteType == EditorNote.NoteType.SWITCH) {
+                        clickedLine = -1;
+                    }
+                    EditorNote note = deleteNote(clickedLane, clickedLine, clickedSongPosition);
+                    if (note != null) {
+                        lastActions.add(Action.ERASE);
+                        lastNotes.add(note);
+                        undoActions.clear();
+                        undoNotes.clear();
+                    }
+                }
+                if (placing_flags && clickedLane != -1 && clickedSongPosition != -3 * beat) {
+                    deleteFlag(clickedLane, clickedSongPosition);
+                }
+                if (placing_hits  && clickedLane != -1 && clickedSongPosition != -3 * beat) {
+                    deleteHit(clickedSongPosition);
                 }
             }
-            if (placing_start && clickedLane != -1 && clickedSongPosition != -3*beat && clickedSongPosition <= 0) {
-                startPosition = PlacePosition(clickedSongPosition, currentPlaceType);
-            }
-            buttonClick(mouseX, mouseY);
-        }
 
-        //Get Erase Note Input
-        if (inputController.didErase()){
-            float mouseX = inputController.getMouseX();
-            float mouseY = canvas.getHeight() - inputController.getMouseY();
-            int clickedLane = screenXtoline(mouseX)[0];
-            int clickedLine = screenXtoline(mouseX)[1];
-            int clickedSongPosition = screenYtoSongPos(mouseY);
-            if (clickedLane != -1 && clickedSongPosition != -1) {
-                if (selectedNoteType == EditorNote.NoteType.SWITCH){
-                    clickedLine = -1;
+            //Get Placement Type Input
+            if (inputController.didSetFree()) {
+                currentPlaceType = PlaceType.FREE;
+            }
+            if (inputController.didSetThird()) {
+                currentPlaceType = PlaceType.THIRD;
+            }
+            if (inputController.didSetQuarter()) {
+                currentPlaceType = PlaceType.QUARTER;
+            }
+
+            //Get Placement Note Type Input
+            if (inputController.setSwitchNotes()) {
+                selectedNoteType = EditorNote.NoteType.SWITCH;
+            }
+            if (inputController.setBeatNotes()) {
+                selectedNoteType = EditorNote.NoteType.BEAT;
+            }
+            if (inputController.setHeldNotes()) {
+                selectedNoteType = EditorNote.NoteType.HELD;
+            }
+
+            if (inputController.durationUp()) {
+                incrementDuration(true);
+            }
+            if (inputController.durationDown()) {
+                incrementDuration(false);
+            }
+
+            //Get Placement Precision Input
+            if (inputController.didPrecision1()) {
+                precision = 1;
+            }
+            if (inputController.didPrecision2()) {
+                precision = 2;
+            }
+            if (inputController.didPrecision3()) {
+                precision = 3;
+            }
+
+            //Get Undo/Redo Input
+            if (inputController.didUndo()) {
+                undo();
+            }
+            if (inputController.didRedo()) {
+                redo();
+            }
+
+            //Get Play input
+            if (inputController.didPressPlay(false)) {
+                togglePlay(false);
+            }
+            if (inputController.didPressPlay(true)) {
+                togglePlay(true);
+            }
+            if (inputController.didPressTrack()) {
+                trackSong = !trackSong;
+                if (playing) {
+                    songPosition = playPosition;
                 }
-                EditorNote note = deleteNote(clickedLane, clickedLine, clickedSongPosition);
-                if (note != null){
-                    lastActions.add(Action.ERASE);
-                    lastNotes.add(note);
-                    undoActions.clear();
-                    undoNotes.clear();
+            }
+            if (inputController.didResetSong()) {
+                resetSong();
+            }
+
+            //Get Speed Input
+            if (inputController.didSpeedUp()) {
+                speed = 6;
+            } else {
+                speed = 2;
+            }
+
+            //Get Place Start Input
+            if (inputController.pressedPlaceStart()) {
+                placing_start = !placing_start;
+                if (placing_start) {
+                    placing_flags = false;
+                    placing_hits = false;
                 }
             }
-        }
 
-        //Get Placement Type Input
-        if (inputController.didSetFree()){
-            currentPlaceType = PlaceType.FREE;
-        }
-        if (inputController.didSetThird()){
-            currentPlaceType = PlaceType.THIRD;
-        }
-        if (inputController.didSetQuarter()){
-            currentPlaceType = PlaceType.QUARTER;
-        }
-
-        //Get Placement Note Type Input
-        if (inputController.setSwitchNotes()){
-            selectedNoteType = EditorNote.NoteType.SWITCH;
-        }
-        if (inputController.setBeatNotes()){
-            selectedNoteType = EditorNote.NoteType.BEAT;
-        }
-        if (inputController.setHeldNotes()){
-            selectedNoteType = EditorNote.NoteType.HELD;
-        }
-
-        if (inputController.durationUp()){
-            incrementDuration(true);
-        }
-        if (inputController.durationDown()){
-            incrementDuration(false);
-        }
-
-        //Get Placement Precision Input
-        if (inputController.didPrecision1()){
-            precision = 1;
-        }
-        if (inputController.didPrecision2()){
-            precision = 2;
-        }
-        if (inputController.didPrecision3()){
-            precision = 3;
-        }
-
-        //Get Undo/Redo Input
-        if (inputController.didUndo()){
-            undo();
-        }
-        if (inputController.didRedo()){
-            redo();
-        }
-
-        //Get Play input
-        if (inputController.didPressPlay(false)){
-            togglePlay(false);
-        }
-        if (inputController.didPressPlay(true)){
-            togglePlay(true);
-        }
-        if (inputController.didPressTrack()){
-            trackSong = !trackSong;
-            if (playing) {
-                songPosition = playPosition;
+            //Get Place Flags Input
+            if (inputController.pressedPlaceFlags()) {
+                placing_flags = !placing_flags;
+                System.out.println(placing_flags);
+                if (placing_flags) {
+                    placing_start = false;
+                    placing_hits = false;
+                }
             }
-        }
-        if (inputController.didResetSong()) {
-            resetSong();
-        }
 
-        //Get Speed Input
-        if (inputController.didSpeedUp()){
-            speed = 6;
+            //Get Place Hits Input
+            if (inputController.pressedPlaceHits()) {
+                placing_hits = !placing_hits;
+                if (placing_hits) {
+                    placing_flags = false;
+                    placing_start = false;
+                }
+            }
+
+            //Get Save Input
+            if (inputController.didSave()) {
+                saveLevel("level_test");
+            }
+
+            if (inputController.didLoad()) {
+                loadLevel(defaultLevel);
+            }
+        } else if (typing){
+            if (typingBPM || typingLaneNum || typingLineNum || typingMaxComp) {
+                typePrompt(true);
+            } else {
+                typePrompt(false);
+            }
+            if (inputController.FinishedTyping()){
+                resolveTypePrompt();
+            }
         } else {
-            speed = 2;
-        }
-
-        //Get Place Start Input
-        if (inputController.pressedPlaceStart()){
-            placing_start = !placing_start;
-        }
-
-        //Get Save Input
-        if (inputController.didSave()){
-            saveLevel("level_test");
-        }
-
-        if (inputController.didLoad()){
-            loadLevel(defaultLevel);
+            if (inputController.didClick()) {
+                float mouseX = inputController.getMouseX();
+                float mouseY = canvas.getHeight() - inputController.getMouseY();
+                buttonClick(mouseX, mouseY, true);
+            }
         }
     }
 
@@ -1231,6 +1684,20 @@ public class EditorMode implements Screen {
 
             x += laneWidth + laneSpacing;
 
+        }
+
+        //draw flags
+        for (EditorFlag flag: Flags){
+            if (flag.OnScreen()){
+                flag.draw(canvas, zoom, getLaneEdge(flag.getLane()), getLaneWidth());
+            }
+        }
+
+        //draw hits
+        for (EditorHit hit: Hits){
+            if (hit.OnScreen()){
+                hit.draw(canvas, zoom, laneEdges, getLaneWidth());
+            }
         }
 
         //draw notes
@@ -1348,7 +1815,48 @@ public class EditorMode implements Screen {
         canvas.drawRect(redoButtonLocation, undoButtonSize, undoButtonSize, Color.GRAY, true);
         canvas.drawRect(redoButtonLocation, undoButtonSize, undoButtonSize, Color.BLACK, false);
 
+        //draw open settings button
+        canvas.drawRect(settingsButtonLocation, settingsButtonSize, settingsButtonSize, Color.CORAL, true);
+        canvas.drawRect(settingsButtonLocation, settingsButtonSize, settingsButtonSize, Color.BLACK, false);
 
+        if(setting){
+            //draw settings screen
+            canvas.drawRect(settingsScreenLocation, settingsScreenDimensions.x, settingsScreenDimensions.y, Color.CORAL, true);
+            canvas.drawRect(settingsScreenLocation, settingsScreenDimensions.x, settingsScreenDimensions.y, Color.BLACK, false);
+
+            //draw settings UI buttons
+            canvas.drawRect(changeNameButtonLocation, settingsButtonsSize, settingsButtonsSize, Color.LIGHT_GRAY, true);
+            canvas.drawRect(changeNameButtonLocation, settingsButtonsSize, settingsButtonsSize, Color.BLACK, false);
+            canvas.drawRect(changeBPMButtonLocation, settingsButtonsSize, settingsButtonsSize, Color.LIGHT_GRAY, true);
+            canvas.drawRect(changeBPMButtonLocation, settingsButtonsSize, settingsButtonsSize, Color.BLACK, false);
+            canvas.drawRect(changeMaxCompButtonLocation, settingsButtonsSize, settingsButtonsSize, Color.LIGHT_GRAY, true);
+            canvas.drawRect(changeMaxCompButtonLocation, settingsButtonsSize, settingsButtonsSize, Color.BLACK, false);
+            canvas.drawRect(changeLaneButtonLocation, settingsButtonsSize, settingsButtonsSize, Color.LIGHT_GRAY, true);
+            canvas.drawRect(changeLaneButtonLocation, settingsButtonsSize, settingsButtonsSize, Color.BLACK, false);
+            canvas.drawRect(changeLineButtonLocation, settingsButtonsSize, settingsButtonsSize, Color.LIGHT_GRAY, true);
+            canvas.drawRect(changeLineButtonLocation, settingsButtonsSize, settingsButtonsSize, Color.BLACK, false);
+            canvas.drawRect(closeSettingsButtonLocation, settingsButtonsSize, settingsButtonsSize, Color.RED, true);
+            canvas.drawRect(closeSettingsButtonLocation, settingsButtonsSize, settingsButtonsSize, Color.BLACK, false);
+
+            //draw settings text
+            canvas.drawText("SETTINGS", displayFont, settingsTitleTextLocation.x, settingsTitleTextLocation.y);
+            String NameMsg = "Name: " + levelName;
+            String BPMMsg = "BPM: " + String.valueOf(BPM);
+            String maxCompMsg = "Max Competency: " + String.valueOf(maxCompetency);
+            String laneMsg = "Lane Number: " + String.valueOf(laneNumber);
+            String lineMsg = "Line Number: " + String.valueOf(lineNumber);
+            canvas.drawText(NameMsg, displayFont, nameTextLocation.x, nameTextLocation.y);
+            canvas.drawText(BPMMsg, displayFont, BPMTextLocation.x, BPMTextLocation.y);
+            canvas.drawText(maxCompMsg, displayFont, maxCompTextLocation.x, maxCompTextLocation.y);
+            canvas.drawText(laneMsg, displayFont, laneTextLocation.x, laneTextLocation.y);
+            canvas.drawText(lineMsg, displayFont, lineTextLocation.x, lineTextLocation.y);
+        }
+
+        if (typing) {
+            canvas.drawRect(textPromptBarLocation, textPromptBarDimensions.x, textPromptBarDimensions.y, Color.NAVY, true);
+            canvas.drawRect(textPromptBarLocation, textPromptBarDimensions.x, textPromptBarDimensions.y, Color.BLACK, false);
+            canvas.drawText(typedString, displayFont, promptTextLocation.x, promptTextLocation.y);
+        }
         canvas.end();
     }
 

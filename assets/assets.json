@@ -63,7 +63,11 @@
         "times": {
             "file": "fonts/TimesRoman.ttf",
             "size": 32
-        }
+        },
+        "editor": {
+            "file": "fonts/TimesRoman.ttf",
+            "size": 32
+      }
     },
     "soundtrack": {
         "calibration": {
