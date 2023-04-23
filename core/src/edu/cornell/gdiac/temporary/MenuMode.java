@@ -262,6 +262,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
         // check if buttons get pressed appropriately
         if (isButtonPressed(screenX, screenY, playButton, playButtonCoords)) {
+//            pressState = PLAY_PRESSED;
             pressState = PLAY_PRESSED;
         }
         if (isButtonPressed(screenX, screenY, levelEditorButton, levelEditorButtonCoords)) {

@@ -178,6 +178,24 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
     }
 
+    /**
+     * Resets the MenuMode
+     */
+    public void reset() {
+//        pressState = NO_BUTTON_PRESSED;
+        Gdx.input.setInputProcessor( this );
+        selectedDifficulty= -1;
+        selectedLevel = -1;
+        playButton = null;
+        easyButton=null;
+        mediumButton=null;
+        hardButton=null;
+        playPressed=false;
+
+        hasSelectedLevel = false;
+
+    }
+
     public boolean getHasSelectedLevel(){
         return hasSelectedLevel;
 

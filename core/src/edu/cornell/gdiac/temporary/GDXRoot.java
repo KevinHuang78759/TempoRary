@@ -155,18 +155,16 @@ public class GDXRoot extends Game implements ScreenListener {
 //			screen.hide();
 			// TODO: probably add the level populate here
 //			to playing is now to level select
+			levelscreen.reset();
 			levelscreen.setScreenListener(this);
 			System.out.println("to level again");
 			levelscreen.populate(directory);
 			setScreen(levelscreen);
+
 			levelscreen.show();
-
-
 		} else if (exitCode ==ExitCode.TO_PLAYING){
-//			to level is right now to game
 			playing.setScreenListener(this);
 			String fileName = levelscreen.getSelectedJson();
-//			System.out.println(fileName);
 			playing.readLevel(directory,fileName);
 			playing.populate(directory);
 			playing.initializeOffset(calibration.getOffset());
@@ -192,12 +190,6 @@ public class GDXRoot extends Game implements ScreenListener {
 			setScreen(menu);
 			menu.reset();
 			menu.show();
-		}
-		// TODO: @Melanie, make this use exit code
-		else if (exitCode==ExitCode.TO_PLAYING){
-			loading = new LoadingMode("assets.json", canvas,1);
-			loading.setScreenListener(this);
-			setScreen(loading);
 		} else if (exitCode == ExitCode.TO_EXIT) {
 			// We quit the main application
 			Gdx.app.exit();
