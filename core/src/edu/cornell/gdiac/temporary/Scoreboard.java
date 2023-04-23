@@ -1,8 +1,13 @@
 package edu.cornell.gdiac.temporary;
 
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.utils.JsonValue;
 
 public class Scoreboard {
+    private FreeTypeFontGenerator fontGenerator;
+    private FreeTypeFontGenerator.FreeTypeFontParameter fontParameter;
+    private BitmapFont font;
     /**
      * SFX for hitting combos
      */
@@ -42,7 +47,7 @@ public class Scoreboard {
         levelMultipliers = multiplers;
         levelMeters = meters;
         sfx = new SoundController<>();
-        sfx.addSound(0, "sound/combolost.ogg");
+        sfx.addSound(0, "sound/comboLost.ogg");
         sfx.addSound(1, "sound/combo1.ogg");
         sfx.addSound(2, "sound/combo2.ogg");
         sfx.addSound(3, "sound/combo3.ogg");

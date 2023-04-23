@@ -39,6 +39,8 @@ public class GameplayController {
 	/** Texture for all stars, as they look the same */
 	private Texture particleTexture;
 
+	private Texture enhancedParticle;
+
 	/** The minimum velocity factor (x shell velocity) of a newly created star */
 	private static final float MIN_STAR_FACTOR = 0.1f;
 	/** The maximum velocity factor (x shell velocity) of a newly created star */
@@ -259,7 +261,8 @@ public class GameplayController {
 	 * @param directory 	Reference to the asset directory.
 	 */
 	public void populate(AssetDirectory directory) {
-		particleTexture = directory.getEntry("star", Texture.class);
+		particleTexture = directory.getEntry("quaver", Texture.class);
+		enhancedParticle = directory.getEntry("doubleQ", Texture.class);
 	}
 
 	/**
@@ -361,20 +364,33 @@ public class GameplayController {
 	}
 
 	/**
-	 * Spawns stars at location x, y with center of mass velocity vx0 and vy0.
-	 * Directions are randomzed, and more stars are spawned with a higher value of k
+	 * Spawns hit particles at x, y, more hit particles with k
 	 */
 	public void spawnHitEffect(int k, float x, float y){
 		for(int i = 0; i < k; ++i){
-			for (int j = 0; j < 5; j++) {
+			for (int j = 0; j < 3; j++) {
 				Particle s = new Particle();
 				s.setTexture(particleTexture);
 				s.getPosition().set(x, y);
-				float vx = RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
-				float vy = RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
+				s.setSizeConfine(inBetweenWidth/2f);
+				float vx = RandomController.rollFloat(-inBetweenWidth*0.07f, inBetweenWidth*0.07f);
+				float vy = RandomController.rollFloat(-inBetweenWidth*0.07f, inBetweenWidth*0.07f);
 				s.getVelocity().set(vx,vy);
 				particles.add(s);
 			}
+		}
+	}
+
+	public void spawnEnhancedHitEffect(float x, float y){
+		for (int j = 0; j < 6; j++) {
+			Particle s = new Particle();
+			s.setTexture(enhancedParticle);
+			s.getPosition().set(x, y);
+			s.setSizeConfine(inBetweenWidth/2f);
+			float vx = RandomController.rollFloat(-inBetweenWidth*0.07f, inBetweenWidth*0.07f);
+			float vy = RandomController.rollFloat(-inBetweenWidth*0.07f, inBetweenWidth*0.07f);
+			s.getVelocity().set(vx,vy);
+			particles.add(s);
 		}
 	}
 
@@ -434,6 +450,9 @@ public class GameplayController {
 			note.setHolding(true);
 			note.setHitStatus(isOnBeat ? onBeatGain : offBeatGain);
 			spawnHitEffect(note.getHitStatus(), note.getX(), spawnEffectY);
+			if(isOnBeat){
+				spawnEnhancedHitEffect(note.getX(), note.getY());
+			}
 			if (note.getLine() != -1) hitReg[note.getLine()] = true;
 			note.setDestroyed(destroy);
 			// move the note to where the indicator is
