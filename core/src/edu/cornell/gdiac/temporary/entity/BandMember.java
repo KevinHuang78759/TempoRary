@@ -68,7 +68,7 @@ public class BandMember {
     private float height;
     public void setHeight(float l){
         height = l;
-        setHitY(bottomLeftCorner.y + l/4);
+        setHitY(bottomLeftCorner.y + l/8);
     }
 
     public float getHeight(){

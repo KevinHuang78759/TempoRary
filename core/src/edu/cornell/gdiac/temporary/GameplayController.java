@@ -92,7 +92,7 @@ public class GameplayController {
 	/** Width between each band member lane */
 	public float inBetweenWidth;
 	/** Y value of the hit bar */
-	public float hitbarY;
+
 
 	public SoundController<String> sfx;
 
@@ -110,11 +110,27 @@ public class GameplayController {
 
 		//Set margins so there is a comfortable amount of space between play area and screen boundaries
 		//Values decided by pure look
-		LEFTBOUND = width/10f;
-		RIGHTBOUND = 9*width/10f;
-		TOPBOUND = 17f*height/20f;
-		BOTTOMBOUND = height/5f;
+		setBounds(width, height);
 		sfx = new SoundController<>();
+	}
+
+	public void setBounds(float width, float height){
+		LEFTBOUND = width/8f;
+		RIGHTBOUND = 7*width/8f;
+		TOPBOUND = 17f*height/20f;
+		BOTTOMBOUND = height/3f;
+	}
+
+	public void setWidths(){
+		smallwidth = (RIGHTBOUND - LEFTBOUND)/(NUM_LANES - 1 + (NUM_LANES - 1)*0.25f + 4);
+		inBetweenWidth = smallwidth/4f;
+		largewidth = 4f*smallwidth;
+	}
+
+	public void setYVals(){
+		//instantiate other variables
+		noteSpawnY = TOPBOUND + smallwidth/2;
+		noteDieY = BOTTOMBOUND - smallwidth/2;
 	}
 
 
@@ -137,16 +153,10 @@ public class GameplayController {
 		//In total, we have NUM_LANES - 1 small lanes, 1 large lane, and n - 1 in between segments
 		//Therefore, the width of the small lane shall be 1/(5NUM_LANES/4 + 35/4) of the available total width
 		//Values decided by pure look
-		smallwidth = (RIGHTBOUND - LEFTBOUND)/(NUM_LANES - 1 + (NUM_LANES - 1)*0.25f + 4);
-		inBetweenWidth = smallwidth/4f;
-		largewidth = 4f*smallwidth;
+		setWidths();
 		//initiate default active band member to 0
 		activeBandMember = 0;
-		//Have the y value be a bit above the bottom of the play area, but not too close
-		hitbarY = BOTTOMBOUND + 3*(TOPBOUND - BOTTOMBOUND)/20f;
-		//instantiate other variables
-		noteSpawnY = TOPBOUND + smallwidth/2;
-		noteDieY = BOTTOMBOUND - smallwidth/2;
+		setYVals();
 		switches = new boolean[NUM_LANES];
 		triggers = new boolean[lpl];
 
@@ -165,17 +175,9 @@ public class GameplayController {
 	 */
 	public void resize(int width, int height){
 		System.out.println(width + "  " + height);
-		LEFTBOUND = width/10f;
-		RIGHTBOUND = 9*width/10f;
-		TOPBOUND = 17f*height/20f;
-		BOTTOMBOUND = height/5f;
-		smallwidth = (RIGHTBOUND - LEFTBOUND)/(NUM_LANES - 1 + (NUM_LANES - 1)*0.25f + 4);
-		inBetweenWidth = smallwidth/4f;
-		largewidth = 4f*smallwidth;
-		//Have the y value be a bit above the bottom of the play area, but not too close
-		hitbarY = BOTTOMBOUND + 3*(TOPBOUND - BOTTOMBOUND)/20f;
-		//instantiate other variables
-		noteSpawnY = TOPBOUND + smallwidth/2;
+		setBounds(width, height);
+		setWidths();
+		setYVals();
 		updateBandMemberCoords();
 	}
 	/**
