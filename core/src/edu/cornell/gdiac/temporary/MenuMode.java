@@ -32,6 +32,8 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private Texture playButton;
     private Texture calibrationButton;
     private Texture levelEditorButton;
+    private Texture settingsButton;
+    private Texture exitButton;
 
     /* BUTTON LOCATIONS */
     /** Play button x and y coordinates represented as a vector */
@@ -72,6 +74,15 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private static final int LEVEL_EDITOR_PRESSED = 102;
     /** Pressed down button state for the calibration button */
     private static final int CALIBRATION_PRESSED = 103;
+    private static final int SETTINGS_PRESSED = 104;
+
+    private MenuState currentState;
+
+    // MenuState
+    private enum MenuState {
+        HOME,
+        SETTINGS
+    }
 
     /**
      * Populates this mode from the given the directory.
@@ -89,6 +100,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         playButton = directory.getEntry("play", Texture.class);
         levelEditorButton = directory.getEntry("level-editor", Texture.class);
         calibrationButton = directory.getEntry("play-old", Texture.class);
+        settingsButton = directory.getEntry("play-old", Texture.class);
         playButtonCoords = new Vector2(centerX + levelEditorButton.getWidth(), canvas.getHeight()/2 + 200);
         levelEditorButtonCoords = new Vector2(centerX + levelEditorButton.getWidth(), canvas.getHeight()/2);
         calibrationButtonCoords = new Vector2(centerX + calibrationButton.getWidth()*2 , centerY);
@@ -109,8 +121,8 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
      * Resets the MenuMode
      */
     public void reset() {
+        currentState = MenuState.HOME;
         pressState = NO_BUTTON_PRESSED;
-        Gdx.input.setInputProcessor( this );
     }
 
     /**
@@ -119,7 +131,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
      * @param canvas 	The game canvas to draw to
      */
     public MenuMode(GameCanvas canvas) {
-        this.canvas  = canvas;
+        this.canvas = canvas;
         // Compute the dimensions from the canvas
         resize(canvas.getWidth(),canvas.getHeight());
         active = false;
@@ -129,7 +141,14 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     @Override
     public void render(float v) {
         if (active) {
-            draw();
+            switch (currentState) {
+                case HOME:
+                    draw();
+                    break;
+                case SETTINGS:
+                    drawSettings();
+                    break;
+            }
             // We are ready, notify our listener
             if (isReady() && listener != null) {
                 listener.exitScreen(this, pressState);
@@ -162,8 +181,29 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         Color tintCalibration = (pressState == CALIBRATION_PRESSED ? Color.GRAY: Color.RED);
         canvas.draw(calibrationButton, tintCalibration, calibrationButton.getWidth()/2, calibrationButton.getHeight()/2,
                     calibrationButtonCoords.x, calibrationButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+
+        Color settingsButtonTint = (pressState == SETTINGS_PRESSED ? Color.GRAY: Color.WHITE);
+        canvas.draw(settingsButton, settingsButtonTint, settingsButton.getWidth()/2, settingsButton.getHeight()/2,
+                calibrationButtonCoords.x - settingsButton.getWidth(), calibrationButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
         canvas.end();
     }
+
+    private void drawSettings() {
+        canvas.begin();
+        canvas.draw(background, 0, 0, canvas.getWidth(), canvas.getHeight());
+        canvas.end();
+    }
+
+    // SETTINGS VALUES (this needs to change after the fact)
+    // also add keybinds
+    public float getMusicVolumeSetting() {
+        return 0.0f;
+    }
+
+    public float getFXVolumeSetting() {
+        return 0.0f;
+    }
+
 
     // TODO: fix this method
     @Override
@@ -191,6 +231,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
     @Override
     public void show() {
+        Gdx.input.setInputProcessor( this );
         active = true;
     }
 
@@ -272,7 +313,13 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         float dist = (screenX-calibrationButtonCoords.x)*(screenX-calibrationButtonCoords.x)
                 +(screenY-calibrationButtonCoords.y)*(screenY-calibrationButtonCoords.y);
         if (dist < radius*radius) {
-            pressState = ExitCode.TO_CALIBRATION;
+            pressState = CALIBRATION_PRESSED;
+        }
+
+        float distSettings = (screenX-(calibrationButtonCoords.x - calibrationButton.getWidth()))*(screenX-(calibrationButtonCoords.x - calibrationButton.getWidth()))
+                +(screenY-calibrationButtonCoords.y)*(screenY-calibrationButtonCoords.y);
+        if (distSettings < radius*radius) {
+            pressState = SETTINGS_PRESSED;
         }
         return false;
     }
@@ -298,9 +345,14 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
                 return false;
             case CALIBRATION_PRESSED:
                 pressState = ExitCode.TO_CALIBRATION;
+                return false;
+            case SETTINGS_PRESSED:
+                currentState = MenuState.SETTINGS;
+                break;
             default:
                 return true;
         }
+        return true;
     }
 
     /**

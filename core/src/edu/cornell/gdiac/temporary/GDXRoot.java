@@ -142,6 +142,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			menu.setScreenListener(this);
 			menu.populate(directory);
 			setScreen(menu);
+			menu.show();
 			loading.dispose();
 			loading = null;
 		} else if (exitCode == ExitCode.TO_PLAYING) {
