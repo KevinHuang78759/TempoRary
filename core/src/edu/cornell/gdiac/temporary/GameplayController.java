@@ -66,8 +66,6 @@ public class GameplayController {
 	public int activeBandMember;
 	/** Level object, stores bandMembers */
 	public Level level;
-	/** Indicates whether or not we want to use randomly generated notes */
-	public boolean randomNotes;
 	/** The Y coordinate at which a note will spawn. Notes should spawn completely invisible. */
 	public float noteSpawnY;
 	/**
@@ -110,7 +108,7 @@ public class GameplayController {
 		sb = new Scoreboard(4, new int[]{1, 2, 3, 5}, new long[]{10000, 20000, 40000});
 		particles = new Array<>();
 		backing = new Array<>();
-		randomNotes = true;
+
 		//Set margins so there is a comfortable amount of space between play area and screen boundaries
 		//Values decided by pure look
 		LEFTBOUND = width/10f;
@@ -126,6 +124,10 @@ public class GameplayController {
 	 * Loads a level
 	 */
 	public void loadLevel(JsonValue levelData, AssetDirectory directory){
+		sb = new Scoreboard(4, new int[]{1, 2, 3, 5}, new long[]{10000, 20000, 40000});
+		particles = new Array<>();
+		backing = new Array<>();
+		sfx = new SoundController<>();
 		level = new Level(levelData, directory);
 		NUM_LANES = level.getBandMembers().length;
 		// 70 is referring to ms
