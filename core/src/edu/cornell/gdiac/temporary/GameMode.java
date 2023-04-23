@@ -42,7 +42,9 @@ public class GameMode implements Screen {
 		/** While we are playing the game */
 		PLAY,
 		/** When the ships is dead (but shells still work) */
-		OVER
+		OVER,
+		/** When the game is paused */
+		PAUSE
 	}
 
 	// Loaded assets
@@ -62,6 +64,10 @@ public class GameMode implements Screen {
 	private InputController inputController;
 	/** Constructs the game models and handle basic gameplay (CONTROLLER CLASS) */
 	private GameplayController gameplayController;
+	/** Asset directory for level loading */
+	private AssetDirectory assetDirectory;
+	/** Last level loaded*/
+	private JsonValue levelData;
 
 	/** Variable to track the game state (SIMPLE FIELDS) */
 	private GameState gameState;
@@ -102,8 +108,9 @@ public class GameMode implements Screen {
 	}
 
 	public void readLevel(AssetDirectory directory) {
+		assetDirectory = directory;
 		JsonReader jr = new JsonReader();
-		JsonValue levelData = jr.parse(Gdx.files.internal("levels/test2.json"));
+		levelData = jr.parse(Gdx.files.internal("levels/test2.json"));
 		gameplayController.loadLevel(levelData, directory);
 		if (gameplayController.NUM_LANES == 2) {
 			inputController = new InputController(new int[]{1, 2},  new int[gameplayController.lpl]);
@@ -132,6 +139,7 @@ public class GameMode implements Screen {
 	 * @param directory 	Reference to the asset directory.
 	 */
 	public void populate(AssetDirectory directory) {
+		assetDirectory = directory;
 		streetLevelBackground = new FilmStrip(directory.getEntry("street-background", Texture.class), 1, 1);
 		displayFont = directory.getEntry("times",BitmapFont.class);
 		gameplayController.populate(directory);
@@ -168,9 +176,9 @@ public class GameMode implements Screen {
 				break;
 			case OVER:
 				if (inputController.didReset()) {
-					gameplayController.reset();
-					gameplayController.start();
-					listener.exitScreen(this, 1);
+					gameplayController.loadLevel(levelData, assetDirectory);
+					waiting = 4f;
+					gameState = GameState.INTRO;
 				}
 				break;
 			case PLAY:
@@ -183,6 +191,8 @@ public class GameMode implements Screen {
 				else {
 					play(delta);
 				}
+				break;
+			case PAUSE:
 				break;
 			default:
 				break;

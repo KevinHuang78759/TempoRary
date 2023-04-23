@@ -74,8 +74,8 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
     public void populate(AssetDirectory directory) {
         background = directory.getEntry( "loading-background", Texture.class);
         background.setFilter( Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        resumeButton = directory.getEntry("resume-button", Texture.class);
-        menuButton = directory.getEntry("menu-button", Texture.class);
+        resumeButton = directory.getEntry("play", Texture.class);
+        menuButton = directory.getEntry("level-editor", Texture.class);
         resumeButtonCoords = new Vector2(centerX + resumeButton.getWidth(), canvas.getHeight()/2 + 200);
         menuButtonCoords = new Vector2(centerX + menuButton.getWidth(), canvas.getHeight()/2);
     }
