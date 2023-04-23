@@ -201,6 +201,8 @@ public class GameMode implements Screen {
 			gameplayController.level.stopMusic();
 		}
 
+//		System.out.println(gameplayController.checkWinCon());
+
 		if (gameplayController.checkWinCon()){
 			gameState = GameState.WON;
 			gameplayController.level.stopMusic();
