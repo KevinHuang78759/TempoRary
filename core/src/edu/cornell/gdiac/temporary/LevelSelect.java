@@ -19,8 +19,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
     private String selectedJson;
 
-    /** Internal assets for this levels screen */
-    private AssetDirectory levels;
 
     /** Whether this player mode is still active */
     private boolean active;
@@ -48,7 +46,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     private Texture hardButton;
 
     /** button for a level */
-    private Texture albumCover;
+    private Texture[] albumCovers;
 
     /** coord for level button */
 
@@ -57,6 +55,9 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     /** The background texture */
     private Texture background;
     private float scale=1;
+
+    /** temp scale b/c album cover too big */
+    private float scale2=0.15f;
 
     /** Reads input from keyboard or game pad (CONTROLLER CLASS) */
     private InputController inputController;
@@ -142,6 +143,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         albumCoverCoords = new Vector2[numLevels];
         System.out.println("num levels "+numLevels);
         gameplayController = new GameplayController(canvas.getWidth(),canvas.getHeight());
+        albumCovers = new Texture[numLevels];
 
 
         if (playButton == null || easyButton == null || mediumButton ==null || hardButton==null) {
@@ -164,11 +166,16 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         }
 
 
-        albumCover = internal.getEntry("play",Texture.class);
-        for (int i = 0; i <numLevels;i++){
-            albumCoverCoords[i]=new Vector2(canvas.getWidth()/2-(i*200),canvas.getHeight()/2+200);
 
+//        temp implementation for temp assets
+        for (int i = 0; i <numLevels;i++){
+            albumCovers[i] = internal.getEntry(Integer.toString(i+1),Texture.class);
         }
+
+        float w = albumCovers[1].getWidth()*scale2/2;
+        albumCoverCoords[0]=new Vector2((canvas.getWidth()/4 - w),canvas.getHeight()/2);
+        albumCoverCoords[1]=new Vector2((canvas.getWidth()/2 -w ),canvas.getHeight()/2);
+        albumCoverCoords[2]=new Vector2((canvas.getWidth()/2 -w)+ canvas.getWidth()/4,canvas.getHeight()/2);
 
         for (int i = 0; i <numLevels*3;i++){
             String levelString = "levels/"+(i+1)+".json";
@@ -221,9 +228,9 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         // draw each song
         for (int i=0;i<numLevels;i++){
 //            Level l = new Level (j,loadDirectory);
-            Color albumCoverTint = (selectedLevel == (numLevels-i-1) ? Color.GRAY: Color.WHITE);
-            canvas.draw(albumCover,albumCoverTint,albumCover.getWidth()/2,albumCover.getHeight()/2,albumCoverCoords[i].x,
-                    albumCoverCoords[i].y,0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+            Color albumCoverTint = (selectedLevel == i ? Color.GRAY: Color.WHITE);
+            canvas.draw(albumCovers[i],albumCoverTint,albumCovers[i].getWidth()/200,albumCovers[i].getHeight()/200,albumCoverCoords[i].x,
+                    albumCoverCoords[i].y,0, BUTTON_SCALE*scale2, BUTTON_SCALE*scale2);
         }
 
         // draw play button
@@ -245,7 +252,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
      * @param buttonCoords the specified button coordinates as a Vector2 object
      * @return whether the button specified was pressed
      */
-    public boolean isButtonPressed(int screenX, int screenY, Texture buttonTexture, Vector2 buttonCoords) {
+    public boolean isButtonPressed(int screenX, int screenY, Texture buttonTexture, Vector2 buttonCoords, float scale) {
         // buttons are rectangles
         // buttonCoords hold the center of the rectangle, buttonTexture has the width and height
         // get half the x length of the button portrayed
@@ -298,15 +305,15 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             return true;
         }
 
-        if (isButtonPressed(screenX, screenY, easyButton, easyButtonCoords)) {
+        if (isButtonPressed(screenX, screenY, easyButton, easyButtonCoords, scale)) {
             selectedDifficulty = 1;
         }
 
-        if (isButtonPressed(screenX, screenY, mediumButton, mediumButtonCoords)) {
+        if (isButtonPressed(screenX, screenY, mediumButton, mediumButtonCoords, scale)) {
             selectedDifficulty = 2;
         }
 
-        if (isButtonPressed(screenX, screenY, hardButton, hardButtonCoords)) {
+        if (isButtonPressed(screenX, screenY, hardButton, hardButtonCoords, scale)) {
             selectedDifficulty = 3;
         }
 
@@ -314,9 +321,9 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
         for (int i=0;i<numLevels;i++){
             System.out.println("numLevels is "+(numLevels));
-            if (isButtonPressed(screenX, screenY, albumCover, albumCoverCoords[i])){
-                System.out.println("selected song is "+(numLevels-i-1));
-                selectedLevel=numLevels-i-1;
+            if (isButtonPressed(screenX, screenY, albumCovers[i], albumCoverCoords[i], scale2)){
+                System.out.println("selected song is "+(i));
+                selectedLevel=i;
             }
         }
 
@@ -324,7 +331,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             hasSelectedLevel=true;
         }
 
-        if (isButtonPressed(screenX, screenY, playButton, playButtonCoords)) {
+        if (isButtonPressed(screenX, screenY, playButton, playButtonCoords,scale)) {
             System.out.println("play pressed");
             playPressed=true;
 
