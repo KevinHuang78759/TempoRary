@@ -58,7 +58,7 @@ public class Scoreboard {
 
         fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/TempoRaryFont.ttf"));
         fontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        fontParameter.size = 12;
+        fontParameter.size = 100;
         font = fontGenerator.generateFont(fontParameter);
         layout = new GlyphLayout();
 
