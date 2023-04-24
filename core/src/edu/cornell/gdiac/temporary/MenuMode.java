@@ -225,7 +225,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         return 0.0f;
     }
 
-
     // TODO: fix this method
     @Override
     public void resize(int width, int height) {
@@ -276,7 +275,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     }
 
     // PROCESSING PLAYER INPUT
-
     /**
      * Checks to see if the location clicked at `screenX`, `screenY` are within the bounds of the given button
      * `buttonTexture` and `buttonCoords` should refer to the appropriate button parameters
@@ -354,7 +352,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
             case SETTINGS:
                 float distBack = (screenX - (calibrationButton.getWidth())) * (screenX - (calibrationButton.getWidth()))
                         + (screenY - calibrationButtonCoords.y) * (screenY - calibrationButtonCoords.y);
-                System.out.println(distBack);
                 if (distBack < radius * radius) {
                     currentMenuState = MenuState.HOME;
                 }

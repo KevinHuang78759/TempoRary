@@ -64,26 +64,34 @@ public class LoadingMode implements Screen {
 	/** Middle portion of the status forground (colored region) */
 	private TextureRegion statusFrgMiddle;
 	/** Right cap to the status forground (colored region) */
-	private TextureRegion statusFrgRight;	
+	private TextureRegion statusFrgRight;
+
+	/** Font for drawing "Loading..." */
+	private BitmapFont font;
 
 	/** Default budget for asset loader (do nothing but load 60 fps) */
 	private static int DEFAULT_BUDGET = 15;
 	/** Standard window size (for scaling) */
-	private static int STANDARD_WIDTH  = 800;
+	private static int STANDARD_WIDTH  = 1200;
 	/** Standard window height (for scaling) */
-	private static int STANDARD_HEIGHT = 700;
+	private static int STANDARD_HEIGHT = 800;
 	/** Ratio of the bar width to the screen */
-	private static float BAR_WIDTH_RATIO  = 0.66f;
-	/** Ration of the bar height to the screen */
-	private static float BAR_HEIGHT_RATIO = 0.25f;	
+	private static float BAR_WIDTH_RATIO  = 0.3f;
+	/** Ratio of the bar height to the screen */
+	private static float BAR_HEIGHT_RATIO = 0.1f;
 	/** Height of the progress bar */
-	private static int PROGRESS_HEIGHT = 30;
+	private static int PROGRESS_HEIGHT = 93;
+	/** Height of the inner progress bar */
+	private static int INNER_PROGRESS_HEIGHT = 77;
+	/** Padding on the left and right sides of the inner bar */
+	private static int X_PADDING = 8;
 	/** Width of the rounded cap on left or right */
-	private static int PROGRESS_CAP    = 15;
+	private static int PROGRESS_CAP    = 42;
+	/** Width of the rounded cap on the left or right for the inner bar */
+	private static int INNER_PROGRESS_CAP    = 33;
 	/** Width of the middle portion in texture atlas */
 	private static int PROGRESS_MIDDLE = 200;
-	private static float BUTTON_SCALE  = 0.75f;
-	
+
 	/** Reference to GameCanvas created by the root */
 	private GameCanvas canvas;
 	/** Listener that will update the player mode when we are done */
@@ -197,6 +205,8 @@ public class LoadingMode implements Screen {
 		background = internal.getEntry( "background", Texture.class );
 		background.setFilter( TextureFilter.Linear, TextureFilter.Linear );
 
+		font = internal.getEntry("lucida", BitmapFont.class);
+
 		// Break up the status bar texture into regions
 		statusBkgLeft = internal.getEntry( "progress.backleft", TextureRegion.class );
 		statusBkgRight = internal.getEntry( "progress.backright", TextureRegion.class );
@@ -241,9 +251,8 @@ public class LoadingMode implements Screen {
 	 * @param delta Number of seconds since last animation frame
 	 */
 	private void update(float delta) {
-//		if (playButton == null || levelEditorButton == null) {
-			assets.update(budget);
-			this.progress = assets.getProgress();
+		assets.update(budget);
+		this.progress = assets.getProgress();
 	}
 
 	/**
@@ -256,6 +265,7 @@ public class LoadingMode implements Screen {
 	private void draw() {
 		canvas.begin();
 		canvas.draw(background, 0, 0, canvas.getWidth(), canvas.getHeight());
+		canvas.drawTextCentered("Loading...", font, -230, Color.WHITE);
 		drawProgress(canvas);
 		canvas.end();
 	}
@@ -274,13 +284,13 @@ public class LoadingMode implements Screen {
 		canvas.draw(statusBkgRight,  centerX+width/2-scale*PROGRESS_CAP, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
 		canvas.draw(statusBkgMiddle, centerX-width/2+scale*PROGRESS_CAP, centerY, width-2*scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
 
-		canvas.draw(statusFrgLeft,   centerX-width/2, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
+		canvas.draw(statusFrgLeft,   centerX-width/2+X_PADDING, centerY +(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, scale*INNER_PROGRESS_CAP, scale*INNER_PROGRESS_HEIGHT);
 		if (progress > 0) {
-			float span = progress*(width-2*scale*PROGRESS_CAP)/2.0f;
-			canvas.draw(statusFrgRight,  centerX-width/2+scale*PROGRESS_CAP+span, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
-			canvas.draw(statusFrgMiddle, centerX-width/2+scale*PROGRESS_CAP, centerY, span, scale*PROGRESS_HEIGHT);
+			float span = progress*(width-2*scale*INNER_PROGRESS_CAP)/2.0f;
+			canvas.draw(statusFrgRight,  centerX-width/2+scale*INNER_PROGRESS_CAP+span+X_PADDING, centerY+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, scale*INNER_PROGRESS_CAP, scale*INNER_PROGRESS_HEIGHT);
+			canvas.draw(statusFrgMiddle, centerX-width/2+scale*INNER_PROGRESS_CAP+X_PADDING, centerY+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, span, scale*INNER_PROGRESS_HEIGHT);
 		} else {
-			canvas.draw(statusFrgRight,  centerX-width/2+scale*PROGRESS_CAP, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
+			canvas.draw(statusFrgRight,  centerX-width/2+scale*INNER_PROGRESS_CAP+X_PADDING, centerY+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, scale*INNER_PROGRESS_CAP, scale*INNER_PROGRESS_HEIGHT);
 		}
 	}
 
@@ -318,7 +328,7 @@ public class LoadingMode implements Screen {
 		// Compute the drawing scale
 		float sx = ((float)width)/STANDARD_WIDTH;
 		float sy = ((float)height)/STANDARD_HEIGHT;
-		scale = (sx < sy ? sx : sy);
+		scale = (Math.min(sx, sy)) * 0.6f;
 		
 		this.width = (int)(BAR_WIDTH_RATIO*width);
 		centerY = (int)(BAR_HEIGHT_RATIO*height);
