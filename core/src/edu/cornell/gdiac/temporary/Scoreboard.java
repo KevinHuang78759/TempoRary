@@ -112,13 +112,13 @@ public class Scoreboard {
     }
 
     public void displayScore(float xPos, float yPos, GameCanvas canvas){
-        String disp = "Score: " +
+        String disp = "Score " +
                 totalScore +
                 "\n" +
-                "Combo: " +
+                "Combo " +
                 meter +
                 "\n" +
-                "Multiplier: x" +
+                "Multiplier x" +
                 levelMultipliers[level];
         canvas.drawText(disp, font, xPos, yPos + fontHeightOffset);
 
