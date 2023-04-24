@@ -8,6 +8,7 @@ import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.ControllerMapping;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.util.ScreenListener;
@@ -37,6 +38,19 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
     private Texture backButton;
 
+    /** Left cap to the status background (grey region) */
+    private TextureRegion statusBkgLeft;
+    /** Middle portion of the status background (grey region) */
+    private TextureRegion statusBkgMiddle;
+    /** Right cap to the status background (grey region) */
+    private TextureRegion statusBkgRight;
+    /** Left cap to the status forground (colored region) */
+    private TextureRegion statusFrgLeft;
+    /** Middle portion of the status forground (colored region) */
+    private TextureRegion statusFrgMiddle;
+    /** Right cap to the status forground (colored region) */
+    private TextureRegion statusFrgRight;
+
     /* BUTTON LOCATIONS */
     /** Play button x and y coordinates represented as a vector */
     private Vector2 playButtonCoords;
@@ -53,12 +67,25 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     /** The height of the canvas window (necessary since sprite origin != screen origin) */
     private int heightY;
 
+    /** Height of the progress bar */
+    private static int PROGRESS_HEIGHT = 93;
+    /** Height of the inner progress bar */
+    private static int INNER_PROGRESS_HEIGHT = 77;
+    /** Padding on the left and right sides of the inner bar */
+    private static int X_PADDING = 8;
+    /** Width of the rounded cap on left or right */
+    private static int PROGRESS_CAP    = 42;
+    /** Width of the rounded cap on the left or right for the inner bar */
+    private static int INNER_PROGRESS_CAP    = 33;
+
+    private int barWidth;
+
     /** Standard window size (for scaling) */
     private static int STANDARD_WIDTH  = 1200;
     /** Standard window height (for scaling) */
     private static int STANDARD_HEIGHT = 800;
     /** Ratio of the bar width to the screen (artifact of LoadingMode) */
-    private static float BAR_WIDTH_RATIO  = 0.66f;
+    private static float BAR_WIDTH_RATIO  = 0.5f;
     /** Ration of the bar height to the screen (artifact of LoadingMode) */
     private static float BAR_HEIGHT_RATIO = 0.25f;
     /** Scaling factor for when the student changes the resolution. */
@@ -84,6 +111,8 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private static final int EXIT_PRESSED = 105;
 
     private MenuState currentMenuState;
+    private int innerWidth;
+    private boolean holdingBar;
 
     // MenuState
     private enum MenuState {
@@ -112,6 +141,14 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         playButtonCoords = new Vector2(centerX + levelEditorButton.getWidth(), canvas.getHeight()/2 + 200);
         levelEditorButtonCoords = new Vector2(centerX + levelEditorButton.getWidth(), canvas.getHeight()/2);
         calibrationButtonCoords = new Vector2(centerX + calibrationButton.getWidth()*2 , centerY);
+
+        statusBkgLeft = directory.getEntry( "slider.backleft", TextureRegion.class );
+        statusBkgRight = directory.getEntry( "slider.backright", TextureRegion.class );
+        statusBkgMiddle = directory.getEntry( "slider.background", TextureRegion.class );
+
+        statusFrgLeft = directory.getEntry( "slider.foreleft", TextureRegion.class );
+        statusFrgRight = directory.getEntry( "slider.foreright", TextureRegion.class );
+        statusFrgMiddle = directory.getEntry( "slider.foreground", TextureRegion.class );
 
         backButton = directory.getEntry("play-old", Texture.class);
     }
@@ -209,6 +246,26 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private void drawSettings() {
         canvas.begin();
         canvas.draw(background, 0, 0, canvas.getWidth(), canvas.getHeight());
+        float scale = 0.5f;
+
+        canvas.draw(statusBkgLeft,   centerX-barWidth/2, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
+        canvas.draw(statusBkgRight,  centerX+barWidth/2-scale*PROGRESS_CAP, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
+        canvas.draw(statusBkgMiddle, centerX-barWidth/2+scale*PROGRESS_CAP, centerY, barWidth-2*scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
+
+        float padding = (barWidth - innerWidth) / 2f;
+        canvas.draw(statusFrgLeft,   centerX-innerWidth/2, centerY +(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, scale*INNER_PROGRESS_CAP, scale*INNER_PROGRESS_HEIGHT);
+        float span = (musicVolume/100f)*(innerWidth-2*scale*INNER_PROGRESS_CAP);
+        canvas.draw(statusFrgRight,  centerX-innerWidth/2+scale*INNER_PROGRESS_CAP+span, centerY+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, scale*INNER_PROGRESS_CAP, scale*INNER_PROGRESS_HEIGHT);
+        canvas.draw(statusFrgMiddle, centerX-innerWidth/2+scale*INNER_PROGRESS_CAP, centerY+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, span, scale*INNER_PROGRESS_HEIGHT);
+
+        canvas.draw(statusBkgLeft,   centerX-barWidth/2, centerY + 100, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
+        canvas.draw(statusBkgRight,  centerX+barWidth/2-scale*PROGRESS_CAP, centerY + 100, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
+        canvas.draw(statusBkgMiddle, centerX-barWidth/2+scale*PROGRESS_CAP, centerY + 100, barWidth-2*scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
+
+        canvas.draw(statusFrgLeft,   centerX-innerWidth/2, centerY + 100+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, scale*INNER_PROGRESS_CAP, scale*INNER_PROGRESS_HEIGHT);
+        float span2 = (soundFXVolume/100f)*(innerWidth-2*scale*INNER_PROGRESS_CAP);
+        canvas.draw(statusFrgRight,  centerX-innerWidth/2+scale*INNER_PROGRESS_CAP+span2, centerY + 100+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, scale*INNER_PROGRESS_CAP, scale*INNER_PROGRESS_HEIGHT);
+        canvas.draw(statusFrgMiddle, centerX-innerWidth/2+scale*INNER_PROGRESS_CAP, centerY + 100+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, span, scale*INNER_PROGRESS_HEIGHT);
 
         canvas.draw(exitButton, Color.WHITE, exitButton.getWidth()/2, exitButton.getHeight()/2,
                 calibrationButton.getWidth(), calibrationButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
@@ -218,11 +275,11 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     // SETTINGS VALUES (this needs to change after the fact)
     // also add keybinds
     public float getMusicVolumeSetting() {
-        return 0.0f;
+        return musicVolume;
     }
 
     public float getFXVolumeSetting() {
-        return 0.0f;
+        return soundFXVolume;
     }
 
     // TODO: fix this method
@@ -233,7 +290,8 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         float sy = ((float)height)/STANDARD_HEIGHT;
         scale = (sx < sy ? sx : sy);
 
-//        this.width = (int)(BAR_WIDTH_RATIO*width);
+        barWidth = (int)(BAR_WIDTH_RATIO*width);
+        innerWidth = (int)(BAR_WIDTH_RATIO*0.97*width);
         centerY = (int)(BAR_HEIGHT_RATIO*height);
         centerX = width/2;
         heightY = height;
@@ -298,6 +356,14 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         return xInBounds && yInBounds;
     }
 
+    public boolean isButtonPressed(int screenX, int screenY, float width, float height, Vector2 buttonCoords) {
+        float xRadius = width/2.0f;
+        boolean xInBounds = buttonCoords.x - xRadius <= screenX && buttonCoords.x + xRadius >= screenX;
+        float yRadius = height/2.0f;
+        boolean yInBounds = buttonCoords.y - yRadius <= screenY && buttonCoords.y + yRadius >= screenY;
+        return xInBounds && yInBounds;
+    }
+
     /**
      * Called when the screen was touched or a mouse button was pressed.
      *
@@ -355,6 +421,11 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
                 if (distBack < radius * radius) {
                     currentMenuState = MenuState.HOME;
                 }
+                if (isButtonPressed(screenX, screenY, barWidth, scale*INNER_PROGRESS_HEIGHT, new Vector2(centerX, centerY))) {
+                    holdingBar = true;
+                    System.out.println("hello");
+                }
+                float barWidth = (innerWidth-2*scale*INNER_PROGRESS_CAP);
                 break;
         }
 
@@ -392,6 +463,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
             default:
                 return true;
         }
+        holdingBar = false;
         return true;
     }
 
@@ -437,6 +509,27 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
                 pressState = ExitCode.TO_PLAYING;
                 return false;
             }
+        }
+        return true;
+    }
+
+    /**
+     * Called when the mouse or finger was dragged.
+     *
+     * @param screenX the x-coordinate of the mouse on the screen
+     * @param screenY the y-coordinate of the mouse on the screen
+     * @param pointer the button or touch finger number
+     * @return whether to hand the event to other listeners.
+     */
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+//        System.out.println(screenX);
+        if (holdingBar) {
+            musicVolume = 1 - ((screenX - centerX - innerWidth / 2) * 1.0f / innerWidth * -1);
+            if (musicVolume > 1) musicVolume = 1;
+            if (musicVolume < 0) musicVolume = 0;
+            musicVolume *= 100;
+            System.out.println(musicVolume);
+//            System.out.println(1 - ((screenX - centerX - innerWidth / 2) * 1.0f / innerWidth * -1));
         }
         return true;
     }
@@ -493,18 +586,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
      * @return whether to hand the event to other listeners.
      */
     public boolean scrolled(float dx, float dy) {
-        return true;
-    }
-
-    /**
-     * Called when the mouse or finger was dragged. (UNSUPPORTED)
-     *
-     * @param screenX the x-coordinate of the mouse on the screen
-     * @param screenY the y-coordinate of the mouse on the screen
-     * @param pointer the button or touch finger number
-     * @return whether to hand the event to other listeners.
-     */
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
         return true;
     }
 

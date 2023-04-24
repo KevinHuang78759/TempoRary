@@ -30,6 +30,19 @@
           "minFilter": "linear",
           "maxFilter": "linear"
         },
+        "slider": {
+          "file":      "images/loading_bar.png",
+          "minFilter": "linear",
+          "magFilter": "linear",
+          "atlas":     {
+            "background" : [43, 0, 340, 93],
+            "backleft"   : [0, 0, 42, 93],
+            "backright"  : [544, 0, 587, 93],
+            "foreground" : [48, 97,  538, 170],
+            "foreleft"   : [14, 97, 47, 170],
+            "foreright"  : [539, 97, 573, 170]
+          }
+        },
         "background": "images/background.png",
         "concert-background": "images/backgrounds/background_temp_concert_1.png",
         "street-background": "images/backgrounds/background_temp_streets_1.png",
