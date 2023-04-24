@@ -110,13 +110,12 @@ public class LoadingMode implements Screen {
 
 	/** Current progress (0 to 1) of the asset manager */
 	private float progress;
-	/** The current state of the play button */
-	private int   pressState;
 	/** The amount of time to devote to loading assets (as opposed to on screen hints, etc.) */
 	private int   budget;
-
 	/** Whether or not this player mode is still active */
 	private boolean active;
+
+	private int innerWidth;
 
 	/**
 	 * Returns the budget for the asset loader.
@@ -226,14 +225,6 @@ public class LoadingMode implements Screen {
 	}
 
 	/**
-	 * Getter for the press state of a button
-	 * @return value of `pressState`
-	 */
-	public int getPressState() {
-		return pressState;
-	}
-
-	/**
 	 * Called when this screen should release all resources.
 	 */
 	public void dispose() {
@@ -284,13 +275,14 @@ public class LoadingMode implements Screen {
 		canvas.draw(statusBkgRight,  centerX+width/2-scale*PROGRESS_CAP, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
 		canvas.draw(statusBkgMiddle, centerX-width/2+scale*PROGRESS_CAP, centerY, width-2*scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
 
-		canvas.draw(statusFrgLeft,   centerX-width/2+X_PADDING, centerY +(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, scale*INNER_PROGRESS_CAP, scale*INNER_PROGRESS_HEIGHT);
+		float padding = (width - innerWidth) / 2f;
+		canvas.draw(statusFrgLeft,   centerX-width/2+padding, centerY +(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, scale*INNER_PROGRESS_CAP, scale*INNER_PROGRESS_HEIGHT);
 		if (progress > 0) {
-			float span = progress*(width-2*scale*INNER_PROGRESS_CAP)/2.0f;
-			canvas.draw(statusFrgRight,  centerX-width/2+scale*INNER_PROGRESS_CAP+span+X_PADDING, centerY+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, scale*INNER_PROGRESS_CAP, scale*INNER_PROGRESS_HEIGHT);
-			canvas.draw(statusFrgMiddle, centerX-width/2+scale*INNER_PROGRESS_CAP+X_PADDING, centerY+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, span, scale*INNER_PROGRESS_HEIGHT);
+			float span = progress*((innerWidth)-2*scale*INNER_PROGRESS_CAP);
+			canvas.draw(statusFrgRight,  centerX-innerWidth/2+scale*INNER_PROGRESS_CAP+span, centerY+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, scale*INNER_PROGRESS_CAP, scale*INNER_PROGRESS_HEIGHT);
+			canvas.draw(statusFrgMiddle, centerX-innerWidth/2+scale*INNER_PROGRESS_CAP, centerY+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, span, scale*INNER_PROGRESS_HEIGHT);
 		} else {
-			canvas.draw(statusFrgRight,  centerX-width/2+scale*INNER_PROGRESS_CAP+X_PADDING, centerY+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, scale*INNER_PROGRESS_CAP, scale*INNER_PROGRESS_HEIGHT);
+			canvas.draw(statusFrgRight,  centerX-innerWidth/2+scale*INNER_PROGRESS_CAP+padding, centerY+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, scale*INNER_PROGRESS_CAP, scale*INNER_PROGRESS_HEIGHT);
 		}
 	}
 
@@ -331,6 +323,7 @@ public class LoadingMode implements Screen {
 		scale = (Math.min(sx, sy)) * 0.6f;
 		
 		this.width = (int)(BAR_WIDTH_RATIO*width);
+		innerWidth = (int)(BAR_WIDTH_RATIO*0.95*width);
 		centerY = (int)(BAR_HEIGHT_RATIO*height);
 		centerX = width/2;
 		heightY = height;
