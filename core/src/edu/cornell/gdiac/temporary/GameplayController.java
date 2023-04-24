@@ -474,6 +474,11 @@ public class GameplayController {
 				note.setHitStatus(offBeatLoss);
 			}
 		}
+		//if we let go too early we need to reset the combo
+		if (lifted && dist >= 10000){
+			sb.resetCombo();
+			note.setHitStatus(offBeatLoss);
+		}
 	}
 	/**
 	 * Handle transitions and inputs
