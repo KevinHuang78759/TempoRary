@@ -251,6 +251,7 @@ public class GameMode implements Screen {
 				canvas.drawTextCentered("" + (int) waiting, displayFont, 0);
 			}
 		}
+		gameplayController.sb.displayScore(gameplayController.LEFTBOUND, gameplayController.TOPBOUND + gameplayController.inBetweenWidth/4f, canvas);
 		canvas.end();
 	}
 

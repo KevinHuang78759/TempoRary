@@ -113,11 +113,17 @@ public class GameplayController {
 		sfx = new SoundController<>();
 	}
 
+	float totalWidth;
+	float totalHeight;
+
 	public void setBounds(float width, float height){
+		totalHeight = height;
+		totalWidth = width;
 		LEFTBOUND = width/8f;
 		RIGHTBOUND = 7*width/8f;
 		TOPBOUND = 17f*height/20f;
 		BOTTOMBOUND = height/3f;
+
 	}
 
 	public void setWidths(){
@@ -140,7 +146,8 @@ public class GameplayController {
 	 * Loads a level
 	 */
 	public void loadLevel(JsonValue levelData, AssetDirectory directory){
-		sb = new Scoreboard(4, new int[]{1, 2, 3, 5}, new long[]{10000, 20000, 40000});
+		sb = new Scoreboard(4, new int[]{1, 2, 3, 5}, new long[]{10, 20, 30});
+		sb.setFontScale((totalHeight - TOPBOUND)/2f);
 		particles = new Array<>();
 		backing = new Array<>();
 		sfx = new SoundController<>();
@@ -175,11 +182,12 @@ public class GameplayController {
 	 * Resizing screen to new width and height
 	 */
 	public void resize(int width, int height){
-		System.out.println(width + "  " + height);
 		setBounds(width, height);
 		setWidths();
 		setYVals();
 		updateBandMemberCoords();
+		sb.setFontScale((totalHeight - TOPBOUND)/2f);
+
 	}
 	/**
 	 * Sets the offset in determining beat calculation, converting it to samples

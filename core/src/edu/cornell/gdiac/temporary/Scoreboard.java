@@ -1,13 +1,19 @@
 package edu.cornell.gdiac.temporary;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.utils.JsonValue;
+
+import java.awt.*;
 
 public class Scoreboard {
     private FreeTypeFontGenerator fontGenerator;
     private FreeTypeFontGenerator.FreeTypeFontParameter fontParameter;
     private BitmapFont font;
+
+    private GlyphLayout layout;
     /**
      * SFX for hitting combos
      */
@@ -52,6 +58,13 @@ public class Scoreboard {
         sfx.addSound(2, "sound/combo2.ogg");
         sfx.addSound(3, "sound/combo3.ogg");
         this.maxLevel = maxLevel;
+
+        fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/TempoRaryFont.ttf"));
+        fontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        fontParameter.size = 12;
+        font = fontGenerator.generateFont(fontParameter);
+        layout = new GlyphLayout();
+
     }
     public void resetCombo(){
         if(level > 0){
@@ -61,7 +74,7 @@ public class Scoreboard {
         level = 0;
     }
     public void recieveHit(int hitVal){
-        meter += hitVal;
+        ++meter;
         if(level < maxLevel-1 && meter > levelMeters[level]){
             ++level;
             if(level == maxLevel){
@@ -72,7 +85,6 @@ public class Scoreboard {
             }
         }
         totalScore += (long) hitVal* (long)levelMultipliers[level];
-        System.out.println("Current Combo:" + level + "Current Score:" + totalScore);
     }
 
     public long getScore(){
@@ -80,5 +92,35 @@ public class Scoreboard {
     }
     public void dispose(){
         sfx.dispose();
+        fontGenerator.dispose();
+        font.dispose();
+
+    }
+
+    private float fontScale = 1f;
+    private float fontHeightOffset;
+    public void setFontScale(float heightConfine){
+        String disp = "S" +
+                "\n" +
+                "C" +
+                "\n" +
+                "M";
+        layout.setText(font, disp);
+        fontScale *= heightConfine/layout.height;
+        fontHeightOffset = heightConfine;
+        font.getData().setScale(fontScale);
+    }
+
+    public void displayScore(float xPos, float yPos, GameCanvas canvas){
+        String disp = "Score: " +
+                totalScore +
+                "\n" +
+                "Combo: " +
+                meter +
+                "\n" +
+                "Multiplier: x" +
+                levelMultipliers[level];
+        canvas.drawText(disp, font, xPos, yPos + fontHeightOffset);
+
     }
 }
