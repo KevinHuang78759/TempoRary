@@ -104,7 +104,6 @@ public class GameplayController {
 	 * @param height
 	 */
 	public GameplayController(float width, float height){
-		sb = new Scoreboard(4, new int[]{1, 2, 3, 5}, new long[]{10000, 20000, 40000});
 		particles = new Array<>();
 		backing = new Array<>();
 
