@@ -249,6 +249,12 @@ public class Level {
         }
     }
 
+    public void setBandMemberHitY(float hity){
+        for(BandMember bandMember : bandMembers){
+            bandMember.setHitY(hity);
+        }
+    }
+
     /**
      * Sets width and height of BandMembers outside of transition. Call once after transitioning is finished
      * @param activeBandMember - index of active BandMember

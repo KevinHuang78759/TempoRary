@@ -91,8 +91,8 @@ public class GameplayController {
 	public float largewidth;
 	/** Width between each band member lane */
 	public float inBetweenWidth;
-	/** Y value of the hit bar */
-
+	/** Y value of the hit area*/
+	public float hitY;
 
 	public SoundController<String> sfx;
 
@@ -131,6 +131,8 @@ public class GameplayController {
 		//instantiate other variables
 		noteSpawnY = TOPBOUND + smallwidth/2;
 		noteDieY = BOTTOMBOUND - smallwidth/2;
+		hitY = BOTTOMBOUND + smallwidth/2f;
+		level.setBandMemberHitY(hitY);
 	}
 
 
