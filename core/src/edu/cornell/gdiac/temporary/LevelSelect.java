@@ -173,9 +173,9 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         }
 
         float w = albumCovers[1].getWidth()*scale2/2;
-        albumCoverCoords[0]=new Vector2((canvas.getWidth()/4 - w),canvas.getHeight()/2);
-        albumCoverCoords[1]=new Vector2((canvas.getWidth()/2 -w ),canvas.getHeight()/2);
-        albumCoverCoords[2]=new Vector2((canvas.getWidth()/2 -w)+ canvas.getWidth()/4,canvas.getHeight()/2);
+        albumCoverCoords[0]=new Vector2((canvas.getWidth()/4 ),canvas.getHeight()-canvas.getHeight()/3);
+        albumCoverCoords[1]=new Vector2((canvas.getWidth()/2 ),canvas.getHeight()-canvas.getHeight()/3);
+        albumCoverCoords[2]=new Vector2((canvas.getWidth()/2 )+ canvas.getWidth()/4,canvas.getHeight()-canvas.getHeight()/3);
 
         for (int i = 0; i <numLevels*3;i++){
             String levelString = "levels/"+(i+1)+".json";
@@ -229,7 +229,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         for (int i=0;i<numLevels;i++){
 //            Level l = new Level (j,loadDirectory);
             Color albumCoverTint = (selectedLevel == i ? Color.GRAY: Color.WHITE);
-            canvas.draw(albumCovers[i],albumCoverTint,albumCovers[i].getWidth()/200,albumCovers[i].getHeight()/200,albumCoverCoords[i].x,
+            canvas.draw(albumCovers[i],albumCoverTint,albumCovers[i].getWidth()/2,albumCovers[i].getHeight()/2,albumCoverCoords[i].x,
                     albumCoverCoords[i].y,0, BUTTON_SCALE*scale2, BUTTON_SCALE*scale2);
         }
 
@@ -264,6 +264,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         boolean yInBounds = buttonCoords.y - yRadius <= screenY && buttonCoords.y + yRadius >= screenY;
         return xInBounds && yInBounds;
     }
+
 
 
     @Override
