@@ -141,10 +141,11 @@ public class BandMember {
      */
     private Array<Note> backing;
 
-
+    private int lossRateImm;
     private int lossRate;
     public void setLossRate(int t){
         lossRate = t;
+        lossRateImm = t;
     }
     public int getLossRate(){
         return lossRate;
@@ -207,6 +208,12 @@ public class BandMember {
         for(Note n : hitNotes){
             n.update();
         }
+        if(hitNotes.size == 0){
+            lossRate = 0;
+        }
+        else{
+            lossRate = lossRateImm;
+        }
     }
 
     /**
@@ -247,6 +254,8 @@ public class BandMember {
         backing = hitNotes;
         hitNotes = temp;
         backing.clear();
+        System.out.println(hitNotes.size);
+        System.out.println(switchNotes.size);
     }
 
     /**
@@ -406,7 +415,6 @@ public class BandMember {
     public void drawCharacterSprite(GameCanvas canvas) {
         float scale = Math.min((bottomLeftCorner.y*4/5)/characterSprite.getRegionHeight(), 1.5f*width/characterSprite.getRegionWidth());
         float trueHeight = scale*characterSprite.getRegionHeight();
-        System.out.println((bottomLeftCorner.y - trueHeight)/2);
         canvas.draw(characterSprite, Color.WHITE, characterSprite.getRegionWidth()/ 2f, characterSprite.getRegionHeight()/2f,
                 bottomLeftCorner.x + width/2, (bottomLeftCorner.y - borderthickness - trueHeight/2), 0.0f, scale, scale);
     }
