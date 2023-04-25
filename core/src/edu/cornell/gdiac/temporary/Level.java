@@ -205,7 +205,6 @@ public class Level {
             bandMembers[i].setMaxComp(maxCompetency);
             bandMembers[i].setLossRate(bandMemberData.getInt("competencyLossRate"));
             bandMembers[i].setHpBarFilmStrip(hpbar, 47);
-            bandMembers[i].setFont(displayFont);
             bandMembers[i].setIndicatorTextures(noteIndicator, noteIndicatorHit);
             switch (bandMemberData.getString("instrument")) {
                 case "violin":
