@@ -127,7 +127,7 @@ public class GameCanvas {
 		}
 		resize();
 	}
-	
+
 	/**
 	 * Returns the height of this canvas
 	 *
@@ -499,6 +499,7 @@ public class GameCanvas {
 		// Call the master drawing method (we have to for transforms)
 		holder.setRegion(image);
 		draw(holder,tint,ox,oy,x,y,angle,sx,sy);
+		tint.a = 1f;
 	}
 	
 	/**

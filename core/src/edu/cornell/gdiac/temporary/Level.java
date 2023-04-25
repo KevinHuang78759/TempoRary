@@ -166,8 +166,8 @@ public class Level {
         voiceSprite = new FilmStrip(directory.getEntry("singer-cat", Texture.class), 1, 1, 1);
         drummerSprite = new FilmStrip(directory.getEntry("drummer-cat", Texture.class), 1, 1, 1);
         synthSprite = new FilmStrip(directory.getEntry("drummer-cat", Texture.class), 1, 1, 1);
-        backSplash = new FilmStrip(directory.getEntry("back-splash", Texture.class), 4, 5, 19);
-        frontSplash = new FilmStrip(directory.getEntry("front-splash", Texture.class), 4, 5, 19);
+        backSplash = new FilmStrip(directory.getEntry("back-splash", Texture.class), 5, 5, 23);
+        frontSplash = new FilmStrip(directory.getEntry("front-splash", Texture.class), 5, 5, 21);
 
         HUnit = directory.getEntry("borderHUnit", Texture.class);
         VUnit = directory.getEntry("borderVUnit", Texture.class);
