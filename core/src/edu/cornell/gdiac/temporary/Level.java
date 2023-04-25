@@ -162,10 +162,10 @@ public class Level {
         holdEndTexture = directory.getEntry("hold-end", Texture.class);
         noteIndicator = directory.getEntry("note-indicator", Texture.class);
         noteIndicatorHit = directory.getEntry("note-indicator-hit", Texture.class);
-        violinSprite = new FilmStrip(directory.getEntry("violin-cat", Texture.class), 1, 1, 1);
-        voiceSprite = new FilmStrip(directory.getEntry("singer-cat", Texture.class), 1, 1, 1);
-        drummerSprite = new FilmStrip(directory.getEntry("drummer-cat", Texture.class), 1, 1, 1);
-        synthSprite = new FilmStrip(directory.getEntry("drummer-cat", Texture.class), 1, 1, 1);
+        violinSprite = new FilmStrip(directory.getEntry("violin-cat", Texture.class), 2, 5, 6);
+        voiceSprite = new FilmStrip(directory.getEntry("singer-cat", Texture.class), 2, 5, 6);
+        drummerSprite = new FilmStrip(directory.getEntry("drummer-cat", Texture.class), 2, 5, 6);
+        synthSprite = new FilmStrip(directory.getEntry("drummer-cat", Texture.class), 2, 5, 10);
         backSplash = new FilmStrip(directory.getEntry("back-splash", Texture.class), 5, 5, 23);
         frontSplash = new FilmStrip(directory.getEntry("front-splash", Texture.class), 5, 5, 21);
 
@@ -208,16 +208,16 @@ public class Level {
             bandMembers[i].setIndicatorTextures(noteIndicator, noteIndicatorHit);
             switch (bandMemberData.getString("instrument")) {
                 case "violin":
-                    bandMembers[i].setCharacterTexture(violinSprite);
+                    bandMembers[i].setCharacterFilmstrip(violinSprite);
                     break;
                 case "piano":
-                    bandMembers[i].setCharacterTexture(synthSprite);
+                    bandMembers[i].setCharacterFilmstrip(synthSprite);
                     break;
                 case "drum":
-                    bandMembers[i].setCharacterTexture(drummerSprite);
+                    bandMembers[i].setCharacterFilmstrip(drummerSprite);
                     break;
                 case "voice":
-                    bandMembers[i].setCharacterTexture(voiceSprite);
+                    bandMembers[i].setCharacterFilmstrip(voiceSprite);
                     break;
             }
 //            System.out.println(System.nanoTime() - t);

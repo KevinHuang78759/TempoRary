@@ -427,9 +427,11 @@ public class BandMember {
         noteIndicator = texture;
         noteIndicatorHit = textureHit;
     }
-
-    public void setCharacterTexture(FilmStrip characterSprite) {
-        this.characterSprite = characterSprite;
+    private int characterFrames;
+    public void setCharacterFilmstrip(FilmStrip t){
+        characterFrames = t.getSize();
+        characterSprite = t;
+        characterSprite.setFrame(0);
     }
 
 }
