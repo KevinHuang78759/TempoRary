@@ -25,6 +25,8 @@ import edu.cornell.gdiac.temporary.entity.Particle;
 import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.ScreenListener;
 
+import java.awt.*;
+
 /**
  * The primary controller class for the game.
  *
@@ -118,6 +120,8 @@ public class GameMode implements Screen {
 	private AssetDirectory assetDirectory;
 	/** Last level loaded*/
 	private JsonValue levelData;
+	/** Lets the intro phase know to just resume the gameplay and not to reset the level */
+	private boolean justPaused;
 
 	/** Variable to track the game state (SIMPLE FIELDS) */
 	private GameState gameState;
@@ -218,7 +222,7 @@ public class GameMode implements Screen {
 		switch (gameState) {
 			case INTRO:
 				// wait a few frames before starting
-				if (waiting == 4f) {
+				if (waiting == 4f && !justPaused) {
 					gameplayController.reset();
 					gameplayController.update();
 					gameplayController.start();
@@ -250,7 +254,24 @@ public class GameMode implements Screen {
 				if (inputController.didClick()) {
 					int screenX = (int) inputController.getMouseX();
 					int screenY = (int) inputController.getMouseY();
-					isButtonPressed(screenX, screenY, resumeButton, resumeCoords);
+					if (isButtonPressed(screenX, screenY, resumeButton, resumeCoords)) {
+						waiting = 4f;
+						justPaused = true;
+						gameState = GameState.INTRO;
+					}
+					if (isButtonPressed(screenX, screenY, restartButton, restartCoords)) {
+						gameplayController.reset();
+						gameplayController.loadLevel(levelData, assetDirectory);
+						waiting = 4f;
+						gameState = GameState.INTRO;
+					}
+					if (isButtonPressed(screenX, screenY, levelButton, levelCoords)) {
+						pressState = ExitCode.TO_MENU;
+					}
+					if (isButtonPressed(screenX, screenY, menuButton, menuCoords)) {
+						pressState = ExitCode.TO_MENU;
+					}
+
 				}
 				break;
 			default:
@@ -297,8 +318,13 @@ public class GameMode implements Screen {
 			displayFont.setColor(Color.NAVY);
 			canvas.drawTextCentered("Press ENTER to Restart", displayFont, 0);
 		} else if (gameState == GameState.PAUSE) {
+			//Draw the buttons for the pause menu
 			canvas.draw(resumeButton, Color.WHITE, resumeButton.getWidth()/2, resumeButton.getHeight()/2,
 					resumeCoords.x, resumeCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+			canvas.draw(restartButton, Color.WHITE, restartButton.getWidth()/2, restartButton.getHeight()/2,
+					restartCoords.x, restartCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+			canvas.draw(levelButton, Color.WHITE, levelButton.getWidth()/2, levelButton.getHeight()/2,
+					levelCoords.x, levelCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 			canvas.draw(menuButton, Color.WHITE, resumeButton.getWidth()/2, resumeButton.getHeight()/2,
 					resumeCoords.x, resumeCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 		}
@@ -399,8 +425,8 @@ public class GameMode implements Screen {
 		if (active) {
 			update(delta);
 			draw();
-			if (inputController.didExit() && listener != null) {
-				listener.exitScreen(this, ExitCode.TO_MENU);
+			if (isReady() && listener != null) {
+				listener.exitScreen(this, pressState);
 			}
 		}
 	}
