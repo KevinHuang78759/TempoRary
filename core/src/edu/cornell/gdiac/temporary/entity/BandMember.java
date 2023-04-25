@@ -329,10 +329,12 @@ public class BandMember {
         }
     }
 
+    private float borderthickness;
     /**
      * Draw the border
      */
     public void drawBorder(GameCanvas canvas, Texture HorizontalUnit, Texture VerticalUnit, Texture Corner, float thickness){
+        borderthickness = thickness;
         Vector2 HOrigin = new Vector2(HorizontalUnit.getWidth()/2f, HorizontalUnit.getHeight()/2f);
         Vector2 VOrigin = new Vector2(VerticalUnit.getWidth()/2f, VerticalUnit.getHeight()/2f);
         Vector2 COrigin = new Vector2(Corner.getWidth()/2f, Corner.getHeight()/2f);
@@ -404,8 +406,9 @@ public class BandMember {
     public void drawCharacterSprite(GameCanvas canvas) {
         float scale = Math.min((bottomLeftCorner.y*4/5)/characterSprite.getRegionHeight(), 1.5f*width/characterSprite.getRegionWidth());
         float trueHeight = scale*characterSprite.getRegionHeight();
-        canvas.draw(characterSprite, Color.WHITE, characterSprite.getRegionWidth() / 2, characterSprite.getRegionY() / 2,
-                bottomLeftCorner.x + width/2, (bottomLeftCorner.y - trueHeight)/2, 0.0f, scale, scale);
+        System.out.println((bottomLeftCorner.y - trueHeight)/2);
+        canvas.draw(characterSprite, Color.WHITE, characterSprite.getRegionWidth()/ 2f, characterSprite.getRegionHeight()/2f,
+                bottomLeftCorner.x + width/2, (bottomLeftCorner.y - borderthickness - trueHeight/2), 0.0f, scale, scale);
     }
 
     /**
@@ -428,10 +431,23 @@ public class BandMember {
         noteIndicatorHit = textureHit;
     }
     private int characterFrames;
+    public int getCharacterFrames(){
+        return characterFrames;
+    }
+
+    private int frame;
+    public int getFrame(){
+        return frame;
+    }
+    public void setFrame(int frame){
+        this.frame = frame;
+        characterSprite.setFrame(frame);
+    }
     public void setCharacterFilmstrip(FilmStrip t){
         characterFrames = t.getSize();
         characterSprite = t;
         characterSprite.setFrame(0);
+        frame = 0;
     }
 
 }

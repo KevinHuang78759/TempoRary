@@ -165,7 +165,7 @@ public class Level {
         violinSprite = new FilmStrip(directory.getEntry("violin-cat", Texture.class), 2, 5, 6);
         voiceSprite = new FilmStrip(directory.getEntry("singer-cat", Texture.class), 2, 5, 6);
         drummerSprite = new FilmStrip(directory.getEntry("drummer-cat", Texture.class), 2, 5, 6);
-        synthSprite = new FilmStrip(directory.getEntry("drummer-cat", Texture.class), 2, 5, 10);
+        synthSprite = new FilmStrip(directory.getEntry("piano-cat", Texture.class), 2, 5, 10);
         backSplash = new FilmStrip(directory.getEntry("back-splash", Texture.class), 5, 5, 23);
         frontSplash = new FilmStrip(directory.getEntry("front-splash", Texture.class), 5, 5, 21);
 
@@ -296,13 +296,19 @@ public class Level {
 
     /**
      * Spawns new notes according to what sample we are at. Also decrements bandmembers' competency
-     * for some amount about once a second
+     * for some amount about once a second. It also updates the frame of the bandmember.
      */
     public void updateBandMemberNotes(){
         //First get the sample we at
         long sample = getCurrentSample();
+        int rate = music.getSampleRate();
+        float samplesPerBeat = rate * 60f/bpm;
         boolean decTog = false;
         for(BandMember bandMember : bandMembers){
+            //update the uh frame
+            float frameprogress = (sample % samplesPerBeat)/(samplesPerBeat);
+            int totalframes = bandMember.getCharacterFrames();
+            bandMember.setFrame((int)(totalframes*frameprogress));
             //update the note frames
             bandMember.updateNotes();
             //spawn new notes accordingly
