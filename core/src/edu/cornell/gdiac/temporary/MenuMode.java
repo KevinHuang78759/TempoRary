@@ -7,9 +7,19 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.ControllerMapping;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.util.ScreenListener;
 
@@ -114,6 +124,11 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private int innerWidth;
     private boolean holdingBar;
 
+    // SCENES FOR THE SETTINGS PAGE
+    private Stage stage;
+    private Table table;
+    private BitmapFont font;
+
     // MenuState
     private enum MenuState {
         HOME,
@@ -151,6 +166,89 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         statusFrgMiddle = directory.getEntry( "slider.foreground", TextureRegion.class );
 
         backButton = directory.getEntry("play-old", Texture.class);
+
+        font = directory.getEntry("lucida", BitmapFont.class);
+
+        addSceneElements();
+    }
+
+    private void addSceneElements() {
+        Button.ButtonStyle backButtonStyle = new Button.ButtonStyle();
+        backButtonStyle.up = new TextureRegionDrawable(exitButton);
+        backButtonStyle.down = new TextureRegionDrawable(exitButton);
+
+        final Button button = new Button(backButtonStyle);
+
+        Slider.SliderStyle musicVolumeSliderStyle = new Slider.SliderStyle();
+        musicVolumeSliderStyle.background = new TextureRegionDrawable(statusFrgMiddle);
+        musicVolumeSliderStyle.knob = new TextureRegionDrawable(statusFrgRight);
+
+        final Slider musicVolumeSlider = new Slider(0f, 1f, 0.1f, false, musicVolumeSliderStyle);
+        musicVolumeSlider.setValue(musicVolume);
+
+        Slider.SliderStyle fxVolumeSliderStyle = new Slider.SliderStyle();
+        fxVolumeSliderStyle.background = new TextureRegionDrawable(statusFrgMiddle);
+        fxVolumeSliderStyle.knob = new TextureRegionDrawable(statusFrgRight);
+
+        final Slider fxVolumeSlider = new Slider(0f, 1f, 0.05f, false, fxVolumeSliderStyle);
+        fxVolumeSlider.setValue(soundFXVolume);
+
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = font;
+
+        final Label musicLabel = new Label("Music Volume", labelStyle);
+        final Label fxLabel = new Label("Sound Effects Volume", labelStyle);
+
+        table.row();
+
+        table.add(button);
+        table.row();
+
+        table.add(musicLabel);
+        table.add(musicVolumeSlider).width(800);
+        table.row();
+
+        table.add(fxLabel);
+        table.add(fxVolumeSlider).width(800);
+
+//        button.addListener(new InputListener() {
+//            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+//                System.out.println("down");
+//                return true;
+//            }
+//            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+//                System.out.println("up");
+//            }
+//        });
+
+        button.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                System.out.println("clicked");
+                switchToHome();
+            }
+        });
+
+        musicVolumeSlider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                System.out.println(((Slider) actor).getValue());
+                musicVolume = ((Slider) actor).getValue();
+            }
+        });
+
+        fxVolumeSlider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                System.out.println(((Slider) actor).getValue());
+                soundFXVolume = ((Slider) actor).getValue();
+            }
+        });
+    }
+
+    private void switchToHome() {
+        reset();
+        Gdx.input.setInputProcessor( this );
     }
 
     /**
@@ -180,10 +278,16 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
      */
     public MenuMode(GameCanvas canvas) {
         this.canvas = canvas;
+        stage = new Stage();
+        table = new Table();
+        table.setFillParent(true);
+        stage.addActor(table);
+        table.setDebug(true); // This is optional, but enables debug lines for tables.
+
         // Compute the dimensions from the canvas
         resize(canvas.getWidth(),canvas.getHeight());
-        musicVolume = 100f;
-        soundFXVolume = 100f;
+        musicVolume = 1f;
+        soundFXVolume = 1f;
         active = false;
         reset();
     }
@@ -246,30 +350,34 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private void drawSettings() {
         canvas.begin();
         canvas.draw(background, 0, 0, canvas.getWidth(), canvas.getHeight());
-        float scale = 0.5f;
-
-        canvas.draw(statusBkgLeft,   centerX-barWidth/2, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
-        canvas.draw(statusBkgRight,  centerX+barWidth/2-scale*PROGRESS_CAP, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
-        canvas.draw(statusBkgMiddle, centerX-barWidth/2+scale*PROGRESS_CAP, centerY, barWidth-2*scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
-
-        float padding = (barWidth - innerWidth) / 2f;
-        canvas.draw(statusFrgLeft,   centerX-innerWidth/2, centerY +(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, scale*INNER_PROGRESS_CAP, scale*INNER_PROGRESS_HEIGHT);
-        float span = (musicVolume/100f)*(innerWidth-2*scale*INNER_PROGRESS_CAP);
-        canvas.draw(statusFrgRight,  centerX-innerWidth/2+scale*INNER_PROGRESS_CAP+span, centerY+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, scale*INNER_PROGRESS_CAP, scale*INNER_PROGRESS_HEIGHT);
-        canvas.draw(statusFrgMiddle, centerX-innerWidth/2+scale*INNER_PROGRESS_CAP, centerY+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, span, scale*INNER_PROGRESS_HEIGHT);
-
-        canvas.draw(statusBkgLeft,   centerX-barWidth/2, centerY + 100, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
-        canvas.draw(statusBkgRight,  centerX+barWidth/2-scale*PROGRESS_CAP, centerY + 100, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
-        canvas.draw(statusBkgMiddle, centerX-barWidth/2+scale*PROGRESS_CAP, centerY + 100, barWidth-2*scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
-
-        canvas.draw(statusFrgLeft,   centerX-innerWidth/2, centerY + 100+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, scale*INNER_PROGRESS_CAP, scale*INNER_PROGRESS_HEIGHT);
-        float span2 = (soundFXVolume/100f)*(innerWidth-2*scale*INNER_PROGRESS_CAP);
-        canvas.draw(statusFrgRight,  centerX-innerWidth/2+scale*INNER_PROGRESS_CAP+span2, centerY + 100+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, scale*INNER_PROGRESS_CAP, scale*INNER_PROGRESS_HEIGHT);
-        canvas.draw(statusFrgMiddle, centerX-innerWidth/2+scale*INNER_PROGRESS_CAP, centerY + 100+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, span, scale*INNER_PROGRESS_HEIGHT);
-
-        canvas.draw(exitButton, Color.WHITE, exitButton.getWidth()/2, exitButton.getHeight()/2,
-                calibrationButton.getWidth(), calibrationButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+//
+//        canvas.draw(backButton, Color.WHITE, backButton.getWidth()/2, backButton.getHeight()/2,
+//                calibrationButton.getWidth(), calibrationButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+//
+//        float scale = 0.5f;
+//
+//        canvas.draw(statusBkgLeft,   centerX-barWidth/2, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
+//        canvas.draw(statusBkgRight,  centerX+barWidth/2-scale*PROGRESS_CAP, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
+//        canvas.draw(statusBkgMiddle, centerX-barWidth/2+scale*PROGRESS_CAP, centerY, barWidth-2*scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
+//
+//        float padding = (barWidth - innerWidth) / 2f;
+//        canvas.draw(statusFrgLeft,   centerX-innerWidth/2, centerY +(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, scale*INNER_PROGRESS_CAP, scale*INNER_PROGRESS_HEIGHT);
+//        float span = (musicVolume)*(innerWidth-2*scale*INNER_PROGRESS_CAP);
+//        canvas.draw(statusFrgRight,  centerX-innerWidth/2+scale*INNER_PROGRESS_CAP+span, centerY+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, scale*INNER_PROGRESS_CAP, scale*INNER_PROGRESS_HEIGHT);
+//        canvas.draw(statusFrgMiddle, centerX-innerWidth/2+scale*INNER_PROGRESS_CAP, centerY+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, span, scale*INNER_PROGRESS_HEIGHT);
+//
+//        canvas.draw(statusBkgLeft,   centerX-barWidth/2, centerY + 100, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
+//        canvas.draw(statusBkgRight,  centerX+barWidth/2-scale*PROGRESS_CAP, centerY + 100, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
+//        canvas.draw(statusBkgMiddle, centerX-barWidth/2+scale*PROGRESS_CAP, centerY + 100, barWidth-2*scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
+//
+//        canvas.draw(statusFrgLeft,   centerX-innerWidth/2, centerY + 100+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, scale*INNER_PROGRESS_CAP, scale*INNER_PROGRESS_HEIGHT);
+//        float span2 = (soundFXVolume)*(innerWidth-2*scale*INNER_PROGRESS_CAP);
+//        canvas.draw(statusFrgRight,  centerX-innerWidth/2+scale*INNER_PROGRESS_CAP+span2, centerY + 100+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, scale*INNER_PROGRESS_CAP, scale*INNER_PROGRESS_HEIGHT);
+//        canvas.draw(statusFrgMiddle, centerX-innerWidth/2+scale*INNER_PROGRESS_CAP, centerY + 100+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, span2, scale*INNER_PROGRESS_HEIGHT);
+//
         canvas.end();
+        stage.act(Gdx.graphics.getDeltaTime());
+        stage.draw();
     }
 
     // SETTINGS VALUES (this needs to change after the fact)
@@ -295,6 +403,8 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         centerY = (int)(BAR_HEIGHT_RATIO*height);
         centerX = width/2;
         heightY = height;
+
+        stage.getViewport().update(width, height, true);
     }
 
     @Override
@@ -321,6 +431,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     @Override
     public void dispose() {
         canvas = null;
+//        stage.dispose();
     }
 
     /**
@@ -420,12 +531,12 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
                         + (screenY - calibrationButtonCoords.y) * (screenY - calibrationButtonCoords.y);
                 if (distBack < radius * radius) {
                     currentMenuState = MenuState.HOME;
-                }
-                if (isButtonPressed(screenX, screenY, barWidth, scale*INNER_PROGRESS_HEIGHT, new Vector2(centerX, centerY))) {
-                    holdingBar = true;
-                    System.out.println("hello");
+                    Gdx.input.setInputProcessor(this);
                 }
                 float barWidth = (innerWidth-2*scale*INNER_PROGRESS_CAP);
+                if (isButtonPressed(screenX, screenY, barWidth, scale*INNER_PROGRESS_HEIGHT, new Vector2(centerX, centerY))) {
+                    holdingBar = true;
+                }
                 break;
         }
 
@@ -457,11 +568,12 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
             case SETTINGS_PRESSED:
                 currentMenuState = MenuState.SETTINGS;
                 pressState = NO_BUTTON_PRESSED;
+                Gdx.input.setInputProcessor(stage);
                 break;
             case EXIT_PRESSED:
                 pressState = ExitCode.TO_EXIT;
             default:
-                return true;
+                break;
         }
         holdingBar = false;
         return true;
@@ -527,9 +639,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
             musicVolume = 1 - ((screenX - centerX - innerWidth / 2) * 1.0f / innerWidth * -1);
             if (musicVolume > 1) musicVolume = 1;
             if (musicVolume < 0) musicVolume = 0;
-            musicVolume *= 100;
-            System.out.println(musicVolume);
-//            System.out.println(1 - ((screenX - centerX - innerWidth / 2) * 1.0f / innerWidth * -1));
         }
         return true;
     }
@@ -542,9 +651,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
      * @param keycode the key pressed
      * @return whether to hand the event to other listeners.
      */
-    public boolean keyDown(int keycode) {
-        return true;
-    }
+    public boolean keyDown(int keycode) {return true;}
 
     /**
      * Called when a key is typed (UNSUPPORTED)
@@ -552,9 +659,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
      * @param keycode the key typed
      * @return whether to hand the event to other listeners.
      */
-    public boolean keyTyped(char keycode) {
-        return true;
-    }
+    public boolean keyTyped(char keycode) {return true;}
 
     /**
      * Called when a key is released (UNSUPPORTED)
@@ -562,9 +667,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
      * @param keycode the key released
      * @return whether to hand the event to other listeners.
      */
-    public boolean keyUp(int keycode) {
-        return true;
-    }
+    public boolean keyUp(int keycode) {return true;}
 
     /**
      * Called when the mouse was moved without any buttons being pressed. (UNSUPPORTED)
@@ -573,9 +676,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
      * @param screenY the y-coordinate of the mouse on the screen
      * @return whether to hand the event to other listeners.
      */
-    public boolean mouseMoved(int screenX, int screenY) {
-        return true;
-    }
+    public boolean mouseMoved(int screenX, int screenY) {return true;}
 
     /**
      * Called when the mouse wheel was scrolled. (UNSUPPORTED)
@@ -585,9 +686,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
      *
      * @return whether to hand the event to other listeners.
      */
-    public boolean scrolled(float dx, float dy) {
-        return true;
-    }
+    public boolean scrolled(float dx, float dy) {return true;}
 
     // UNSUPPORTED METHODS FROM ControllerListener
 
@@ -615,7 +714,5 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
      * @param value 	The axis value, -1 to 1
      * @return whether to hand the event to other listeners.
      */
-    public boolean axisMoved (Controller controller, int axisCode, float value) {
-        return true;
-    }
+    public boolean axisMoved (Controller controller, int axisCode, float value) {return true;}
 }
