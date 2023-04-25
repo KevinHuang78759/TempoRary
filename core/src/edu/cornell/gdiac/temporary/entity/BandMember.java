@@ -402,10 +402,10 @@ public class BandMember {
     }
 
     public void drawCharacterSprite(GameCanvas canvas) {
-        float scale = (bottomLeftCorner.y*4/5)/characterSprite.getRegionHeight();
+        float scale = Math.min((bottomLeftCorner.y*4/5)/characterSprite.getRegionHeight(), 1.5f*width/characterSprite.getRegionWidth());
         float trueHeight = scale*characterSprite.getRegionHeight();
         canvas.draw(characterSprite, Color.WHITE, characterSprite.getRegionWidth() / 2, characterSprite.getRegionY() / 2,
-                bottomLeftCorner.x + width/10 + scale * characterSprite.getRegionWidth() / 2 + 20, (bottomLeftCorner.y - trueHeight)/2, 0.0f, scale, scale);
+                bottomLeftCorner.x + width/2, (bottomLeftCorner.y - trueHeight)/2, 0.0f, scale, scale);
     }
 
     /**
