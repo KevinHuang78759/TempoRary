@@ -20,6 +20,7 @@
  */
 package edu.cornell.gdiac.temporary;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.graphics.Texture;
@@ -32,11 +33,12 @@ import edu.cornell.gdiac.temporary.entity.*;
  * This controller also acts as the root class for all the models.
  */
 public class GameplayController {
-	// note, currently not being used
-	int curframe;
+
 	// Graphics assets for the entities
 	/** Texture for all stars, as they look the same */
 	private Texture particleTexture;
+
+	private Texture enhancedParticle;
 
 	/** The minimum velocity factor (x shell velocity) of a newly created star */
 	private static final float MIN_STAR_FACTOR = 0.1f;
@@ -63,8 +65,6 @@ public class GameplayController {
 	public int activeBandMember;
 	/** Level object, stores bandMembers */
 	public Level level;
-	/** Indicates whether or not we want to use randomly generated notes */
-	public boolean randomNotes;
 	/** The Y coordinate at which a note will spawn. Notes should spawn completely invisible. */
 	public float noteSpawnY;
 	/**
@@ -91,9 +91,12 @@ public class GameplayController {
 	public float largewidth;
 	/** Width between each band member lane */
 	public float inBetweenWidth;
-	/** Y value of the hit bar */
-	public float hitbarY;
+	/** Y value of the hit area*/
+	public float hitY;
 
+	public SoundController<String> sfx;
+
+	public Scoreboard sb;
 
 	/**
 	 * Create gameplaycontroler
@@ -103,19 +106,51 @@ public class GameplayController {
 	public GameplayController(float width, float height){
 		particles = new Array<>();
 		backing = new Array<>();
-		randomNotes = true;
+
 		//Set margins so there is a comfortable amount of space between play area and screen boundaries
 		//Values decided by pure look
-		LEFTBOUND = width/10f;
-		RIGHTBOUND = 9*width/10f;
-		TOPBOUND = 19f*height/20f;
-		BOTTOMBOUND = height/5f;
+		setBounds(width, height);
+		sfx = new SoundController<>();
 	}
+
+	float totalWidth;
+	float totalHeight;
+
+	public void setBounds(float width, float height){
+		totalHeight = height;
+		totalWidth = width;
+		LEFTBOUND = width/8f;
+		RIGHTBOUND = 7*width/8f;
+		TOPBOUND = 17f*height/20f;
+		BOTTOMBOUND = height/3f;
+
+	}
+
+	public void setWidths(){
+		smallwidth = (RIGHTBOUND - LEFTBOUND)/(NUM_LANES - 1 + (NUM_LANES - 1)*0.25f + 4);
+		inBetweenWidth = smallwidth/4f;
+		largewidth = 4f*smallwidth;
+	}
+
+	public void setYVals(){
+		//instantiate other variables
+		noteSpawnY = TOPBOUND + smallwidth/2;
+		noteDieY = BOTTOMBOUND - smallwidth/2;
+		hitY = BOTTOMBOUND + smallwidth/2f;
+		level.setBandMemberHitY(hitY);
+	}
+
+
 
 	/**
 	 * Loads a level
 	 */
 	public void loadLevel(JsonValue levelData, AssetDirectory directory){
+		sb = new Scoreboard(4, new int[]{1, 2, 3, 5}, new long[]{10, 20, 30});
+		sb.setFontScale((totalHeight - TOPBOUND)/2f);
+		particles = new Array<>();
+		backing = new Array<>();
+		sfx = new SoundController<>();
 		level = new Level(levelData, directory);
 		NUM_LANES = level.getBandMembers().length;
 		// 70 is referring to ms
@@ -126,20 +161,34 @@ public class GameplayController {
 		//In total, we have NUM_LANES - 1 small lanes, 1 large lane, and n - 1 in between segments
 		//Therefore, the width of the small lane shall be 1/(5NUM_LANES/4 + 35/4) of the available total width
 		//Values decided by pure look
-		smallwidth = (RIGHTBOUND - LEFTBOUND)/(NUM_LANES - 1 + (NUM_LANES - 1)*0.25f + 4);
-		inBetweenWidth = smallwidth/4f;
-		largewidth = 4f*smallwidth;
+		setWidths();
 		//initiate default active band member to 0
 		activeBandMember = 0;
-		//Have the y value be a bit above the bottom of the play area, but not too close
-		hitbarY = BOTTOMBOUND + 3*(TOPBOUND - BOTTOMBOUND)/20f;
-		//instantiate other variables
-		noteSpawnY = TOPBOUND + smallwidth/2;
-		noteDieY = BOTTOMBOUND - smallwidth/2;
+		setYVals();
 		switches = new boolean[NUM_LANES];
 		triggers = new boolean[lpl];
+
+		//populate sound effects
+		JsonReader jr = new JsonReader();
+		JsonValue allSounds = jr.parse(Gdx.files.internal("assets.json"));
+		allSounds = allSounds.get("soundEffects");
+		for(int i = 0; i < allSounds.size; ++i){
+			JsonValue cur = allSounds.get(i);
+			sfx.addSound(cur.getString(0), cur.getString(1));
+		}
 	}
 
+	/**
+	 * Resizing screen to new width and height
+	 */
+	public void resize(int width, int height){
+		setBounds(width, height);
+		setWidths();
+		setYVals();
+		updateBandMemberCoords();
+		sb.setFontScale((totalHeight - TOPBOUND)/2f);
+
+	}
 	/**
 	 * Sets the offset in determining beat calculation, converting it to samples
 	 * @param offset offset from CalibrationMode in milliseconds
@@ -169,6 +218,9 @@ public class GameplayController {
 				if(n.getY() < noteDieY && !n.isDestroyed()){
 //					n.setHitStatus(-2);
 					n.setDestroyed(true);
+					if(i == activeBandMember){
+						sb.resetCombo();
+					}
 				}
 				if(n.isDestroyed()){
 					//if this note is destroyed we need to increment the competency of the
@@ -221,7 +273,8 @@ public class GameplayController {
 	 * @param directory 	Reference to the asset directory.
 	 */
 	public void populate(AssetDirectory directory) {
-		particleTexture = directory.getEntry("star", Texture.class);
+		particleTexture = directory.getEntry("quaver", Texture.class);
+		enhancedParticle = directory.getEntry("doubleQ", Texture.class);
 	}
 
 	/**
@@ -245,7 +298,6 @@ public class GameplayController {
 		activeBandMember = 0;
 		goalBandMember = 0;
 		updateBandMemberCoords();
-		curframe = 0;
 	}
 
 	/**
@@ -262,8 +314,6 @@ public class GameplayController {
 		for(Particle o : particles){
 			o.update(0f);
 		}
-		//increment the current frame.
-		++curframe;
 
 	}
 
@@ -288,7 +338,6 @@ public class GameplayController {
 	 * Resets the game, deleting all objects.
 	 */
 	public void reset() {
-		curframe = 0;
 		particles.clear();
 		curP = PlayPhase.NOTES;
 	}
@@ -323,20 +372,33 @@ public class GameplayController {
 	}
 
 	/**
-	 * Spawns stars at location x, y with center of mass velocity vx0 and vy0.
-	 * Directions are randomzed, and more stars are spawned with a higher value of k
+	 * Spawns hit particles at x, y, more hit particles with k
 	 */
 	public void spawnHitEffect(int k, float x, float y){
 		for(int i = 0; i < k; ++i){
-			for (int j = 0; j < 5; j++) {
+			for (int j = 0; j < 3; j++) {
 				Particle s = new Particle();
 				s.setTexture(particleTexture);
 				s.getPosition().set(x, y);
-				float vx = RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
-				float vy = RandomController.rollFloat(MIN_STAR_OFFSET, MAX_STAR_OFFSET);
+				s.setSizeConfine(inBetweenWidth/2f);
+				float vx = RandomController.rollFloat(-inBetweenWidth*0.07f, inBetweenWidth*0.07f);
+				float vy = RandomController.rollFloat(-inBetweenWidth*0.07f, inBetweenWidth*0.07f);
 				s.getVelocity().set(vx,vy);
 				particles.add(s);
 			}
+		}
+	}
+
+	public void spawnEnhancedHitEffect(float x, float y){
+		for (int j = 0; j < 6; j++) {
+			Particle s = new Particle();
+			s.setTexture(enhancedParticle);
+			s.getPosition().set(x, y);
+			s.setSizeConfine(inBetweenWidth/2f);
+			float vx = RandomController.rollFloat(-inBetweenWidth*0.07f, inBetweenWidth*0.07f);
+			float vy = RandomController.rollFloat(-inBetweenWidth*0.07f, inBetweenWidth*0.07f);
+			s.getVelocity().set(vx,vy);
+			particles.add(s);
 		}
 	}
 
@@ -376,8 +438,9 @@ public class GameplayController {
 						 boolean destroy,
 						 boolean[] hitReg,
 						 boolean lifted) {
+		Note.NoteType nt = note.getNoteType();
 		// check for precondition that lifted is true iff note type is HELD
-		assert !lifted || note.getNoteType() == Note.NoteType.HELD;
+		assert !lifted || nt == Note.NoteType.HELD;
 
 		//Check for all the switch notes of this lane, if one is close enough destroy it and
 		//give it positive hit status
@@ -395,19 +458,28 @@ public class GameplayController {
 				note.setHolding(true);
 				note.setHitStatus(isOnBeat ? onBeatGain : offBeatGain);
 				spawnHitEffect(note.getHitStatus(), note.getX(), spawnEffectY);
+				if (isOnBeat) {
+					spawnEnhancedHitEffect(note.getX(), spawnEffectY);
+				}
 				if (note.getLine() != -1) hitReg[note.getLine()] = true;
 				note.setDestroyed(destroy);
 				// move the note to where the indicator is
 				note.setBottomY(level.getBandMembers()[0].getHitY());
-			}
-			else {
+				sfx.playSound(isOnBeat ? (nt == Note.NoteType.SWITCH ? "switchHit" : "perfectHit") : "goodHit", 0.2f);
+				sb.recieveHit(isOnBeat ? 1000 : 500);
+			} else {
 				// lose some competency since you played a bit off beat
 				// TODO: REWORK THIS
+				sb.resetCombo();
 				note.setHitStatus(offBeatLoss);
 			}
 		}
+		//if we let go too early we need to reset the combo
+		if (lifted && dist >= 10000){
+			sb.resetCombo();
+			note.setHitStatus(offBeatLoss);
+		}
 	}
-
 	/**
 	 * Handle transitions and inputs
 	 * @param input
@@ -416,6 +488,14 @@ public class GameplayController {
 		//Read in inputs
 		switches = input.switches();
 		triggers = input.didTrigger();
+
+		for (boolean trigger : triggers) {
+			if (trigger) {
+				sfx.playSound("tap", 0.2f);
+				break;
+			}
+		}
+
 		boolean[] lifted = input.triggerLifted;
 		long currentSample = level.getCurrentSample();
 
@@ -425,6 +505,12 @@ public class GameplayController {
 
 		// SWITCH NOTE HIT HANDLING
 		if (curP == PlayPhase.NOTES){
+			for (boolean trigger : switches) {
+				if (trigger) {
+					sfx.playSound("switch", 0.2f);
+					break;
+				}
+			}
 			for (int i = 0; i < switches.length; ++i){
 				if (switches[i] && i != activeBandMember){
 					//Check only the lanes that are not the current active lane

@@ -297,7 +297,7 @@ public class Note{
 	public void draw(GameCanvas canvas, float widthConfine, float heightConfine, float topbound, float lowbound) {
 		//Calculate a scale such that the entire sprite fits within both confines, but does not get distorted
 		float scale = Math.min(widthConfine/w, heightConfine/h);
-		float splashScale = scale * 3.5f;
+
 
 		float headHeight = animator.getRegionHeight()*scale;
 
@@ -305,10 +305,8 @@ public class Note{
 			backSplash.setFrame((int) holdingAnimationFrames);
 			frontSplash.setFrame((int) holdingAnimationFrames);
 
-			// draw back holding sprite
-			if (holding)
-				canvas.draw(backSplash, Color.WHITE, backSplash.getRegionWidth() / 2, backSplash.getRegionHeight() / 2,
-					x, bottomY + animator.getRegionHeight()* scale + 50, 0.0f, splashScale, splashScale);
+
+
 
 			// DRAW THE HELD MIDDLE PART OF THE NOTE
 			//The tail should be about half the width of the actual note assets
@@ -398,10 +396,18 @@ public class Note{
 				float startFrac = (lowbound - (y - endH/2))/endH;
 				canvas.drawSubsection(endAnimator, x, y, scale, 0f, 1f, startFrac, 1f);
 			}
-
-			if (holding)
+			// draw back holding sprite
+			if (holding){
+				float splashScale = Math.min(widthConfine/backSplash.getRegionWidth(), heightConfine/backSplash.getRegionHeight());
+				canvas.draw(backSplash, Color.WHITE, backSplash.getRegionWidth() / 2, backSplash.getRegionHeight() / 2,
+						x, bottomY, 0.0f, splashScale, splashScale);
+			}
+			if (holding){
+				float splashScale = Math.min(widthConfine/backSplash.getRegionWidth(), heightConfine/backSplash.getRegionHeight());
 				canvas.draw(frontSplash, Color.WHITE, frontSplash.getRegionWidth() / 2,frontSplash.getRegionHeight() / 2,
-					x, bottomY +  animator.getRegionHeight() * scale + 50, 0.0f, splashScale, splashScale);
+						x, bottomY, 0.0f, splashScale, splashScale);
+			}
+
 		}
 		else{
 			animator.setFrame((int)animeframe);
