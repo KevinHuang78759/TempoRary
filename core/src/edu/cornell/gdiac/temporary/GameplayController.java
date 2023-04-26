@@ -298,7 +298,6 @@ public class GameplayController {
 	public void populate(AssetDirectory directory) {
 		particleTexture = directory.getEntry("quaver", Texture.class);
 		enhancedParticle = directory.getEntry("doubleQ", Texture.class);
-		playPressed=false;
 	}
 
 	/**
