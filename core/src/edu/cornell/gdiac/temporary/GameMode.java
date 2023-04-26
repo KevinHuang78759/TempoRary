@@ -39,7 +39,6 @@ import edu.cornell.gdiac.util.ScreenListener;
  */
 public class GameMode implements Screen, InputProcessor,ControllerListener {
 
-
 	/**
 	 * Track the current state of the game for the update loop.
 	 */
@@ -141,13 +140,12 @@ public class GameMode implements Screen, InputProcessor,ControllerListener {
 		gameplayController.setOffset(offset);
 	}
 
-	public void readLevel(AssetDirectory loadDirectory,String level) {
+	public void readLevel(AssetDirectory loadDirectory, String level) {
 		directory = loadDirectory;
 		JsonReader jr = new JsonReader();
-//		JsonValue levelData = jr.parse(Gdx.files.internal("levels/test2.json"));
+//		JsonValue levelData = jr.parse(Gdx.files.internal(level));
 		SetCurrLevel("1");
 		JsonValue levelData = jr.parse(Gdx.files.internal(level));
-
 		gameplayController.loadLevel(levelData, directory);
 		if (gameplayController.NUM_LANES == 2) {
 			inputController = new InputController(new int[]{1, 2},  new int[gameplayController.lpl]);
@@ -203,8 +201,6 @@ public class GameMode implements Screen, InputProcessor,ControllerListener {
 			playButtonCoords = new Vector2(4*canvas.getWidth()/5, 2*canvas.getHeight()/7);
 			Gdx.input.setInputProcessor( this );
 		}
-
-
 
 	}
 
@@ -464,14 +460,8 @@ public class GameMode implements Screen, InputProcessor,ControllerListener {
 		screenY = canvas.getHeight()-screenY;
 		if (isButtonPressed(screenX, screenY, playButton, playButtonCoords,scale)) {
 			playPressed=true;
-
 			String nextLevel ="levels/"+(currLevel+1)+".json";
-
 			listener.exitScreen(this, ExitCode.TO_PLAYING);
-
-
-
-
 		}
 		return false;
 	}

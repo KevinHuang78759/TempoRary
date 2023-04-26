@@ -10,11 +10,14 @@ public class ExitCode {
     // exit out of game
     public static final int TO_EXIT = 0;
     // exit to playing
-    public static final int TO_PLAYING = 1;
+    public static final int TO_LEVEL = 1;
     // exit to calibration mode
     public static final int TO_CALIBRATION = 2;
     // exit to editor
     public static final int TO_EDITOR = 3;
     // exit to menu
     public static final int TO_MENU = 4;
+
+    // exit to level selection
+    public static final int TO_PLAYING = 5;
 }

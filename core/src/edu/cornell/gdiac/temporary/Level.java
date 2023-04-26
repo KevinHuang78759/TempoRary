@@ -153,8 +153,8 @@ public class Level {
         maxCompetency = data.getInt("maxCompetency");
         bpm = data.getInt("bpm");
 
-        // need to take from directory because this is the only way to load it into the music queue
-        music = directory.getEntry("aliens", MusicQueue.class);
+        String song = data.getString("song");
+        music = directory.getEntry(song, MusicQueue.class);
         music.setVolume(0.8f);
         // load all related level textures
         hitNoteTexture = directory.getEntry("hit", Texture.class);
@@ -338,10 +338,7 @@ public class Level {
     public void startmusic(){
         musicInitialized = true;
         music.play();
-
     }
-
-
 
     public void stopMusic() {
         music.stop();
@@ -356,7 +353,6 @@ public class Level {
      */
     public boolean isMusicPlaying(){
         return music.isPlaying() && musicInitialized;
-//        return false;
     }
 
     /**
@@ -366,6 +362,12 @@ public class Level {
     public long getCurrentSample(){
         return (long)(music.getPosition()*music.getSampleRate());
     }
+
+    /**
+     * Returns true if the player has unlocked this level
+     * @return
+     */
+    public boolean hasUnlocked(){ return true; };
 
     /**
      * this draws everything the level needs to display on the given canvas

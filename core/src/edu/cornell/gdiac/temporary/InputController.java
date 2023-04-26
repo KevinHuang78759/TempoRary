@@ -73,6 +73,36 @@ public class InputController {
 	 * @return true if the pause buttonw as pressed.*/
 	public boolean didPause() {return pausePressed;}
 
+	// DEFAULT PRESETS!
+//	private final int[] triggerBindingsL = new int[]{
+//		Input.Keys.D,
+//		Input.Keys.F,
+//		Input.Keys.J,
+//		Input.Keys.K
+//	};
+//
+//	private final int[] switchesBindings1 = new int[]{
+//		Input.Keys.E,
+//		Input.Keys.R,
+//		Input.Keys.U,
+//		Input.Keys.I
+//	};
+//
+//	private final int[] switchesBindings2 = new int[]{
+//		Input.Keys.D,
+//		Input.Keys.F,
+//		Input.Keys.J,
+//		Input.Keys.K
+//	};
+//
+//	private final int[] switchesBindings3 = new int[]{
+//			Input.Keys.D,
+//			Input.Keys.F,
+//			Input.Keys.J,
+//			Input.Keys.K
+//	};
+
+	// TODO: TURN THIS INTO A SINGLETON INSTANCE PLEASE
 	/**
 	 * Creates a new input controller
 	 * 
@@ -100,12 +130,17 @@ public class InputController {
 				Input.Keys.J,
 				Input.Keys.K
 		};
-
 		switchesBindings = new int[]{
 				Input.Keys.E,
 				Input.Keys.R,
 				Input.Keys.U,
 				Input.Keys.I,
+		};
+		switchesOrder = new int[] {
+				0,
+				1,
+				2,
+				3,
 		};
 	}
 
@@ -335,13 +370,13 @@ public class InputController {
 
 		//Compute actual values by comparing with previous value. We only register a click if the trigger or switch
 		// went from false to true. We only register a lift if the trigger went from true to false.
-		for(int i = 0; i < Math.max(switchesPress.length, triggerPress.length); ++i){
-			if(i < triggers.length){
+		for (int i = 0; i < Math.max(switchesPress.length, triggerPress.length); ++i){
+			if (i < triggers.length){
 				triggers[i] = !triggerLast[i] && triggerPress[i];
 				triggerLifted[i] = triggerLast[i] && !triggerPress[i];
 				triggerLast[i] = triggerPress[i];
 			}
-			if(i < switches.length){
+			if (i < switches.length) {
 				if (switchesOrder != null) {
 					switches[i] = !switchesLast[i] && switchesPress[switchesOrder[i]];
 					switchesLast[i] = switchesPress[switchesOrder[i]];

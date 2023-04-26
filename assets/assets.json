@@ -30,6 +30,36 @@
           "minFilter": "linear",
           "maxFilter": "linear"
         },
+        "easy": {
+          "file": "images/easy.png",
+          "minFilter": "linear",
+          "maxFilter": "linear"
+        },
+        "medium": {
+          "file": "images/medium.png",
+          "minFilter": "linear",
+          "maxFilter": "linear"
+        },
+        "hard": {
+          "file": "images/hard.png",
+          "minFilter": "linear",
+          "maxFilter": "linear"
+        },
+        "1": {
+          "file": "images/challenger_album.png",
+          "minFilter": "linear",
+          "maxFilter": "linear"
+        },
+        "2": {
+          "file": "images/aliens_album.png",
+          "minFilter": "linear",
+          "maxFilter": "linear"
+        },
+        "3": {
+          "file": "images/aliens_album.png",
+          "minFilter": "linear",
+          "maxFilter": "linear"
+        },
         "background": "images/background.png",
         "concert-background": "images/backgrounds/background_temp_concert_1.png",
         "street-background": "images/backgrounds/background_temp_streets_1.png",
@@ -91,7 +121,8 @@
     },
     "jsons": {
         "1": "levels/1.json",
-        "2" : "levels/2.json"
+        "2" : "levels/2.json",
+        "3" : "levels/3.json"
     },
     "soundEffects": [
       ["tap", "sound/tap.ogg"],
