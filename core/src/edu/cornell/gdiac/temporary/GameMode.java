@@ -25,8 +25,6 @@ import edu.cornell.gdiac.temporary.entity.Particle;
 import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.ScreenListener;
 
-import java.awt.*;
-
 /**
  * The primary controller class for the game.
  *
@@ -196,7 +194,7 @@ public class GameMode implements Screen {
 		streetLevelBackground = new FilmStrip(directory.getEntry("street-background", Texture.class), 1, 1);
 		displayFont = directory.getEntry("times",BitmapFont.class);
 		gameplayController.populate(directory);
-
+		inputController.setEditorProcessor();
 		resumeButton = directory.getEntry("resume-button", Texture.class);
 		restartButton = directory.getEntry("restart-button", Texture.class);
 		levelButton = directory.getEntry("level-select-button", Texture.class);
@@ -251,7 +249,7 @@ public class GameMode implements Screen {
 				}
 				break;
 			case PLAY:
-				if (inputController.didPause()) {
+				if (inputController.didExit()) {
 					gameplayController.level.pauseMusic();
 					gameState = GameState.PAUSE;
 				} else {
@@ -259,21 +257,18 @@ public class GameMode implements Screen {
 				}
 				break;
 			case PAUSE:
-				boolean didInput = inputController.didClick() || inputController.didExit() || inputController.didReset()
-						|| inputController.didPressPlay();
+				boolean didInput = inputController.didClick();
 				if (didInput) {
 					int screenX = (int) inputController.getMouseX();
 					int screenY = (int) inputController.getMouseY();
 					screenY = canvas.getHeight() - screenY;
-					boolean didResume = (inputController.didClick()
-							&& isButtonPressed(screenX, screenY, resumeButton, resumeCoords)) || inputController.didExit();
+					boolean didResume = (isButtonPressed(screenX, screenY, resumeButton, resumeCoords));
 					if (didResume) {
 						waiting = 4f;
 						justPaused = true;
 						gameState = GameState.INTRO;
 					}
-					boolean didRestart = (inputController.didClick()
-							&& isButtonPressed(screenX, screenY, restartButton, restartCoords)) || inputController.didReset();
+					boolean didRestart = (isButtonPressed(screenX, screenY, restartButton, restartCoords));
 					if (didRestart) {
 						gameplayController.level.stopMusic();
 						gameplayController.reset();
@@ -281,17 +276,14 @@ public class GameMode implements Screen {
 						waiting = 4f;
 						gameState = GameState.INTRO;
 					}
-					boolean didLevel = (inputController.didClick() && isButtonPressed(screenX, screenY, levelButton, levelCoords))
-							|| inputController.didPressPlay();
+					boolean didLevel = (isButtonPressed(screenX, screenY, levelButton, levelCoords));
 					if (didLevel) {
 						pressState = ExitCode.TO_MENU;
 					}
-					boolean didMenu = (inputController.didClick() && isButtonPressed(screenX, screenY, menuButton, menuCoords))
-							|| inputController.didPressPlay();
+					boolean didMenu = (isButtonPressed(screenX, screenY, menuButton, menuCoords));
 					if (didMenu) {
 						pressState = ExitCode.TO_MENU;
 					}
-
 				}
 				break;
 			default:
@@ -406,11 +398,11 @@ public class GameMode implements Screen {
 		// buttons are rectangles
 		// buttonCoords hold the center of the rectangle, buttonTexture has the width and height
 		// get half the x length of the button portrayed
-		float xRadius = BUTTON_SCALE * scale * buttonTexture.getWidth()/2.0f;
+		float xRadius = BUTTON_SCALE * buttonTexture.getWidth()/2.0f;
 		boolean xInBounds = buttonCoords.x - xRadius <= screenX && buttonCoords.x + xRadius >= screenX;
 
 		// get half the y length of the button portrayed
-		float yRadius = BUTTON_SCALE * scale * buttonTexture.getHeight()/2.0f;
+		float yRadius = BUTTON_SCALE * buttonTexture.getHeight()/2.0f;
 		boolean yInBounds = buttonCoords.y - yRadius <= screenY && buttonCoords.y + yRadius >= screenY;
 		return xInBounds && yInBounds;
 	}
