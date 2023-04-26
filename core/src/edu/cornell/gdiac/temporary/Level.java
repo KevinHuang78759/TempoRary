@@ -153,6 +153,8 @@ public class Level {
 
     AudioSource songSource;
     JsonValue data;
+
+    float maxSample;
     public Level(JsonValue data, AssetDirectory directory) {
         this.data = data;
         //Read in Json  Value and populate asset textures
@@ -166,7 +168,7 @@ public class Level {
         music = directory.getEntry(song, MusicQueue.class);
         music.setVolume(0.8f);
         songSource = music.getSource(0);
-
+        maxSample = songSource.getDuration() * songSource.getSampleRate();
         // load all related level textures
         hitNoteTexture = directory.getEntry("hit", Texture.class);
         switchNoteTexture = directory.getEntry("switch", Texture.class);
@@ -202,13 +204,23 @@ public class Level {
             for(int j = 0; j < noteData.size; ++j){
                 JsonValue thisNote = noteData.get(j);
                 Note n;
+
                 if (thisNote.getString("type").equals("beat")){
+                    if(thisNote.getLong("position") > maxSample){
+                        continue;
+                    }
                     n = new Note(thisNote.getInt("line"), Note.NoteType.BEAT, thisNote.getLong("position") - spawnOffset, hitNoteTexture);
                 }
                 else if (thisNote.getString("type").equals("switch")){
+                    if(thisNote.getLong("position") > maxSample){
+                        continue;
+                    }
                     n = new Note(thisNote.getInt("line"), Note.NoteType.SWITCH, thisNote.getLong("position") - spawnOffset, switchNoteTexture);
                 }
                 else {
+                    if(thisNote.getLong("position") + thisNote.getLong("duration")> maxSample){
+                        continue;
+                    }
                     n = new Note(thisNote.getInt("line"), Note.NoteType.HELD, thisNote.getLong("position") - spawnOffset, holdNoteTexture);
                     n.setHoldTextures(holdTrailTexture,1,holdEndTexture,1, backSplash, frontSplash, getAnimationRateFromBPM(bpm));
                     n.setHoldSamples(thisNote.getLong("duration"));
@@ -355,6 +367,14 @@ public class Level {
         music.play();
     }
 
+    public boolean hasMoreNotes(){
+        boolean tog = false;
+        for(BandMember bm : bandMembers){
+            tog = tog ||  bm.hasMoreNotes();
+        }
+        return tog;
+    }
+
     public void resetLevel(){
         music.stop();
         music.reset();
@@ -372,12 +392,21 @@ public class Level {
                 JsonValue thisNote = noteData.get(j);
                 Note n;
                 if (thisNote.getString("type").equals("beat")){
+                    if(thisNote.getLong("position") > maxSample){
+                        continue;
+                    }
                     n = new Note(thisNote.getInt("line"), Note.NoteType.BEAT, thisNote.getLong("position") - spawnOffset, hitNoteTexture);
                 }
                 else if (thisNote.getString("type").equals("switch")){
+                    if(thisNote.getLong("position") > maxSample){
+                        continue;
+                    }
                     n = new Note(thisNote.getInt("line"), Note.NoteType.SWITCH, thisNote.getLong("position") - spawnOffset, switchNoteTexture);
                 }
                 else {
+                    if(thisNote.getLong("position") + thisNote.getLong("duration")> maxSample){
+                        continue;
+                    }
                     n = new Note(thisNote.getInt("line"), Note.NoteType.HELD, thisNote.getLong("position") - spawnOffset, holdNoteTexture);
                     n.setHoldTextures(holdTrailTexture,1,holdEndTexture,1, backSplash, frontSplash, getAnimationRateFromBPM(bpm));
                     n.setHoldSamples(thisNote.getLong("duration"));
@@ -420,7 +449,7 @@ public class Level {
      * returns true if music is playing
      */
     public boolean isMusicPlaying(){
-        return music.isPlaying() && musicInitialized;
+        return music.getPosition() <= songSource.getDuration();
     }
 
     /**

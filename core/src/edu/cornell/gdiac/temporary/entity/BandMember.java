@@ -119,6 +119,9 @@ public class BandMember {
         switchNotes = l;
     }
 
+    public boolean hasMoreNotes(){
+        return !switchNotes.isEmpty() || !hitNotes.isEmpty() || !allNotes.isEmpty();
+    }
     public Array<Note> getSwitchNotes(){
         return switchNotes;
     }
