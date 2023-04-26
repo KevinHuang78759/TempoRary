@@ -77,6 +77,7 @@ public class GameplayController {
 	/** Base offset for leniency in samples */
 	private int baseLeniency;
 
+
 	/** The minimum x value margin */
 	public float LEFTBOUND;
 	/** The maximum x value margin */
@@ -94,6 +95,21 @@ public class GameplayController {
 	/** Y value of the hit bar */
 	public float hitbarY;
 
+	/** Play button to display when done */
+	private Texture playButton;
+
+	/** Internal assets for this loading screen */
+	private AssetDirectory internal;
+
+	private static float BUTTON_SCALE  = 0.75f;
+	private float scale=1;
+
+	/** Whether the play button is pressed or not */
+	private boolean playPressed;
+
+	/** Play button x and y coordinates represented as a vector */
+	private Vector2 playButtonCoords;
+
 
 	/**
 	 * Create gameplaycontroler
@@ -110,6 +126,7 @@ public class GameplayController {
 		RIGHTBOUND = 9*width/10f;
 		TOPBOUND = 19f*height/20f;
 		BOTTOMBOUND = height/5f;
+		playButton = null;
 	}
 
 
@@ -215,13 +232,12 @@ public class GameplayController {
 			System.out.println("bm.getSwitchNotes()"+ (bm.getSwitchNotes().size ));
 			System.out.println("bm.getHitNotes()"+ (bm.getHitNotes().size ));
 
-
 		}
 
 		System.out.println("b:"+bandNotes);
 		System.out.println("particles.size:"+particles.size);
 		System.out.println("!hasZeroCompetency():"+!hasZeroCompetency());
-		if (particles.size ==0 && !hasZeroCompetency() && bandNotes){
+		if ((particles.size ==0 && bandNotes) || !level.isMusicPlaying()){
 			return true;
 		}else{
 			return false;
@@ -253,6 +269,8 @@ public class GameplayController {
 	 */
 	public void populate(AssetDirectory directory) {
 		particleTexture = directory.getEntry("star", Texture.class);
+		playPressed=false;
+
 	}
 
 	/**

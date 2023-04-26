@@ -122,6 +122,11 @@ public class Level {
      * Horizontal slice of border
      */
     private Texture HUnit;
+
+    /**
+     * set to true if music has been started
+     */
+    private boolean musicInitialized = false;
     /**
      * Vertical slice of border
      */
@@ -320,8 +325,12 @@ public class Level {
      * Starts the music
      */
     public void startmusic(){
+        musicInitialized = true;
         music.play();
+
     }
+
+
 
     public void stopMusic() {
         music.stop();
@@ -329,6 +338,13 @@ public class Level {
 
     public void pauseMusic() {
         music.pause();
+    }
+
+    /**
+     * returns true if music is playing
+     */
+    public boolean isMusicPlaying(){
+        return music.isPlaying() && musicInitialized;
     }
 
     /**

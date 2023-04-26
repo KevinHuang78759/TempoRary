@@ -16,6 +16,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
@@ -53,6 +54,15 @@ public class GameMode implements Screen {
 	/** The font for giving messages to the player */
 	private BitmapFont displayFont;
 
+	/** Play button to display when done */
+	private Texture playButton;
+
+	/** Internal assets for this loading screen */
+	private AssetDirectory internal;
+
+	private static float BUTTON_SCALE  = 0.75f;
+	private float scale=1;
+
 	/// CONSTANTS
 	/** Offset for the game over message on the screen */
 	private static final float GAME_OVER_OFFSET = 40.0f;
@@ -64,6 +74,10 @@ public class GameMode implements Screen {
 	private InputController inputController;
 	/** Constructs the game models and handle basic gameplay (CONTROLLER CLASS) */
 	private GameplayController gameplayController;
+
+	/** Whether the play button is pressed or not */
+	private boolean playPressed;
+
 
 	/** Variable to track the game state (SIMPLE FIELDS) */
 	private GameState gameState;
@@ -77,6 +91,9 @@ public class GameMode implements Screen {
 	/** used for "counting down" before game starts */
 	private float waiting = 4f;
 
+	/** Play button x and y coordinates represented as a vector */
+	private Vector2 playButtonCoords;
+
 
 	/**
 	 * Creates a new game with the given drawing context.
@@ -87,6 +104,7 @@ public class GameMode implements Screen {
 	public GameMode(GameCanvas canvas)  {
 		this.canvas = canvas;
 		active = false;
+		playButton = null;
 
 		// Null out all pointers, 0 out all ints, etc.
 		gameState = GameState.INTRO;
@@ -105,7 +123,7 @@ public class GameMode implements Screen {
 
 	public void readLevel(AssetDirectory directory) {
 		JsonReader jr = new JsonReader();
-		JsonValue levelData = jr.parse(Gdx.files.internal("levels/test2.json"));
+		JsonValue levelData = jr.parse(Gdx.files.internal("levels/test.json"));
 		gameplayController.loadLevel(levelData, directory);
 		if (gameplayController.NUM_LANES == 2) {
 			inputController = new InputController(new int[]{1, 2},  new int[gameplayController.lpl]);
@@ -136,7 +154,16 @@ public class GameMode implements Screen {
 	public void populate(AssetDirectory directory) {
 		streetLevelBackground = new FilmStrip(directory.getEntry("street-background", Texture.class), 1, 1);
 		displayFont = directory.getEntry("times",BitmapFont.class);
+		playPressed=false;
+		internal = new AssetDirectory( "loading.json" );
+		internal.loadAssets();
+		internal.finishLoading();
+		playButton = internal.getEntry("play",Texture.class);
+		playButtonCoords = new Vector2(canvas.getWidth()/5, 2*canvas.getHeight()/3);
+
 		gameplayController.populate(directory);
+
+
 	}
 
 	/**
@@ -233,6 +260,13 @@ public class GameMode implements Screen {
 		} else if (gameState == GameState.WON) {
 			displayFont.setColor(Color.NAVY);
 			canvas.drawTextCentered("You won!", displayFont, GAME_OVER_OFFSET+50);
+
+			Color playButtonTint = (playPressed ? Color.GRAY: Color.WHITE);
+			canvas.draw(playButton, playButtonTint, playButton.getWidth()/2, playButton.getHeight()/2,
+					playButtonCoords.x, playButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+
+
+
 		} else{
 			//Draw everything in the current level
 			gameplayController.level.drawEverything(canvas,
