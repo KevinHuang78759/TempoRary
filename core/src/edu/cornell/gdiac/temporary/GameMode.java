@@ -130,8 +130,7 @@ public class GameMode implements Screen, InputProcessor,ControllerListener {
 	 */
 	public void reset(){
 		playPressed = false;
-
-
+		gameState = GameState.INTRO;
 	}
 
 	/**
@@ -331,12 +330,15 @@ public class GameMode implements Screen, InputProcessor,ControllerListener {
 				bandMember.drawCharacterSprite(canvas);
 				bandMember.drawHPBar(canvas);
 			}
+
+			// draw the scoreboard
+			gameplayController.sb.displayScore(gameplayController.LEFTBOUND, gameplayController.TOPBOUND + gameplayController.inBetweenWidth/4f, canvas);
+
 			// draw the countdown
 			if (gameState == GameState.INTRO) {
 				canvas.drawTextCentered("" + (int) waiting, displayFont, 0);
 			}
 		}
-		gameplayController.sb.displayScore(gameplayController.LEFTBOUND, gameplayController.TOPBOUND + gameplayController.inBetweenWidth/4f, canvas);
 		canvas.end();
 	}
 

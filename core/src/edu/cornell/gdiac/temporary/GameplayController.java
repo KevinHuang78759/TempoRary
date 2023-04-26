@@ -261,7 +261,9 @@ public class GameplayController {
 			BandMember bm = level.getBandMembers()[i];
 			bandNotes = bandNotes && bm.getAllNotes().isEmpty();
 		}
-		return (particles.size == 0 && bandNotes) || !level.isMusicPlaying();
+		// TODO: FIX THE WIN CONDITION
+//		return (particles.size == 0 && bandNotes) || !level.isMusicPlaying();
+		return !level.isMusicPlaying();
 	}
 
 	/**
