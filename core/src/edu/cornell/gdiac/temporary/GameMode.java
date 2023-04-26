@@ -454,13 +454,9 @@ public class GameMode implements Screen, InputProcessor,ControllerListener {
 		screenY = canvas.getHeight()-screenY;
 		if (isButtonPressed(screenX, screenY, playButton, playButtonCoords,scale)) {
 			playPressed=true;
-			GameCanvas newCanvas = new GameCanvas();
-	//		GameMode playing = new GameMode(newCanvas);
-//			playing.populate(directory);
-//			playing.setScreenListener(listener);
-//			String nextLevel ="levels/"+(currLevel+1)+".json";
-//			playing.readLevel(directory, nextLevel);
-//			playing.show();
+
+			String nextLevel ="levels/"+(currLevel+1)+".json";
+
 			listener.exitScreen(this, ExitCode.TO_PLAYING);
 
 
