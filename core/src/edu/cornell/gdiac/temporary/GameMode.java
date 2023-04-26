@@ -168,8 +168,7 @@ public class GameMode implements Screen {
 		gameplayController.loadLevel(levelData, directory);
 		if (gameplayController.NUM_LANES == 2) {
 			inputController = new InputController(new int[]{1, 2},  new int[gameplayController.lpl]);
-		}
-		else {
+		} else {
 			inputController = new InputController(gameplayController.NUM_LANES, gameplayController.lpl);
 		}
 	}
@@ -190,7 +189,7 @@ public class GameMode implements Screen {
 	 * Assets can include images, sounds, and fonts (and more). This
 	 * method delegates to the gameplay controller
 	 *
-	 * @param directory 	Reference to the asset directory.
+	 * @param directory     Reference to the asset directory.
 	 */
 	public void populate(AssetDirectory directory) {
 		assetDirectory = directory;
@@ -199,9 +198,14 @@ public class GameMode implements Screen {
 		gameplayController.populate(directory);
 
 		resumeButton = directory.getEntry("play", Texture.class);
+		restartButton = directory.getEntry("play", Texture.class);
+		levelButton = directory.getEntry("level-editor", Texture.class);
 		menuButton = directory.getEntry("level-editor", Texture.class);
-		resumeCoords = new Vector2(centerX + resumeButton.getWidth(), canvas.getHeight()/2 + 200);
-		menuCoords = new Vector2(centerX + menuButton.getWidth(), canvas.getHeight()/2);
+		resumeCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 - 150);
+		restartCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 - 75);
+		levelCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 + 75);
+		menuCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 + 150);
+
 	}
 
 	/**
@@ -235,6 +239,7 @@ public class GameMode implements Screen {
 				break;
 			case OVER:
 				if (inputController.didReset()) {
+					gameplayController.level.stopMusic();
 					gameplayController.reset();
 					gameplayController.loadLevel(levelData, assetDirectory);
 					waiting = 4f;
@@ -245,30 +250,41 @@ public class GameMode implements Screen {
 				if (inputController.didPause()) {
 					gameplayController.level.pauseMusic();
 					gameState = GameState.PAUSE;
-				}
-				else {
+				} else {
 					play(delta);
 				}
 				break;
 			case PAUSE:
-				if (inputController.didClick()) {
+				boolean didInput = inputController.didClick() || inputController.didExit() || inputController.didReset()
+						|| inputController.didPressPlay();
+				if (didInput) {
 					int screenX = (int) inputController.getMouseX();
 					int screenY = (int) inputController.getMouseY();
-					if (isButtonPressed(screenX, screenY, resumeButton, resumeCoords)) {
+					screenY = canvas.getHeight() - screenY;
+					boolean didResume = (inputController.didClick()
+							&& isButtonPressed(screenX, screenY, resumeButton, resumeCoords)) || inputController.didExit();
+					if (didResume) {
 						waiting = 4f;
 						justPaused = true;
 						gameState = GameState.INTRO;
 					}
-					if (isButtonPressed(screenX, screenY, restartButton, restartCoords)) {
+					boolean didRestart = (inputController.didClick()
+							&& isButtonPressed(screenX, screenY, restartButton, restartCoords)) || inputController.didReset();
+					if (didRestart) {
+						gameplayController.level.stopMusic();
 						gameplayController.reset();
 						gameplayController.loadLevel(levelData, assetDirectory);
 						waiting = 4f;
 						gameState = GameState.INTRO;
 					}
-					if (isButtonPressed(screenX, screenY, levelButton, levelCoords)) {
+					boolean didLevel = (inputController.didClick() && isButtonPressed(screenX, screenY, levelButton, levelCoords))
+							|| inputController.didPressPlay();
+					if (didLevel) {
 						pressState = ExitCode.TO_MENU;
 					}
-					if (isButtonPressed(screenX, screenY, menuButton, menuCoords)) {
+					boolean didMenu = (inputController.didClick() && isButtonPressed(screenX, screenY, menuButton, menuCoords))
+							|| inputController.didPressPlay();
+					if (didMenu) {
 						pressState = ExitCode.TO_MENU;
 					}
 
@@ -327,8 +343,7 @@ public class GameMode implements Screen {
 					levelCoords.x, levelCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 			canvas.draw(menuButton, Color.WHITE, resumeButton.getWidth()/2, resumeButton.getHeight()/2,
 					resumeCoords.x, resumeCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
-		}
-		else{
+		} else{
 			//Draw everything in the current level
 			gameplayController.level.drawEverything(canvas,
 					gameplayController.activeBandMember, gameplayController.goalBandMember,
