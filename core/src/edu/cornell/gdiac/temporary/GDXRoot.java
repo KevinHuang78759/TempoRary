@@ -147,6 +147,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		} else if (exitCode == ExitCode.TO_PLAYING) {
 			screen.hide();
 			playing.setScreenListener(this);
+//			TODO: need to change this .
 			playing.readLevel(directory, "levels/1.json");
 			playing.populate(directory);
 			playing.reset();
