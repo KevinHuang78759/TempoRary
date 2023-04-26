@@ -77,7 +77,6 @@ public class GameMode implements Screen {
 	private Texture playButton;
 
 	/** Asset directory */
-
 	private AssetDirectory directory;
 
 	private static float BUTTON_SCALE  = 0.25f;

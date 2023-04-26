@@ -213,7 +213,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
-                System.out.println("clicked");
                 switchToHome();
             }
         });
@@ -337,7 +336,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private void drawSettings() {
         canvas.begin();
         canvas.draw(plainBackground, 0, 0, canvas.getWidth(), canvas.getHeight());
-//
 //        canvas.draw(backButton, Color.WHITE, backButton.getWidth()/2, backButton.getHeight()/2,
 //                calibrationButton.getWidth(), calibrationButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 //
@@ -361,7 +359,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 //        float span2 = (soundFXVolume)*(innerWidth-2*scale*INNER_PROGRESS_CAP);
 //        canvas.draw(statusFrgRight,  centerX-innerWidth/2+scale*INNER_PROGRESS_CAP+span2, centerY + 100+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, scale*INNER_PROGRESS_CAP, scale*INNER_PROGRESS_HEIGHT);
 //        canvas.draw(statusFrgMiddle, centerX-innerWidth/2+scale*INNER_PROGRESS_CAP, centerY + 100+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, span2, scale*INNER_PROGRESS_HEIGHT);
-//
         canvas.end();
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
@@ -396,12 +393,10 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
     @Override
     public void pause() {
-
     }
 
     @Override
     public void resume() {
-
     }
 
     @Override
@@ -622,7 +617,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
      * @return whether to hand the event to other listeners.
      */
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-//        System.out.println(screenX);
         if (holdingBar) {
             musicVolume = 1 - ((screenX - centerX - innerWidth / 2) * 1.0f / innerWidth * -1);
             if (musicVolume > 1) musicVolume = 1;

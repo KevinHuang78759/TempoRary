@@ -226,7 +226,6 @@ public class Level {
                     bandMembers[i].setCharacterFilmstrip(voiceSprite);
                     break;
             }
-//            System.out.println(System.nanoTime() - t);
         }
     }
 
