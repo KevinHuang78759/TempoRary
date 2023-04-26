@@ -43,9 +43,9 @@
         "doubleQ":     "images/particles/doubleQuaver.png",
         "hp-bar": "images/bandmember_lanes/HPbarPNG.png",
         "catnote": "images/catnote.png",
+        "actual-star": "images/star.png",
         "note-indicator": "images/bandmember_lanes/note_indicator.png",
         "note-indicator-hit": "images/bandmember_lanes/note_indicator_hit.png",
-        "play": "images/leveleditor_button_v1.png",
         "violin-cat": "images/cats/violin_spritesheet.png",
         "singer-cat": "images/cats/sing_spritesheet.png",
         "drummer-cat": "images/cats/drum_spritesheet.png",
@@ -66,7 +66,11 @@
         "times": {
             "file": "fonts/TimesRoman.ttf",
             "size": 32
-        }
+        },
+        "editor": {
+            "file": "fonts/TimesRoman.ttf",
+            "size": 32
+      }
     },
     "soundtrack": {
         "calibration": {
@@ -78,7 +82,12 @@
             "sources": [
                 "music/Challenger-Approaches.ogg"
             ]
-        }
+        },
+      "aliens": {
+        "sources": [
+          "music/Aliens.ogg"
+        ]
+      }
     },
     "jsons": {
         "1": "levels/test2.json",
@@ -90,6 +99,7 @@
       ["goodHit","sound/goodhit.ogg"],
       ["perfectHit","sound/perfecthit.ogg"],
       ["switch", "sound/switch.ogg"],
-      ["switchHit", "sound/switchHit.ogg"]
+      ["switchHit", "sound/switchHit.ogg"],
+      ["meow", "sound/meow.mp3"]
     ]
 }

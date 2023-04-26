@@ -165,13 +165,13 @@ public class GDXRoot extends Game implements ScreenListener {
 		} else if (exitCode ==ExitCode.TO_PLAYING){
 			playing.setScreenListener(this);
 			String fileName = levelscreen.getSelectedJson();
-			playing.readLevel(directory,fileName);
+			playing.readLevel(directory, fileName);
 			playing.populate(directory);
+			playing.reset();
 			playing.initializeOffset(calibration.getOffset());
 			setScreen(playing);
 			playing.show();
-		}
-		else if (exitCode == ExitCode.TO_EDITOR) {
+		} else if (exitCode == ExitCode.TO_EDITOR) {
 			screen.hide();
 			editing.setScreenListener(this);
 			editing.populate(directory);
