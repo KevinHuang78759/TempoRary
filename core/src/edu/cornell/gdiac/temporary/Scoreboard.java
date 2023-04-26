@@ -63,6 +63,7 @@ public class Scoreboard {
         layout = new GlyphLayout();
 
     }
+
     public void resetCombo(){
         if(level > 0){
             sfx.playSound(0, 0.75f);
@@ -70,6 +71,7 @@ public class Scoreboard {
         meter = 0;
         level = 0;
     }
+
     public void recieveHit(int hitVal){
         ++meter;
         if(level < maxLevel-1 && meter > levelMeters[level]){
@@ -82,6 +84,10 @@ public class Scoreboard {
             }
         }
         totalScore += (long) hitVal* (long)levelMultipliers[level];
+    }
+
+    public void setVolume(float volume) {
+        sfx.setVolumeAdjust(volume);
     }
 
     public long getScore(){

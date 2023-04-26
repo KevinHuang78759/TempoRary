@@ -37,6 +37,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
     /** Background texture */
     private Texture background;
+    private Texture plainBackground;
     /** Tempo-Rary logo */
     private Texture logo;
     /** Buttons */
@@ -148,6 +149,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         logo = directory.getEntry("title", Texture.class);
         background = directory.getEntry( "loading-background", Texture.class );
         background.setFilter( Texture.TextureFilter.Linear, Texture.TextureFilter.Linear );
+        plainBackground = directory.getEntry("background", Texture.class);
         playButton = directory.getEntry("play", Texture.class);
         levelEditorButton = directory.getEntry("level-editor", Texture.class);
         calibrationButton = directory.getEntry("play-old", Texture.class);
@@ -195,6 +197,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font;
+        labelStyle.fontColor = Color.BLACK;
 
         final Label musicLabel = new Label("Music Volume", labelStyle);
         final Label fxLabel = new Label("Sound Effects Volume", labelStyle);
@@ -349,7 +352,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
     private void drawSettings() {
         canvas.begin();
-        canvas.draw(background, 0, 0, canvas.getWidth(), canvas.getHeight());
+        canvas.draw(plainBackground, 0, 0, canvas.getWidth(), canvas.getHeight());
 //
 //        canvas.draw(backButton, Color.WHITE, backButton.getWidth()/2, backButton.getHeight()/2,
 //                calibrationButton.getWidth(), calibrationButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);

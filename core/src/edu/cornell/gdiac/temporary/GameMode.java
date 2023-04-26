@@ -113,6 +113,10 @@ public class GameMode implements Screen {
 		}
 	}
 
+	public void setFXVolume(float fxVolume) {
+		gameplayController.setFxVolume(fxVolume);
+	}
+
 	/**
 	 * Dispose of all (non-static) resources allocated to this mode.
 	 */

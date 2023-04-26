@@ -147,6 +147,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			loading = null;
 		} else if (exitCode == ExitCode.TO_PLAYING) {
 			screen.hide();
+			playing.setFXVolume(menu.getFXVolumeSetting());
 			playing.setScreenListener(this);
 			playing.readLevel(directory);
 			playing.populate(directory);
