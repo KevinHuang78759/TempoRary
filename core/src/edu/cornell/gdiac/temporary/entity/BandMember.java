@@ -200,20 +200,28 @@ public class BandMember {
     /**
      * Update animations
      */
-    public void updateNotes(){
+    public void updateNotes(float spawnY, long currentSample){
         //Update both switchNotes and hit notes no matter what
         for(Note n : switchNotes){
+            n.setY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample()) *(hitY - spawnY));
             n.update();
         }
         for(Note n : hitNotes){
+            if(n.getNoteType() == Note.NoteType.HELD){
+                //Y coordinates based on formula mentioned in discord.
+                float bottomYCalc = spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample()) *(hitY - spawnY);
+                if (!n.getHolding()) {
+                    n.setBottomY(bottomYCalc);
+                }
+                n.setHoldMiddleBottomY(bottomYCalc);
+                n.setY(spawnY + Math.max(0, (float)(currentSample - n.getStartSample() - n.getHoldSamples())/(n.getHitSample() - n.getStartSample()))*(hitY - spawnY));
+            }
+            else{
+                n.setY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample())*(hitY - spawnY));
+            }
             n.update();
         }
-        if(hitNotes.size == 0){
-            lossRate = 0;
-        }
-        else{
-            lossRate = lossRateImm;
-        }
+
     }
 
     /**
@@ -231,6 +239,13 @@ public class BandMember {
                 hitNotes.add(n);
             }
         }
+        if(hitNotes.isEmpty()){
+            lossRate = 0;
+        }
+        else{
+            lossRate = lossRateImm;
+        }
+
     }
 
     public void garbageCollect(){
@@ -254,8 +269,7 @@ public class BandMember {
         backing = hitNotes;
         hitNotes = temp;
         backing.clear();
-        System.out.println(hitNotes.size);
-        System.out.println(switchNotes.size);
+
     }
 
     /**
@@ -286,7 +300,7 @@ public class BandMember {
      * Draw the hit bar in a certain color according to if we triggered the line. Pass in a value for a switchable lane
      * also draw the keyBind
      */
-    public void drawIndicator(GameCanvas canvas, boolean hit, int i){
+    public void drawIndicator(GameCanvas canvas, boolean hit){
        float scale = NOTE_SIZE_SCALE*width/noteIndicatorHit.getWidth();
         canvas.draw(hit ? noteIndicatorHit : noteIndicator, Color.WHITE, noteIndicatorHit.getWidth() / 2, noteIndicatorHit.getHeight() / 2,
                 bottomLeftCorner.x + width/2, hitY,
@@ -297,7 +311,7 @@ public class BandMember {
     /**
      * Draw the switch notes
      */
-    public void drawSwitchNotes(GameCanvas canvas, long currentSample, float spawnY){
+    public void drawSwitchNotes(GameCanvas canvas){
         for(Note n : switchNotes){
             if(!n.isDestroyed()){
                 //Switch notes should just appear in the middle of the lane
@@ -305,7 +319,6 @@ public class BandMember {
                 //Set the Y coordinate according to sampleProgression
                 //Calculate the spawning y coordinate to be high enough such that none of the note is
                 //visible
-                n.setY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample()) *(hitY - spawnY));
                 n.draw(canvas, NOTE_SIZE_SCALE*width, NOTE_SIZE_SCALE*width, bottomLeftCorner.y + height, bottomLeftCorner.y);
             }
         }
@@ -315,23 +328,11 @@ public class BandMember {
      * Draw the held and beat notes
      * Updates the notes
      */
-    public void drawHitNotes(GameCanvas canvas, long currentSample, float spawnY){
+    public void drawHitNotes(GameCanvas canvas){
         for(Note n : hitNotes){
             if(!n.isDestroyed()){
                 //Hitnotes will be based on what line we are on
                 n.setX(bottomLeftCorner.x + width/(2*numLines) + n.getLine()*(width/numLines));
-                if(n.getNoteType() == Note.NoteType.HELD){
-                    //Y coordinates based on formula mentioned in discord.
-                    float bottomYCalc = spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample()) *(hitY - spawnY);
-                    if (!n.getHolding())
-                        n.setBottomY(bottomYCalc);
-                    n.setHoldMiddleBottomY(bottomYCalc);
-                    n.setY(spawnY + Math.max(0, (float)(currentSample - n.getStartSample() - n.getHoldSamples())/(n.getHitSample() - n.getStartSample()))*(hitY - spawnY));
-                }
-                else{
-                    n.setY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample())*(hitY - spawnY));
-                }
-
                 n.draw(canvas, NOTE_SIZE_SCALE*width/(numLines), NOTE_SIZE_SCALE*width/(numLines), bottomLeftCorner.y + height, bottomLeftCorner.y);
             }
 

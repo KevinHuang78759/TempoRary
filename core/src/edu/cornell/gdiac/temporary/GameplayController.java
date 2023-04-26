@@ -202,7 +202,7 @@ public class GameplayController {
 	 * Sets up the colors, max competency, lines and other default values as well as creates each band member object
 	 */
 	public void setupBandMembers(){
-		level.setActiveProperties(0, largewidth, smallwidth, TOPBOUND - BOTTOMBOUND);
+		level.setActiveProperties(activeBandMember, largewidth, smallwidth, TOPBOUND - BOTTOMBOUND);
 		level.setBandMemberBl(new Vector2(LEFTBOUND, BOTTOMBOUND), inBetweenWidth);
 	}
 
@@ -307,9 +307,8 @@ public class GameplayController {
 	public void update(){
 		//First, check for dead notes and remove them from active arrays
 		checkDeadNotes();
-
 		//Then, update the notes for each band member and spawn new notes
-		level.updateBandMemberNotes();
+		level.updateBandMemberNotes(noteSpawnY);
 		//Update the objects of this class (mostly stars)
 		for(Particle o : particles){
 			o.update(0f);
