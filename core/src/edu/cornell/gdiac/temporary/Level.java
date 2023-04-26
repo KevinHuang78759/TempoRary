@@ -449,7 +449,7 @@ public class Level {
      * returns true if music is playing
      */
     public boolean isMusicPlaying(){
-        return music.getPosition() <= songSource.getDuration();
+        return Math.abs(music.getPosition() - songSource.getDuration()) <= 0.01;
     }
 
     /**
