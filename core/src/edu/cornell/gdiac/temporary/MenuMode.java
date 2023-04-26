@@ -269,7 +269,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
-        table.setDebug(true); // This is optional, but enables debug lines for tables.
+//        table.setDebug(true);
 
         // Compute the dimensions from the canvas
         resize(canvas.getWidth(),canvas.getHeight());

@@ -46,17 +46,17 @@
           "maxFilter": "linear"
         },
         "1": {
-          "file": "images/challenger_album.png",
+          "file": "images/album_covers/aliens_album.png",
           "minFilter": "linear",
           "maxFilter": "linear"
         },
         "2": {
-          "file": "images/aliens_album.png",
+          "file": "images/album_covers/challenger_album.png",
           "minFilter": "linear",
           "maxFilter": "linear"
         },
         "3": {
-          "file": "images/aliens_album.png",
+          "file": "images/album_covers/locked_level_album.png",
           "minFilter": "linear",
           "maxFilter": "linear"
         },
