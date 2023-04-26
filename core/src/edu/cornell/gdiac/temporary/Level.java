@@ -122,6 +122,11 @@ public class Level {
      * Horizontal slice of border
      */
     private Texture HUnit;
+
+    /**
+     * set to true if music has been started
+     */
+    private boolean musicInitialized = false;
     /**
      * Vertical slice of border
      */
@@ -148,8 +153,8 @@ public class Level {
         maxCompetency = data.getInt("maxCompetency");
         bpm = data.getInt("bpm");
 
-        // need to take from directory because this is the only way to load it into the music queue
-        music = directory.getEntry("challenger", MusicQueue.class);
+        String song = data.getString("song");
+        music = directory.getEntry(song, MusicQueue.class);
         music.setVolume(0.8f);
         // load all related level textures
         hitNoteTexture = directory.getEntry("hit", Texture.class);
@@ -331,6 +336,7 @@ public class Level {
      * Starts the music
      */
     public void startmusic(){
+        musicInitialized = true;
         music.play();
     }
 
@@ -343,12 +349,25 @@ public class Level {
     }
 
     /**
+     * returns true if music is playing
+     */
+    public boolean isMusicPlaying(){
+        return music.isPlaying() && musicInitialized;
+    }
+
+    /**
      * Gets the current sample of the song
      * @return
      */
     public long getCurrentSample(){
         return (long)(music.getPosition()*music.getSampleRate());
     }
+
+    /**
+     * Returns true if the player has unlocked this level
+     * @return
+     */
+    public boolean hasUnlocked(){ return true; };
 
     /**
      * this draws everything the level needs to display on the given canvas

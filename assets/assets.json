@@ -30,6 +30,36 @@
           "minFilter": "linear",
           "maxFilter": "linear"
         },
+        "easy": {
+          "file": "images/easy.png",
+          "minFilter": "linear",
+          "maxFilter": "linear"
+        },
+        "medium": {
+          "file": "images/medium.png",
+          "minFilter": "linear",
+          "maxFilter": "linear"
+        },
+        "hard": {
+          "file": "images/hard.png",
+          "minFilter": "linear",
+          "maxFilter": "linear"
+        },
+        "1": {
+          "file": "images/challenger_album.png",
+          "minFilter": "linear",
+          "maxFilter": "linear"
+        },
+        "2": {
+          "file": "images/aliens_album.png",
+          "minFilter": "linear",
+          "maxFilter": "linear"
+        },
+        "3": {
+          "file": "images/aliens_album.png",
+          "minFilter": "linear",
+          "maxFilter": "linear"
+        },
         "level-select-button": "images/ui/level_select.png",
         "quit-button": "images/ui/quit.png",
         "restart-button": "images/ui/restart.png",
@@ -47,6 +77,7 @@
         "doubleQ":     "images/particles/doubleQuaver.png",
         "hp-bar": "images/bandmember_lanes/HPbarPNG.png",
         "catnote": "images/catnote.png",
+        "actual-star": "images/star.png",
         "note-indicator": "images/bandmember_lanes/note_indicator.png",
         "note-indicator-hit": "images/bandmember_lanes/note_indicator_hit.png",
         "violin-cat": "images/cats/violin_spritesheet.png",
@@ -69,7 +100,11 @@
         "times": {
             "file": "fonts/TimesRoman.ttf",
             "size": 32
-        }
+        },
+        "editor": {
+            "file": "fonts/TimesRoman.ttf",
+            "size": 32
+      }
     },
     "soundtrack": {
         "calibration": {
@@ -81,17 +116,24 @@
             "sources": [
                 "music/Challenger-Approaches.ogg"
             ]
-        }
+        },
+      "aliens": {
+        "sources": [
+          "music/Aliens.ogg"
+        ]
+      }
     },
     "jsons": {
-        "level_test": "levels/test2.json",
-        "level_test_old" : "levels/test.json"
+        "1": "levels/1.json",
+        "2" : "levels/2.json",
+        "3" : "levels/3.json"
     },
     "soundEffects": [
       ["tap", "sound/tap.ogg"],
       ["goodHit","sound/goodhit.ogg"],
       ["perfectHit","sound/perfecthit.ogg"],
       ["switch", "sound/switch.ogg"],
-      ["switchHit", "sound/switchHit.ogg"]
+      ["switchHit", "sound/switchHit.ogg"],
+      ["meow", "sound/meow.mp3"]
     ]
 }

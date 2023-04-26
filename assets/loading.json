@@ -15,6 +15,36 @@
             "minFilter": "linear",
             "maxFilter": "linear"
         },
+        "easy": {
+            "file": "images/easy.png",
+            "minFilter": "linear",
+            "maxFilter": "linear"
+        },
+        "medium": {
+            "file": "images/medium.png",
+            "minFilter": "linear",
+            "maxFilter": "linear"
+        },
+        "hard": {
+            "file": "images/hard.png",
+            "minFilter": "linear",
+            "maxFilter": "linear"
+        },
+        "1": {
+            "file": "images/challenger_album.png",
+            "minFilter": "linear",
+            "maxFilter": "linear"
+        },
+        "2": {
+            "file": "images/aliens_album.png",
+            "minFilter": "linear",
+            "maxFilter": "linear"
+        },
+        "3": {
+            "file": "images/aliens_album.png",
+            "minFilter": "linear",
+            "maxFilter": "linear"
+        },
         "play-old": {
             "file": "images/play.png",
             "minFilter": "linear",

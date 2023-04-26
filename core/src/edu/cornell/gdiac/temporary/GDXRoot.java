@@ -52,6 +52,9 @@ public class GDXRoot extends Game implements ScreenListener {
 	/** Player mode for getting calibration (CONTROLLER CLASS) */
 	private CalibrationMode calibration;
 
+	private LevelSelect levelscreen;
+
+
 	/**
 	 * Creates a new game from the configuration settings.
 	 *
@@ -77,6 +80,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			throw new RuntimeException(e);
 		}
 		calibration = new CalibrationMode(canvas);
+		levelscreen = new LevelSelect(canvas);
 
 		loading.setScreenListener(this);
 		setScreen(loading);
@@ -144,11 +148,26 @@ public class GDXRoot extends Game implements ScreenListener {
 			setScreen(menu);
 			loading.dispose();
 			loading = null;
-		} else if (exitCode == ExitCode.TO_PLAYING) {
-			screen.hide();
+		}
+		// TODO: @Melanie, modify this condition to include the playing
+		// TODO: also add a new else-if branch condition for exit code to the level screen
+		else if (exitCode == ExitCode.TO_LEVEL) {
+//			screen.hide();
+			// TODO: probably add the level populate here
+//			to playing is now to level select
+			levelscreen.reset();
+			levelscreen.setScreenListener(this);
+			System.out.println("to level again");
+			levelscreen.populate(directory);
+			setScreen(levelscreen);
+
+			levelscreen.show();
+		} else if (exitCode ==ExitCode.TO_PLAYING){
 			playing.setScreenListener(this);
-			playing.readLevel(directory);
+			String fileName = levelscreen.getSelectedJson();
+			playing.readLevel(directory, fileName);
 			playing.populate(directory);
+			playing.reset();
 			playing.initializeOffset(calibration.getOffset());
 			setScreen(playing);
 			playing.reset();
