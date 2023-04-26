@@ -145,30 +145,21 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         gameplayController = new GameplayController(canvas.getWidth(),canvas.getHeight());
         albumCovers = new Texture[numLevels];
 
+        Gdx.input.setInputProcessor( this );
 
-        if (playButton == null || easyButton == null || mediumButton ==null || hardButton==null) {
-            Gdx.input.setInputProcessor( this );
+        playButton = directory.getEntry("play",Texture.class);
+        easyButton = directory.getEntry("easy",Texture.class);
+        mediumButton = directory.getEntry("medium",Texture.class);
+        hardButton = directory.getEntry("hard",Texture.class);
 
-            internal = new AssetDirectory( "loading.json" );
-            internal.loadAssets();
-            internal.finishLoading();
-
-            playButton = internal.getEntry("play",Texture.class);
-            //we don't currently have these in the json yet.
-            easyButton = internal.getEntry("easy",Texture.class);
-            mediumButton = internal.getEntry("medium",Texture.class);
-            hardButton = internal.getEntry("hard",Texture.class);
-
-            playButtonCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/8);
-            easyButtonCoords = new Vector2(canvas.getWidth()/4 , canvas.getHeight()/3);
-            mediumButtonCoords = new Vector2(canvas.getWidth()/2 , canvas.getHeight()/3);
-            hardButtonCoords = new Vector2(canvas.getWidth()/2+ canvas.getWidth()/4, canvas.getHeight()/3);
-        }
-
+        playButtonCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/8);
+        easyButtonCoords = new Vector2(canvas.getWidth()/4 , canvas.getHeight()/3);
+        mediumButtonCoords = new Vector2(canvas.getWidth()/2 , canvas.getHeight()/3);
+        hardButtonCoords = new Vector2(canvas.getWidth()/2+ canvas.getWidth()/4, canvas.getHeight()/3);
 
 //        temp implementation for temp assets
         for (int i = 0; i < numLevels;i++){
-            albumCovers[i] = internal.getEntry(Integer.toString(i+1),Texture.class);
+            albumCovers[i] = directory.getEntry(Integer.toString(i+1),Texture.class);
         }
 
         float w = albumCovers[1].getWidth()*scale2/2;

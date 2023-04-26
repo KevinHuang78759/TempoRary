@@ -367,7 +367,7 @@ public class Level {
      * Returns true if the player has unlocked this level
      * @return
      */
-    public boolean hasUnlocked(){return true;};
+    public boolean hasUnlocked(){ return true; };
 
     /**
      * this draws everything the level needs to display on the given canvas
