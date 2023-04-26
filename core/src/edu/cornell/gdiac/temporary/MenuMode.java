@@ -235,7 +235,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         musicVolumeSlider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
-                System.out.println(((Slider) actor).getValue());
                 musicVolume = ((Slider) actor).getValue();
             }
         });
@@ -243,7 +242,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         fxVolumeSlider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
-                System.out.println(((Slider) actor).getValue());
                 soundFXVolume = ((Slider) actor).getValue();
             }
         });

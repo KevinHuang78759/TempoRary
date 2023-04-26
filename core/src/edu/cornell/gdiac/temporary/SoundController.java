@@ -50,6 +50,5 @@ public class SoundController<T>{
      */
     public void setVolumeAdjust(float vol) {
         volumeAdjust = vol;
-        System.out.println("setting vol " + volumeAdjust);
     }
 }
