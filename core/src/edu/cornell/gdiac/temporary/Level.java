@@ -308,7 +308,7 @@ public class Level {
      * Spawns new notes according to what sample we are at. Also decrements bandmembers' competency
      * for some amount about once a second. It also updates the frame of the bandmember.
      */
-    public void updateBandMemberNotes(){
+    public void updateBandMemberNotes(float spawnY){
         //First get the sample we at
         long sample = getCurrentSample();
         int rate = music.getSampleRate();
@@ -319,12 +319,12 @@ public class Level {
             float frameprogress = (sample % samplesPerBeat)/(samplesPerBeat);
             int totalframes = bandMember.getCharacterFrames();
             bandMember.setFrame((int)(totalframes*frameprogress));
-            //update the note frames
-            bandMember.updateNotes();
+
             //spawn new notes accordingly
             bandMember.spawnNotes(sample);
+            //update the note frames
+            bandMember.updateNotes(spawnY, sample);
             //check if enough samples have passed since the last decrement
-
             if(sample - lastDec >= music.getSampleRate()){
                 //if so, decrement competency
                 bandMember.compUpdate(-bandMember.getLossRate());
@@ -392,14 +392,14 @@ public class Level {
             //If we are the goal of the active lane we need to draw separation lines and held/beat notes
             //We also need to draw a separate hit bar for each line
             if(active == i || goal == i){
-                bandMembers[i].drawHitNotes(canvas, sample, canvas.getHeight());
+                bandMembers[i].drawHitNotes(canvas);
                 bandMembers[i].drawLineSeps(canvas, sepLine);
                 bandMembers[i].drawIndicator(canvas, triggers);
             }
             //Otherwise just draw the switch notes, and we only have 1 hit bar to draw
             else{
-                bandMembers[i].drawSwitchNotes(canvas, sample, canvas.getHeight());
-                bandMembers[i].drawIndicator(canvas, switches[i], i);
+                bandMembers[i].drawSwitchNotes(canvas);
+                bandMembers[i].drawIndicator(canvas, switches[i]);
             }
         }
 
