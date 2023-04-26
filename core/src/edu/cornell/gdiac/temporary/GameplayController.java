@@ -40,15 +40,7 @@ public class GameplayController {
 
 	private Texture enhancedParticle;
 
-	/** The minimum velocity factor (x shell velocity) of a newly created star */
-	private static final float MIN_STAR_FACTOR = 0.1f;
-	/** The maximum velocity factor (x shell velocity) of a newly created star */
-	private static final float MAX_STAR_FACTOR = 0.2f;
-	/** The minimum velocity offset (+ shell velocity) of a newly created star */
-	private static final float MIN_STAR_OFFSET = -3.0f;
-	/** The maximum velocity offset (+ shell velocity) of a newly created star */
-	private static final float MAX_STAR_OFFSET = 3.0f;
-
+	private static final float GLOBAL_VOLUME_ADJ = 0.2f;
 
 	/** Maximum amount of health */
 	final int MAX_HEALTH = 30;
@@ -76,7 +68,6 @@ public class GameplayController {
 	public int offset;
 	/** Base offset for leniency in samples */
 	private int baseLeniency;
-
 
 	/** The minimum x value margin */
 	public float LEFTBOUND;
@@ -107,7 +98,6 @@ public class GameplayController {
 	public GameplayController(float width, float height){
 		particles = new Array<>();
 		backing = new Array<>();
-
 		//Set margins so there is a comfortable amount of space between play area and screen boundaries
 		//Values decided by pure look
 		setBounds(width, height);
@@ -141,6 +131,11 @@ public class GameplayController {
 		level.setBandMemberHitY(hitY);
 	}
 
+	public void setFxVolume(float fxVolume) {
+		sfx.setVolumeAdjust(fxVolume);
+		sb.setVolume(fxVolume);
+	}
+
 	/**
 	 * Loads a level
 	 */
@@ -149,7 +144,6 @@ public class GameplayController {
 		sb.setFontScale((totalHeight - TOPBOUND)/2f);
 		particles = new Array<>();
 		backing = new Array<>();
-		sfx = new SoundController<>();
 		level = new Level(levelData, directory);
 		NUM_LANES = level.getBandMembers().length;
 		// 70 is referring to ms
@@ -480,11 +474,10 @@ public class GameplayController {
 				note.setDestroyed(destroy);
 				// move the note to where the indicator is
 				note.setBottomY(level.getBandMembers()[0].getHitY());
-				sfx.playSound(isOnBeat ? (nt == Note.NoteType.SWITCH ? "switchHit" : "perfectHit") : "goodHit", 0.2f);
+				sfx.playSound(isOnBeat ? (nt == Note.NoteType.SWITCH ? "switchHit" : "perfectHit") : "goodHit", GLOBAL_VOLUME_ADJ);
 				sb.recieveHit(isOnBeat ? 1000 : 500);
 			} else {
 				// lose some competency since you played a bit off beat
-				// TODO: REWORK THIS
 				sb.resetCombo();
 				note.setHitStatus(offBeatLoss);
 			}
@@ -506,7 +499,7 @@ public class GameplayController {
 
 		for (boolean trigger : triggers) {
 			if (trigger) {
-				sfx.playSound("tap", 0.2f);
+				sfx.playSound("tap", GLOBAL_VOLUME_ADJ);
 				break;
 			}
 		}
@@ -522,7 +515,7 @@ public class GameplayController {
 		if (curP == PlayPhase.NOTES){
 			for (boolean trigger : switches) {
 				if (trigger) {
-					sfx.playSound("switch", 0.2f);
+					sfx.playSound("switch", GLOBAL_VOLUME_ADJ);
 					break;
 				}
 			}

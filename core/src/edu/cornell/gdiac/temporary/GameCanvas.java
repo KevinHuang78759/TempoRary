@@ -36,7 +36,6 @@ import java.util.ArrayList;
 public class GameCanvas {
 
 	/** While we are not drawing polygons (yet), this spritebatch is more reliable */
-
 	private PolygonSpriteBatch spriteBatch;
 	
 	/** Track whether or not we are active (for error checking) */
@@ -686,6 +685,19 @@ public class GameCanvas {
      * @param offset The y-value offset from the center of the screen.
      */
     public void drawTextCentered(String text, BitmapFont font, float offset) {
+		drawTextCentered(text, font, offset, Color.BLACK);
+    }
+
+
+	/**
+	 * Draws text centered on the screen. Also takes color as a parameter
+	 *
+	 * @param text The string to draw
+	 * @param font The font to use
+	 * @param offset The y-value offset from the center of the screen.
+	 * @param tint The color of the text to be drawn
+	 */
+	public void drawTextCentered(String text, BitmapFont font, float offset, Color tint) {
 		if (!active) {
 			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
 			return;
@@ -694,9 +706,9 @@ public class GameCanvas {
 		GlyphLayout layout = new GlyphLayout(font,text);
 		float x = (getWidth()  - layout.width) / 2.0f;
 		float y = (getHeight() + layout.height) / 2.0f;
-		font.setColor(Color.BLACK);
+		font.setColor(tint);
 		font.draw(spriteBatch, layout, x, y+offset);
-    }
+	}
     
 
 	/**

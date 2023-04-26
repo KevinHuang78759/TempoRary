@@ -77,7 +77,6 @@ public class GameMode implements Screen {
 	private Texture playButton;
 
 	/** Asset directory */
-
 	private AssetDirectory directory;
 
 	private static float BUTTON_SCALE  = 0.25f;
@@ -197,6 +196,11 @@ public class GameMode implements Screen {
 		} else {
 			inputController = new InputController(gameplayController.NUM_LANES, gameplayController.lpl);
 		}
+	}
+
+	public void setSoundVolume(float fxVolume, float musicVolume) {
+		gameplayController.setFxVolume(fxVolume);
+		gameplayController.level.setMusicVolume(musicVolume);
 	}
 
 	/**

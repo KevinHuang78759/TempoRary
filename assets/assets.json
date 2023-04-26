@@ -1,7 +1,7 @@
 {
 	"textures": {
         "loading-background": {
-          "file":     "images/background.png",
+          "file":     "images/backgrounds/loading_screen_background_2.png",
           "minFilter": "linear",
           "magFilter": "linear"
         },
@@ -46,17 +46,17 @@
           "maxFilter": "linear"
         },
         "1": {
-          "file": "images/challenger_album.png",
+          "file": "images/album_covers/aliens_album.png",
           "minFilter": "linear",
           "maxFilter": "linear"
         },
         "2": {
-          "file": "images/aliens_album.png",
+          "file": "images/album_covers/challenger_album.png",
           "minFilter": "linear",
           "maxFilter": "linear"
         },
         "3": {
-          "file": "images/aliens_album.png",
+          "file": "images/album_covers/locked_level_album.png",
           "minFilter": "linear",
           "maxFilter": "linear"
         },
@@ -64,6 +64,19 @@
         "quit-button": "images/ui/quit.png",
         "restart-button": "images/ui/restart.png",
         "resume-button": "images/ui/resume.png",
+        "slider": {
+          "file":      "images/loading_bar.png",
+          "minFilter": "linear",
+          "magFilter": "linear",
+          "atlas":     {
+            "background" : [43, 0, 340, 93],
+            "backleft"   : [0, 0, 42, 93],
+            "backright"  : [544, 0, 587, 93],
+            "foreground" : [48, 97,  538, 170],
+            "foreleft"   : [14, 97, 47, 170],
+            "foreright"  : [539, 97, 573, 170]
+          }
+        },
         "background": "images/background.png",
         "concert-background": "images/backgrounds/background_temp_concert_1.png",
         "street-background": "images/backgrounds/background_temp_streets_1.png",
@@ -117,11 +130,11 @@
                 "music/Challenger-Approaches.ogg"
             ]
         },
-      "aliens": {
-        "sources": [
-          "music/Aliens.ogg"
-        ]
-      }
+        "aliens": {
+            "sources": [
+                "music/Aliens.ogg"
+            ]
+        }
     },
     "jsons": {
         "1": "levels/1.json",
@@ -129,11 +142,11 @@
         "3" : "levels/3.json"
     },
     "soundEffects": [
-      ["tap", "sound/tap.ogg"],
-      ["goodHit","sound/goodhit.ogg"],
-      ["perfectHit","sound/perfecthit.ogg"],
-      ["switch", "sound/switch.ogg"],
-      ["switchHit", "sound/switchHit.ogg"],
-      ["meow", "sound/meow.mp3"]
+        ["tap", "sound/tap.ogg"],
+        ["goodHit","sound/goodhit.ogg"],
+        ["perfectHit","sound/perfecthit.ogg"],
+        ["switch", "sound/switch.ogg"],
+        ["switchHit", "sound/switchHit.ogg"],
+        ["meow", "sound/meow.mp3"]
     ]
 }

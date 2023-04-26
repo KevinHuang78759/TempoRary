@@ -156,6 +156,7 @@ public class Level {
         String song = data.getString("song");
         music = directory.getEntry(song, MusicQueue.class);
         music.setVolume(0.8f);
+
         // load all related level textures
         hitNoteTexture = directory.getEntry("hit", Texture.class);
         switchNoteTexture = directory.getEntry("switch", Texture.class);
@@ -225,8 +226,11 @@ public class Level {
                     bandMembers[i].setCharacterFilmstrip(voiceSprite);
                     break;
             }
-//            System.out.println(System.nanoTime() - t);
         }
+    }
+
+    public void setMusicVolume(float vol) {
+        music.setVolume(vol);
     }
 
     // TODO: REMOVE THIS AND REPLACE WITH ACTUAL ANIMATION BASED ON SAMPLE
@@ -323,7 +327,6 @@ public class Level {
             if(sample - lastDec >= music.getSampleRate()){
                 //if so, decrement competency
                 bandMember.compUpdate(-bandMember.getLossRate());
-//                System.out.println(bm.getCurComp() + " " + bm.getLossRate());
                 decTog = true;
             }
         }
