@@ -1,13 +1,14 @@
 package edu.cornell.gdiac.temporary.editor;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.temporary.GameCanvas;
 import edu.cornell.gdiac.util.FilmStrip;
 
 /** Flag for a change in a band member's competency loss rate*/
-public class EditorFlag {
+public class EditorFlag implements Comparable<EditorFlag>{
     /** lane the flag corresponds to */
     private int lane;
 
@@ -93,12 +94,25 @@ public class EditorFlag {
     public boolean OnScreen(){
         return onScreen;
     }
-    public void draw(GameCanvas canvas, float zoom, float laneEdge, float laneWidth){
+
+    @Override
+    public int compareTo(EditorFlag f) {
+        if (this.getPos() == f.getPos()) {
+            return 0;
+        } else if (this.getPos() < f.getPos()) {
+            return -1;
+        } else {
+            return 1;
+        }
+    }
+
+    public void draw(GameCanvas canvas, float zoom, float laneEdge, float laneWidth, BitmapFont font){
         float sizeMultiple = 3f;
         if (zoom < 1 / 2) {
             sizeMultiple = 3 * (zoom + 1 / 2);
         }
-        canvas.drawLine(laneEdge, y, laneEdge + laneWidth, y, 5*((int) sizeMultiple), Color.CORAL);
+        canvas.drawLine(laneEdge, y, laneEdge + laneWidth, y, 8*((int) sizeMultiple), Color.FOREST);
+        canvas.drawText(String.valueOf(lossRate), font, laneEdge + laneWidth/2, y+4*((int) sizeMultiple));
     }
 
 }

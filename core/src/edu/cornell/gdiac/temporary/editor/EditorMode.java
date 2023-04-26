@@ -40,6 +40,25 @@ public class EditorMode implements Screen {
     private Vector2 switchButtonLocation;
     private float noteButtonSize;
 
+    /**Location and size of the UI buttons for placing competency drain flags */
+    private Vector2 flagButtonLocation;
+    private float flagButtonSize;
+    private Vector2 flagSettingsButtonLocation;
+    private float flagSettingsButtonSize;
+
+    /**Location and size of the UI buttons for placing random hits */
+    private Vector2 hitButtonLocation;
+    private float hitButtonSize;
+    private Vector2 hitSettingsButtonLocation;
+    private float hitSettingsButtonSize;
+
+    private Vector2 hitSettingsScreenLocation;
+    private Vector2 hitSettingsScreenDimensions;
+    private Vector2 closeHitSettingsButtonLocation;
+    float closeHitSettingsButtonSize;
+    private Vector2[] probabilityButtonLocations;
+    private float probabilityButtonSize;
+
     /**Location and size of the UI buttons for changing duration of held notes */
     private Vector2 upDurationButtonLocation;
     private Vector2 downDurationButtonLocation;
@@ -140,11 +159,26 @@ public class EditorMode implements Screen {
     /** Texture for the cat notes*/
     private Texture catNoteTexture;
 
+    /** Texture for the hit star icon */
+    private Texture hitStarTexture;
+
     /** animator to draw the cat notes*/
-    private FilmStrip animator;
+    private FilmStrip catNoteAnimator;
 
     /** center location for the cat note texture*/
-    private Vector2 origin;
+    private Vector2 catNoteOrigin;
+
+    /** animator to draw the hits and flags*/
+    private FilmStrip hitAnimator;
+
+    /** center location for the hit and flag texture*/
+    private Vector2 hitOrigin;
+
+    /** animator to draw the hits and flags*/
+    private FilmStrip flagAnimator;
+
+    /** center location for the hit and flag texture*/
+    private Vector2 flagOrigin;
 
     /** Location in the song (in samples) that the editor screen is currently centered on */
     private int songPosition;
@@ -190,6 +224,9 @@ public class EditorMode implements Screen {
     /** True if the user is placing the start location*/
     private boolean placing_start;
 
+    /** True if the user is placing notes */
+    private boolean placing_notes;
+
     /** True if the user is placing competency drain flags*/
     private boolean placing_flags;
 
@@ -201,6 +238,9 @@ public class EditorMode implements Screen {
 
     /** True if the user is in the level settings */
     private boolean setting;
+
+    /** True if the user is in the random hit settings */
+    private boolean hitSetting;
 
     /** True if the user is typing in any text prompt */
     private boolean typing;
@@ -219,6 +259,12 @@ public class EditorMode implements Screen {
 
     /** True if the user is typing in the max competency text prompt */
     private boolean typingMaxComp;
+
+    /** True if the user is typing in the competency loss rate text prompt */
+    private boolean typingLossRate;
+
+    /** True if the user is typing in the hit probabilities text prompt */
+    private boolean[] typingProbabilities;
 
     /** String the user is typing in a text prompt */
     private String typedString;
@@ -399,6 +445,26 @@ public class EditorMode implements Screen {
         downDurationButtonLocation.set(width*0.09f,  height*0.7f - width*0.13f);
         durationButtonSize = width*0.02f;
 
+        //Flag Type Buttons
+        flagButtonLocation.set(width*0.035f, height*0.7f - width*0.33f);
+        flagButtonSize = (1f/20f)*width*0.05f;
+        flagSettingsButtonLocation.set(width*0.075f, height*0.7f - width*0.35f);
+        flagSettingsButtonSize = width*0.03f;
+
+        //Hit Type Buttons
+        hitButtonLocation.set(width*0.035f, height*0.7f - width*0.4f);
+        hitButtonSize = (1f/20f)*width*0.05f;
+        hitSettingsButtonLocation.set(width*0.075f, height*0.7f - width*0.42f);
+        hitSettingsButtonSize = width*0.03f;
+        hitSettingsScreenLocation.set(width*0.25f, height*0.35f);
+        hitSettingsScreenDimensions.set(width*0.5f, height*0.3f);
+        closeHitSettingsButtonLocation.set(width*0.26f, height*0.64f - width*0.04f);
+        closeHitSettingsButtonSize = width*0.04f;
+        for (int i=0; i < laneNumber; i++){
+            probabilityButtonLocations[i].set(width*0.3f - width*0.02f + (width*0.4f/((float) laneNumber))*(((float) i) + 1f/2f), height*0.45f);
+        }
+        probabilityButtonSize = width*0.04f;
+
         //Play and Track Buttons
         playButtonLocation.set(width*0.50f, height * 0.90f);
         trackButtonLocation.set(width*0.60f, height*0.90f);
@@ -460,16 +526,19 @@ public class EditorMode implements Screen {
         selectedNoteType = EditorNote.NoteType.BEAT;
         selectedLossRate = 3;
         placing_start = false;
+        placing_notes = true;
         placing_flags = false;
         placing_hits = false;
         playing = false;
         setting = false;
+        hitSetting = false;
         typing = false;
         typingBPM = false;
         typingLaneNum = false;
         typingLineNum = false;
         typingName = false;
         typingMaxComp = false;
+        typingLossRate = false;
         typedString = "";
         trackSong = true;
         levelName = "New Level";
@@ -489,6 +558,13 @@ public class EditorMode implements Screen {
         switchButtonLocation = new Vector2();
         upDurationButtonLocation = new Vector2();
         downDurationButtonLocation = new Vector2();
+        flagButtonLocation = new Vector2();
+        flagSettingsButtonLocation = new Vector2();
+        hitButtonLocation = new Vector2();
+        hitSettingsButtonLocation = new Vector2();
+        hitSettingsScreenLocation = new Vector2();
+        hitSettingsScreenDimensions = new Vector2();
+        closeHitSettingsButtonLocation = new Vector2();
         playButtonLocation = new Vector2();
         trackButtonLocation = new Vector2();
         resetButtonLocation = new Vector2();
@@ -514,7 +590,6 @@ public class EditorMode implements Screen {
         textPromptBarLocation = new Vector2();
         textPromptBarDimensions = new Vector2();
         promptTextLocation = new Vector2();
-        defineButtonLocations();
 
         //initialize actions list
         lastActions = new LinkedList<Action>();
@@ -532,12 +607,17 @@ public class EditorMode implements Screen {
         this.laneNumber = laneNumber;
         this.lineNumber = lineNumber;
         selectedProbabilities = new int[laneNumber];
+        typingProbabilities = new boolean[laneNumber];
+        probabilityButtonLocations = new Vector2[laneNumber];
         for (int i = 0; i < laneNumber; i++){
             selectedProbabilities[i] = 10;
+            typingProbabilities[i] = false;
+            probabilityButtonLocations[i] = new Vector2();
         }
 
         //initialize band member lanes
         defineRectangles(laneNumber);
+        defineButtonLocations();
 
         //initialize level data lists
         Notes = new LinkedList();
@@ -574,14 +654,19 @@ public class EditorMode implements Screen {
         laneNumber = level.get("bandMembers").size;
         lineNumber = level.getInt("linesPerMember");
         selectedProbabilities = new int[laneNumber];
+        typingProbabilities = new boolean[laneNumber];
+        probabilityButtonLocations = new Vector2[laneNumber];
         for (int i = 0; i < laneNumber; i++){
             selectedProbabilities[i] = 10;
+            typingProbabilities[i] = false;
+            probabilityButtonLocations[i] = new Vector2();
         }
         maxCompetency = level.getInt("maxCompetency");
 
 
         //initialize band member lanes
         defineRectangles(laneNumber);
+        defineButtonLocations();
 
         //initialize level data lists
         Notes = new LinkedList();
@@ -621,8 +706,29 @@ public class EditorMode implements Screen {
                 addNote(type, lane, line, position, duration);
                 currentPlaceType = tmpPlaceType;
             }
+            JsonValue memberFlags = level.get("bandMembers").get(lane).get("lossRates");
+            for (int i = 0; i < memberFlags.size; i++){
+                int position = memberFlags.get(i).getInt("position") + startPosition;
+                int lossRate = memberFlags.get(i).getInt("rate");
+                PlaceType tmpPlaceType = currentPlaceType;
+                currentPlaceType = PlaceType.AUTO;
+                addFlag(lane, position, lossRate);
+                currentPlaceType = tmpPlaceType;
+            }
         }
-
+        JsonValue randomHits = level.get("randomHits");
+        for (int i = 0; i < randomHits.size; i++){
+            int position = randomHits.get(i).getInt("position") + startPosition;
+            JsonValue probabilities = randomHits.get(i).get("probabilities");
+            int[] probability = new int[probabilities.size];
+            for (int j = 0; j < probabilities.size; j++){
+                probability[j] = probabilities.get(j).getInt("probability");
+            }
+            PlaceType tmpPlaceType = currentPlaceType;
+            currentPlaceType = PlaceType.AUTO;
+            addHit(position, probability);
+            currentPlaceType = tmpPlaceType;
+        }
     }
 
     /**
@@ -637,9 +743,21 @@ public class EditorMode implements Screen {
             public int duration;
             public int line;
         }
+        class Flag {
+            public int rate;
+            public int position;
+        }
+        class Probability {
+            public int probability;
+        }
+        class Hit {
+            public ArrayList<Probability> probabilities;
+            public int position;
+        }
         class BandMember {
             public int competencyLossRate;
             public ArrayList<Note> notes;
+            public ArrayList<Flag> lossRates;
         }
         class Level {
             public String levelName;
@@ -650,10 +768,13 @@ public class EditorMode implements Screen {
             public int maxCompetency;
             public int linesPerMember;
             public ArrayList<BandMember> bandMembers;
+            public ArrayList<Hit> randomHits;
         }
 
-        // first sort all the notes
+        // first sort all the notes, flags, and hits
         Collections.sort(Notes);
+        Collections.sort(Flags);
+        Collections.sort(Hits);
 
         Level l = new Level();
         l.levelName = this.levelName;
@@ -668,6 +789,7 @@ public class EditorMode implements Screen {
             BandMember b = new BandMember();
             b.competencyLossRate = 10;
             b.notes = new ArrayList<Note>();
+            b.lossRates = new ArrayList<Flag>();
             l.bandMembers.add(b);
         }
         for (EditorNote note : Notes){
@@ -685,6 +807,24 @@ public class EditorMode implements Screen {
             }
             n.duration = note.getDuration();
             l.bandMembers.get(note.getLane()).notes.add(n);
+        }
+        for (EditorFlag flag : Flags){
+            Flag f = new Flag();
+            f.rate = flag.getLossRate();
+            f.position = flag.getPos() - startPosition;
+            l.bandMembers.get(flag.getLane()).lossRates.add(f);
+        }
+        l.randomHits = new ArrayList<Hit>();
+        for (EditorHit hit : Hits){
+            Hit h = new Hit();
+            h.probabilities = new ArrayList<Probability>();
+            for (int prob : hit.getProbabilities()) {
+                Probability p = new Probability();
+                p.probability = prob;
+                h.probabilities.add(p);
+            }
+            h.position = hit.getPos() - startPosition;
+            l.randomHits.add(h);
         }
         Json json = new Json();
         try {
@@ -718,8 +858,13 @@ public class EditorMode implements Screen {
         background  = directory.getEntry("background",Texture.class);
         displayFont = directory.getEntry("times",BitmapFont.class);
         catNoteTexture = directory.getEntry("catnote", Texture.class);
-        animator = new FilmStrip(catNoteTexture, 1, 4,4);
-        origin = new Vector2(animator.getRegionWidth()/2.0f, animator.getRegionHeight()/2.0f);
+        hitStarTexture = directory.getEntry("actual-star", Texture.class);
+        catNoteAnimator = new FilmStrip(catNoteTexture, 1, 4,4);
+        catNoteOrigin = new Vector2(catNoteAnimator.getRegionWidth()/2.0f, catNoteAnimator.getRegionHeight()/2.0f);
+        hitAnimator = new FilmStrip(hitStarTexture, 1, 1,1);
+        hitOrigin = new Vector2(hitAnimator.getRegionWidth()/2.0f, hitAnimator.getRegionHeight()/2.0f);
+        flagAnimator = new FilmStrip(hitStarTexture, 1, 1,1);
+        flagOrigin = new Vector2(flagAnimator.getRegionWidth()/2.0f, flagAnimator.getRegionHeight()/2.0f);
         displayFont = directory.getEntry("times", BitmapFont.class);
         inputController.setEditorProcessor();
         defaultLevel = directory.getEntry("level_test", JsonValue.class);
@@ -1043,7 +1188,12 @@ public class EditorMode implements Screen {
             songPosition = (int) ((4/zoom)*beat) - 2*beat;
         }
 
-        typing = typingName || typingMaxComp || typingBPM || typingLaneNum || typingLineNum;
+        typing = typingName || typingMaxComp || typingBPM || typingLaneNum || typingLineNum || typingLossRate;
+        for (int i =0; i<laneNumber;i++){
+            if (typingProbabilities[i]){
+                typing = true;
+            }
+        }
 
         //update note positions
         for (EditorNote note : Notes){
@@ -1160,7 +1310,7 @@ public class EditorMode implements Screen {
         if (typingBPM) {
             typingBPM = false;
             if (typedString.equals("")) {
-                BPM = 1;
+                BPM = 100;
             } else {
                 BPM = Integer.parseInt(typedString);
             }
@@ -1170,12 +1320,11 @@ public class EditorMode implements Screen {
         if (typingMaxComp) {
             typingMaxComp = false;
             if (typedString.equals("")) {
-                maxCompetency = 1;
+                maxCompetency = 100;
             } else {
                 maxCompetency = Integer.parseInt(typedString);
             }
             typedString = "";
-            initializeLevel(laneNumber, lineNumber);
         }
         if (typingLaneNum) {
             typingLaneNum = false;
@@ -1205,6 +1354,26 @@ public class EditorMode implements Screen {
             typedString = "";
             initializeLevel(laneNumber, lineNumber);
         }
+        if (typingLossRate) {
+            typingLossRate = false;
+            if (typedString.equals("")){
+                selectedLossRate = 3;
+            } else {
+                selectedLossRate = Integer.parseInt(typedString);
+            }
+            typedString = "";
+        }
+        for(int i=0;i<laneNumber;i++){
+            if (typingProbabilities[i]){
+                typingProbabilities[i] = false;
+                if (typedString.equals("")){
+                    selectedProbabilities[i] = 10;
+                } else {
+                    selectedProbabilities[i] = Integer.parseInt(typedString);
+                }
+                typedString = "";
+            }
+        }
         if (typingName) {
             typingName = false;
             levelName = typedString;
@@ -1217,10 +1386,9 @@ public class EditorMode implements Screen {
      * Checks if the given screen location is on a UI button and if so activates the button effect.
      * @param x the horizontal screen location
      * @param y the vertical screen location
-     * @param setting true if the user is in the settings screen
      */
-    private void buttonClick(float x, float y, boolean setting){
-        if (!setting) {
+    private void buttonClick(float x, float y){
+        if (!setting && !hitSetting) {
             if (x >= quarterPrecision1ButtonLocation.x && x <= quarterPrecision1ButtonLocation.x + buttonSize) {
                 if (y >= quarterPrecision1ButtonLocation.y && y <= quarterPrecision1ButtonLocation.y + buttonSize) {
                     currentPlaceType = PlaceType.QUARTER;
@@ -1266,16 +1434,42 @@ public class EditorMode implements Screen {
             if (x >= beatButtonLocation.x - 7.5f * noteButtonSize && x <= beatButtonLocation.x + 7.5f * noteButtonSize) {
                 if (y >= beatButtonLocation.y - 7.5f * noteButtonSize && y <= beatButtonLocation.y + 7.5f * noteButtonSize) {
                     selectedNoteType = EditorNote.NoteType.BEAT;
+                    setToPlaceNotes();
                 }
             }
             if (x >= heldButtonLocation.x - 7.5f * noteButtonSize && x <= heldButtonLocation.x + 7.5f * noteButtonSize) {
                 if (y >= heldButtonLocation.y - 7.5f * noteButtonSize && y <= heldButtonLocation.y + 7.5f * noteButtonSize) {
                     selectedNoteType = EditorNote.NoteType.HELD;
+                    setToPlaceNotes();
                 }
             }
             if (x >= switchButtonLocation.x - 7.5f * noteButtonSize && x <= switchButtonLocation.x + 7.5f * noteButtonSize) {
                 if (y >= switchButtonLocation.y - 7.5f * noteButtonSize && y <= switchButtonLocation.y + 7.5f * noteButtonSize) {
                     selectedNoteType = EditorNote.NoteType.SWITCH;
+                    setToPlaceNotes();
+                }
+            }
+
+            if (x >= flagButtonLocation.x - 7.5f * flagButtonSize && x <= flagButtonLocation.x + 7.5f * flagButtonSize) {
+                if (y >= flagButtonLocation.y - 7.5f * flagButtonSize && y <= flagButtonLocation.y + 7.5f * flagButtonSize) {
+                    togglePlaceFlags();
+                }
+            }
+
+            if (x >= hitButtonLocation.x - 7.5f * hitButtonSize && x <= hitButtonLocation.x + 7.5f * hitButtonSize) {
+                if (y >= hitButtonLocation.y - 7.5f * hitButtonSize && y <= hitButtonLocation.y + 7.5f * hitButtonSize) {
+                    togglePlaceHits();
+                }
+            }
+
+            if (x >= flagSettingsButtonLocation.x && x <= flagSettingsButtonLocation.x + flagSettingsButtonSize) {
+                if (y >= flagSettingsButtonLocation.y && y <= flagSettingsButtonLocation.y + flagSettingsButtonSize) {
+                    typingLossRate = true;
+                }
+            }
+            if (x >= hitSettingsButtonLocation.x && x <= hitSettingsButtonLocation.x + hitSettingsButtonSize) {
+                if (y >= hitSettingsButtonLocation.y && y <= hitSettingsButtonLocation.y + hitSettingsButtonSize) {
+                    hitSetting = true;
                 }
             }
 
@@ -1323,10 +1517,10 @@ public class EditorMode implements Screen {
                     this.setting = true;
                 }
             }
-        } else {
+        } else if (setting){
             if (x >= closeSettingsButtonLocation.x && x <= closeSettingsButtonLocation.x + settingsButtonsSize) {
                 if (y >= closeSettingsButtonLocation.y && y <= closeSettingsButtonLocation.y + settingsButtonsSize) {
-                    this.setting = false;
+                    setting = false;
                 }
             }
             if (x >= changeNameButtonLocation.x && x <= changeNameButtonLocation.x + settingsButtonsSize) {
@@ -1354,6 +1548,19 @@ public class EditorMode implements Screen {
                     typingLineNum = true;
                 }
             }
+        } else {
+            if (x >= closeHitSettingsButtonLocation.x && x <= closeHitSettingsButtonLocation.x + closeHitSettingsButtonSize) {
+                if (y >= closeHitSettingsButtonLocation.y && y <= closeHitSettingsButtonLocation.y + closeHitSettingsButtonSize) {
+                    hitSetting = false;
+                }
+            }
+            for (int i = 0; i < laneNumber; i++){
+                if (x >= probabilityButtonLocations[i].x && x <= probabilityButtonLocations[i].x + probabilityButtonSize) {
+                    if (y >= probabilityButtonLocations[i].y && y <= probabilityButtonLocations[i].y + probabilityButtonSize) {
+                        typingProbabilities[i] = true;
+                    }
+                }
+            }
         }
     }
 
@@ -1379,8 +1586,52 @@ public class EditorMode implements Screen {
         selectedDuration = PlacePosition(selectedDuration, currentPlaceType);
     }
 
+    private void setToPlaceNotes(){
+        placing_notes = true;
+        placing_flags = false;
+        placing_hits = false;
+        placing_start = false;
+    }
+
+    private void togglePlaceHits(){
+        placing_hits = !placing_hits;
+        if (placing_hits) {
+            placing_flags = false;
+            placing_start = false;
+            placing_notes = false;
+        }
+        else {
+            placing_notes = true;
+        }
+    }
+
+    private void togglePlaceFlags(){
+        placing_flags = !placing_flags;
+        if (placing_flags) {
+            placing_start = false;
+            placing_hits = false;
+            placing_notes = false;
+        }
+        else {
+            placing_notes = true;
+        }
+    }
+
+    private void togglePlaceStart(){
+        placing_start = !placing_start;
+        if (placing_start) {
+            placing_flags = false;
+            placing_hits = false;
+            placing_notes = false;
+        }
+        else {
+            placing_notes = true;
+        }
+    }
+
+
     private void resolveAction(){
-        if (!(typing || setting)) {
+        if (!(typing || setting || hitSetting)) {
             //Get Movement Input
             moves = inputController.getMoves();
             if (moves[0]) {
@@ -1404,7 +1655,7 @@ public class EditorMode implements Screen {
                 int clickedLine = screenXtoline(mouseX)[1];
                 int clickedSongPosition = screenYtoSongPos(mouseY);
                 int duration = 0;
-                if (!placing_start && !placing_flags && !placing_hits && clickedLane != -1 && clickedSongPosition != -3 * beat && clickedSongPosition >= 0) {
+                if (placing_notes && clickedLane != -1 && clickedSongPosition != -3 * beat && clickedSongPosition >= 0) {
                     if (selectedNoteType == EditorNote.NoteType.SWITCH) {
                         clickedLine = -1;
                     }
@@ -1428,7 +1679,7 @@ public class EditorMode implements Screen {
                 if (placing_hits  && clickedLane != -1 && clickedSongPosition != -3 * beat && clickedSongPosition > 0) {
                     addHit(clickedSongPosition, selectedProbabilities);
                 }
-                buttonClick(mouseX, mouseY, false);
+                buttonClick(mouseX, mouseY);
             }
 
             //Get Erase Note Input
@@ -1438,7 +1689,7 @@ public class EditorMode implements Screen {
                 int clickedLane = screenXtoline(mouseX)[0];
                 int clickedLine = screenXtoline(mouseX)[1];
                 int clickedSongPosition = screenYtoSongPos(mouseY);
-                if (!placing_start && !placing_flags && !placing_hits && clickedLane != -1 && clickedSongPosition != -1) {
+                if (placing_notes && clickedLane != -1 && clickedSongPosition != -1) {
                     if (selectedNoteType == EditorNote.NoteType.SWITCH) {
                         clickedLine = -1;
                     }
@@ -1472,12 +1723,15 @@ public class EditorMode implements Screen {
             //Get Placement Note Type Input
             if (inputController.setSwitchNotes()) {
                 selectedNoteType = EditorNote.NoteType.SWITCH;
+                setToPlaceNotes();
             }
             if (inputController.setBeatNotes()) {
                 selectedNoteType = EditorNote.NoteType.BEAT;
+                setToPlaceNotes();
             }
             if (inputController.setHeldNotes()) {
                 selectedNoteType = EditorNote.NoteType.HELD;
+                setToPlaceNotes();
             }
 
             if (inputController.durationUp()) {
@@ -1499,10 +1753,10 @@ public class EditorMode implements Screen {
             }
 
             //Get Undo/Redo Input
-            if (inputController.didUndo()) {
+            if (placing_notes && inputController.didUndo()) {
                 undo();
             }
-            if (inputController.didRedo()) {
+            if (placing_notes && inputController.didRedo()) {
                 redo();
             }
 
@@ -1532,30 +1786,17 @@ public class EditorMode implements Screen {
 
             //Get Place Start Input
             if (inputController.pressedPlaceStart()) {
-                placing_start = !placing_start;
-                if (placing_start) {
-                    placing_flags = false;
-                    placing_hits = false;
-                }
+               togglePlaceStart();
             }
 
             //Get Place Flags Input
             if (inputController.pressedPlaceFlags()) {
-                placing_flags = !placing_flags;
-                System.out.println(placing_flags);
-                if (placing_flags) {
-                    placing_start = false;
-                    placing_hits = false;
-                }
+                togglePlaceFlags();
             }
 
             //Get Place Hits Input
             if (inputController.pressedPlaceHits()) {
-                placing_hits = !placing_hits;
-                if (placing_hits) {
-                    placing_flags = false;
-                    placing_start = false;
-                }
+                togglePlaceHits();
             }
 
             //Get Save Input
@@ -1567,10 +1808,15 @@ public class EditorMode implements Screen {
                 loadLevel(defaultLevel);
             }
         } else if (typing){
-            if (typingBPM || typingLaneNum || typingLineNum || typingMaxComp) {
+            if (typingBPM || typingLaneNum || typingLineNum || typingMaxComp || typingLossRate) {
                 typePrompt(true);
-            } else {
+            } else if (typingName) {
                 typePrompt(false);
+            }
+            for (int i=0;i<laneNumber;i++){
+                if (typingProbabilities[i]){
+                    typePrompt(true);
+                }
             }
             if (inputController.FinishedTyping()){
                 resolveTypePrompt();
@@ -1579,7 +1825,7 @@ public class EditorMode implements Screen {
             if (inputController.didClick()) {
                 float mouseX = inputController.getMouseX();
                 float mouseY = canvas.getHeight() - inputController.getMouseY();
-                buttonClick(mouseX, mouseY, true);
+                buttonClick(mouseX, mouseY);
             }
         }
     }
@@ -1687,42 +1933,48 @@ public class EditorMode implements Screen {
         }
 
         //draw flags
-        for (EditorFlag flag: Flags){
-            if (flag.OnScreen()){
-                flag.draw(canvas, zoom, getLaneEdge(flag.getLane()), getLaneWidth());
+        if (placing_flags) {
+            for (EditorFlag flag : Flags) {
+                if (flag.OnScreen()) {
+                    flag.draw(canvas, zoom, getLaneEdge(flag.getLane()), getLaneWidth(), displayFont);
+                }
             }
         }
 
         //draw hits
-        for (EditorHit hit: Hits){
-            if (hit.OnScreen()){
-                hit.draw(canvas, zoom, laneEdges, getLaneWidth());
+        if (placing_hits) {
+            for (EditorHit hit : Hits) {
+                if (hit.OnScreen()) {
+                    hit.draw(canvas, zoom, laneEdges, getLaneWidth(), displayFont);
+                }
             }
         }
 
         //draw notes
-        for (EditorNote note: Notes){
-            if (note.getType() == EditorNote.NoteType.HELD) {
-                if (note.getPos() + note.getDuration() > songPosition - (int) ((4/zoom)*beat)) {
-                    if (note.getPos() < songPosition + (int) ((4/zoom)*beat)) {
-                        float trailTop;
-                        float trailBot;
-                        if (onScreen(note.getPos())) {
-                            trailTop = songPosToScreenY(note.getPos());
-                        } else {
-                            trailTop = bottomBound + laneHeight;
+        if (placing_notes) {
+            for (EditorNote note : Notes) {
+                if (note.getType() == EditorNote.NoteType.HELD) {
+                    if (note.getPos() + note.getDuration() > songPosition - (int) ((4 / zoom) * beat)) {
+                        if (note.getPos() < songPosition + (int) ((4 / zoom) * beat)) {
+                            float trailTop;
+                            float trailBot;
+                            if (onScreen(note.getPos())) {
+                                trailTop = songPosToScreenY(note.getPos());
+                            } else {
+                                trailTop = bottomBound + laneHeight;
+                            }
+                            if (onScreen(note.getPos() + note.getDuration())) {
+                                trailBot = songPosToScreenY(note.getPos() + note.getDuration());
+                            } else {
+                                trailBot = bottomBound;
+                            }
+                            canvas.drawLine(note.getX(), trailBot, note.getX(), trailTop, 8, Color.YELLOW);
                         }
-                        if (onScreen(note.getPos() + note.getDuration())) {
-                            trailBot = songPosToScreenY(note.getPos() + note.getDuration());
-                        } else {
-                            trailBot = bottomBound;
-                        }
-                        canvas.drawLine(note.getX(), trailBot, note.getX(), trailTop, 8, Color.YELLOW);
                     }
                 }
-            }
-            if (note.OnScreen()){
-                note.draw(canvas, zoom, getLaneEdge(note.getLane()), getLaneWidth());
+                if (note.OnScreen()) {
+                    note.draw(canvas, zoom, getLaneEdge(note.getLane()), getLaneWidth());
+                }
             }
         }
 
@@ -1765,9 +2017,9 @@ public class EditorMode implements Screen {
         canvas.drawRect(selectBoxX + buttonSize/4f, selectBoxY + buttonSize/4f, selectBoxX + buttonSize*(1f-1f/4f), selectBoxY + buttonSize*(1f- 1f/4f), Color.CYAN, true);
 
         //draw note type buttons
-        animator.setFrame(0);
+        catNoteAnimator.setFrame(0);
         selectBoxX = beatButtonLocation.x;
-        if (selectedNoteType == EditorNote.NoteType.BEAT){
+        if (selectedNoteType == EditorNote.NoteType.BEAT ){
             selectBoxY = beatButtonLocation.y;
         }
         if (selectedNoteType == EditorNote.NoteType.HELD){
@@ -1776,11 +2028,34 @@ public class EditorMode implements Screen {
         if (selectedNoteType == EditorNote.NoteType.SWITCH){
             selectBoxY = switchButtonLocation.y;
         }
-        canvas.draw(animator, Color.CYAN, origin.x, origin.y, selectBoxX, selectBoxY, 0.0f, noteButtonSize*1.4f, noteButtonSize*1.4f);
+        if (placing_notes) {
+            canvas.draw(catNoteAnimator, Color.CYAN, catNoteOrigin.x, catNoteOrigin.y, selectBoxX, selectBoxY, 0.0f, noteButtonSize * 1.4f, noteButtonSize * 1.4f);
+        }
 
-        canvas.draw(animator, Color.WHITE, origin.x, origin.y, beatButtonLocation.x, beatButtonLocation.y, 0.0f, noteButtonSize, noteButtonSize);
-        canvas.draw(animator, Color.SALMON, origin.x, origin.y, heldButtonLocation.x, heldButtonLocation.y, 0.0f, noteButtonSize, noteButtonSize);
-        canvas.draw(animator, Color.GREEN, origin.x, origin.y, switchButtonLocation.x, switchButtonLocation.y, 0.0f, noteButtonSize, noteButtonSize);
+        canvas.draw(catNoteAnimator, Color.WHITE, catNoteOrigin.x, catNoteOrigin.y, beatButtonLocation.x, beatButtonLocation.y, 0.0f, noteButtonSize, noteButtonSize);
+        canvas.draw(catNoteAnimator, Color.SALMON, catNoteOrigin.x, catNoteOrigin.y, heldButtonLocation.x, heldButtonLocation.y, 0.0f, noteButtonSize, noteButtonSize);
+        canvas.draw(catNoteAnimator, Color.GREEN, catNoteOrigin.x, catNoteOrigin.y, switchButtonLocation.x, switchButtonLocation.y, 0.0f, noteButtonSize, noteButtonSize);
+
+        //draw flag and hit type buttons
+        hitAnimator.setFrame(0);
+        flagAnimator.setFrame(0);
+        selectBoxX = flagButtonLocation.x;
+        if (placing_flags) {
+            selectBoxY = flagButtonLocation.y;
+            canvas.draw(flagAnimator, Color.LIME, flagOrigin.x, flagOrigin.y, selectBoxX, selectBoxY, 0.0f, flagButtonSize * 1.4f, flagButtonSize * 1.4f);
+        }
+        if (placing_hits) {
+            selectBoxY = hitButtonLocation.y;
+            canvas.draw(hitAnimator, Color.LIME, hitOrigin.x, hitOrigin.y, selectBoxX, selectBoxY, 0.0f, hitButtonSize * 1.4f, hitButtonSize * 1.4f);
+        }
+        canvas.draw(flagAnimator, Color.RED, flagOrigin.x, flagOrigin.y, flagButtonLocation.x, flagButtonLocation.y, 0.0f, flagButtonSize, flagButtonSize);
+        canvas.draw(hitAnimator, Color.WHITE, hitOrigin.x, hitOrigin.y, hitButtonLocation.x, hitButtonLocation.y, 0.0f, hitButtonSize, hitButtonSize);
+
+        canvas.drawRect(flagSettingsButtonLocation, flagSettingsButtonSize, flagSettingsButtonSize, Color.RED, true);
+        canvas.drawRect(flagSettingsButtonLocation, flagSettingsButtonSize, flagSettingsButtonSize, Color.BLACK, false);
+        canvas.drawRect(hitSettingsButtonLocation, hitSettingsButtonSize, hitSettingsButtonSize, Color.YELLOW, true);
+        canvas.drawRect(hitSettingsButtonLocation, hitSettingsButtonSize, hitSettingsButtonSize, Color.BLACK, false);
+
 
         //draw duration up/down buttons
         canvas.drawRect(upDurationButtonLocation, durationButtonSize, durationButtonSize, Color.SALMON, true);
@@ -1850,6 +2125,19 @@ public class EditorMode implements Screen {
             canvas.drawText(maxCompMsg, displayFont, maxCompTextLocation.x, maxCompTextLocation.y);
             canvas.drawText(laneMsg, displayFont, laneTextLocation.x, laneTextLocation.y);
             canvas.drawText(lineMsg, displayFont, lineTextLocation.x, lineTextLocation.y);
+        }
+
+        if (hitSetting) {
+            canvas.drawRect(hitSettingsScreenLocation, hitSettingsScreenDimensions.x, hitSettingsScreenDimensions.y, Color.YELLOW, true);
+            canvas.drawRect(hitSettingsScreenLocation, hitSettingsScreenDimensions.x, hitSettingsScreenDimensions.y, Color.BLACK, false);
+
+            canvas.drawRect(closeHitSettingsButtonLocation, closeHitSettingsButtonSize, closeHitSettingsButtonSize, Color.RED, true);
+            canvas.drawRect(closeHitSettingsButtonLocation, closeHitSettingsButtonSize, closeHitSettingsButtonSize, Color.BLACK, false);
+
+            for (int i=0; i < laneNumber; i++){
+                canvas.drawRect(probabilityButtonLocations[i], probabilityButtonSize, probabilityButtonSize, Color.LIGHT_GRAY, true);
+                canvas.drawRect(probabilityButtonLocations[i], probabilityButtonSize, probabilityButtonSize, Color.BLACK, false);
+            }
         }
 
         if (typing) {

@@ -1,13 +1,14 @@
 package edu.cornell.gdiac.temporary.editor;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.temporary.GameCanvas;
 import edu.cornell.gdiac.util.FilmStrip;
 
 /** Flag for a random competency hit to occur*/
-public class EditorHit {
+public class EditorHit implements Comparable<EditorHit>{
 
     /** amount of band members in the level */
     private static int laneNumber;
@@ -50,7 +51,7 @@ public class EditorHit {
         this.probabilities = probabilities;
     }
 
-    public int[] getProbabilites(){
+    public int[] getProbabilities(){
         return probabilities;
     }
 
@@ -93,13 +94,26 @@ public class EditorHit {
     public boolean OnScreen(){
         return onScreen;
     }
-    public void draw(GameCanvas canvas, float zoom, float[] laneEdges, float laneWidths){
+
+    @Override
+    public int compareTo(EditorHit h) {
+        if (this.getPos() == h.getPos()) {
+            return 0;
+        } else if (this.getPos() < h.getPos()) {
+            return -1;
+        } else {
+            return 1;
+        }
+    }
+
+    public void draw(GameCanvas canvas, float zoom, float[] laneEdges, float laneWidth, BitmapFont font){
         float sizeMultiple = 3f;
         if (zoom < 1 / 2) {
             sizeMultiple = 3 * (zoom + 1 / 2);
         }
-        for (int i = 0; i < laneNumber; i++){
-            canvas.drawLine(laneEdges[i], y, laneEdges[i] + laneWidths, y, 5 * ((int) sizeMultiple), Color.BROWN);
+        for (int i = 0; i < laneEdges.length; i++){
+            canvas.drawLine(laneEdges[i], y, laneEdges[i] + laneWidth, y, 8 * ((int) sizeMultiple), Color.BROWN);
+            canvas.drawText(String.valueOf(probabilities[i]), font, laneEdges[i] + laneWidth/2, y+4*((int) sizeMultiple));
         }
     }
 
