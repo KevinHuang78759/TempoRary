@@ -110,7 +110,6 @@ public class GameMode implements Screen {
 			inputController = new InputController(new int[]{1, 2},  new int[gameplayController.lpl]);
 		}
 		else {
-			System.out.println("new input controller");
 			inputController = new InputController(gameplayController.NUM_LANES, gameplayController.lpl);
 		}
 	}

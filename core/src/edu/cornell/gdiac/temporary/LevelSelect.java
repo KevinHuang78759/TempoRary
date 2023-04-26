@@ -166,9 +166,8 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         }
 
 
-
 //        temp implementation for temp assets
-        for (int i = 0; i <numLevels;i++){
+        for (int i = 0; i < numLevels;i++){
             albumCovers[i] = internal.getEntry(Integer.toString(i+1),Texture.class);
         }
 
