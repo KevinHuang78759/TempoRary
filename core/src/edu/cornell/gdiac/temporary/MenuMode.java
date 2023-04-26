@@ -7,15 +7,11 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.ControllerMapping;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -213,16 +209,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
         table.add(fxLabel);
         table.add(fxVolumeSlider).width(800);
-
-//        button.addListener(new InputListener() {
-//            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-//                System.out.println("down");
-//                return true;
-//            }
-//            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-//                System.out.println("up");
-//            }
-//        });
 
         button.addListener(new ChangeListener() {
             @Override
