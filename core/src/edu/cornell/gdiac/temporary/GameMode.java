@@ -74,7 +74,7 @@ public class GameMode implements Screen {
 
 	/* CONSTANTS */
 	/** Scale at which to draw the buttons */
-	private static float BUTTON_SCALE  = 0.75f;
+	private static float BUTTON_SCALE  = 0.25f;
 	/** Offset for the game over message on the screen */
 	private static final float GAME_OVER_OFFSET = 40.0f;
 	/** The y-coordinate of the center of the progress bar (artifact of LoadingMode) */
@@ -87,8 +87,6 @@ public class GameMode implements Screen {
 	private static int STANDARD_WIDTH  = 1200;
 	/** Standard window height (for scaling) */
 	private static int STANDARD_HEIGHT = 800;
-	/** Ratio of the bar width to the screen (artifact of LoadingMode) */
-	private static float BAR_WIDTH_RATIO  = 0.66f;
 	/** Ration of the bar height to the screen (artifact of LoadingMode) */
 	private static float BAR_HEIGHT_RATIO = 0.25f;
 	/** Scaling factor for when the student changes the resolution. */
@@ -178,6 +176,8 @@ public class GameMode implements Screen {
 	 */
 	public void dispose() {
 		inputController = null;
+		gameplayController.sfx.dispose();
+		gameplayController.sb.dispose();
 		gameplayController = null;
 		canvas = null;
 	}
@@ -197,15 +197,14 @@ public class GameMode implements Screen {
 		displayFont = directory.getEntry("times",BitmapFont.class);
 		gameplayController.populate(directory);
 
-		resumeButton = directory.getEntry("play", Texture.class);
-		restartButton = directory.getEntry("play", Texture.class);
-		levelButton = directory.getEntry("level-editor", Texture.class);
-		menuButton = directory.getEntry("level-editor", Texture.class);
-		resumeCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 - 150);
-		restartCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 - 75);
-		levelCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 + 75);
-		menuCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 + 150);
-
+		resumeButton = directory.getEntry("resume-button", Texture.class);
+		restartButton = directory.getEntry("restart-button", Texture.class);
+		levelButton = directory.getEntry("level-select-button", Texture.class);
+		menuButton = directory.getEntry("quit-button", Texture.class);
+		resumeCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 - 250);
+		restartCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 - 125);
+		levelCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 + 125);
+		menuCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 + 250);
 	}
 
 	/**
@@ -225,6 +224,11 @@ public class GameMode implements Screen {
 		// Test whether to reset the game.
 		switch (gameState) {
 			case INTRO:
+				for(boolean k : inputController.getTriggers()){
+					if (k){
+						gameplayController.sfx.playSound("tap", 0.2f);
+					}
+				}
 				// wait a few frames before starting
 				if (waiting == 4f && !justPaused) {
 					gameplayController.reset();
@@ -336,13 +340,13 @@ public class GameMode implements Screen {
 		} else if (gameState == GameState.PAUSE) {
 			//Draw the buttons for the pause menu
 			canvas.draw(resumeButton, Color.WHITE, resumeButton.getWidth()/2, resumeButton.getHeight()/2,
-					resumeCoords.x, resumeCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+					resumeCoords.x, resumeCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
 			canvas.draw(restartButton, Color.WHITE, restartButton.getWidth()/2, restartButton.getHeight()/2,
-					restartCoords.x, restartCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+					restartCoords.x, restartCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
 			canvas.draw(levelButton, Color.WHITE, levelButton.getWidth()/2, levelButton.getHeight()/2,
-					levelCoords.x, levelCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
-			canvas.draw(menuButton, Color.WHITE, resumeButton.getWidth()/2, resumeButton.getHeight()/2,
-					resumeCoords.x, resumeCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+					levelCoords.x, levelCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
+			canvas.draw(menuButton, Color.WHITE, menuButton.getWidth()/2, menuButton.getHeight()/2,
+					menuCoords.x, menuCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
 		} else{
 			//Draw everything in the current level
 			gameplayController.level.drawEverything(canvas,
@@ -360,6 +364,10 @@ public class GameMode implements Screen {
 				bandMember.drawCharacterSprite(canvas);
 				bandMember.drawHPBar(canvas);
 			}
+
+			// draw the score
+			gameplayController.sb.displayScore(gameplayController.LEFTBOUND, gameplayController.TOPBOUND + gameplayController.inBetweenWidth/4f, canvas);
+
 			// draw the countdown
 			if (gameState == GameState.INTRO) {
 				canvas.drawTextCentered("" + (int) waiting, displayFont, 0);
@@ -417,15 +425,16 @@ public class GameMode implements Screen {
 	 * @param height The new height in pixels
 	 */
 	public void resize(int width, int height) {
-		// Compute the drawing scale
-		float sx = ((float)width)/STANDARD_WIDTH;
-		float sy = ((float)height)/STANDARD_HEIGHT;
-		scale = (sx < sy ? sx : sy);
-
-//        this.width = (int)(BAR_WIDTH_RATIO*width);
-		centerY = (int)(BAR_HEIGHT_RATIO*height);
-		centerX = width/2;
-		heightY = height;
+		gameplayController.resize(Math.max(250,width), Math.max(200,height));
+//		// Compute the drawing scale
+//		float sx = ((float)width)/STANDARD_WIDTH;
+//		float sy = ((float)height)/STANDARD_HEIGHT;
+//		scale = (sx < sy ? sx : sy);
+//
+////        this.width = (int)(BAR_WIDTH_RATIO*width);
+//		centerY = (int)(BAR_HEIGHT_RATIO*height);
+//		centerX = width/2;
+//		heightY = height;
 	}
 
 	/**

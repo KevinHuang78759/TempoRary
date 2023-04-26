@@ -151,6 +151,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			playing.populate(directory);
 			playing.initializeOffset(calibration.getOffset());
 			setScreen(playing);
+			playing.reset();
 			playing.show();
 		} else if (exitCode == ExitCode.TO_EDITOR) {
 			screen.hide();

@@ -26,7 +26,6 @@ public class BandMember {
     private Vector2 bottomLeftCorner;
 
     /** Textures */
-    private BitmapFont displayFont;
     private Texture noteIndicator;
     private Texture noteIndicatorHit;
     private FilmStrip characterSprite;
@@ -68,7 +67,6 @@ public class BandMember {
     private float height;
     public void setHeight(float l){
         height = l;
-        setHitY(bottomLeftCorner.y + l/4);
     }
 
     public float getHeight(){
@@ -143,10 +141,11 @@ public class BandMember {
      */
     private Array<Note> backing;
 
-
+    private int lossRateImm;
     private int lossRate;
     public void setLossRate(int t){
         lossRate = t;
+        lossRateImm = t;
     }
     public int getLossRate(){
         return lossRate;
@@ -209,6 +208,12 @@ public class BandMember {
         for(Note n : hitNotes){
             n.update();
         }
+        if(hitNotes.size == 0){
+            lossRate = 0;
+        }
+        else{
+            lossRate = lossRateImm;
+        }
     }
 
     /**
@@ -249,6 +254,8 @@ public class BandMember {
         backing = hitNotes;
         hitNotes = temp;
         backing.clear();
+        System.out.println(hitNotes.size);
+        System.out.println(switchNotes.size);
     }
 
     /**
@@ -331,10 +338,12 @@ public class BandMember {
         }
     }
 
+    private float borderthickness;
     /**
      * Draw the border
      */
     public void drawBorder(GameCanvas canvas, Texture HorizontalUnit, Texture VerticalUnit, Texture Corner, float thickness){
+        borderthickness = thickness;
         Vector2 HOrigin = new Vector2(HorizontalUnit.getWidth()/2f, HorizontalUnit.getHeight()/2f);
         Vector2 VOrigin = new Vector2(VerticalUnit.getWidth()/2f, VerticalUnit.getHeight()/2f);
         Vector2 COrigin = new Vector2(Corner.getWidth()/2f, Corner.getHeight()/2f);
@@ -391,7 +400,9 @@ public class BandMember {
     public void drawBackground(GameCanvas canvas, Texture background){
         float xScale = width/background.getWidth();
         float yScale = height/background.getHeight();
-        canvas.draw(background, Color.WHITE, 0, 0, bottomLeftCorner.x, bottomLeftCorner.y, 0.0f, xScale, yScale);
+        Color c = Color.WHITE;
+        c.a = 0.5f;
+        canvas.draw(background, c, 0, 0, bottomLeftCorner.x, bottomLeftCorner.y, 0.0f, xScale, yScale);
     }
 
     public void drawHPBar(GameCanvas canvas){
@@ -402,10 +413,10 @@ public class BandMember {
     }
 
     public void drawCharacterSprite(GameCanvas canvas) {
-        float scale = (bottomLeftCorner.y*4/5)/characterSprite.getRegionHeight();
+        float scale = Math.min((bottomLeftCorner.y*4/5)/characterSprite.getRegionHeight(), 1.5f*width/characterSprite.getRegionWidth());
         float trueHeight = scale*characterSprite.getRegionHeight();
-        canvas.draw(characterSprite, Color.WHITE, characterSprite.getRegionWidth() / 2, characterSprite.getRegionY() / 2,
-                bottomLeftCorner.x + width/10 + scale * characterSprite.getRegionWidth() / 2 + 20, (bottomLeftCorner.y - trueHeight)/2, 0.0f, scale, scale);
+        canvas.draw(characterSprite, Color.WHITE, characterSprite.getRegionWidth()/ 2f, characterSprite.getRegionHeight()/2f,
+                bottomLeftCorner.x + width/2, (bottomLeftCorner.y - borderthickness - trueHeight/2), 0.0f, scale, scale);
     }
 
     /**
@@ -423,17 +434,28 @@ public class BandMember {
         }
     }
 
-    public void setFont(BitmapFont displayFont) {
-        this.displayFont = displayFont;
-    }
-
     public void setIndicatorTextures(Texture texture, Texture textureHit) {
         noteIndicator = texture;
         noteIndicatorHit = textureHit;
     }
+    private int characterFrames;
+    public int getCharacterFrames(){
+        return characterFrames;
+    }
 
-    public void setCharacterTexture(FilmStrip characterSprite) {
-        this.characterSprite = characterSprite;
+    private int frame;
+    public int getFrame(){
+        return frame;
+    }
+    public void setFrame(int frame){
+        this.frame = frame;
+        characterSprite.setFrame(frame);
+    }
+    public void setCharacterFilmstrip(FilmStrip t){
+        characterFrames = t.getSize();
+        characterSprite = t;
+        characterSprite.setFrame(0);
+        frame = 0;
     }
 
 }
