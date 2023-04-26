@@ -120,6 +120,8 @@ public class GameMode implements Screen {
 	 */
 	public void dispose() {
 		inputController = null;
+		gameplayController.sfx.dispose();
+		gameplayController.sb.dispose();
 		gameplayController = null;
 		canvas = null;
 	}
@@ -156,6 +158,11 @@ public class GameMode implements Screen {
 		// Test whether to reset the game.
 		switch (gameState) {
 			case INTRO:
+				for(boolean k : inputController.getTriggers()){
+					if (k){
+						gameplayController.sfx.playSound("tap", 0.2f);
+					}
+				}
 				// wait a few frames before starting
 				if (waiting == 4f) {
 					gameplayController.reset();
@@ -246,6 +253,7 @@ public class GameMode implements Screen {
 				canvas.drawTextCentered("" + (int) waiting, displayFont, 0);
 			}
 		}
+		gameplayController.sb.displayScore(gameplayController.LEFTBOUND, gameplayController.TOPBOUND + gameplayController.inBetweenWidth/4f, canvas);
 		canvas.end();
 	}
 
@@ -259,7 +267,7 @@ public class GameMode implements Screen {
 	 * @param height The new height in pixels
 	 */
 	public void resize(int width, int height) {
-		// IGNORE FOR NOW
+		gameplayController.resize(Math.max(250,width), Math.max(200,height));
 	}
 
 	/**

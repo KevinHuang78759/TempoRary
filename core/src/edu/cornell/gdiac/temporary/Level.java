@@ -150,7 +150,7 @@ public class Level {
 
         // need to take from directory because this is the only way to load it into the music queue
         music = directory.getEntry("challenger", MusicQueue.class);
-
+        music.setVolume(0.8f);
         // load all related level textures
         hitNoteTexture = directory.getEntry("hit", Texture.class);
         switchNoteTexture = directory.getEntry("switch", Texture.class);
@@ -162,12 +162,12 @@ public class Level {
         holdEndTexture = directory.getEntry("hold-end", Texture.class);
         noteIndicator = directory.getEntry("note-indicator", Texture.class);
         noteIndicatorHit = directory.getEntry("note-indicator-hit", Texture.class);
-        violinSprite = new FilmStrip(directory.getEntry("violin-cat", Texture.class), 1, 1, 1);
-        voiceSprite = new FilmStrip(directory.getEntry("singer-cat", Texture.class), 1, 1, 1);
-        drummerSprite = new FilmStrip(directory.getEntry("drummer-cat", Texture.class), 1, 1, 1);
-        synthSprite = new FilmStrip(directory.getEntry("drummer-cat", Texture.class), 1, 1, 1);
-        backSplash = new FilmStrip(directory.getEntry("back-splash", Texture.class), 4, 5, 19);
-        frontSplash = new FilmStrip(directory.getEntry("front-splash", Texture.class), 4, 5, 19);
+        violinSprite = new FilmStrip(directory.getEntry("violin-cat", Texture.class), 2, 5, 6);
+        voiceSprite = new FilmStrip(directory.getEntry("singer-cat", Texture.class), 2, 5, 6);
+        drummerSprite = new FilmStrip(directory.getEntry("drummer-cat", Texture.class), 2, 5, 6);
+        synthSprite = new FilmStrip(directory.getEntry("piano-cat", Texture.class), 2, 5, 10);
+        backSplash = new FilmStrip(directory.getEntry("back-splash", Texture.class), 5, 5, 23);
+        frontSplash = new FilmStrip(directory.getEntry("front-splash", Texture.class), 5, 5, 21);
 
         HUnit = directory.getEntry("borderHUnit", Texture.class);
         VUnit = directory.getEntry("borderVUnit", Texture.class);
@@ -205,20 +205,19 @@ public class Level {
             bandMembers[i].setMaxComp(maxCompetency);
             bandMembers[i].setLossRate(bandMemberData.getInt("competencyLossRate"));
             bandMembers[i].setHpBarFilmStrip(hpbar, 47);
-            bandMembers[i].setFont(displayFont);
             bandMembers[i].setIndicatorTextures(noteIndicator, noteIndicatorHit);
             switch (bandMemberData.getString("instrument")) {
                 case "violin":
-                    bandMembers[i].setCharacterTexture(violinSprite);
+                    bandMembers[i].setCharacterFilmstrip(violinSprite);
                     break;
                 case "piano":
-                    bandMembers[i].setCharacterTexture(synthSprite);
+                    bandMembers[i].setCharacterFilmstrip(synthSprite);
                     break;
                 case "drum":
-                    bandMembers[i].setCharacterTexture(drummerSprite);
+                    bandMembers[i].setCharacterFilmstrip(drummerSprite);
                     break;
                 case "voice":
-                    bandMembers[i].setCharacterTexture(voiceSprite);
+                    bandMembers[i].setCharacterFilmstrip(voiceSprite);
                     break;
             }
 //            System.out.println(System.nanoTime() - t);
@@ -246,6 +245,12 @@ public class Level {
         for (BandMember bandMember : bandMembers) {
             bandMember.setBottomLeft(new Vector2(xCoord, yCoord));
             xCoord += inBetweenWidth + bandMember.getWidth();
+        }
+    }
+
+    public void setBandMemberHitY(float hity){
+        for(BandMember bandMember : bandMembers){
+            bandMember.setHitY(hity);
         }
     }
 
@@ -291,13 +296,19 @@ public class Level {
 
     /**
      * Spawns new notes according to what sample we are at. Also decrements bandmembers' competency
-     * for some amount about once a second
+     * for some amount about once a second. It also updates the frame of the bandmember.
      */
     public void updateBandMemberNotes(){
         //First get the sample we at
         long sample = getCurrentSample();
+        int rate = music.getSampleRate();
+        float samplesPerBeat = rate * 60f/bpm;
         boolean decTog = false;
         for(BandMember bandMember : bandMembers){
+            //update the uh frame
+            float frameprogress = (sample % samplesPerBeat)/(samplesPerBeat);
+            int totalframes = bandMember.getCharacterFrames();
+            bandMember.setFrame((int)(totalframes*frameprogress));
             //update the note frames
             bandMember.updateNotes();
             //spawn new notes accordingly

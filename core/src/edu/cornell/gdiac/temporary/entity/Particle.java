@@ -227,8 +227,15 @@ public class Particle {
 		// Compute a new angle of rotation.
 		angle = (float)(delta*1000 % (8 * Math.PI)); // MAGIC NUMBERS
 	}
-	
 
+
+	/**
+	 * Particle must fit in a square of this side length
+	 */
+	private float sizeConfine;
+	public void setSizeConfine(float s){
+		sizeConfine = s;
+	}
 	/**
 	 * Draws this object to the canvas
 	 *
@@ -238,7 +245,8 @@ public class Particle {
 	 * @param canvas The drawing context
 	 */
 	public void draw(GameCanvas canvas) {
-		canvas.draw(animator, Color.WHITE, origin.x, origin.y, position.x, position.y, angle, 1, 1);
+		float scale = Math.min(sizeConfine/animator.getRegionWidth(), sizeConfine/animator.getRegionHeight());
+		canvas.draw(animator, Color.WHITE, origin.x, origin.y, position.x, position.y, angle, scale, scale);
 	}
 	
 }
