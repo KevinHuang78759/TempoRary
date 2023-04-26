@@ -141,8 +141,6 @@ public class GameplayController {
 		level.setBandMemberHitY(hitY);
 	}
 
-
-
 	/**
 	 * Loads a level
 	 */
@@ -261,16 +259,9 @@ public class GameplayController {
 		boolean bandNotes = true;
 		for(int i = 0; i < level.getBandMembers().length; ++i){
 			BandMember bm = level.getBandMembers()[i];
-			bandNotes = bandNotes && bm.getSwitchNotes().isEmpty() && (bm.getHitNotes().isEmpty());
-
+			bandNotes = bandNotes && bm.getAllNotes().isEmpty();
 		}
-
-		if ((particles.size ==0 && bandNotes) || !level.isMusicPlaying()){
-			return true;
-		}else{
-			return false;
-		}
-
+		return (particles.size == 0 && bandNotes) || !level.isMusicPlaying();
 	}
 
 	/**
