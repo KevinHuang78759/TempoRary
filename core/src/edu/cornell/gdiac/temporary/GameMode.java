@@ -170,14 +170,19 @@ public class GameMode implements Screen {
 				waiting -= delta;
 				if (waiting < 1f) {
 					gameState = GameState.PLAY;
+
 					gameplayController.level.startmusic();
+
 				}
 				break;
 			case OVER:
 			case PLAY:
 				if (inputController.didReset()) {
-					gameplayController.reset();
-					gameplayController.start();
+					gameplayController.level.resetMusic();
+					gameplayController.level.pauseMusic();
+					gameplayController.reloadLevel();
+					waiting = 4f;
+					gameState = GameState.INTRO;
 				} else if (inputController.didPause()){
 					listener.exitScreen(this, 0);
 				}

@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.audio.AudioSource;
 import edu.cornell.gdiac.audio.MusicQueue;
 import edu.cornell.gdiac.temporary.entity.BandMember;
 import edu.cornell.gdiac.temporary.entity.Note;
@@ -302,6 +303,7 @@ public class Level {
         //First get the sample we at
         long sample = getCurrentSample();
         int rate = music.getSampleRate();
+        System.out.println(sample);
         float samplesPerBeat = rate * 60f/bpm;
         boolean decTog = false;
         for(BandMember bandMember : bandMembers){
@@ -331,11 +333,16 @@ public class Level {
      * Starts the music
      */
     public void startmusic(){
+        System.out.println("start " + getCurrentSample());
         music.play();
     }
 
     public void stopMusic() {
         music.stop();
+    }
+    public void resetMusic() {
+        music.reset();
+
     }
 
     public void pauseMusic() {
