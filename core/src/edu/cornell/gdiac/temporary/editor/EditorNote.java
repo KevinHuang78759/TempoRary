@@ -17,6 +17,8 @@ public class EditorNote implements Comparable<EditorNote> {
 
     private Vector2 origin;
 
+    /** true if the cat should meow :)*/
+    private boolean meow;
 
     /** lane the note corresponds to */
     private int lane;
@@ -60,6 +62,7 @@ public class EditorNote implements Comparable<EditorNote> {
     private NoteType type;
 
     public EditorNote(NoteType type, int lane, int line, int songPos, int duration){
+        meow = true;
         this.lane = lane;
         this.line = line;
         if (type == NoteType.SWITCH){
@@ -70,6 +73,9 @@ public class EditorNote implements Comparable<EditorNote> {
         this.duration = duration;
         sizeMultiple = 1;
     }
+
+    public boolean shouldMeow(){return meow;}
+    public void setMeow(boolean meow){this.meow = meow;}
 
     public void setLane(int lane){
         this.lane = lane;

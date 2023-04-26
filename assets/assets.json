@@ -82,7 +82,12 @@
             "sources": [
                 "music/Challenger-Approaches.ogg"
             ]
-        }
+        },
+      "aliens": {
+        "sources": [
+          "music/Aliens.ogg"
+        ]
+      }
     },
     "jsons": {
         "level_test": "levels/happy.json",
@@ -93,6 +98,7 @@
       ["goodHit","sound/goodhit.ogg"],
       ["perfectHit","sound/perfecthit.ogg"],
       ["switch", "sound/switch.ogg"],
-      ["switchHit", "sound/switchHit.ogg"]
+      ["switchHit", "sound/switchHit.ogg"],
+      ["meow", "sound/meow.mp3"]
     ]
 }

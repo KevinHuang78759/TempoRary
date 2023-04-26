@@ -11,9 +11,11 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.temporary.ExitCode;
 import edu.cornell.gdiac.temporary.GameCanvas;
 import edu.cornell.gdiac.temporary.InputController;
+import edu.cornell.gdiac.temporary.SoundController;
 import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.ScreenListener;
 import edu.cornell.gdiac.audio.*;
+import com.badlogic.gdx.audio.Sound;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -146,6 +148,9 @@ public class EditorMode implements Screen {
 
     /** Reads input from keyboard or game pad (CONTROLLER CLASS) */
     private InputController inputController;
+
+    /** Plays Sound Effects */
+    private SoundController<String> soundController;
 
     /** Whether this player mode is still active */
     private boolean active;
@@ -857,6 +862,8 @@ public class EditorMode implements Screen {
     public void populate(AssetDirectory directory) {
         background  = directory.getEntry("background",Texture.class);
         displayFont = directory.getEntry("times",BitmapFont.class);
+        soundController = new SoundController<String>();
+        soundController.addSound("meow", "sound/meow.mp3");
         catNoteTexture = directory.getEntry("catnote", Texture.class);
         hitStarTexture = directory.getEntry("actual-star", Texture.class);
         catNoteAnimator = new FilmStrip(catNoteTexture, 1, 4,4);
@@ -868,7 +875,7 @@ public class EditorMode implements Screen {
         displayFont = directory.getEntry("times", BitmapFont.class);
         inputController.setEditorProcessor();
         defaultLevel = directory.getEntry("level_test", JsonValue.class);
-        music = directory.getEntry("challenger", MusicQueue.class);
+        music = directory.getEntry("aliens", MusicQueue.class);
         initializeLevel(4, 4);
     }
 
@@ -1195,11 +1202,21 @@ public class EditorMode implements Screen {
             }
         }
 
-        //update note positions
+        //update note positions and play meows
         for (EditorNote note : Notes){
             note.setX(lineToScreenX(note.getLane(), note.getLine()));
             note.setY(songPosToScreenY(note.getPos()));
             note.setOnScreen(onScreen(note.getPos()));
+            if (playing) {
+                if (playPosition >= note.getPos() - beat/4){
+                    if (note.shouldMeow()) {
+                        soundController.playSound("meow", 0.5f);
+                        note.setMeow(false);
+                    }
+                } else {
+                    note.setMeow(true);
+                }
+            }
         }
         //update flag positions
         for (EditorFlag flag : Flags){
