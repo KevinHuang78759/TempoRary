@@ -60,6 +60,10 @@
           "minFilter": "linear",
           "maxFilter": "linear"
         },
+        "level-select-button": "images/ui/level_select.png",
+        "quit-button": "images/ui/quit.png",
+        "restart-button": "images/ui/restart.png",
+        "resume-button": "images/ui/resume.png",
         "background": "images/background.png",
         "concert-background": "images/backgrounds/background_temp_concert_1.png",
         "street-background": "images/backgrounds/background_temp_streets_1.png",
