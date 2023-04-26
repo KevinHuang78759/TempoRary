@@ -344,8 +344,8 @@ public class Level {
      * returns true if music is playing
      */
     public boolean isMusicPlaying(){
-//        return music.isPlaying() && musicInitialized;
-        return false;
+        return music.isPlaying() && musicInitialized;
+//        return false;
     }
 
     /**

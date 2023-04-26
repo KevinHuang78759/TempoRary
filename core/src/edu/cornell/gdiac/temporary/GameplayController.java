@@ -228,15 +228,9 @@ public class GameplayController {
 		for(int i = 0; i < level.getBandMembers().length; ++i){
 			BandMember bm = level.getBandMembers()[i];
 			bandNotes = bandNotes && bm.getSwitchNotes().isEmpty() && (bm.getHitNotes().isEmpty());
-			System.out.println("bm.getAllNotes()"+ (bm.getAllNotes().size ));
-			System.out.println("bm.getSwitchNotes()"+ (bm.getSwitchNotes().size ));
-			System.out.println("bm.getHitNotes()"+ (bm.getHitNotes().size ));
 
 		}
 
-		System.out.println("b:"+bandNotes);
-		System.out.println("particles.size:"+particles.size);
-		System.out.println("music playing"+level.isMusicPlaying());
 		if ((particles.size ==0 && bandNotes) || !level.isMusicPlaying()){
 			return true;
 		}else{
