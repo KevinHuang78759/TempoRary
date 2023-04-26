@@ -88,6 +88,7 @@ public class InputController {
 			xbox = null;
 		}
 		clicking = false;
+		Typed = false;
 		triggerLast = new boolean[lpl];
 		switchesLast = new boolean[lanes];
 		triggers = new boolean[lpl];
@@ -147,6 +148,8 @@ public class InputController {
 	}
 
 	private boolean clicking;
+	private char characterTyped;
+	private boolean Typed;
 
 	public class Processor implements InputProcessor {
 
@@ -159,6 +162,8 @@ public class InputController {
 		}
 
 		public boolean keyTyped (char character){
+			characterTyped = character;
+			Typed = true;
 			return false;
 		}
 
@@ -268,6 +273,14 @@ public class InputController {
 	private boolean placeStartPress;
 	private boolean placeStartLast;
 
+	private boolean placeFlags;
+	private boolean placeFlagsPress;
+	private boolean placeFlagsLast;
+
+	private boolean placeHits;
+	private boolean placeHitsPress;
+	private boolean placeHitsLast;
+
 	boolean[] triggerPress;
 	boolean[] triggerLifted;
 	/**
@@ -306,6 +319,10 @@ public class InputController {
 		trackPress = Gdx.input.isKeyPressed(Input.Keys.V);
 
 		placeStartPress = Gdx.input.isKeyPressed(Input.Keys.P);
+
+		placeFlagsPress = Gdx.input.isKeyPressed(Input.Keys.C);
+
+		placeHitsPress = Gdx.input.isKeyPressed(Input.Keys.X);
 
 		savePress = Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && Gdx.input.isKeyPressed(Input.Keys.S);
 
@@ -364,6 +381,12 @@ public class InputController {
 
 		placeStart = !placeStartLast && placeStartPress;
 		placeStartLast = placeStartPress;
+
+		placeFlags = !placeFlagsLast && placeFlagsPress;
+		placeFlagsLast = placeFlagsPress;
+
+		placeHits = !placeHitsLast && placeHitsPress;
+		placeHitsLast = placeHitsPress;
 	}
 
 	/**
@@ -418,12 +441,23 @@ public class InputController {
 		return false;
 	}
 
+	public boolean didType() {
+		if (Typed){
+			Typed = false;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	public float getMouseX() { return Gdx.input.getX(); }
 
 	public float getMouseY() { return Gdx.input.getY(); }
 
 
 	public boolean didMove() { return mouseMoved;}
+
+	public char getCharTyped() {return characterTyped;}
 
 	public boolean didErase() {return erased;}
 
@@ -462,6 +496,10 @@ public class InputController {
 
 	public boolean pressedPlaceStart() {return placeStart;}
 
+	public boolean pressedPlaceHits() {return placeHits;}
+
+	public boolean pressedPlaceFlags() {return placeFlags;}
+
 	public boolean didSave() {return save;}
 
 	public boolean didLoad() {return load;}
@@ -469,6 +507,8 @@ public class InputController {
 	public boolean durationUp() {return upDuration;}
 
 	public boolean durationDown() {return downDuration;}
+
+	public boolean FinishedTyping() {return Gdx.input.isKeyPressed(Input.Keys.ENTER);}
 
 	public void setEditorProcessor() {
 		Gdx.input.setInputProcessor(processor);
