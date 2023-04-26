@@ -141,7 +141,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         numLevels = levelData.get("jsons").size;
         allLevels= new String[numLevels*3];
         albumCoverCoords = new Vector2[numLevels];
-        System.out.println("num levels "+numLevels);
+//        System.out.println("num levels "+numLevels);
         gameplayController = new GameplayController(canvas.getWidth(),canvas.getHeight());
         albumCovers = new Texture[numLevels];
 
@@ -197,8 +197,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
 
     public void draw(){
-//        System.out.println("start draw");
-
         canvas.begin();
         canvas.drawBackground(background,0,0);
 
@@ -286,9 +284,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
      */
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-//        System.out.println("touch down");
-//        System.out.println(screenX);
-//        System.out.println(screenY);
 
         screenY = canvas.getHeight()-screenY;
 
@@ -308,12 +303,12 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             selectedDifficulty = 3;
         }
 
-        System.out.println("selected difficulty is: " + selectedDifficulty);
+//        System.out.println("selected difficulty is: " + selectedDifficulty);
 
         for (int i=0;i<numLevels;i++){
-            System.out.println("numLevels is "+(numLevels));
+//            System.out.println("numLevels is "+(numLevels));
             if (isButtonPressed(screenX, screenY, albumCovers[i], albumCoverCoords[i], scale2)){
-                System.out.println("selected song is "+(i));
+//                System.out.println("selected song is "+(i));
                 selectedLevel=i;
             }
         }
@@ -323,7 +318,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         }
 
         if (isButtonPressed(screenX, screenY, playButton, playButtonCoords,scale)) {
-            System.out.println("play pressed");
             playPressed=true;
 
         }
@@ -362,12 +356,12 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             draw();
             if (getHasSelectedLevel() && playPressed && listener != null) {
                 // go to game
-                System.out.println("loading level..");
-                System.out.println("selected level:" + selectedLevel);
-                System.out.println("selected difficulty:" + selectedDifficulty);
+//                System.out.println("loading level..");
+//                System.out.println("selected level:" + selectedLevel);
+//                System.out.println("selected difficulty:" + selectedDifficulty);
                 int gameIdx = selectedDifficulty+(selectedLevel*3);
-                System.out.println("index of json is:" + gameIdx);
-                System.out.println("file name:"+allLevels[gameIdx-1]);
+//                System.out.println("index of json is:" + gameIdx);
+//                System.out.println("file name:"+allLevels[gameIdx-1]);
 
                 selectedJson=allLevels[gameIdx-1];
                 listener.exitScreen(playing, ExitCode.TO_PLAYING);

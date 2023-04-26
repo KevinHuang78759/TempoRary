@@ -418,7 +418,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     @Override
     public void dispose() {
         canvas = null;
-//        stage.dispose();
+        stage.dispose();
     }
 
     /**
