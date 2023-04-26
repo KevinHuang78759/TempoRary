@@ -460,14 +460,8 @@ public class GameMode implements Screen, InputProcessor,ControllerListener {
 		screenY = canvas.getHeight()-screenY;
 		if (isButtonPressed(screenX, screenY, playButton, playButtonCoords,scale)) {
 			playPressed=true;
-
 			String nextLevel ="levels/"+(currLevel+1)+".json";
-
 			listener.exitScreen(this, ExitCode.TO_PLAYING);
-
-
-
-
 		}
 		return false;
 	}

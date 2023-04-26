@@ -90,9 +90,9 @@
       }
     },
     "jsons": {
-        "1": "levels/test2.json",
-        "2" : "levels/test.json",
-        "3" : "levels/test.json"
+        "1": "levels/1.json",
+        "2" : "levels/2.json",
+        "3" : "levels/3.json"
     },
     "soundEffects": [
       ["tap", "sound/tap.ogg"],
