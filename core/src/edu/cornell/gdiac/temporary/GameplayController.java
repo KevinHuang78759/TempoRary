@@ -236,7 +236,7 @@ public class GameplayController {
 
 		System.out.println("b:"+bandNotes);
 		System.out.println("particles.size:"+particles.size);
-		System.out.println("!hasZeroCompetency():"+!hasZeroCompetency());
+		System.out.println("music playing"+level.isMusicPlaying());
 		if ((particles.size ==0 && bandNotes) || !level.isMusicPlaying()){
 			return true;
 		}else{

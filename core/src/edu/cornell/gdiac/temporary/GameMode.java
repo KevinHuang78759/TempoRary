@@ -13,6 +13,10 @@ package edu.cornell.gdiac.temporary;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.controllers.ControllerListener;
+import com.badlogic.gdx.controllers.Controller;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -33,7 +37,9 @@ import edu.cornell.gdiac.util.ScreenListener;
  * of the other classes in the game and hooks them together.  It also provides the
  * basic game loop (update-draw).
  */
-public class GameMode implements Screen {
+public class GameMode implements Screen, InputProcessor,ControllerListener {
+
+
 	/**
 	 * Track the current state of the game for the update loop.
 	 */
@@ -56,6 +62,10 @@ public class GameMode implements Screen {
 
 	/** Play button to display when done */
 	private Texture playButton;
+
+	/** Asset directory */
+
+	private AssetDirectory directory;
 
 	/** Internal assets for this loading screen */
 	private AssetDirectory internal;
@@ -94,6 +104,8 @@ public class GameMode implements Screen {
 	/** Play button x and y coordinates represented as a vector */
 	private Vector2 playButtonCoords;
 
+	/** the current level */
+	private int currLevel;
 
 	/**
 	 * Creates a new game with the given drawing context.
@@ -114,6 +126,15 @@ public class GameMode implements Screen {
 	}
 
 	/**
+	 * reset current level
+	 */
+	public void reset(){
+		playPressed = false;
+
+
+	}
+
+	/**
 	 * Initializes the offset to use for the gameplayController
 	 * @param offset the offset from CalibrationMode
 	 */
@@ -121,9 +142,13 @@ public class GameMode implements Screen {
 		gameplayController.setOffset(offset);
 	}
 
-	public void readLevel(AssetDirectory directory) {
+	public void readLevel(AssetDirectory loadDirectory,String level) {
+		directory = loadDirectory;
 		JsonReader jr = new JsonReader();
-		JsonValue levelData = jr.parse(Gdx.files.internal("levels/test.json"));
+//		JsonValue levelData = jr.parse(Gdx.files.internal("levels/test2.json"));
+		SetCurrLevel("1");
+		JsonValue levelData = jr.parse(Gdx.files.internal(level));
+
 		gameplayController.loadLevel(levelData, directory);
 		if (gameplayController.NUM_LANES == 2) {
 			inputController = new InputController(new int[]{1, 2},  new int[gameplayController.lpl]);
@@ -132,6 +157,17 @@ public class GameMode implements Screen {
 			inputController = new InputController(gameplayController.NUM_LANES, gameplayController.lpl);
 		}
 	}
+
+	/**
+	 * Get the current level from LevelSelect
+	 * Note this function
+	 */
+	public void SetCurrLevel(String level) {
+//		TODO: need to merge with level screen
+//		currLevel is some versions of levelscreen.getSelectedJson();
+		currLevel = Integer.valueOf(level);
+	}
+
 
 	/**
 	 * Dispose of all (non-static) resources allocated to this mode.
@@ -154,14 +190,19 @@ public class GameMode implements Screen {
 	public void populate(AssetDirectory directory) {
 		streetLevelBackground = new FilmStrip(directory.getEntry("street-background", Texture.class), 1, 1);
 		displayFont = directory.getEntry("times",BitmapFont.class);
-		playPressed=false;
-		internal = new AssetDirectory( "loading.json" );
-		internal.loadAssets();
-		internal.finishLoading();
-		playButton = internal.getEntry("play",Texture.class);
-		playButtonCoords = new Vector2(canvas.getWidth()/5, 2*canvas.getHeight()/3);
-
 		gameplayController.populate(directory);
+
+		if (playButton == null) {
+			Gdx.input.setInputProcessor( this );
+			playPressed=false;
+			internal = new AssetDirectory( "loading.json" );
+			internal.loadAssets();
+			internal.finishLoading();
+			playButton = internal.getEntry("play",Texture.class);
+			playButtonCoords = new Vector2(4*canvas.getWidth()/5, 2*canvas.getHeight()/7);
+			Gdx.input.setInputProcessor( this );
+		}
+
 
 
 	}
@@ -179,6 +220,7 @@ public class GameMode implements Screen {
 	private void update(float delta) {
 		// Process the game input
 		inputController.readInput();
+		Gdx.input.setInputProcessor( this );
 
 		// Test whether to reset the game.
 		switch (gameState) {
@@ -228,8 +270,8 @@ public class GameMode implements Screen {
 			gameplayController.level.stopMusic();
 		}
 
-//		System.out.println(gameplayController.checkWinCon());
-
+		// in the future, we should prob move this else where.
+		// so that it is checked near the end of the game.
 		if (gameplayController.checkWinCon()){
 			gameState = GameState.WON;
 			gameplayController.level.stopMusic();
@@ -264,8 +306,6 @@ public class GameMode implements Screen {
 			Color playButtonTint = (playPressed ? Color.GRAY: Color.WHITE);
 			canvas.draw(playButton, playButtonTint, playButton.getWidth()/2, playButton.getHeight()/2,
 					playButtonCoords.x, playButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
-
-
 
 		} else{
 			//Draw everything in the current level
@@ -368,6 +408,111 @@ public class GameMode implements Screen {
 	 */
 	public void setScreenListener(ScreenListener listener) {
 		this.listener = listener;
+	}
+
+	@Override
+	public boolean keyDown(int keycode) {
+		return false;
+	}
+
+	@Override
+	public boolean keyUp(int keycode) {
+		return false;
+	}
+
+	@Override
+	public boolean keyTyped(char character) {
+		return false;
+	}
+	/**
+	 * Checks to see if the location clicked at `screenX`, `screenY` are within the bounds of the given button
+	 * `buttonTexture` and `buttonCoords` should refer to the appropriate button parameters
+	 *
+	 * @param screenX the x-coordinate of the mouse on the screen
+	 * @param screenY the y-coordinate of the mouse on the screen
+	 * @param buttonTexture the specified button texture
+	 * @param buttonCoords the specified button coordinates as a Vector2 object
+	 * @return whether the button specified was pressed
+	 */
+	public boolean isButtonPressed(int screenX, int screenY, Texture buttonTexture, Vector2 buttonCoords, float scale) {
+		// buttons are rectangles
+		// buttonCoords hold the center of the rectangle, buttonTexture has the width and height
+		// get half the x length of the button portrayed
+
+		float xRadius = BUTTON_SCALE * scale * buttonTexture.getWidth()/2.0f;
+		boolean xInBounds = buttonCoords.x - xRadius <= screenX && buttonCoords.x + xRadius >= screenX;
+
+		// get half the y length of the button portrayed
+		float yRadius = BUTTON_SCALE * scale * buttonTexture.getHeight()/2.0f;
+		boolean yInBounds = buttonCoords.y - yRadius <= screenY && buttonCoords.y + yRadius >= screenY;
+		System.out.println(xInBounds && yInBounds);
+		return xInBounds && yInBounds;
+	}
+
+	@Override
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		screenY = canvas.getHeight()-screenY;
+		if (isButtonPressed(screenX, screenY, playButton, playButtonCoords,scale)) {
+			playPressed=true;
+			GameCanvas newCanvas = new GameCanvas();
+	//		GameMode playing = new GameMode(newCanvas);
+//			playing.populate(directory);
+//			playing.setScreenListener(listener);
+//			String nextLevel ="levels/"+(currLevel+1)+".json";
+//			playing.readLevel(directory, nextLevel);
+//			playing.show();
+			listener.exitScreen(this, ExitCode.TO_PLAYING);
+
+
+
+
+		}
+		return false;
+	}
+
+	@Override
+	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+		return false;
+	}
+
+	@Override
+	public boolean touchDragged(int screenX, int screenY, int pointer) {
+		return false;
+	}
+
+	@Override
+	public boolean mouseMoved(int screenX, int screenY) {
+		return false;
+	}
+
+	@Override
+	public boolean scrolled(float amountX, float amountY) {
+		return false;
+	}
+
+	@Override
+	public void connected(Controller controller) {
+
+	}
+
+	@Override
+	public void disconnected(Controller controller) {
+
+	}
+
+	@Override
+	public boolean buttonDown(Controller controller, int buttonCode) {
+		return false;
+	}
+
+	@Override
+	public boolean buttonUp(Controller controller, int buttonCode) {
+		return false;
+	}
+
+	@Override
+	public boolean axisMoved(Controller controller, int axisCode, float value) {
+		return false;
 	}
 
 }
