@@ -22,14 +22,6 @@ public class Note {
 	private FilmStrip backSplash;
 	private FilmStrip frontSplash;
 
-	public int getNUM_ANIM_FRAMES() {
-		return NUM_ANIM_FRAMES;
-	}
-
-	public void setNUM_ANIM_FRAMES(int NUM_ANIM_FRAMES) {
-		this.NUM_ANIM_FRAMES = NUM_ANIM_FRAMES;
-	}
-
 	/** The number of animation frames in our filmstrip */
 	private int   NUM_ANIM_FRAMES;
 	/** Current animation frame for this shell */
@@ -68,6 +60,11 @@ public class Note {
 		hitSample = t;
 	}
 
+	/** nubmer of beats held for */
+	private int heldFor;
+	public int getHeldFor() { return heldFor; }
+	public void setHeldFor(int heldFor) { this.heldFor = heldFor; }
+
 	// hold note logic
 	/**
 	 * How many samples do we intend to hold the held note for?
@@ -82,7 +79,7 @@ public class Note {
 	}
 
 	private boolean holding;
-	public boolean getHolding() { return holding; }
+	public boolean isHolding() { return holding; }
 	public void setHolding(boolean holding) { this.holding = holding; }
 
 	private float holdingAnimationSpeed;

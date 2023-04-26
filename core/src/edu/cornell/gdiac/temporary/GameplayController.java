@@ -433,6 +433,7 @@ public class GameplayController {
 	/** Trigger inputs */
 	public boolean[] triggers;
 
+
 	/**
 	 * Handles logic of a hit, whether it is on beat or not, etc.
 	 * @param note the note that we are trying to hit
@@ -488,6 +489,8 @@ public class GameplayController {
 			note.setHitStatus(offBeatLoss);
 		}
 	}
+
+
 	/**
 	 * Handle transitions and inputs
 	 * @param input
@@ -523,7 +526,7 @@ public class GameplayController {
 				if (switches[i] && i != activeBandMember){
 					//Check only the lanes that are not the current active lane
 					for(Note n : level.getBandMembers()[i].getSwitchNotes()) {
-						checkHit(n, currentSample, 8, 5, 0, n.getY(),true, hitReg, false);
+						checkHit(n, currentSample, 10, 8, 0, n.getY(),true, hitReg, false);
 					}
 					//set goalBM
 					goalBandMember = i;
@@ -536,45 +539,59 @@ public class GameplayController {
 			}
 		}
 		else {
-			//Otherwise we must be in transition
+			// Transition phase
 
-			//Increment progress
+			// Increment progress
 			++t_progress;
 
-			//Check if we are done, if so set active BM and change phase
+			// Check if we are done, if so set active BM and change phase
 			if(t_progress == T_SwitchPhases){
 				curP = PlayPhase.NOTES;
 				activeBandMember = goalBandMember;
 			}
-			//During this phase we need to change the BL and widths of each BM
+
+			// During this phase we need to change the BL and widths of each BM
 			updateBandMemberCoords();
 		}
 		//Now check for hit and held notes
 		int checkBandMember = curP == PlayPhase.NOTES ? activeBandMember : goalBandMember;
-		for(Note n : level.getBandMembers()[checkBandMember].getHitNotes()){
-			if(n.getNoteType() == Note.NoteType.BEAT){
-				if(triggers[n.getLine()] && !hitReg[n.getLine()]){
+		for (Note n : level.getBandMembers()[checkBandMember].getHitNotes()){
+			if (n.getNoteType() == Note.NoteType.BEAT){
+				if (triggers[n.getLine()] && !hitReg[n.getLine()]){
 					//Check for all the notes in this line and in the active band member
 					//See if any are close enough
-					checkHit(n, currentSample, 3, 1, -1, n.getY(),true, hitReg, false);
+					checkHit(n, currentSample, 4, 2, -1, n.getY(),true, hitReg, false);
 				}
 			}
-			else{
-				// HOLD NOTE
+			// HOLD NOTE
+			else {
 				//Check if we hit the trigger down close enough to the head
 				if(triggers[n.getLine()] && !hitReg[n.getLine()]){
 					checkHit(n, currentSample, 4, 2, -1, n.getBottomY(),false, hitReg, false);
 				}
 				//check if we lifted close to the end (we only check if we ended up holding the note in the first place)
-				if(lifted[n.getLine()] && n.getHolding()){
-					checkHit(n, currentSample, 4, 2, -1, n.getBottomY(),true, hitReg, true);
+				if(lifted[n.getLine()] && n.isHolding()){
+					checkHit(n, currentSample, 1, 0, -1, n.getBottomY(),true, hitReg, true);
+					n.setHeldFor(0);
 					// destroy (if you are already holding)
-					if (n.getHolding()) n.setDestroyed(true);
+					if (n.isHolding()) n.setDestroyed(true);
 					n.setHolding(false);
+				}
+				// check the hold
+				if (n.isHolding()) {
+					// update competency every beat
+					long samplesPerBeat = (long) (level.getMusic().getSampleRate() * (60f / level.getBpm()));
+					// approximation of how many samples held
+					long heldSamples = level.getCurrentSample() - n.getHitSample();
+					System.out.println(samplesPerBeat);
+					if (heldSamples / samplesPerBeat > n.getHeldFor()) {
+						level.getBandMembers()[activeBandMember].compUpdate(2);
+						n.setHeldFor(n.getHeldFor() + 1);
+					}
 				}
 				// destroy if the note head has gone past (will only be true while you're holding)
 				// also reset the combo
-				if (((currentSample - this.offset) - (n.getHitSample() + n.getHoldSamples())) > baseLeniency && n.getHolding()) {
+				if (((currentSample - this.offset) - (n.getHitSample() + n.getHoldSamples())) > baseLeniency && n.isHolding()) {
 					n.setDestroyed(true);
 					sb.resetCombo();
 				}
