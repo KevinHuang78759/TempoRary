@@ -254,8 +254,8 @@ public class BandMember {
         backing = hitNotes;
         hitNotes = temp;
         backing.clear();
-        System.out.println(hitNotes.size);
-        System.out.println(switchNotes.size);
+//        System.out.println(hitNotes.size);
+//        System.out.println(switchNotes.size);
     }
 
     /**

@@ -90,8 +90,8 @@
       }
     },
     "jsons": {
-        "level_test": "levels/happy.json",
-        "level_test_old" : "levels/test.json"
+        "1": "levels/1.json",
+        "2" : "levels/2.json"
     },
     "soundEffects": [
       ["tap", "sound/tap.ogg"],
