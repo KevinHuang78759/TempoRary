@@ -2,7 +2,6 @@ package edu.cornell.gdiac.temporary.entity;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Queue;
@@ -210,7 +209,7 @@ public class BandMember {
             if(n.getNoteType() == Note.NoteType.HELD){
                 //Y coordinates based on formula mentioned in discord.
                 float bottomYCalc = spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample()) *(hitY - spawnY);
-                if (!n.getHolding()) {
+                if (!n.isHolding()) {
                     n.setBottomY(bottomYCalc);
                 }
                 n.setHoldMiddleBottomY(bottomYCalc);
@@ -386,7 +385,6 @@ public class BandMember {
 
         float heightScale = barHeight/VerticalUnit.getWidth();
         canvas.draw(VerticalUnit, Color.WHITE, VOrigin.x, VOrigin.y, xLocLeft, yLocLeft, 0.0f, xScaleLeft, heightScale);
-
         canvas.draw(VerticalUnit, Color.WHITE, VOrigin.x, VOrigin.y, xLocRight, yLocRight, 0.0f, xScaleRight, heightScale);
     }
 
@@ -426,7 +424,6 @@ public class BandMember {
         float trueHeight = 0.95f*lineHeight;
         float yScale = trueHeight/lineSep.getHeight();
         float yCoord = ((bottomLeftCorner.y + height) + (bottomLeftCorner.y + height - lineHeight))/2f;
-        Color lColor = Color.BLACK;
         for(int i = 1; i < numLines; ++i){
             canvas.draw(lineSep, Color.WHITE, lineSep.getWidth()/2f, lineSep.getHeight()/2f, bottomLeftCorner.x + i * (width/numLines), yCoord, 0.0f, xScale, yScale);
         }

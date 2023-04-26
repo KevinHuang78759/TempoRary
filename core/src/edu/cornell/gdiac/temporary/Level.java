@@ -86,6 +86,8 @@ public class Level {
         this.music = music;
     }
 
+    public int getBpm() { return this.bpm; }
+
     private BandMember[] bandMembers;
 
     // TEXTURES

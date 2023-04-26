@@ -16,19 +16,11 @@ import com.badlogic.gdx.graphics.*;
 /**
  * Model class for Notes.
  */
-public class Note{
+public class Note {
 	/** How fast we change frames (one frame per 4 calls to update) */
 	private static final float ANIMATION_SPEED = 0.25f;
 	private FilmStrip backSplash;
 	private FilmStrip frontSplash;
-
-	public int getNUM_ANIM_FRAMES() {
-		return NUM_ANIM_FRAMES;
-	}
-
-	public void setNUM_ANIM_FRAMES(int NUM_ANIM_FRAMES) {
-		this.NUM_ANIM_FRAMES = NUM_ANIM_FRAMES;
-	}
 
 	/** The number of animation frames in our filmstrip */
 	private int   NUM_ANIM_FRAMES;
@@ -68,6 +60,11 @@ public class Note{
 		hitSample = t;
 	}
 
+	/** nubmer of beats held for */
+	private int heldFor;
+	public int getHeldFor() { return heldFor; }
+	public void setHeldFor(int heldFor) { this.heldFor = heldFor; }
+
 	// hold note logic
 	/**
 	 * How many samples do we intend to hold the held note for?
@@ -82,7 +79,7 @@ public class Note{
 	}
 
 	private boolean holding;
-	public boolean getHolding() { return holding; }
+	public boolean isHolding() { return holding; }
 	public void setHolding(boolean holding) { this.holding = holding; }
 
 	private float holdingAnimationSpeed;
@@ -298,15 +295,11 @@ public class Note{
 		//Calculate a scale such that the entire sprite fits within both confines, but does not get distorted
 		float scale = Math.min(widthConfine/w, heightConfine/h);
 
-
 		float headHeight = animator.getRegionHeight()*scale;
 
-		if(nt == NoteType.HELD){
+		if (nt == NoteType.HELD){
 			backSplash.setFrame((int) holdingAnimationFrames);
 			frontSplash.setFrame((int) holdingAnimationFrames);
-
-
-
 
 			// DRAW THE HELD MIDDLE PART OF THE NOTE
 			//The tail should be about half the width of the actual note assets
@@ -409,7 +402,7 @@ public class Note{
 			}
 
 		}
-		else{
+		else {
 			animator.setFrame((int)animeframe);
 			if (y + headHeight/2 >topbound && y - headHeight/2 < topbound) {
 				canvas.draw(animator, Color.WHITE, origin.x, origin.y, 4000, 4000,

@@ -108,7 +108,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		menu.dispose();
 		menu = null;
 
-		// Unload all of the resources
+		// Unload all the resources
 		if (directory != null) {
 			directory.unloadAssets();
 			directory.dispose();
