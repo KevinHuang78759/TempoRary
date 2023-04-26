@@ -615,7 +615,6 @@ public class GameplayController {
 					long samplesPerBeat = (long) (level.getMusic().getSampleRate() * (60f / level.getBpm()));
 					// approximation of how many samples held
 					long heldSamples = level.getCurrentSample() - n.getHitSample();
-					System.out.println(samplesPerBeat);
 					if (heldSamples / samplesPerBeat > n.getHeldFor()) {
 						level.getBandMembers()[activeBandMember].compUpdate(2);
 						n.setHeldFor(n.getHeldFor() + 1);

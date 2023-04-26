@@ -167,6 +167,7 @@ public class Level {
         String song = data.getString("song");
         music = directory.getEntry(song, MusicQueue.class);
         music.setVolume(0.8f);
+        System.out.println(music.getNumberOfSources());
         songSource = music.getSource(0);
         maxSample = songSource.getDuration() * songSource.getSampleRate();
         // load all related level textures
