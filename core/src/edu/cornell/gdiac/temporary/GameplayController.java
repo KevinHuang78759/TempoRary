@@ -102,8 +102,6 @@ public class GameplayController {
 		//Values decided by pure look
 		setBounds(width, height);
 		sfx = new SoundController<>();
-		sb = new Scoreboard(4, new int[]{1, 2, 3, 5}, new long[]{10, 20, 30});
-		sb.setFontScale((totalHeight - TOPBOUND)/2f);
 	}
 
 	float totalWidth;
@@ -142,6 +140,8 @@ public class GameplayController {
 	 * Loads a level
 	 */
 	public void loadLevel(JsonValue levelData, AssetDirectory directory){
+		sb = new Scoreboard(4, new int[]{1, 2, 3, 5}, new long[]{10, 20, 30});
+		sb.setFontScale((totalHeight - TOPBOUND)/2f);
 		particles = new Array<>();
 		backing = new Array<>();
 		level = new Level(levelData, directory);
@@ -241,6 +241,23 @@ public class GameplayController {
 				}
 			}
 		}
+	}
+
+
+	/**
+	 * Check if the player has won the game.
+	 * @return true if there are no more active and loading notes,
+	 * and all band members have competency bar > 0.
+	 */
+	public boolean checkWinCon(){
+		boolean bandNotes = true;
+		for(int i = 0; i < level.getBandMembers().length; ++i){
+			BandMember bm = level.getBandMembers()[i];
+			bandNotes = bandNotes && bm.getAllNotes().isEmpty();
+		}
+		// TODO: FIX THE WIN CONDITION
+//		return (particles.size == 0 && bandNotes) || !level.isMusicPlaying();
+		return !level.isMusicPlaying();
 	}
 
 	/**

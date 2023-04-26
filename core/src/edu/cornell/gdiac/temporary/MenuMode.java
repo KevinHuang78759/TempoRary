@@ -244,7 +244,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
      * @return true if the player is ready to go
      */
     public boolean isReady() {
-        return pressState == ExitCode.TO_PLAYING
+        return pressState == ExitCode.TO_LEVEL
                 || pressState == ExitCode.TO_EDITOR
                 || pressState == ExitCode.TO_CALIBRATION
                 || pressState == ExitCode.TO_EXIT;
@@ -475,7 +475,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
      * @return whether to hand the event to other listeners.
      */
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if (pressState == ExitCode.TO_PLAYING
+        if (pressState == ExitCode.TO_LEVEL
                 || pressState == ExitCode.TO_EDITOR
                 || pressState == ExitCode.TO_CALIBRATION
                 || pressState == ExitCode.TO_EXIT) {
@@ -488,6 +488,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
             case HOME:
             // check if buttons get pressed appropriately
             if (isButtonPressed(screenX, screenY, playButton, playButtonCoords)) {
+        //            pressState = PLAY_PRESSED;
                 pressState = PLAY_PRESSED;
             }
             if (isButtonPressed(screenX, screenY, levelEditorButton, levelEditorButtonCoords)) {
@@ -544,7 +545,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         switch (pressState){
             case PLAY_PRESSED:
-                pressState = ExitCode.TO_PLAYING;
+                pressState = ExitCode.TO_LEVEL;
                 return false;
             case LEVEL_EDITOR_PRESSED:
                 pressState = ExitCode.TO_EDITOR;
@@ -605,7 +606,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         if (pressState == PLAY_PRESSED) {
             ControllerMapping mapping = controller.getMapping();
             if (mapping != null && buttonCode == mapping.buttonStart ) {
-                pressState = ExitCode.TO_PLAYING;
+                pressState = ExitCode.TO_LEVEL;
                 return false;
             }
         }

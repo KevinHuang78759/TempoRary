@@ -73,6 +73,36 @@ public class InputController {
 	 * @return true if the pause buttonw as pressed.*/
 	public boolean didPause() {return pausePressed;}
 
+	// DEFAULT PRESETS!
+//	private final int[] triggerBindingsL = new int[]{
+//		Input.Keys.D,
+//		Input.Keys.F,
+//		Input.Keys.J,
+//		Input.Keys.K
+//	};
+//
+//	private final int[] switchesBindings1 = new int[]{
+//		Input.Keys.E,
+//		Input.Keys.R,
+//		Input.Keys.U,
+//		Input.Keys.I
+//	};
+//
+//	private final int[] switchesBindings2 = new int[]{
+//		Input.Keys.D,
+//		Input.Keys.F,
+//		Input.Keys.J,
+//		Input.Keys.K
+//	};
+//
+//	private final int[] switchesBindings3 = new int[]{
+//			Input.Keys.D,
+//			Input.Keys.F,
+//			Input.Keys.J,
+//			Input.Keys.K
+//	};
+
+	// TODO: TURN THIS INTO A SINGLETON INSTANCE PLEASE
 	/**
 	 * Creates a new input controller
 	 * 
@@ -88,6 +118,7 @@ public class InputController {
 			xbox = null;
 		}
 		clicking = false;
+		Typed = false;
 		triggerLast = new boolean[lpl];
 		switchesLast = new boolean[lanes];
 		triggers = new boolean[lpl];
@@ -99,12 +130,17 @@ public class InputController {
 				Input.Keys.J,
 				Input.Keys.K
 		};
-
 		switchesBindings = new int[]{
 				Input.Keys.E,
 				Input.Keys.R,
 				Input.Keys.U,
 				Input.Keys.I,
+		};
+		switchesOrder = new int[] {
+				0,
+				1,
+				2,
+				3,
 		};
 	}
 
@@ -147,6 +183,8 @@ public class InputController {
 	}
 
 	private boolean clicking;
+	private char characterTyped;
+	private boolean Typed;
 
 	public class Processor implements InputProcessor {
 
@@ -159,6 +197,8 @@ public class InputController {
 		}
 
 		public boolean keyTyped (char character){
+			characterTyped = character;
+			Typed = true;
 			return false;
 		}
 
@@ -268,6 +308,14 @@ public class InputController {
 	private boolean placeStartPress;
 	private boolean placeStartLast;
 
+	private boolean placeFlags;
+	private boolean placeFlagsPress;
+	private boolean placeFlagsLast;
+
+	private boolean placeHits;
+	private boolean placeHitsPress;
+	private boolean placeHitsLast;
+
 	boolean[] triggerPress;
 	boolean[] triggerLifted;
 	/**
@@ -307,6 +355,10 @@ public class InputController {
 
 		placeStartPress = Gdx.input.isKeyPressed(Input.Keys.P);
 
+		placeFlagsPress = Gdx.input.isKeyPressed(Input.Keys.C);
+
+		placeHitsPress = Gdx.input.isKeyPressed(Input.Keys.X);
+
 		savePress = Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && Gdx.input.isKeyPressed(Input.Keys.S);
 
 		loadPress = Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && Gdx.input.isKeyPressed(Input.Keys.L);
@@ -318,13 +370,13 @@ public class InputController {
 
 		//Compute actual values by comparing with previous value. We only register a click if the trigger or switch
 		// went from false to true. We only register a lift if the trigger went from true to false.
-		for(int i = 0; i < Math.max(switchesPress.length, triggerPress.length); ++i){
-			if(i < triggers.length){
+		for (int i = 0; i < Math.max(switchesPress.length, triggerPress.length); ++i){
+			if (i < triggers.length){
 				triggers[i] = !triggerLast[i] && triggerPress[i];
 				triggerLifted[i] = triggerLast[i] && !triggerPress[i];
 				triggerLast[i] = triggerPress[i];
 			}
-			if(i < switches.length){
+			if (i < switches.length) {
 				if (switchesOrder != null) {
 					switches[i] = !switchesLast[i] && switchesPress[switchesOrder[i]];
 					switchesLast[i] = switchesPress[switchesOrder[i]];
@@ -364,6 +416,12 @@ public class InputController {
 
 		placeStart = !placeStartLast && placeStartPress;
 		placeStartLast = placeStartPress;
+
+		placeFlags = !placeFlagsLast && placeFlagsPress;
+		placeFlagsLast = placeFlagsPress;
+
+		placeHits = !placeHitsLast && placeHitsPress;
+		placeHitsLast = placeHitsPress;
 	}
 
 	/**
@@ -418,12 +476,23 @@ public class InputController {
 		return false;
 	}
 
+	public boolean didType() {
+		if (Typed){
+			Typed = false;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	public float getMouseX() { return Gdx.input.getX(); }
 
 	public float getMouseY() { return Gdx.input.getY(); }
 
 
 	public boolean didMove() { return mouseMoved;}
+
+	public char getCharTyped() {return characterTyped;}
 
 	public boolean didErase() {return erased;}
 
@@ -462,6 +531,10 @@ public class InputController {
 
 	public boolean pressedPlaceStart() {return placeStart;}
 
+	public boolean pressedPlaceHits() {return placeHits;}
+
+	public boolean pressedPlaceFlags() {return placeFlags;}
+
 	public boolean didSave() {return save;}
 
 	public boolean didLoad() {return load;}
@@ -469,6 +542,8 @@ public class InputController {
 	public boolean durationUp() {return upDuration;}
 
 	public boolean durationDown() {return downDuration;}
+
+	public boolean FinishedTyping() {return Gdx.input.isKeyPressed(Input.Keys.ENTER);}
 
 	public void setEditorProcessor() {
 		Gdx.input.setInputProcessor(processor);
