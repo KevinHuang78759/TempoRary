@@ -289,15 +289,20 @@ public class GameMode implements Screen {
 				break;
 			case OVER:
 				if (inputController.didReset()) {
-					gameplayController.level.stopMusic();
 					gameplayController.reset();
-					gameplayController.loadLevel(levelData, assetDirectory);
+					gameplayController.reloadLevel();
 					waiting = 4f;
 					gameState = GameState.INTRO;
 				}
 				break;
 			case PLAY:
-				if (inputController.didExit()) {
+				if (inputController.didReset()) {
+					gameplayController.reset();
+					gameplayController.reloadLevel();
+					waiting = 4f;
+					gameState = GameState.INTRO;
+				}
+				else if (inputController.didExit()) {
 					gameplayController.level.pauseMusic();
 					gameState = GameState.PAUSE;
 				} else {
@@ -318,9 +323,8 @@ public class GameMode implements Screen {
 					}
 					boolean didRestart = (isButtonPressed(screenX, screenY, restartButton, restartCoords));
 					if (didRestart) {
-						gameplayController.level.stopMusic();
 						gameplayController.reset();
-						gameplayController.loadLevel(levelData, assetDirectory);
+						gameplayController.reloadLevel();
 						waiting = 4f;
 						gameState = GameState.INTRO;
 					}

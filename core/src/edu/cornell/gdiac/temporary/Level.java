@@ -1,11 +1,14 @@
 package edu.cornell.gdiac.temporary;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.audio.AudioEngine;
+import edu.cornell.gdiac.audio.AudioSource;
 import edu.cornell.gdiac.audio.MusicQueue;
 import edu.cornell.gdiac.temporary.entity.BandMember;
 import edu.cornell.gdiac.temporary.entity.Note;
@@ -147,7 +150,11 @@ public class Level {
      * background of each lane
      */
     private Texture laneBackground;
+
+    AudioSource songSource;
+    JsonValue data;
     public Level(JsonValue data, AssetDirectory directory) {
+        this.data = data;
         //Read in Json  Value and populate asset textures
         lastDec = 0;
         levelName = data.getString("levelName");
@@ -158,6 +165,7 @@ public class Level {
         String song = data.getString("song");
         music = directory.getEntry(song, MusicQueue.class);
         music.setVolume(0.8f);
+        songSource = music.getSource(0);
 
         // load all related level textures
         hitNoteTexture = directory.getEntry("hit", Texture.class);
@@ -230,6 +238,8 @@ public class Level {
             }
         }
     }
+
+
 
     public void setMusicVolume(float vol) {
         music.setVolume(vol);
@@ -343,6 +353,59 @@ public class Level {
     public void startmusic(){
         musicInitialized = true;
         music.play();
+    }
+
+    public void resetLevel(){
+        music.stop();
+        music.reset();
+        music.clearSources();
+        music = ((AudioEngine) Gdx.audio).newMusicBuffer( songSource.getChannels() == 1, songSource.getSampleRate() );
+        music.addSource(songSource);
+        bandMembers = new BandMember[data.get("bandMembers").size];
+        spawnOffset = music.getSampleRate();
+        for(int i = 0; i < bandMembers.length; i++){
+            bandMembers[i] = new BandMember();
+            JsonValue bandMemberData = data.get("bandMembers").get(i);
+            Queue<Note> notes = new Queue<>();
+            JsonValue noteData = bandMemberData.get("notes");
+            for(int j = 0; j < noteData.size; ++j){
+                JsonValue thisNote = noteData.get(j);
+                Note n;
+                if (thisNote.getString("type").equals("beat")){
+                    n = new Note(thisNote.getInt("line"), Note.NoteType.BEAT, thisNote.getLong("position") - spawnOffset, hitNoteTexture);
+                }
+                else if (thisNote.getString("type").equals("switch")){
+                    n = new Note(thisNote.getInt("line"), Note.NoteType.SWITCH, thisNote.getLong("position") - spawnOffset, switchNoteTexture);
+                }
+                else {
+                    n = new Note(thisNote.getInt("line"), Note.NoteType.HELD, thisNote.getLong("position") - spawnOffset, holdNoteTexture);
+                    n.setHoldTextures(holdTrailTexture,1,holdEndTexture,1, backSplash, frontSplash, getAnimationRateFromBPM(bpm));
+                    n.setHoldSamples(thisNote.getLong("duration"));
+                }
+                n.setHitSample(thisNote.getInt("position"));
+                notes.addLast(n);
+            }
+            bandMembers[i].setAllNotes(notes);
+            bandMembers[i].setCurComp(maxCompetency);
+            bandMembers[i].setMaxComp(maxCompetency);
+            bandMembers[i].setLossRate(bandMemberData.getInt("competencyLossRate"));
+            bandMembers[i].setHpBarFilmStrip(hpbar, 47);
+            bandMembers[i].setIndicatorTextures(noteIndicator, noteIndicatorHit);
+            switch (bandMemberData.getString("instrument")) {
+                case "violin":
+                    bandMembers[i].setCharacterFilmstrip(violinSprite);
+                    break;
+                case "piano":
+                    bandMembers[i].setCharacterFilmstrip(synthSprite);
+                    break;
+                case "drum":
+                    bandMembers[i].setCharacterFilmstrip(drummerSprite);
+                    break;
+                case "voice":
+                    bandMembers[i].setCharacterFilmstrip(voiceSprite);
+                    break;
+            }
+        }
     }
 
     public void stopMusic() {
