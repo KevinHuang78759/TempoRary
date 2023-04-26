@@ -203,6 +203,10 @@ public class InputController {
 	}
 
 
+	public boolean[] getTriggers() {
+		return triggers;
+	}
+
 	/**
 	 * Reads input from the keyboard.
 	 *
