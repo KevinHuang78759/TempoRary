@@ -573,8 +573,10 @@ public class GameplayController {
 					n.setHolding(false);
 				}
 				// destroy if the note head has gone past (will only be true while you're holding)
+				// also reset the combo
 				if (((currentSample - this.offset) - (n.getHitSample() + n.getHoldSamples())) > baseLeniency && n.getHolding()) {
 					n.setDestroyed(true);
+					sb.resetCombo();
 				}
 			}
 		}

@@ -16,7 +16,7 @@ import com.badlogic.gdx.graphics.*;
 /**
  * Model class for Notes.
  */
-public class Note{
+public class Note {
 	/** How fast we change frames (one frame per 4 calls to update) */
 	private static final float ANIMATION_SPEED = 0.25f;
 	private FilmStrip backSplash;
@@ -298,15 +298,11 @@ public class Note{
 		//Calculate a scale such that the entire sprite fits within both confines, but does not get distorted
 		float scale = Math.min(widthConfine/w, heightConfine/h);
 
-
 		float headHeight = animator.getRegionHeight()*scale;
 
-		if(nt == NoteType.HELD){
+		if (nt == NoteType.HELD){
 			backSplash.setFrame((int) holdingAnimationFrames);
 			frontSplash.setFrame((int) holdingAnimationFrames);
-
-
-
 
 			// DRAW THE HELD MIDDLE PART OF THE NOTE
 			//The tail should be about half the width of the actual note assets
@@ -409,7 +405,7 @@ public class Note{
 			}
 
 		}
-		else{
+		else {
 			animator.setFrame((int)animeframe);
 			if (y + headHeight/2 >topbound && y - headHeight/2 < topbound) {
 				canvas.draw(animator, Color.WHITE, origin.x, origin.y, 4000, 4000,
