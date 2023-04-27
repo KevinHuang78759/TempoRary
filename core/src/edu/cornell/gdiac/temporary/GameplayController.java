@@ -273,9 +273,6 @@ public class GameplayController {
 	 * and all band members have competency bar > 0.
 	 */
 	public boolean checkWinCon(){
-
-		// TODO: FIX THE WIN CONDITION
-//		return (particles.size == 0 && bandNotes) || !level.isMusicPlaying();
 		return !level.isMusicPlaying() || !level.hasMoreNotes();
 	}
 

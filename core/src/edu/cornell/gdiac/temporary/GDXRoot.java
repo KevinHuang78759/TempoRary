@@ -151,8 +151,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			loading = null;
 		}
 		else if (exitCode == ExitCode.TO_LEVEL) {
-			// TODO: probably add the level populate here
-//			to playing is now to level select
+
 			levelscreen.reset();
 			levelscreen.setScreenListener(this);
 			levelscreen.populate(directory);
