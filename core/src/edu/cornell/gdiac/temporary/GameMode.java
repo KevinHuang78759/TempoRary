@@ -272,10 +272,9 @@ public class GameMode implements Screen {
 					}
 				}
 				// wait a few frames before starting
-				if (waiting == 4f && !justPaused) {
-					gameplayController.reset();
-					gameplayController.update();
+				if (waiting >= 4f) {
 					gameplayController.start();
+					gameplayController.update();
 				}
 				waiting -= delta;
 				if (waiting < 1f) {
