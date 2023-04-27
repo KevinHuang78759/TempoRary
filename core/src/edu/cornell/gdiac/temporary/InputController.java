@@ -51,6 +51,8 @@ public class InputController {
 	public boolean mouseClicked;
 
 	public boolean pausePressed;
+	private int[] triggerBindingsAlt;
+	private int[] switchesBindingsAlt;
 
 	/**
 	 * Returns true if the reset button was pressed.
@@ -103,6 +105,21 @@ public class InputController {
 //	};
 
 	// TODO: TURN THIS INTO A SINGLETON INSTANCE PLEASE
+	/** The singleton instance of the input controller */
+	private static InputController theController = null;
+
+	/**
+	 * Return the singleton instance of the input controller
+	 *
+	 * @return the singleton instance of the input controller
+	 */
+	public static InputController getInstance() {
+		if (theController == null) {
+			theController = new InputController();
+		}
+		return theController;
+	}
+
 	/**
 	 * Creates a new input controller
 	 * 
@@ -130,11 +147,23 @@ public class InputController {
 				Input.Keys.J,
 				Input.Keys.K
 		};
+		triggerBindingsAlt = new int[]{
+				Input.Keys.LEFT,
+				Input.Keys.DOWN,
+				Input.Keys.UP,
+				Input.Keys.RIGHT
+		};
 		switchesBindings = new int[]{
 				Input.Keys.E,
 				Input.Keys.R,
 				Input.Keys.U,
 				Input.Keys.I,
+		};
+		switchesBindingsAlt = new int[]{
+				Input.Keys.NUM_1,
+				Input.Keys.NUM_2,
+				Input.Keys.NUM_3,
+				Input.Keys.NUM_4,
 		};
 		switchesOrder = new int[] {
 				0,
@@ -332,8 +361,8 @@ public class InputController {
 		boolean[] switchesPress = new boolean[4];
 
 		for (int i = 0; i < triggerBindings.length; i++) {
-			triggerPress[i] = Gdx.input.isKeyPressed(triggerBindings[i]);
-			switchesPress[i] = Gdx.input.isKeyPressed(switchesBindings[i]);
+			triggerPress[i] = Gdx.input.isKeyPressed(triggerBindings[i]) || Gdx.input.isKeyPressed(triggerBindingsAlt[i]);
+			switchesPress[i] = Gdx.input.isKeyPressed(switchesBindings[i]) || Gdx.input.isKeyPressed(switchesBindingsAlt[i]);
 		}
 
 		moves = new boolean[]{
