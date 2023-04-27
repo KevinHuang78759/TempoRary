@@ -177,7 +177,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         Table controlTable = new Table();
         Table volumeTable = new Table();
 
-        table.add(headerTable);
+        table.add(headerTable).top().left();;
         table.row();
         table.add(controlTable).expand();
         table.row();
@@ -220,6 +220,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
         controlTable.add(new Label("Notes", labelStyle)).colspan(2);
 
+        // TODO: CHANGE THIS TO LOOP AND ADD SWITCHES
         controlTable.row();
 
         controlTable.add(new Label("Lane 1", labelStyle)).expand();
@@ -308,7 +309,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
-        table.setDebug(true);
+//        table.setDebug(true);
 //        tableContainer = new Container<>();
 
         // Compute the dimensions from the canvas

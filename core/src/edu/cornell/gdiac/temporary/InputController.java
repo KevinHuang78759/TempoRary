@@ -51,8 +51,6 @@ public class InputController {
 	public boolean mouseClicked;
 
 	public boolean pausePressed;
-	private int[] triggerBindingsAlt;
-	private int[] switchesBindingsAlt;
 
 	/**
 	 * Returns true if the reset button was pressed.
@@ -291,9 +289,11 @@ public class InputController {
 	private static boolean[] triggers;
 	private boolean[] triggerLast;
 	private static int[] triggerBindings;
+	private static int[] triggerBindingsAlt;
 	private static boolean[] switches;
 	private boolean[] switchesLast;
 	private static int[] switchesBindings;
+	private static int[] switchesBindingsAlt;
 	private boolean[] moves;
 	private boolean erased;
 	private boolean erasedPress;
