@@ -120,13 +120,13 @@
       }
     },
     "samples": {
-      "challenger": "sounds/ChallengerApproaches.ogg",
-      "aliens": "sounds/Aliens.ogg"
+      "challenger": "music/Challenger-Approaches.ogg",
+      "aliens": "music/Aliens.ogg"
     },
     "soundtrack": {
       "calibration": {
         "sources": [
-          "sounds/calibration.ogg"
+          "music/calibration.ogg"
         ]
       }
     },
