@@ -357,8 +357,10 @@ public class Level {
             //check if enough samples have passed since the last decrement
             if(sample - lastDec >= music.getSampleRate()){
                 //if so, decrement competency
-                bandMember.compUpdate(-bandMember.getLossRate());
-                decTog = true;
+                if(!bandMember.getHitNotes().isEmpty()){
+                    bandMember.compUpdate(-bandMember.getLossRate());
+                    decTog = true;
+                }
             }
         }
         if (decTog){
@@ -383,6 +385,7 @@ public class Level {
     }
 
     public void resetLevel(){
+        lastDec = 0;
         music.stop();
         music.reset();
         music.clearSources();

@@ -143,11 +143,10 @@ public class BandMember {
      */
     private Array<Note> backing;
 
-    private int lossRateImm;
+
     private int lossRate;
     public void setLossRate(int t){
         lossRate = t;
-        lossRateImm = t;
     }
     public int getLossRate(){
         return lossRate;
@@ -239,12 +238,6 @@ public class BandMember {
             else{
                 hitNotes.add(n);
             }
-        }
-        if(hitNotes.isEmpty()){
-            lossRate = 0;
-        }
-        else{
-            lossRate = lossRateImm;
         }
     }
 
