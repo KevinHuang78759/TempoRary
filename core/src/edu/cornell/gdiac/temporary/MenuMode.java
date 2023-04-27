@@ -124,6 +124,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     // SCENES FOR THE SETTINGS PAGE
     private Stage stage;
     private Table table;
+    Container<Table> tableContainer;
     private BitmapFont font;
 
     // MenuState
@@ -165,12 +166,25 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
         backButton = directory.getEntry("play-old", Texture.class);
 
-        font = directory.getEntry("lucida", BitmapFont.class);
+        font = directory.getEntry("main", BitmapFont.class);
 
         addSceneElements();
     }
 
     private void addSceneElements() {
+
+        Table headerTable = new Table();
+        Table controlTable = new Table();
+        Table volumeTable = new Table();
+
+        table.add(headerTable).top().left();;
+        table.row();
+        table.add(controlTable).expand();
+        table.row();
+        table.add(volumeTable).expand();
+
+        // TODO: add calibration button
+
         Button.ButtonStyle backButtonStyle = new Button.ButtonStyle();
         backButtonStyle.up = new TextureRegionDrawable(exitButton);
         backButtonStyle.down = new TextureRegionDrawable(exitButton);
@@ -200,16 +214,43 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
         table.row();
 
-        table.add(button);
+        headerTable.add(button);
+
         table.row();
 
-        table.add(musicLabel);
-        table.add(musicVolumeSlider).width(800);
+        controlTable.add(new Label("Notes", labelStyle)).colspan(2);
+
+        // TODO: CHANGE THIS TO LOOP AND ADD SWITCHES
+        controlTable.row();
+
+        controlTable.add(new Label("Lane 1", labelStyle)).expand();
+        controlTable.add(new Label("D", labelStyle)).expand();
+
+        controlTable.row();
+
+        controlTable.add( new Label("Lane 2", labelStyle)).expandX();
+        controlTable.add( new Label("F", labelStyle)).expandX();
+
+        controlTable.row();
+
+        controlTable.add( new Label("Lane 3", labelStyle)).expandX();
+        controlTable.add( new Label("J", labelStyle)).expandX();
+
+        controlTable.row();
+
+        controlTable.add( new Label("Lane 4", labelStyle)).expandX();
+        controlTable.add( new Label("K", labelStyle)).expandX();
+
         table.row();
 
-        table.add(fxLabel);
-        table.add(fxVolumeSlider).width(800);
+        volumeTable.add(musicLabel);
+        volumeTable.add(musicVolumeSlider).width(800);
+        volumeTable.row();
 
+        volumeTable.add(fxLabel);
+        volumeTable.add(fxVolumeSlider).width(800);
+
+        // LISTENERS
         button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -269,6 +310,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         table.setFillParent(true);
         stage.addActor(table);
 //        table.setDebug(true);
+//        tableContainer = new Container<>();
 
         // Compute the dimensions from the canvas
         resize(canvas.getWidth(),canvas.getHeight());
