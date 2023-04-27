@@ -99,7 +99,6 @@ public class Level {
     private Texture holdNoteTexture;
     private Texture holdEndTexture;
     private Texture holdTrailTexture;
-    private BitmapFont displayFont;
     private Texture hpbar;
     private Texture noteIndicator;
     private Texture noteIndicatorHit;
@@ -156,26 +155,12 @@ public class Level {
 
     float maxSample;
     public Level(JsonValue data, AssetDirectory directory) {
-        this.data = data;
-        //Read in Json  Value and populate asset textures
-        lastDec = 0;
-        levelName = data.getString("levelName");
-        levelNumber = data.getInt("levelNumber");
-        maxCompetency = data.getInt("maxCompetency");
-        bpm = data.getInt("bpm");
 
-        String song = data.getString("song");
-        music = directory.getEntry(song, MusicQueue.class);
-        music.setVolume(0.8f);
-        System.out.println(music.getNumberOfSources());
-        songSource = music.getSource(0);
-        maxSample = songSource.getDuration() * songSource.getSampleRate();
         // load all related level textures
         hitNoteTexture = directory.getEntry("hit", Texture.class);
         switchNoteTexture = directory.getEntry("switch", Texture.class);
         holdNoteTexture = directory.getEntry("hold-start", Texture.class);
         holdTrailTexture = directory.getEntry("hold-trail", Texture.class);
-        displayFont = directory.getEntry("times", BitmapFont.class);
         hpbar = directory.getEntry("hp-bar", Texture.class);
         holdTrailTexture.setWrap(Texture.TextureWrap.ClampToEdge, Texture.TextureWrap.Repeat);
         holdEndTexture = directory.getEntry("hold-end", Texture.class);
@@ -187,6 +172,24 @@ public class Level {
         synthSprite = new FilmStrip(directory.getEntry("piano-cat", Texture.class), 2, 5, 10);
         backSplash = new FilmStrip(directory.getEntry("back-splash", Texture.class), 5, 5, 23);
         frontSplash = new FilmStrip(directory.getEntry("front-splash", Texture.class), 5, 5, 21);
+
+        System.out.println(directory.getEntry("challenger", MusicQueue.class).getNumberOfSources());
+        this.data = data;
+        //Read in Json  Value and populate asset textures
+        lastDec = 0;
+        levelName = data.getString("levelName");
+        levelNumber = data.getInt("levelNumber");
+        maxCompetency = data.getInt("maxCompetency");
+        bpm = data.getInt("bpm");
+        String song = data.getString("song");
+        music = directory.getEntry(song, MusicQueue.class);
+        music.setVolume(0.8f);
+        songSource = music.getSource(0);
+        maxSample = songSource.getDuration() * songSource.getSampleRate();
+        music.clearSources();
+        music = ((AudioEngine) Gdx.audio).newMusicBuffer( songSource.getChannels() == 1, songSource.getSampleRate() );
+        music.addSource(songSource);
+
 
         HUnit = directory.getEntry("borderHUnit", Texture.class);
         VUnit = directory.getEntry("borderVUnit", Texture.class);
@@ -498,5 +501,19 @@ public class Level {
             }
         }
 
+    }
+
+    public void dispose(){
+        music.dispose();
+        laneBackground.dispose();
+        hitNoteTexture.dispose();
+        holdTrailTexture.dispose();
+        holdNoteTexture.dispose();
+        switchNoteTexture.dispose();
+        holdEndTexture.dispose();
+        noteIndicator.dispose();
+        noteIndicatorHit.dispose();
+        hpbar.dispose();
+        music.dispose();
     }
 }

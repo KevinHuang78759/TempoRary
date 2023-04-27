@@ -76,8 +76,7 @@ public class GameMode implements Screen {
 	/** Play button to display when done */
 	private Texture playButton;
 
-	/** Asset directory */
-	private AssetDirectory directory;
+
 
 	private static float BUTTON_SCALE  = 0.25f;
 
@@ -123,8 +122,6 @@ public class GameMode implements Screen {
 	private GameplayController gameplayController;
 	/** Asset directory for level loading */
 	private AssetDirectory assetDirectory;
-	/** Last level loaded*/
-	private JsonValue levelData;
 	/** Lets the intro phase know to just resume the gameplay and not to reset the level */
 	private boolean justPaused;
 
@@ -185,11 +182,12 @@ public class GameMode implements Screen {
 		gameplayController.setOffset(offset);
 	}
 
-	public void readLevel(AssetDirectory loadDirectory, String level) {
-		directory = loadDirectory;
+	public void readLevel(String level, AssetDirectory directory) {
+
 		JsonReader jr = new JsonReader();
 		SetCurrLevel("1");
 		JsonValue levelData = jr.parse(Gdx.files.internal(level));
+		System.out.println("level read");
 		gameplayController.loadLevel(levelData, directory);
 		if (gameplayController.NUM_LANES == 2) {
 			inputController = new InputController(new int[]{1, 2},  new int[gameplayController.lpl]);
@@ -219,8 +217,7 @@ public class GameMode implements Screen {
 	 */
 	public void dispose() {
 		inputController = null;
-		gameplayController.sfx.dispose();
-		gameplayController.sb.dispose();
+		gameplayController.dispose();
 		gameplayController = null;
 		canvas = null;
 	}
@@ -296,13 +293,7 @@ public class GameMode implements Screen {
 				}
 				break;
 			case PLAY:
-				if (inputController.didReset()) {
-					gameplayController.reset();
-					gameplayController.reloadLevel();
-					waiting = 4f;
-					gameState = GameState.INTRO;
-				}
-				else if (inputController.didExit()) {
+				if (inputController.didExit()) {
 					gameplayController.level.pauseMusic();
 					gameState = GameState.PAUSE;
 				} else {
@@ -316,6 +307,16 @@ public class GameMode implements Screen {
 					int screenY = (int) inputController.getMouseY();
 					screenY = canvas.getHeight() - screenY;
 					boolean didResume = (isButtonPressed(screenX, screenY, resumeButton, resumeCoords));
+					boolean didLevel = (isButtonPressed(screenX, screenY, levelButton, levelCoords));
+					if (didLevel) {
+						pressState = ExitCode.TO_MENU;
+					}
+					boolean didMenu = (isButtonPressed(screenX, screenY, menuButton, menuCoords));
+					if (didMenu) {
+						gameplayController.dispose();
+						gameplayController = null;
+						pressState = ExitCode.TO_MENU;
+					}
 					if (didResume) {
 						waiting = 4f;
 						justPaused = true;
@@ -328,14 +329,7 @@ public class GameMode implements Screen {
 						waiting = 4f;
 						gameState = GameState.INTRO;
 					}
-					boolean didLevel = (isButtonPressed(screenX, screenY, levelButton, levelCoords));
-					if (didLevel) {
-						pressState = ExitCode.TO_MENU;
-					}
-					boolean didMenu = (isButtonPressed(screenX, screenY, menuButton, menuCoords));
-					if (didMenu) {
-						pressState = ExitCode.TO_MENU;
-					}
+
 				}
 				break;
 			default:
