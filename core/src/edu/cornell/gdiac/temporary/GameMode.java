@@ -183,7 +183,6 @@ public class GameMode implements Screen {
 	}
 
 	public void readLevel(String level, AssetDirectory directory) {
-
 		JsonReader jr = new JsonReader();
 		SetCurrLevel("1");
 		JsonValue levelData = jr.parse(Gdx.files.internal(level));
@@ -313,8 +312,6 @@ public class GameMode implements Screen {
 					}
 					boolean didMenu = (isButtonPressed(screenX, screenY, menuButton, menuCoords));
 					if (didMenu) {
-						gameplayController.dispose();
-						gameplayController = null;
 						pressState = ExitCode.TO_MENU;
 					}
 					if (didResume) {
@@ -537,7 +534,6 @@ public class GameMode implements Screen {
 	public void hide() {
 		// Useless if called in outside animation loop
 		active = false;
-		gameplayController.level.stopMusic();
 	}
 
 	/**
