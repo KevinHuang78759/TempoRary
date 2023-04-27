@@ -1,20 +1,24 @@
 package edu.cornell.gdiac.temporary;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.AudioEngine;
 import edu.cornell.gdiac.audio.AudioSource;
+import edu.cornell.gdiac.audio.AudioStream;
 import edu.cornell.gdiac.audio.MusicQueue;
 import edu.cornell.gdiac.temporary.entity.BandMember;
 import edu.cornell.gdiac.temporary.entity.Note;
 import edu.cornell.gdiac.util.FilmStrip;
 
 import javax.swing.plaf.TextUI;
+import java.nio.ByteBuffer;
 
 public class Level {
     public BandMember[] getBandMembers() {
@@ -156,6 +160,8 @@ public class Level {
     float maxSample;
     public Level(JsonValue data, AssetDirectory directory) {
 
+        JsonReader jr = new JsonReader();
+        JsonValue assets = jr.parse(Gdx.files.internal("assets.json"));
         // load all related level textures
         hitNoteTexture = directory.getEntry("hit", Texture.class);
         switchNoteTexture = directory.getEntry("switch", Texture.class);
@@ -172,8 +178,6 @@ public class Level {
         synthSprite = new FilmStrip(directory.getEntry("piano-cat", Texture.class), 2, 5, 10);
         backSplash = new FilmStrip(directory.getEntry("back-splash", Texture.class), 5, 5, 23);
         frontSplash = new FilmStrip(directory.getEntry("front-splash", Texture.class), 5, 5, 21);
-
-        System.out.println(directory.getEntry("challenger", MusicQueue.class).getNumberOfSources());
         this.data = data;
         //Read in Json  Value and populate asset textures
         lastDec = 0;
@@ -182,14 +186,13 @@ public class Level {
         maxCompetency = data.getInt("maxCompetency");
         bpm = data.getInt("bpm");
         String song = data.getString("song");
-        music = directory.getEntry(song, MusicQueue.class);
-        music.setVolume(0.8f);
+        System.out.println(song);
+        System.out.println(assets.get("samples").getString(song));
+        music = ((AudioEngine) Gdx.audio).newMusic(Gdx.files.internal(assets.get("samples").getString(song)));
         songSource = music.getSource(0);
+        System.out.println(songSource.getDuration());
+        music.setVolume(0.8f);
         maxSample = songSource.getDuration() * songSource.getSampleRate();
-        music.clearSources();
-        music = ((AudioEngine) Gdx.audio).newMusicBuffer( songSource.getChannels() == 1, songSource.getSampleRate() );
-        music.addSource(songSource);
-
 
         HUnit = directory.getEntry("borderHUnit", Texture.class);
         VUnit = directory.getEntry("borderVUnit", Texture.class);

@@ -119,22 +119,16 @@
             "size": 32
       }
     },
+    "samples": {
+      "challenger": "sounds/ChallengerApproaches.ogg",
+      "aliens": "sounds/Aliens.ogg"
+    },
     "soundtrack": {
-        "calibration": {
-            "sources": [
-                "music/calibration.ogg"
-            ]
-        },
-        "challenger": {
-            "sources": [
-                "music/Challenger-Approaches.ogg"
-            ]
-        },
-        "aliens": {
-            "sources": [
-                "music/Aliens.ogg"
-            ]
-        }
+      "calibration": {
+        "sources": [
+          "sounds/calibration.ogg"
+        ]
+      }
     },
     "jsons": {
         "1": "levels/1.json",
