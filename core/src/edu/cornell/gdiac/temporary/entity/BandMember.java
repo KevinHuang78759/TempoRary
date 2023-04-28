@@ -331,6 +331,27 @@ public class BandMember {
         }
     }
 
+
+    /**
+     * Draw perfect hit indicator
+     */
+    public void drawPerfectHit(GameCanvas canvas){
+
+    }
+    /**
+     * Draw ok hit indicator
+     */
+    public void drawOKHit(GameCanvas canvas){
+
+    }
+
+    /**
+     * Draw good miss indicator
+     */
+    public void drawMissHit(GameCanvas canvas){
+
+    }
+
     private float borderthickness;
     /**
      * Draw the border
