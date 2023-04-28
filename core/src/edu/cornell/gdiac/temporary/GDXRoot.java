@@ -151,8 +151,6 @@ public class GDXRoot extends Game implements ScreenListener {
 			loading = null;
 		}
 		else if (exitCode == ExitCode.TO_LEVEL) {
-			// TODO: probably add the level populate here
-//			to playing is now to level select
 			levelscreen.reset();
 			levelscreen.setScreenListener(this);
 			levelscreen.populate(directory);
@@ -162,7 +160,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		} else if (exitCode ==ExitCode.TO_PLAYING){
 			playing.setScreenListener(this);
 			String fileName = levelscreen.getSelectedJson();
-			playing.readLevel(directory, fileName);
+			playing.readLevel(fileName, directory);
 			playing.populate(directory);
 			playing.initializeOffset(calibration.getOffset());
 			setScreen(playing);
@@ -182,7 +180,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			setScreen(calibration);
 			calibration.show();
 		} else if (exitCode == ExitCode.TO_MENU) {
-			System.out.println(calibration.getOffset());
+			//System.out.println(calibration.getOffset());
 			screen.hide();
 			menu.setScreenListener(this);
 			setScreen(menu);
