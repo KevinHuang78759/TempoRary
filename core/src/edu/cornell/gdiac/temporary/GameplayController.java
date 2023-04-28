@@ -135,19 +135,15 @@ public class GameplayController {
 		sfx.setVolumeAdjust(fxVolume);
 		sb.setVolume(fxVolume);
 	}
-
-	public JsonValue levelData;
-	public AssetDirectory directory;
 	/**
 	 * Loads a level
 	 */
 	public void loadLevel(JsonValue levelData, AssetDirectory directory){
-		this.levelData = levelData;
-		this.directory = directory;
 		sb = new Scoreboard(4, new int[]{1, 2, 3, 5}, new long[]{10, 20, 30});
 		sb.setFontScale((totalHeight - TOPBOUND)/2f);
 		particles = new Array<>();
 		backing = new Array<>();
+		level = null;
 		level = new Level(levelData, directory);
 		NUM_LANES = level.getBandMembers().length;
 		// 70 is referring to ms
@@ -176,7 +172,7 @@ public class GameplayController {
 	}
 
 	public void reloadLevel(){
-		sb = new Scoreboard(4, new int[]{1, 2, 3, 5}, new long[]{10, 20, 30});
+		sb.resetScoreboard();
 		sb.setFontScale((totalHeight - TOPBOUND)/2f);
 		particles = new Array<>();
 		backing = new Array<>();
@@ -196,15 +192,6 @@ public class GameplayController {
 		setYVals();
 		switches = new boolean[NUM_LANES];
 		triggers = new boolean[lpl];
-
-		//populate sound effects
-		JsonReader jr = new JsonReader();
-		JsonValue allSounds = jr.parse(Gdx.files.internal("assets.json"));
-		allSounds = allSounds.get("soundEffects");
-		for(int i = 0; i < allSounds.size; ++i){
-			JsonValue cur = allSounds.get(i);
-			sfx.addSound(cur.getString(0), cur.getString(1));
-		}
 	}
 
 	/**
@@ -286,14 +273,7 @@ public class GameplayController {
 	 * and all band members have competency bar > 0.
 	 */
 	public boolean checkWinCon(){
-		boolean bandNotes = true;
-		for(int i = 0; i < level.getBandMembers().length; ++i){
-			BandMember bm = level.getBandMembers()[i];
-			bandNotes = bandNotes && bm.getAllNotes().isEmpty();
-		}
-		// TODO: FIX THE WIN CONDITION
-//		return (particles.size == 0 && bandNotes) || !level.isMusicPlaying();
-		return !level.isMusicPlaying();
+		return !level.isMusicPlaying() || !level.hasMoreNotes();
 	}
 
 	/**
@@ -619,7 +599,6 @@ public class GameplayController {
 					long samplesPerBeat = (long) (level.getMusic().getSampleRate() * (60f / level.getBpm()));
 					// approximation of how many samples held
 					long heldSamples = level.getCurrentSample() - n.getHitSample();
-					System.out.println(samplesPerBeat);
 					if (heldSamples / samplesPerBeat > n.getHeldFor()) {
 						level.getBandMembers()[activeBandMember].compUpdate(2);
 						n.setHeldFor(n.getHeldFor() + 1);
@@ -633,5 +612,12 @@ public class GameplayController {
 				}
 			}
 		}
+	}
+
+	public void dispose(){
+		level.dispose();
+		level = null;
+		sfx.dispose();
+		sb.dispose();
 	}
 }

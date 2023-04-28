@@ -1,20 +1,24 @@
 package edu.cornell.gdiac.temporary;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.AudioEngine;
 import edu.cornell.gdiac.audio.AudioSource;
+import edu.cornell.gdiac.audio.AudioStream;
 import edu.cornell.gdiac.audio.MusicQueue;
 import edu.cornell.gdiac.temporary.entity.BandMember;
 import edu.cornell.gdiac.temporary.entity.Note;
 import edu.cornell.gdiac.util.FilmStrip;
 
 import javax.swing.plaf.TextUI;
+import java.nio.ByteBuffer;
 
 public class Level {
     public BandMember[] getBandMembers() {
@@ -99,7 +103,6 @@ public class Level {
     private Texture holdNoteTexture;
     private Texture holdEndTexture;
     private Texture holdTrailTexture;
-    private BitmapFont displayFont;
     private Texture hpbar;
     private Texture noteIndicator;
     private Texture noteIndicatorHit;
@@ -153,26 +156,17 @@ public class Level {
 
     AudioSource songSource;
     JsonValue data;
+
+    float maxSample;
     public Level(JsonValue data, AssetDirectory directory) {
-        this.data = data;
-        //Read in Json  Value and populate asset textures
-        lastDec = 0;
-        levelName = data.getString("levelName");
-        levelNumber = data.getInt("levelNumber");
-        maxCompetency = data.getInt("maxCompetency");
-        bpm = data.getInt("bpm");
 
-        String song = data.getString("song");
-        music = directory.getEntry(song, MusicQueue.class);
-        music.setVolume(0.8f);
-        songSource = music.getSource(0);
-
+        JsonReader jr = new JsonReader();
+        JsonValue assets = jr.parse(Gdx.files.internal("assets.json"));
         // load all related level textures
         hitNoteTexture = directory.getEntry("hit", Texture.class);
         switchNoteTexture = directory.getEntry("switch", Texture.class);
         holdNoteTexture = directory.getEntry("hold-start", Texture.class);
         holdTrailTexture = directory.getEntry("hold-trail", Texture.class);
-        displayFont = directory.getEntry("times", BitmapFont.class);
         hpbar = directory.getEntry("hp-bar", Texture.class);
         holdTrailTexture.setWrap(Texture.TextureWrap.ClampToEdge, Texture.TextureWrap.Repeat);
         holdEndTexture = directory.getEntry("hold-end", Texture.class);
@@ -184,6 +178,19 @@ public class Level {
         synthSprite = new FilmStrip(directory.getEntry("piano-cat", Texture.class), 2, 5, 10);
         backSplash = new FilmStrip(directory.getEntry("back-splash", Texture.class), 5, 5, 23);
         frontSplash = new FilmStrip(directory.getEntry("front-splash", Texture.class), 5, 5, 21);
+        this.data = data;
+        //Read in Json  Value and populate asset textures
+        lastDec = 0;
+        levelName = data.getString("levelName");
+        levelNumber = data.getInt("levelNumber");
+        maxCompetency = data.getInt("maxCompetency");
+        bpm = data.getInt("bpm");
+        String song = data.getString("song");
+        music = ((AudioEngine) Gdx.audio).newMusic(Gdx.files.internal(assets.get("samples").getString(song)));
+        songSource = music.getSource(0);
+        System.out.println(songSource.getDuration());
+        music.setVolume(0.8f);
+        maxSample = songSource.getDuration() * songSource.getSampleRate();
 
         HUnit = directory.getEntry("borderHUnit", Texture.class);
         VUnit = directory.getEntry("borderVUnit", Texture.class);
@@ -194,6 +201,7 @@ public class Level {
         // preallocate band members
         bandMembers = new BandMember[data.get("bandMembers").size];
         spawnOffset = music.getSampleRate();
+        System.out.println(spawnOffset);
         for(int i = 0; i < bandMembers.length; i++){
             bandMembers[i] = new BandMember();
             JsonValue bandMemberData = data.get("bandMembers").get(i);
@@ -202,13 +210,23 @@ public class Level {
             for(int j = 0; j < noteData.size; ++j){
                 JsonValue thisNote = noteData.get(j);
                 Note n;
+
                 if (thisNote.getString("type").equals("beat")){
+                    if(thisNote.getLong("position") > maxSample){
+                        continue;
+                    }
                     n = new Note(thisNote.getInt("line"), Note.NoteType.BEAT, thisNote.getLong("position") - spawnOffset, hitNoteTexture);
                 }
                 else if (thisNote.getString("type").equals("switch")){
+                    if(thisNote.getLong("position") > maxSample){
+                        continue;
+                    }
                     n = new Note(thisNote.getInt("line"), Note.NoteType.SWITCH, thisNote.getLong("position") - spawnOffset, switchNoteTexture);
                 }
                 else {
+                    if(thisNote.getLong("position") + thisNote.getLong("duration")> maxSample){
+                        continue;
+                    }
                     n = new Note(thisNote.getInt("line"), Note.NoteType.HELD, thisNote.getLong("position") - spawnOffset, holdNoteTexture);
                     n.setHoldTextures(holdTrailTexture,1,holdEndTexture,1, backSplash, frontSplash, getAnimationRateFromBPM(bpm));
                     n.setHoldSamples(thisNote.getLong("duration"));
@@ -338,8 +356,10 @@ public class Level {
             //check if enough samples have passed since the last decrement
             if(sample - lastDec >= music.getSampleRate()){
                 //if so, decrement competency
-                bandMember.compUpdate(-bandMember.getLossRate());
-                decTog = true;
+                if(!bandMember.getHitNotes().isEmpty()){
+                    bandMember.compUpdate(-bandMember.getLossRate());
+                    decTog = true;
+                }
             }
         }
         if (decTog){
@@ -355,12 +375,24 @@ public class Level {
         music.play();
     }
 
+    public boolean hasMoreNotes(){
+        boolean tog = false;
+        for(BandMember bm : bandMembers){
+            tog = tog ||  bm.hasMoreNotes();
+        }
+        return tog;
+    }
+
     public void resetLevel(){
+        float oldVolume = music.getVolume();
+        lastDec = 0;
         music.stop();
         music.reset();
         music.clearSources();
         music = ((AudioEngine) Gdx.audio).newMusicBuffer( songSource.getChannels() == 1, songSource.getSampleRate() );
         music.addSource(songSource);
+        // reset volume
+        music.setVolume(oldVolume);
         bandMembers = new BandMember[data.get("bandMembers").size];
         spawnOffset = music.getSampleRate();
         for(int i = 0; i < bandMembers.length; i++){
@@ -372,12 +404,21 @@ public class Level {
                 JsonValue thisNote = noteData.get(j);
                 Note n;
                 if (thisNote.getString("type").equals("beat")){
+                    if(thisNote.getLong("position") > maxSample){
+                        continue;
+                    }
                     n = new Note(thisNote.getInt("line"), Note.NoteType.BEAT, thisNote.getLong("position") - spawnOffset, hitNoteTexture);
                 }
                 else if (thisNote.getString("type").equals("switch")){
+                    if(thisNote.getLong("position") > maxSample){
+                        continue;
+                    }
                     n = new Note(thisNote.getInt("line"), Note.NoteType.SWITCH, thisNote.getLong("position") - spawnOffset, switchNoteTexture);
                 }
                 else {
+                    if(thisNote.getLong("position") + thisNote.getLong("duration")> maxSample){
+                        continue;
+                    }
                     n = new Note(thisNote.getInt("line"), Note.NoteType.HELD, thisNote.getLong("position") - spawnOffset, holdNoteTexture);
                     n.setHoldTextures(holdTrailTexture,1,holdEndTexture,1, backSplash, frontSplash, getAnimationRateFromBPM(bpm));
                     n.setHoldSamples(thisNote.getLong("duration"));
@@ -420,7 +461,8 @@ public class Level {
      * returns true if music is playing
      */
     public boolean isMusicPlaying(){
-        return music.isPlaying() && musicInitialized;
+
+        return Math.abs(music.getPosition()-songSource.getDuration()) > 0.001*songSource.getDuration();
     }
 
     /**
@@ -467,5 +509,19 @@ public class Level {
             }
         }
 
+    }
+
+    public void dispose(){
+        music.dispose();
+        laneBackground.dispose();
+        hitNoteTexture.dispose();
+        holdTrailTexture.dispose();
+        holdNoteTexture.dispose();
+        switchNoteTexture.dispose();
+        holdEndTexture.dispose();
+        noteIndicator.dispose();
+        noteIndicatorHit.dispose();
+        hpbar.dispose();
+        music.dispose();
     }
 }

@@ -61,7 +61,12 @@ public class Scoreboard {
         fontParameter.size = 128;
         font = fontGenerator.generateFont(fontParameter);
         layout = new GlyphLayout();
+    }
 
+    public void resetScoreboard() {
+        totalScore = 0;
+        level = 0;
+        meter = 0;
     }
 
     public void resetCombo(){
