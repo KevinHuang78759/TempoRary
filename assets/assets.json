@@ -103,7 +103,12 @@
         "laneBackground" : "images/bandmember_lanes/laneBackground.png",
         "separationLine" : "images/bandmember_lanes/lane-separation-line.png",
         "back-splash": "images/notes/hold_back.png",
-        "front-splash": "images/notes/hold_front.png"
+        "front-splash": "images/notes/hold_front.png",
+        "ok-hit": "images/Ok.png",
+        "good-hit": "images/Good.png",
+        "perfect-hit": "images/Perfect.png",
+        "miss-hit": "images/Miss.png"
+
     },
     "fonts": {
         "lucida": {

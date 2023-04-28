@@ -27,6 +27,11 @@ public class BandMember {
     /** Textures */
     private Texture noteIndicator;
     private Texture noteIndicatorHit;
+
+    private Texture perfectHitIndicator;
+    private Texture okHitIndicator;
+
+    private Texture missIndicator;
     private FilmStrip characterSprite;
 
     public void setBottomLeft(Vector2 V){
