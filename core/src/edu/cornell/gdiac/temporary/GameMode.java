@@ -76,8 +76,6 @@ public class GameMode implements Screen {
 	/** Play button to display when done */
 	private Texture playButton;
 
-
-
 	private static float BUTTON_SCALE  = 0.25f;
 
 	/// CONSTANTS
@@ -125,10 +123,6 @@ public class GameMode implements Screen {
 	/** Lets the intro phase know to just resume the gameplay and not to reset the level */
 	private boolean justPaused;
 
-	/** Whether the play button is pressed or not */
-	private boolean playPressed;
-
-
 	/** Variable to track the game state (SIMPLE FIELDS) */
 	private GameState gameState;
 
@@ -166,10 +160,9 @@ public class GameMode implements Screen {
 	}
 
 	/**
-	 * reset current level
+	 * reset the GameMode state
 	 */
 	public void reset(){
-		playPressed = false;
 		gameState = GameState.INTRO;
 		pressState = NO_BUTTON_PRESSED;
 	}
@@ -207,7 +200,7 @@ public class GameMode implements Screen {
 	public void SetCurrLevel(String level) {
 //		TODO: need to merge with level screen
 //		currLevel is some versions of levelscreen.getSelectedJson();
-		currLevel = Integer.valueOf(level);
+		currLevel = Integer.parseInt(level);
 	}
 
 
@@ -235,18 +228,17 @@ public class GameMode implements Screen {
 		streetLevelBackground = new FilmStrip(directory.getEntry("street-background", Texture.class), 1, 1);
 		displayFont = directory.getEntry("times",BitmapFont.class);
 		gameplayController.populate(directory);
-		playPressed=false;
-		playButton = directory.getEntry("play",Texture.class);
-		playButtonCoords = new Vector2(4*canvas.getWidth()/5, 2*canvas.getHeight()/7);
+		playButton = directory.getEntry("restart-button",Texture.class);
+		playButtonCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 - 50);
 		inputController.setEditorProcessor();
 		resumeButton = directory.getEntry("resume-button", Texture.class);
 		restartButton = directory.getEntry("restart-button", Texture.class);
 		levelButton = directory.getEntry("level-select-button", Texture.class);
 		menuButton = directory.getEntry("quit-button", Texture.class);
-		resumeCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 - 250);
-		restartCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 - 125);
-		levelCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 + 125);
-		menuCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 + 250);
+		resumeCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 + 250);
+		restartCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 + 100);
+		levelCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 - 100);
+		menuCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 - 250);
 	}
 
 	/**
@@ -263,11 +255,13 @@ public class GameMode implements Screen {
 		// Process the game input
 		inputController.readInput();
 
+		boolean didInput = inputController.didClick();
+
 		// Test whether to reset the game.
 		switch (gameState) {
 			case INTRO:
-				for(boolean k : inputController.getTriggers()){
-					if (k){
+				for (boolean k : inputController.getTriggers()){
+					if (k) {
 						gameplayController.sfx.playSound("tap", 0.2f);
 					}
 				}
@@ -284,10 +278,7 @@ public class GameMode implements Screen {
 				break;
 			case OVER:
 				if (inputController.didReset()) {
-					gameplayController.reset();
-					gameplayController.reloadLevel();
-					waiting = 4f;
-					gameState = GameState.INTRO;
+					resetLevel();
 				}
 				break;
 			case PLAY:
@@ -299,38 +290,48 @@ public class GameMode implements Screen {
 				}
 				break;
 			case PAUSE:
-				boolean didInput = inputController.didClick();
 				if (didInput) {
 					int screenX = (int) inputController.getMouseX();
 					int screenY = (int) inputController.getMouseY();
 					screenY = canvas.getHeight() - screenY;
 					boolean didResume = (isButtonPressed(screenX, screenY, resumeButton, resumeCoords));
 					boolean didLevel = (isButtonPressed(screenX, screenY, levelButton, levelCoords));
-					if (didLevel) {
-						pressState = ExitCode.TO_MENU;
-					}
 					boolean didMenu = (isButtonPressed(screenX, screenY, menuButton, menuCoords));
-					if (didMenu) {
+					boolean didRestart = (isButtonPressed(screenX, screenY, restartButton, restartCoords));
+					if (didLevel) {
+						pressState = ExitCode.TO_LEVEL;
+					} else if (didMenu) {
 						pressState = ExitCode.TO_MENU;
-					}
-					if (didResume) {
+					} else if (didResume) {
 						waiting = 4f;
 						justPaused = true;
 						gameState = GameState.INTRO;
+					} else if (didRestart) {
+						resetLevel();
 					}
-					boolean didRestart = (isButtonPressed(screenX, screenY, restartButton, restartCoords));
-					if (didRestart) {
-						gameplayController.reset();
-						gameplayController.reloadLevel();
-						waiting = 4f;
-						gameState = GameState.INTRO;
-					}
-
+				}
+				break;
+			case WON:
+				int screenX = (int) inputController.getMouseX();
+				int screenY = (int) inputController.getMouseY();
+				screenY = canvas.getHeight() - screenY;
+				if (didInput && isButtonPressed(screenX, screenY, playButton, playButtonCoords)) {
+					resetLevel();
 				}
 				break;
 			default:
 				break;
 		}
+	}
+
+	/**
+	 * All the logic to reset a level
+	 */
+	private void resetLevel() {
+		gameplayController.reset();
+		gameplayController.reloadLevel();
+		waiting = 4f;
+		gameState = GameState.INTRO;
 	}
 
 	/**
@@ -381,11 +382,8 @@ public class GameMode implements Screen {
 		} else if (gameState == GameState.WON) {
 			displayFont.setColor(Color.NAVY);
 			canvas.drawTextCentered("You won!", displayFont, GAME_OVER_OFFSET+50);
-
-			Color playButtonTint = (playPressed ? Color.GRAY: Color.WHITE);
-			canvas.draw(playButton, playButtonTint, playButton.getWidth()/2, playButton.getHeight()/2,
-					playButtonCoords.x, playButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
-
+			canvas.draw(playButton, Color.WHITE, playButton.getWidth()/2, playButton.getHeight()/2,
+					playButtonCoords.x, playButtonCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
 		} else if (gameState == GameState.PAUSE) {
 			//Draw the buttons for the pause menu
 			canvas.draw(resumeButton, Color.WHITE, resumeButton.getWidth()/2, resumeButton.getHeight()/2,
@@ -431,7 +429,7 @@ public class GameMode implements Screen {
 	 * @return true if the player is ready to go
 	 */
 	public boolean isReady() {
-		return pressState == ExitCode.TO_MENU;
+		return pressState == ExitCode.TO_MENU || pressState == ExitCode.TO_LEVEL;
 	}
 
 
