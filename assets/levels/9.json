@@ -1920,6 +1920,12 @@
           "line" : 0
         },
         {
+          "type" : "switch",
+          "position" : 2259000,
+          "duration" : 0,
+          "line" : -1
+        },
+        {
           "type" : "beat",
           "position" : 2259000,
           "duration" : 0,
@@ -2444,7 +2450,7 @@
         {
           "type" : "held",
           "position" : 4734000,
-          "duration" : 1500,
+          "duration" : 18000,
           "line" : 1
         },
         {
