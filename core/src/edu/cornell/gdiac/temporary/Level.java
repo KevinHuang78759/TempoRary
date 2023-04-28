@@ -186,8 +186,6 @@ public class Level {
         maxCompetency = data.getInt("maxCompetency");
         bpm = data.getInt("bpm");
         String song = data.getString("song");
-        System.out.println(song);
-        System.out.println(assets.get("samples").getString(song));
         music = ((AudioEngine) Gdx.audio).newMusic(Gdx.files.internal(assets.get("samples").getString(song)));
         songSource = music.getSource(0);
         System.out.println(songSource.getDuration());
@@ -203,6 +201,7 @@ public class Level {
         // preallocate band members
         bandMembers = new BandMember[data.get("bandMembers").size];
         spawnOffset = music.getSampleRate();
+        System.out.println(spawnOffset);
         for(int i = 0; i < bandMembers.length; i++){
             bandMembers[i] = new BandMember();
             JsonValue bandMemberData = data.get("bandMembers").get(i);

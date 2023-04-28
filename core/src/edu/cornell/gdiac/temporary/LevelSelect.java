@@ -362,7 +362,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                 int gameIdx = selectedDifficulty+(selectedLevel*3);
 //                System.out.println("index of json is:" + gameIdx);
 //                System.out.println("file name:"+allLevels[gameIdx-1]);
-
+                System.out.println(gameIdx);
                 selectedJson=allLevels[gameIdx-1];
                 listener.exitScreen(playing, ExitCode.TO_PLAYING);
             }

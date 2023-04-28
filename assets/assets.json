@@ -122,12 +122,17 @@
     "samples": {
       "challenger": "music/Challenger-Approaches.ogg",
       "aliens": "music/Aliens.ogg",
-      "American": "music/American_Finale.ogg"
+      "american": "music/American_Finale.ogg"
     },
     "soundtrack": {
       "calibration": {
         "sources": [
           "music/calibration.ogg"
+        ]
+      },
+      "american": {
+        "sources": [
+          "music/American_Finale.ogg"
         ]
       },
       "challenger": {
