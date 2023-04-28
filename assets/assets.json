@@ -138,6 +138,11 @@
         "sources": [
           "music/Aliens.ogg"
         ]
+      },
+      "American": {
+        "sources": [
+          "music/American_Finale.ogg"
+        ]
       }
     },
     "jsons": {
