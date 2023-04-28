@@ -381,7 +381,8 @@ public class GameMode implements Screen {
 			canvas.drawTextCentered("Press ENTER to Restart", displayFont, 0);
 		} else if (gameState == GameState.WON) {
 			displayFont.setColor(Color.NAVY);
-			canvas.drawTextCentered("You won!", displayFont, GAME_OVER_OFFSET+50);
+			canvas.drawTextCentered("You won!", displayFont, GAME_OVER_OFFSET+100);
+			canvas.drawTextCentered("Final score: " + gameplayController.sb.getScore(), displayFont, GAME_OVER_OFFSET+50);
 			canvas.draw(playButton, Color.WHITE, playButton.getWidth()/2, playButton.getHeight()/2,
 					playButtonCoords.x, playButtonCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
 		} else if (gameState == GameState.PAUSE) {
