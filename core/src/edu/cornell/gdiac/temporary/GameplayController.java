@@ -438,7 +438,7 @@ public class GameplayController {
 	/** initiate to NOTES phase*/
 	PlayPhase curP = PlayPhase.NOTES;
 	/** Total progress needed before we declare ourselves fully transitioned */
-	int T_SwitchPhases = 20;
+	int T_SwitchPhases = 8;
 	/** The band member lane index that we are trying to switch to */
 	int goalBandMember;
 	/** The current transition progress */
