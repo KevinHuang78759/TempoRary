@@ -384,12 +384,15 @@ public class Level {
     }
 
     public void resetLevel(){
+        float oldVolume = music.getVolume();
         lastDec = 0;
         music.stop();
         music.reset();
         music.clearSources();
         music = ((AudioEngine) Gdx.audio).newMusicBuffer( songSource.getChannels() == 1, songSource.getSampleRate() );
         music.addSource(songSource);
+        // reset volume
+        music.setVolume(oldVolume);
         bandMembers = new BandMember[data.get("bandMembers").size];
         spawnOffset = music.getSampleRate();
         for(int i = 0; i < bandMembers.length; i++){

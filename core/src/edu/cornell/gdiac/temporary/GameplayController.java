@@ -172,7 +172,7 @@ public class GameplayController {
 	}
 
 	public void reloadLevel(){
-		sb = new Scoreboard(4, new int[]{1, 2, 3, 5}, new long[]{10, 20, 30});
+		sb.resetScoreboard();
 		sb.setFontScale((totalHeight - TOPBOUND)/2f);
 		particles = new Array<>();
 		backing = new Array<>();
