@@ -456,9 +456,7 @@ public class GameplayController {
 		s.setTexture(perfectHitIndicator);
 		s.getPosition().set(x, y);
 		s.setSizeConfine(HIT_IND_SIZE);
-		float vx = RandomController.rollFloat(-inBetweenWidth*0.07f, inBetweenWidth*0.07f);
-		float vy = RandomController.rollFloat(-inBetweenWidth*0.07f, inBetweenWidth*0.07f);
-		s.getVelocity().set(vx,vy);
+
 		particles.add(s);
 	}
 
@@ -467,7 +465,7 @@ public class GameplayController {
 		Particle s = new Particle();
 		s.setTexture(okHitIndicator);
 		s.getPosition().set(x, y);
-		s.setSizeConfine(inBetweenWidth/2f);
+		s.setSizeConfine(HIT_IND_SIZE);
 		float vx = RandomController.rollFloat(-inBetweenWidth*0.07f, inBetweenWidth*0.07f);
 		float vy = RandomController.rollFloat(-inBetweenWidth*0.07f, inBetweenWidth*0.07f);
 		s.getVelocity().set(vx,vy);
