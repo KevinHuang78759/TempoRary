@@ -129,12 +129,12 @@ public class CalibrationMode implements Screen {
         canvas.drawBackground(whiteBackground,0,0);
         canvas.drawBackground(background,0,0);
 
-        float noteScale = 0.5f;
+        float noteScale = 0.25f;
         // draw hit indicator
         if (inputController.didHoldPlay()) {
             canvas.draw(calibrationNoteHit, Color.WHITE, calibrationNoteHit.getWidth() / 2, calibrationNoteHit.getHeight() / 2, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, noteScale, noteScale);
         } else {
-            canvas.draw(calibrationNote, Color.WHITE, calibrationNote.getWidth() / 2, calibrationNote.getHeight() / 2, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, noteScale * 0.5f, noteScale * 0.5f);
+            canvas.draw(calibrationNote, Color.WHITE, calibrationNote.getWidth() / 2, calibrationNote.getHeight() / 2, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, noteScale, noteScale);
         }
 
         if (isCalibrated) {
@@ -142,7 +142,11 @@ public class CalibrationMode implements Screen {
             canvas.drawText("You have been calibrated!\nYou can exit this screen\nwith the esc key", displayFont, 100, canvas.getWidth() / 2);
         }
 
-        canvas.drawTextCentered("Press the button to the beat", displayFont,200, textColor);
+        canvas.draw(backArrow, Color.WHITE, 0, backArrow.getHeight(), 25, canvas.getHeight() - 40, 0, 0.1f, 0.1f);
+
+        canvas.drawTextCentered("Press the space bar to the beat", displayFont,200, textColor);
+        canvas.drawTextCentered("Make sure not to click out of the window while calibrating", displayFont,-300, textColor);
+
         canvas.end();
     }
 
