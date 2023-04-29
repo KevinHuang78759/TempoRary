@@ -465,10 +465,7 @@ public class GameplayController {
 		Particle s = new Particle();
 		s.setTexture(okHitIndicator);
 		s.getPosition().set(x, y);
-		s.setSizeConfine(HIT_IND_SIZE);
-		float vx = RandomController.rollFloat(-inBetweenWidth*0.07f, inBetweenWidth*0.07f);
-		float vy = RandomController.rollFloat(-inBetweenWidth*0.07f, inBetweenWidth*0.07f);
-		s.getVelocity().set(vx,vy);
+		s.setSizeConfine(HIT_IND_SIZE/2);
 		particles.add(s);
 	}
 
@@ -533,12 +530,19 @@ public class GameplayController {
 				note.setHolding(true);
 				note.setHitStatus(isOnBeat ? onBeatGain : offBeatGain);
 				spawnHitEffect(note.getHitStatus(), note.getX(), spawnEffectY);
+
+				float hitStatusX = LEFTBOUND+(HIT_IND_SIZE/2)+((activeBandMember+1) * smallwidth);
+				float hitStatusY = BOTTOMBOUND-(HIT_IND_SIZE/2);
 				if (isOnBeat) {
-					spawnPerfectHit(LEFTBOUND+(HIT_IND_SIZE/2)+((activeBandMember+1) * smallwidth), BOTTOMBOUND-(HIT_IND_SIZE/2));
+					spawnPerfectHit(hitStatusX,hitStatusY);
 					spawnEnhancedHitEffect(note.getX(), spawnEffectY);
 					System.out.println("is perfect hit");
 
+				} else{
+					spawnOkHit(hitStatusX,hitStatusY);
 				}
+
+
 
 				if (note.getLine() != -1) hitReg[note.getLine()] = true;
 				note.setDestroyed(destroy);
@@ -550,7 +554,7 @@ public class GameplayController {
 				// lose some competency since you played a bit off beat
 				sb.resetCombo();
 				note.setHitStatus(offBeatLoss);
-				spawnOkHit(500, 1000);
+
 
 
 			}
