@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.temporary;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -7,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.MusicQueue;
 import edu.cornell.gdiac.util.ScreenListener;
+import org.w3c.dom.Text;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -19,12 +21,22 @@ public class CalibrationMode implements Screen {
     // ASSETS
     /** The font for giving messages to the player */
     private BitmapFont displayFont;
-    /** The note texture */
-    private Texture catNote;
     /** The song */
     private MusicQueue music;
     /** The background texture */
     private Texture background;
+    /** White background */
+    private Texture whiteBackground;
+    /** The back arrow */
+    private Texture backArrow;
+    /** The calibration display when not hit */
+    private Texture calibrationNote;
+    /** The calibration display when input hit */
+    private Texture calibrationNoteHit;
+
+
+    private Color textColor = new Color(27f / 255, 1f / 255, 103f / 255, 1);
+
 
     /** Reference to drawing context to display graphics (VIEW CLASS) */
     private GameCanvas canvas;
@@ -33,7 +45,6 @@ public class CalibrationMode implements Screen {
     /** Listener that will update the player mode when we are done */
     private ScreenListener listener;
 
-    // TODO: CONVERT TO SAMPLES
     // new system (based on milliseconds)
     /** Represents the amount of leeway for hitting on the beat (in milliseconds) */
     public final int BASE_OFFSET = 70;
@@ -49,6 +60,8 @@ public class CalibrationMode implements Screen {
     private final int DIST_BETWEEN_BEAT = 60000 / BPM;
     /** temp variable to draw whether the hit was on beat or not */
     private boolean onBeat;
+
+    private final int NUM_BEATS_TO_HIT = 12;
 
     /**
      * Constructs new CalibrationController
@@ -90,16 +103,20 @@ public class CalibrationMode implements Screen {
      * @param directory 	Reference to the asset directory.
      */
     public void populate(AssetDirectory directory) {
-        displayFont = directory.getEntry("times", BitmapFont.class);
+        displayFont = directory.getEntry("main", BitmapFont.class);
         music = directory.getEntry("calibration", MusicQueue.class);
-        background  = directory.getEntry("background", Texture.class); //calibration background?
+        background  = directory.getEntry("calibration-background", Texture.class); //calibration background?
+        whiteBackground = directory.getEntry("white-background", Texture.class);
+        backArrow = directory.getEntry("calibration-back-arrow", Texture.class);
+        calibrationNote = directory.getEntry("calibration-note", Texture.class);
+        calibrationNoteHit = directory.getEntry("calibration-note-hit", Texture.class);;
     }
 
     @Override
     public void render(float delta) {
         if (active) {
-            update(delta);
-            draw(delta);
+            update();
+            draw();
             if (isReady() && listener != null) {
                 listener.exitScreen(this, ExitCode.TO_MENU);
             }
@@ -107,26 +124,30 @@ public class CalibrationMode implements Screen {
     }
 
     /** Draws elements to the screen */
-    private void draw(float delta) {
+    private void draw() {
         canvas.begin();
+        canvas.drawBackground(whiteBackground,0,0);
         canvas.drawBackground(background,0,0);
 
-        // draw a hit bar
-        // Change line color if it is triggered
-        Color lineColor = inputController.didHoldPlay() ? Color.TEAL : Color.NAVY;
-        canvas.drawLine(canvas.getWidth()/2-canvas.getWidth()/12, canvas.getHeight()/2, canvas.getWidth()/2-canvas.getWidth()/12+(canvas.getWidth()/6), canvas.getHeight()/2, 200, lineColor);
+        float noteScale = 0.5f;
+        // draw hit indicator
+        if (inputController.didHoldPlay()) {
+            canvas.draw(calibrationNoteHit, Color.WHITE, calibrationNoteHit.getWidth() / 2, calibrationNoteHit.getHeight() / 2, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, noteScale, noteScale);
+        } else {
+            canvas.draw(calibrationNote, Color.WHITE, calibrationNote.getWidth() / 2, calibrationNote.getHeight() / 2, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, noteScale * 0.5f, noteScale * 0.5f);
+        }
 
         if (isCalibrated) {
             canvas.drawTextCentered("" + onBeat, displayFont, 150);
             canvas.drawText("You have been calibrated!\nYou can exit this screen\nwith the esc key", displayFont, 100, canvas.getWidth() / 2);
         }
 
-        canvas.drawTextCentered("Calibration", displayFont,200);
+        canvas.drawTextCentered("Press the button to the beat", displayFont,200, textColor);
         canvas.end();
     }
 
     /** Updates the note states */
-    private void update(float delta) {
+    private void update() {
         // Process the input into screen
         inputController.readInput();
         // resolve inputs from the user
