@@ -455,7 +455,7 @@ public class GameplayController {
 		Particle s = new Particle();
 		s.setTexture(perfectHitIndicator);
 		s.getPosition().set(x, y);
-		s.setSizeConfine(HIT_IND_SIZE);
+		s.setSizeConfine(HIT_IND_SIZE/2);
 
 		particles.add(s);
 	}
@@ -531,7 +531,7 @@ public class GameplayController {
 				note.setHitStatus(isOnBeat ? onBeatGain : offBeatGain);
 				spawnHitEffect(note.getHitStatus(), note.getX(), spawnEffectY);
 
-				float hitStatusX = LEFTBOUND+(HIT_IND_SIZE/2)+((activeBandMember+1) * smallwidth);
+				float hitStatusX = LEFTBOUND+((activeBandMember+1)*(HIT_IND_SIZE/6))+((activeBandMember+1) * smallwidth);
 				float hitStatusY = BOTTOMBOUND-(HIT_IND_SIZE/2);
 				if (isOnBeat) {
 					spawnPerfectHit(hitStatusX,hitStatusY);
