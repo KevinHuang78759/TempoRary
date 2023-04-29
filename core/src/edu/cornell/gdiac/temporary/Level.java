@@ -2,6 +2,7 @@ package edu.cornell.gdiac.temporary;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
@@ -104,8 +105,11 @@ public class Level {
     private Texture holdEndTexture;
     private Texture holdTrailTexture;
     private Texture hpbar;
+
     private Texture noteIndicator;
     private Texture noteIndicatorHit;
+
+
     private FilmStrip violinSprite;
     private FilmStrip drummerSprite;
     private FilmStrip voiceSprite;
@@ -120,6 +124,7 @@ public class Level {
     private int spawnOffset;
     private int bpm;
     private MusicQueue music;
+
 
     /**
      * The last sample that health was decremented due to continuous decay
@@ -157,6 +162,8 @@ public class Level {
     AudioSource songSource;
     JsonValue data;
 
+
+
     float maxSample;
     public Level(JsonValue data, AssetDirectory directory) {
 
@@ -167,6 +174,7 @@ public class Level {
         switchNoteTexture = directory.getEntry("switch", Texture.class);
         holdNoteTexture = directory.getEntry("hold-start", Texture.class);
         holdTrailTexture = directory.getEntry("hold-trail", Texture.class);
+
         hpbar = directory.getEntry("hp-bar", Texture.class);
         holdTrailTexture.setWrap(Texture.TextureWrap.ClampToEdge, Texture.TextureWrap.Repeat);
         holdEndTexture = directory.getEntry("hold-end", Texture.class);
@@ -211,6 +219,8 @@ public class Level {
                 JsonValue thisNote = noteData.get(j);
                 Note n;
 
+
+
                 if (thisNote.getString("type").equals("beat")){
                     if(thisNote.getLong("position") > maxSample){
                         continue;
@@ -231,9 +241,15 @@ public class Level {
                     n.setHoldTextures(holdTrailTexture,1,holdEndTexture,1, backSplash, frontSplash, getAnimationRateFromBPM(bpm));
                     n.setHoldSamples(thisNote.getLong("duration"));
                 }
+
+
+
+
                 n.setHitSample(thisNote.getInt("position"));
                 notes.addLast(n);
+
             }
+
             bandMembers[i].setAllNotes(notes);
             bandMembers[i].setCurComp(maxCompetency);
             bandMembers[i].setMaxComp(maxCompetency);
@@ -256,6 +272,8 @@ public class Level {
             }
         }
     }
+
+
 
 
 
@@ -449,6 +467,9 @@ public class Level {
         }
     }
 
+
+
+
     public void stopMusic() {
         music.stop();
     }
@@ -507,6 +528,7 @@ public class Level {
                 bandMembers[i].drawSwitchNotes(canvas);
                 bandMembers[i].drawIndicator(canvas, switches[i]);
             }
+
         }
 
     }

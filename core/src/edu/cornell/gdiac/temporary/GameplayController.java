@@ -47,6 +47,14 @@ public class GameplayController {
 	/** Number of band member lanes */
 	int NUM_LANES;
 
+	private Texture perfectHitIndicator;
+	private Texture okHitIndicator;
+
+	private Texture missIndicator;
+
+
+
+
 	// List of objects with the garbage collection set.
 	/** The currently active object */
 	private Array<Particle> particles;
@@ -90,6 +98,8 @@ public class GameplayController {
 
 	public Scoreboard sb;
 
+
+
 	/**
 	 * Create gameplaycontroler
 	 * @param width
@@ -102,6 +112,9 @@ public class GameplayController {
 		//Values decided by pure look
 		setBounds(width, height);
 		sfx = new SoundController<>();
+
+
+
 	}
 
 	float totalWidth;
@@ -301,6 +314,12 @@ public class GameplayController {
 	public void populate(AssetDirectory directory) {
 		particleTexture = directory.getEntry("quaver", Texture.class);
 		enhancedParticle = directory.getEntry("doubleQ", Texture.class);
+
+		perfectHitIndicator = directory.getEntry("perfect-hit", Texture.class);
+		okHitIndicator = directory.getEntry("ok-hit", Texture.class);
+		missIndicator = directory.getEntry("miss-hit", Texture.class);
+
+
 	}
 
 	/**
@@ -419,13 +438,39 @@ public class GameplayController {
 			Particle s = new Particle();
 			s.setTexture(enhancedParticle);
 			s.getPosition().set(x, y);
-			s.setSizeConfine(inBetweenWidth/2f);
+//			s.setSizeConfine(inBetweenWidth/2f);
 			float vx = RandomController.rollFloat(-inBetweenWidth*0.07f, inBetweenWidth*0.07f);
 			float vy = RandomController.rollFloat(-inBetweenWidth*0.07f, inBetweenWidth*0.07f);
 			s.getVelocity().set(vx,vy);
 			particles.add(s);
 		}
 	}
+
+	public void spawnPerfectHit(float x, float y){
+		System.out.println("spawn perfect hit is called");
+		Particle s = new Particle();
+		s.setTexture(perfectHitIndicator);
+		s.getPosition().set(x, y);
+		s.setSizeConfine(100);
+		float vx = RandomController.rollFloat(-inBetweenWidth*0.07f, inBetweenWidth*0.07f);
+		float vy = RandomController.rollFloat(-inBetweenWidth*0.07f, inBetweenWidth*0.07f);
+		s.getVelocity().set(vx,vy);
+		particles.add(s);
+	}
+
+	public void spawnOkHit(float x, float y){
+		System.out.println("spawn ok hit is called");
+		Particle s = new Particle();
+		s.setTexture(okHitIndicator);
+		s.getPosition().set(x, y);
+		s.setSizeConfine(inBetweenWidth/2f);
+		float vx = RandomController.rollFloat(-inBetweenWidth*0.07f, inBetweenWidth*0.07f);
+		float vy = RandomController.rollFloat(-inBetweenWidth*0.07f, inBetweenWidth*0.07f);
+		s.getVelocity().set(vx,vy);
+		particles.add(s);
+	}
+
+
 
 	/**
 	 * Enum to determine whether or not we are in a phase of hitting notes or switching to another band member
@@ -476,6 +521,8 @@ public class GameplayController {
 
 		// check if note was hit or on beat
 		if(dist < 15000) {
+
+
 			if (dist < 10000) {
 				//If so, destroy the note and set a positive hit status. Also set that we
 				//have registered a hit for this line for this click. This ensures that
@@ -485,8 +532,12 @@ public class GameplayController {
 				note.setHitStatus(isOnBeat ? onBeatGain : offBeatGain);
 				spawnHitEffect(note.getHitStatus(), note.getX(), spawnEffectY);
 				if (isOnBeat) {
+					spawnPerfectHit(LEFTBOUND+(activeBandMember * largewidth), 200);
 					spawnEnhancedHitEffect(note.getX(), spawnEffectY);
+					System.out.println("is perfect hit");
+
 				}
+
 				if (note.getLine() != -1) hitReg[note.getLine()] = true;
 				note.setDestroyed(destroy);
 				// move the note to where the indicator is
@@ -497,7 +548,12 @@ public class GameplayController {
 				// lose some competency since you played a bit off beat
 				sb.resetCombo();
 				note.setHitStatus(offBeatLoss);
+				spawnOkHit(500, 1000);
+
+
 			}
+
+//			note is missed
 		}
 		//if we let go too early we need to reset the combo
 		if (lifted && dist >= 10000){
@@ -610,8 +666,12 @@ public class GameplayController {
 					n.setDestroyed(true);
 					sb.resetCombo();
 				}
+//				System.out.println("hit status:"+n.getHitStatus());
+//
+
 			}
 		}
+
 	}
 
 	public void dispose(){

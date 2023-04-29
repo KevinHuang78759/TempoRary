@@ -43,6 +43,8 @@ public class GameCanvas {
 	
 	/** The current color blending mode */
 	private BlendState blend;
+
+	private static float BUTTON_SCALE  = 0.75f;
 	
 	/** Value to cache window width (if we are currently full screen) */
 	int width;
@@ -57,6 +59,8 @@ public class GameCanvas {
 	Pixmap pixel;
 	ArrayList<Texture> disp;
 	Texture pixelTexture;
+
+
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.
 	 * 
@@ -76,6 +80,10 @@ public class GameCanvas {
 		pixel.setColor(Color.WHITE);
 		pixel.fill();
 		pixelTexture = new Texture(pixel);
+
+
+
+
 	}
 		
     /**
@@ -709,7 +717,9 @@ public class GameCanvas {
 		font.setColor(tint);
 		font.draw(spriteBatch, layout, x, y+offset);
 	}
-    
+
+
+
 
 	/**
 	 * Enumeration of supported BlendStates.
