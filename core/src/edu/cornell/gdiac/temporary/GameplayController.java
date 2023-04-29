@@ -38,6 +38,8 @@ public class GameplayController {
 	/** Texture for all stars, as they look the same */
 	private Texture particleTexture;
 
+
+
 	private Texture enhancedParticle;
 
 	private static final float GLOBAL_VOLUME_ADJ = 0.2f;
@@ -46,6 +48,8 @@ public class GameplayController {
 	final int MAX_HEALTH = 30;
 	/** Number of band member lanes */
 	int NUM_LANES;
+
+	int HIT_IND_SIZE = 120;
 
 	private Texture perfectHitIndicator;
 	private Texture okHitIndicator;
@@ -451,7 +455,7 @@ public class GameplayController {
 		Particle s = new Particle();
 		s.setTexture(perfectHitIndicator);
 		s.getPosition().set(x, y);
-		s.setSizeConfine(100);
+		s.setSizeConfine(HIT_IND_SIZE);
 		float vx = RandomController.rollFloat(-inBetweenWidth*0.07f, inBetweenWidth*0.07f);
 		float vy = RandomController.rollFloat(-inBetweenWidth*0.07f, inBetweenWidth*0.07f);
 		s.getVelocity().set(vx,vy);
@@ -532,7 +536,7 @@ public class GameplayController {
 				note.setHitStatus(isOnBeat ? onBeatGain : offBeatGain);
 				spawnHitEffect(note.getHitStatus(), note.getX(), spawnEffectY);
 				if (isOnBeat) {
-					spawnPerfectHit(LEFTBOUND+(activeBandMember * largewidth), 200);
+					spawnPerfectHit(LEFTBOUND+(HIT_IND_SIZE/2)+((activeBandMember+1) * smallwidth), BOTTOMBOUND-(HIT_IND_SIZE/2));
 					spawnEnhancedHitEffect(note.getX(), spawnEffectY);
 					System.out.println("is perfect hit");
 
