@@ -126,6 +126,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private Table table;
     Container<Table> tableContainer;
     private BitmapFont font;
+    private Vector2 v;
 
     // MenuState
     private enum MenuState {
@@ -151,7 +152,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         levelEditorButton = directory.getEntry("level-editor", Texture.class);
         calibrationButton = directory.getEntry("play-old", Texture.class);
         settingsButton = directory.getEntry("play-old", Texture.class);
-        exitButton = directory.getEntry("play-old", Texture.class);
+        exitButton = directory.getEntry("quit-button", Texture.class);
         playButtonCoords = new Vector2(centerX + levelEditorButton.getWidth(), canvas.getHeight()/2 + 200);
         levelEditorButtonCoords = new Vector2(centerX + levelEditorButton.getWidth(), canvas.getHeight()/2);
         calibrationButtonCoords = new Vector2(centerX + calibrationButton.getWidth()*2 , centerY);
@@ -186,8 +187,8 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         // TODO: add calibration button
 
         Button.ButtonStyle backButtonStyle = new Button.ButtonStyle();
-        backButtonStyle.up = new TextureRegionDrawable(exitButton);
-        backButtonStyle.down = new TextureRegionDrawable(exitButton);
+        backButtonStyle.up = new TextureRegionDrawable(backButton);
+        backButtonStyle.down = new TextureRegionDrawable(backButton);
 
         final Button button = new Button(backButtonStyle);
 
@@ -317,6 +318,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         musicVolume = 1f;
         soundFXVolume = 1f;
         active = false;
+        v = new Vector2();
         reset();
     }
 
@@ -371,7 +373,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
         Color exitButtonTint = (pressState == EXIT_PRESSED ? Color.GRAY: Color.WHITE);
         canvas.draw(exitButton, exitButtonTint, exitButton.getWidth()/2, exitButton.getHeight()/2,
-                calibrationButtonCoords.x - 2 * exitButton.getWidth(), calibrationButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+                calibrationButtonCoords.x - 2 * 0.25f * exitButton.getWidth(), calibrationButtonCoords.y, 0, 0.25f, 0.25f);
         canvas.end();
     }
 
@@ -523,34 +525,31 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         screenY = heightY - screenY;
         switch (currentMenuState) {
             case HOME:
-            // check if buttons get pressed appropriately
-            if (isButtonPressed(screenX, screenY, playButton, playButtonCoords)) {
-        //            pressState = PLAY_PRESSED;
-                pressState = PLAY_PRESSED;
-            }
-            if (isButtonPressed(screenX, screenY, levelEditorButton, levelEditorButtonCoords)) {
-                pressState = LEVEL_EDITOR_PRESSED;
-            }
+                // check if buttons get pressed appropriately
+                if (isButtonPressed(screenX, screenY, playButton, playButtonCoords)) {
+                    pressState = PLAY_PRESSED;
+                }
+                if (isButtonPressed(screenX, screenY, levelEditorButton, levelEditorButtonCoords)) {
+                    pressState = LEVEL_EDITOR_PRESSED;
+                }
 
-            float dist = (screenX - calibrationButtonCoords.x) * (screenX - calibrationButtonCoords.x)
-                    + (screenY - calibrationButtonCoords.y) * (screenY - calibrationButtonCoords.y);
-            if (dist < radius * radius) {
-                pressState = CALIBRATION_PRESSED;
-            }
+                float dist = (screenX - calibrationButtonCoords.x) * (screenX - calibrationButtonCoords.x)
+                        + (screenY - calibrationButtonCoords.y) * (screenY - calibrationButtonCoords.y);
+                if (dist < radius * radius) {
+                    pressState = CALIBRATION_PRESSED;
+                }
 
-            float distSettings = (screenX - (calibrationButtonCoords.x - calibrationButton.getWidth())) * (screenX - (calibrationButtonCoords.x - calibrationButton.getWidth()))
-                    + (screenY - calibrationButtonCoords.y) * (screenY - calibrationButtonCoords.y);
-            if (distSettings < radius * radius) {
-                pressState = SETTINGS_PRESSED;
-            }
-
-            float distExit = (screenX - (calibrationButtonCoords.x - 2 * calibrationButton.getWidth())) * (screenX - (calibrationButtonCoords.x - 2 * calibrationButton.getWidth()))
-                    + (screenY - calibrationButtonCoords.y) * (screenY - calibrationButtonCoords.y);
-            if (distExit < radius * radius) {
-                pressState = EXIT_PRESSED;
-            }
-            break;
-
+                float distSettings = (screenX - (calibrationButtonCoords.x - calibrationButton.getWidth())) * (screenX - (calibrationButtonCoords.x - calibrationButton.getWidth()))
+                        + (screenY - calibrationButtonCoords.y) * (screenY - calibrationButtonCoords.y);
+                if (distSettings < radius * radius) {
+                    pressState = SETTINGS_PRESSED;
+                }
+                v.x = calibrationButtonCoords.x - 2 * 0.25f * exitButton.getWidth();
+                v.y = calibrationButtonCoords.y;
+                if (isButtonPressed(screenX, screenY, 0.25f * exitButton.getWidth(), 0.25f * exitButton.getHeight(), v)) {
+                    pressState = EXIT_PRESSED;
+                }
+                break;
             case SETTINGS:
                 float distBack = (screenX - (calibrationButton.getWidth())) * (screenX - (calibrationButton.getWidth()))
                         + (screenY - calibrationButtonCoords.y) * (screenY - calibrationButtonCoords.y);
@@ -559,7 +558,9 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
                     Gdx.input.setInputProcessor(this);
                 }
                 float barWidth = (innerWidth-2*scale*INNER_PROGRESS_CAP);
-                if (isButtonPressed(screenX, screenY, barWidth, scale*INNER_PROGRESS_HEIGHT, new Vector2(centerX, centerY))) {
+                v.x = centerX;
+                v.y = centerY;
+                if (isButtonPressed(screenX, screenY, barWidth, scale*INNER_PROGRESS_HEIGHT, v)) {
                     holdingBar = true;
                 }
                 break;
