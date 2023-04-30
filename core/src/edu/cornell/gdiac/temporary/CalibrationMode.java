@@ -39,10 +39,13 @@ public class CalibrationMode implements Screen {
     private Texture calibrationNote;
     /** The calibration display when input hit */
     private Texture calibrationNoteHit;
+    /** The indicator to show how many you need to hit */
+    private Texture circleIndicator;
+    /** The indicator to show how many you have hit */
+    private Texture circleIndicatorHit;
 
     /** Color of the text for interface */
     private Color textColor = new Color(27f / 255, 1f / 255, 103f / 255, 1);
-
 
     /** Reference to drawing context to display graphics (VIEW CLASS) */
     private GameCanvas canvas;
@@ -149,6 +152,8 @@ public class CalibrationMode implements Screen {
         backArrow = directory.getEntry("calibration-back-arrow", Texture.class);
         calibrationNote = directory.getEntry("calibration-note", Texture.class);
         calibrationNoteHit = directory.getEntry("calibration-note-hit", Texture.class);
+        circleIndicator = directory.getEntry("calibration-circle", Texture.class);
+        circleIndicatorHit = directory.getEntry("calibration-circle-filled", Texture.class);
 
         music.setLooping(true);
         inputController.setEditorProcessor();
@@ -183,8 +188,29 @@ public class CalibrationMode implements Screen {
         canvas.drawTextCentered("Make sure not to click out of the window while calibrating", displayFont,-300, textColor);
 
         if (isCalibrated) {
-            canvas.drawTextCentered("" + onBeat, displayFont, 150);
-            canvas.drawText("You have been calibrated!\nYou can exit this screen\nwith the esc key", displayFont, 100, canvas.getWidth() / 2);
+            canvas.drawTextCentered("" + onBeat, displayFont, 150, textColor);
+//            canvas.drawText("You have been calibrated!\nYou can exit this screen\nwith the esc key", displayFont, 100, canvas.getWidth() / 2);
+        }
+
+        int totalHits = NUM_BEATS_TO_HIT + NUM_BEATS_REMOVED;
+        int spaceApart = 10;
+        float circleIndicatorScale = 0.75f;
+        float circleIndicatorTrueWidth = 0.75f * circleIndicator.getWidth();
+        float startingX = canvas.getWidth()/2f - (spaceApart * (totalHits / 2f - 1) + circleIndicatorTrueWidth * (totalHits / 2f));
+
+        // draw the beat needed:
+        int i = 0;
+        while (i < userHitBeats.size()) {
+            canvas.draw(circleIndicatorHit, Color.WHITE, circleIndicator.getWidth()/2, circleIndicator.getHeight()/2,
+                    startingX + i * (circleIndicatorTrueWidth + spaceApart), canvas.getHeight()/2 - noteScale * calibrationNote.getHeight(), 0,
+                    circleIndicatorScale, circleIndicatorScale);
+            i++;
+        }
+        while (i < totalHits) {
+            canvas.draw(circleIndicator, Color.WHITE, circleIndicator.getWidth()/2, circleIndicator.getHeight()/2,
+                    startingX + i * (circleIndicatorTrueWidth + spaceApart), canvas.getHeight()/2 - noteScale * calibrationNote.getHeight(), 0,
+                    circleIndicatorScale, circleIndicatorScale);
+            i++;
         }
 
         canvas.draw(backArrow, Color.WHITE, 0, backArrow.getHeight(), 25, canvas.getHeight() - 40, 0, 0.1f, 0.1f);
