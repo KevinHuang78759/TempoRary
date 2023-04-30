@@ -21,6 +21,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Collections;
 
@@ -1002,7 +1003,9 @@ public class EditorMode implements Screen {
         }
         if (!hitConflict) {
             System.out.println("No Hit Conflict");
-            EditorHit h = new EditorHit(PlacePos, probabilities);
+            int[] probs = new int[laneNumber];
+            probs = Arrays.copyOf(probabilities, laneNumber);
+            EditorHit h = new EditorHit(PlacePos, probs);
             Hits.add(h);
             return h;
         }
