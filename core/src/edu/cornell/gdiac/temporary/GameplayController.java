@@ -442,7 +442,7 @@ public class GameplayController {
 			Particle s = new Particle();
 			s.setTexture(enhancedParticle);
 			s.getPosition().set(x, y);
-//			s.setSizeConfine(inBetweenWidth/2f);
+			s.setSizeConfine(inBetweenWidth/2f);
 			float vx = RandomController.rollFloat(-inBetweenWidth*0.07f, inBetweenWidth*0.07f);
 			float vy = RandomController.rollFloat(-inBetweenWidth*0.07f, inBetweenWidth*0.07f);
 			s.getVelocity().set(vx,vy);
@@ -456,7 +456,6 @@ public class GameplayController {
 		s.setTexture(perfectHitIndicator);
 		s.getPosition().set(x, y);
 		s.setSizeConfine(HIT_IND_SIZE/2);
-
 		particles.add(s);
 	}
 
@@ -464,6 +463,14 @@ public class GameplayController {
 		System.out.println("spawn ok hit is called");
 		Particle s = new Particle();
 		s.setTexture(okHitIndicator);
+		s.getPosition().set(x, y);
+		s.setSizeConfine(HIT_IND_SIZE/2);
+		particles.add(s);
+	}
+
+	public void spawnMissHit(float x, float y){
+		Particle s = new Particle();
+		s.setTexture(missIndicator);
 		s.getPosition().set(x, y);
 		s.setSizeConfine(HIT_IND_SIZE/2);
 		particles.add(s);
@@ -521,7 +528,6 @@ public class GameplayController {
 		// check if note was hit or on beat
 		if(dist < 15000) {
 
-
 			if (dist < 10000) {
 				//If so, destroy the note and set a positive hit status. Also set that we
 				//have registered a hit for this line for this click. This ensures that
@@ -536,13 +542,9 @@ public class GameplayController {
 				if (isOnBeat) {
 					spawnPerfectHit(hitStatusX,hitStatusY);
 					spawnEnhancedHitEffect(note.getX(), spawnEffectY);
-					System.out.println("is perfect hit");
-
 				} else{
 					spawnOkHit(hitStatusX,hitStatusY);
 				}
-
-
 
 				if (note.getLine() != -1) hitReg[note.getLine()] = true;
 				note.setDestroyed(destroy);
@@ -555,11 +557,12 @@ public class GameplayController {
 				sb.resetCombo();
 				note.setHitStatus(offBeatLoss);
 
-
-
 			}
 
-//			note is missed
+		}else{
+			float hitStatusX = LEFTBOUND+((activeBandMember+1)*(HIT_IND_SIZE/6))+((activeBandMember+1) * smallwidth);
+			float hitStatusY = BOTTOMBOUND-(HIT_IND_SIZE/2);
+			spawnMissHit(hitStatusX,hitStatusY);
 		}
 		//if we let go too early we need to reset the combo
 		if (lifted && dist >= 10000){
