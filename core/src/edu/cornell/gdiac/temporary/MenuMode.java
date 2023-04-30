@@ -217,30 +217,32 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
         headerTable.add(button);
 
-        table.row();
+        // TODO: fix this mess
 
-        controlTable.add(new Label("Notes", labelStyle)).colspan(2);
+//        table.row();
+
+//        controlTable.add(new Label("Notes", labelStyle)).colspan(2);
 
         // TODO: CHANGE THIS TO LOOP AND ADD SWITCHES
-        controlTable.row();
-
-        controlTable.add(new Label("Lane 1", labelStyle)).expand();
-        controlTable.add(new Label("D", labelStyle)).expand();
-
-        controlTable.row();
-
-        controlTable.add( new Label("Lane 2", labelStyle)).expandX();
-        controlTable.add( new Label("F", labelStyle)).expandX();
-
-        controlTable.row();
-
-        controlTable.add( new Label("Lane 3", labelStyle)).expandX();
-        controlTable.add( new Label("J", labelStyle)).expandX();
-
-        controlTable.row();
-
-        controlTable.add( new Label("Lane 4", labelStyle)).expandX();
-        controlTable.add( new Label("K", labelStyle)).expandX();
+//        controlTable.row();
+//
+//        controlTable.add(new Label("Lane 1", labelStyle)).expand();
+//        controlTable.add(new Label("D", labelStyle)).expand();
+//
+//        controlTable.row();
+//
+//        controlTable.add( new Label("Lane 2", labelStyle)).expandX();
+//        controlTable.add( new Label("F", labelStyle)).expandX();
+//
+//        controlTable.row();
+//
+//        controlTable.add( new Label("Lane 3", labelStyle)).expandX();
+//        controlTable.add( new Label("J", labelStyle)).expandX();
+//
+//        controlTable.row();
+//
+//        controlTable.add( new Label("Lane 4", labelStyle)).expandX();
+//        controlTable.add( new Label("K", labelStyle)).expandX();
 
         table.row();
 

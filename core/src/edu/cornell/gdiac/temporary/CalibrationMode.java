@@ -90,6 +90,23 @@ public class CalibrationMode implements Screen {
      * @return true if the player is ready to exit calibration mode
      */
     public boolean isReady() {
+        boolean backButtonPressed = false;
+        // TODO: FIX THIS
+//        if (inputController.didClick()) {
+////            0, backArrow.getHeight(), 25, canvas.getHeight() - 40, 0, 0.1f, 0.1f
+//            int screenX = (int) inputController.getMouseX();
+//            int screenY = (int) inputController.getMouseY();
+//            screenY = canvas.getHeight() - screenY;
+//
+//            float xRadius = backArrow.getWidth()*0.1f/2.0f;
+//            float xCoord = 25f + xRadius;
+//            boolean xInBounds = xCoord - xRadius <= screenX && xCoord + xRadius >= screenX;
+//            float yRadius = backArrow.getHeight()*0.1f/2.0f;
+//            float yCoord = canvas.getHeight() - 40 - yRadius;
+//            boolean yInBounds = yCoord - yRadius <= screenY && yCoord + yRadius >= screenY;
+//            backButtonPressed = xInBounds && yInBounds;
+//            System.out.println(backButtonPressed);
+//        }
         return inputController.didExit();
     }
 
@@ -137,15 +154,15 @@ public class CalibrationMode implements Screen {
             canvas.draw(calibrationNote, Color.WHITE, calibrationNote.getWidth() / 2, calibrationNote.getHeight() / 2, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, noteScale, noteScale);
         }
 
+        canvas.drawTextCentered("Press the space bar to the beat", displayFont,200, textColor);
+        canvas.drawTextCentered("Make sure not to click out of the window while calibrating", displayFont,-300, textColor);
+
         if (isCalibrated) {
             canvas.drawTextCentered("" + onBeat, displayFont, 150);
             canvas.drawText("You have been calibrated!\nYou can exit this screen\nwith the esc key", displayFont, 100, canvas.getWidth() / 2);
         }
 
-        canvas.draw(backArrow, Color.WHITE, 0, backArrow.getHeight(), 25, canvas.getHeight() - 40, 0, 0.1f, 0.1f);
-
-        canvas.drawTextCentered("Press the space bar to the beat", displayFont,200, textColor);
-        canvas.drawTextCentered("Make sure not to click out of the window while calibrating", displayFont,-300, textColor);
+//        canvas.draw(backArrow, Color.WHITE, 0, backArrow.getHeight(), 25, canvas.getHeight() - 40, 0, 0.1f, 0.1f);
 
         canvas.end();
     }
@@ -226,6 +243,7 @@ public class CalibrationMode implements Screen {
     @Override
     public void show() {
         active = true;
+        inputController.setEditorProcessor();
         music.play();
         reset();
     }
