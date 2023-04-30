@@ -1,65 +1,22 @@
 {
 	"textures": {
-        "loading-background": {
-          "file":     "images/backgrounds/loading_screen_background_2.png",
-          "minFilter": "linear",
-          "magFilter": "linear"
-        },
-        "title": {
-          "file": "images/title_v1.png",
-          "minFilter": "linear",
-          "magFilter": "linear"
-        },
-        "ghost-cat": {
-          "file": "images/ghost_cat.jpg",
-          "minFilter": "linear",
-          "maxFilter": "linear"
-        },
-        "play-old": {
-          "file": "images/play.png",
-          "minFilter": "linear",
-          "maxFilter": "linear"
-        },
-        "play": {
-          "file":     "images/play_button_v1.png",
-          "minFilter": "linear",
-          "magFilter": "linear"
-        },
-        "level-editor": {
-          "file": "images/leveleditor_button_v1.png",
-          "minFilter": "linear",
-          "maxFilter": "linear"
-        },
-        "easy": {
-          "file": "images/easy.png",
-          "minFilter": "linear",
-          "maxFilter": "linear"
-        },
-        "medium": {
-          "file": "images/medium.png",
-          "minFilter": "linear",
-          "maxFilter": "linear"
-        },
-        "hard": {
-          "file": "images/hard.png",
-          "minFilter": "linear",
-          "maxFilter": "linear"
-        },
-        "1": {
-          "file": "images/album_covers/aliens_album.png",
-          "minFilter": "linear",
-          "maxFilter": "linear"
-        },
-        "2": {
-          "file": "images/album_covers/challenger_album.png",
-          "minFilter": "linear",
-          "maxFilter": "linear"
-        },
-        "3": {
-          "file": "images/album_covers/locked_level_album.png",
-          "minFilter": "linear",
-          "maxFilter": "linear"
-        },
+        "loading-background": "images/backgrounds/loading_screen_background_2.png",
+        "title": "images/title_v1.png",
+        "ghost-cat": "images/ghost_cat.jpg",
+        "play-old": "images/play.png",
+        "play": "images/play_button_v1.png",
+        "calibration-background": "images/backgrounds/Calibration_Background.png",
+        "white-background": "images/backgrounds/white_background.png",
+        "calibration-back-arrow": "images/ui/Calibration_left_arrow.png",
+        "calibration-note": "images/ui/Calibration_note_normal.png",
+        "calibration-note-hit": "images/ui/Calibration_note_glowing.png",
+        "level-editor": "images/leveleditor_button_v1.png",
+        "easy": "images/easy.png",
+        "medium": "images/medium.png",
+        "hard": "images/hard.png",
+        "1": "images/album_covers/aliens_album.png",
+        "2": "images/album_covers/challenger_album.png",
+        "3": "images/album_covers/challenger_album.png",
         "level-select-button": "images/ui/level_select.png",
         "quit-button": "images/ui/quit.png",
         "restart-button": "images/ui/restart.png",
