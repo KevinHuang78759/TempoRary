@@ -370,6 +370,7 @@ public class GameMode implements Screen {
 	 */
 	private void draw() {
 		canvas.begin();
+//		gameplayController.garbageCollectNoteIndicators();
 		// First draw the background
 		// TODO: SWITCH BACKGROUND BASED ON LEVEL JSON (may need to move this to a different location)
 		canvas.drawBackground(streetLevelBackground.getTexture(),0,0);
@@ -402,15 +403,20 @@ public class GameMode implements Screen {
 					inputController.triggerPress, inputController.switches(),
 					gameplayController.inBetweenWidth/5f);
 
+			for(BandMember bandMember : gameplayController.level.getBandMembers()){
+				//Draw the band member sprite and competency bar
+				bandMember.drawCharacterSprite(canvas);
+				bandMember.drawHPBar(canvas);
+			}
+
 			// Draw the particles on top
 			for (Particle o : gameplayController.getParticles()) {
 				o.draw(canvas);
 			}
 
-			for(BandMember bandMember : gameplayController.level.getBandMembers()){
-				//Draw the band member sprite and competency bar
-				bandMember.drawCharacterSprite(canvas);
-				bandMember.drawHPBar(canvas);
+			// draw miss note indicators
+			for (Particle o: gameplayController.getNoteIndicatorParticles()){
+				o.draw(canvas);
 			}
 
 			// draw the scoreboard
@@ -421,7 +427,9 @@ public class GameMode implements Screen {
 				canvas.drawTextCentered("" + (int) waiting, displayFont, 0);
 			}
 		}
+
 		canvas.end();
+
 	}
 
 	/**

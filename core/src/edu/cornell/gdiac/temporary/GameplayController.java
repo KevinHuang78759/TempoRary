@@ -49,10 +49,10 @@ public class GameplayController {
 	/** Number of band member lanes */
 	int NUM_LANES;
 
-	int HIT_IND_SIZE = 120;
+	int HIT_IND_SIZE = 100;
 
 	private Texture perfectHitIndicator;
-	private Texture okHitIndicator;
+	private Texture goodHitIndicator;
 
 	private Texture missIndicator;
 
@@ -62,6 +62,8 @@ public class GameplayController {
 	// List of objects with the garbage collection set.
 	/** The currently active object */
 	private Array<Particle> particles;
+
+	private Array<Particle> noteIndicatorParticles;
 	/** The backing set for garbage collection */
 	private Array<Particle> backing;
 
@@ -112,6 +114,7 @@ public class GameplayController {
 	public GameplayController(float width, float height){
 		particles = new Array<>();
 		backing = new Array<>();
+		noteIndicatorParticles =new Array<>();
 		//Set margins so there is a comfortable amount of space between play area and screen boundaries
 		//Values decided by pure look
 		setBounds(width, height);
@@ -160,6 +163,7 @@ public class GameplayController {
 		sb.setFontScale((totalHeight - TOPBOUND)/2f);
 		particles = new Array<>();
 		backing = new Array<>();
+		noteIndicatorParticles =new Array<>();
 		level = null;
 		level = new Level(levelData, directory);
 		NUM_LANES = level.getBandMembers().length;
@@ -253,6 +257,9 @@ public class GameplayController {
 					n.setDestroyed(true);
 					if(i == activeBandMember){
 						sb.resetCombo();
+						float hitStatusX = LEFTBOUND+((activeBandMember+1)*(HIT_IND_SIZE/3))+((activeBandMember+1) * smallwidth);
+						float hitStatusY = BOTTOMBOUND-(HIT_IND_SIZE/2);
+						spawnMissHit(hitStatusX,hitStatusY);
 					}
 				}
 				if(n.isDestroyed()){
@@ -320,9 +327,8 @@ public class GameplayController {
 		enhancedParticle = directory.getEntry("doubleQ", Texture.class);
 
 		perfectHitIndicator = directory.getEntry("perfect-hit", Texture.class);
-		okHitIndicator = directory.getEntry("ok-hit", Texture.class);
+		goodHitIndicator = directory.getEntry("good-hit", Texture.class);
 		missIndicator = directory.getEntry("miss-hit", Texture.class);
-
 
 	}
 
@@ -338,6 +344,8 @@ public class GameplayController {
 	public Array<Particle> getParticles() {
 		return particles;
 	}
+
+	public Array<Particle> getNoteIndicatorParticles(){return noteIndicatorParticles;}
 
 	/**
 	 * Starts level
@@ -360,6 +368,10 @@ public class GameplayController {
 		level.updateBandMemberNotes(noteSpawnY);
 		//Update the objects of this class (mostly stars)
 		for(Particle o : particles){
+			o.update(0f);
+		}
+
+		for (Particle o: noteIndicatorParticles){
 			o.update(0f);
 		}
 
@@ -395,6 +407,18 @@ public class GameplayController {
 	 */
 	public int lpl = 4;
 
+	Array<Particle> backingNoteIndicator = new Array<Particle>();
+	public void garbageCollectNoteIndicators(){
+		for (Particle o : noteIndicatorParticles) {
+				if (!o.isDestroyed()) {
+					backingNoteIndicator.add(o);
+				}
+		}
+		Array<Particle> tmp = backingNoteIndicator;
+
+		noteIndicatorParticles.clear();
+	}
+
 	/**
 	 * Garbage collects all deleted objects.
 	 *
@@ -417,6 +441,7 @@ public class GameplayController {
 		for (BandMember bandMember : level.getBandMembers()) {
 			bandMember.garbageCollect();
 		}
+
 	}
 
 	/**
@@ -451,29 +476,30 @@ public class GameplayController {
 	}
 
 	public void spawnPerfectHit(float x, float y){
-		System.out.println("spawn perfect hit is called");
+		garbageCollectNoteIndicators();
 		Particle s = new Particle();
 		s.setTexture(perfectHitIndicator);
 		s.getPosition().set(x, y);
-		s.setSizeConfine(HIT_IND_SIZE/2);
-		particles.add(s);
+		s.setSizeConfine(HIT_IND_SIZE*1.2f);
+		noteIndicatorParticles.add(s);
 	}
 
-	public void spawnOkHit(float x, float y){
-		System.out.println("spawn ok hit is called");
+	public void spawnGoodHit(float x, float y){
+		garbageCollectNoteIndicators();
 		Particle s = new Particle();
-		s.setTexture(okHitIndicator);
+		s.setTexture(goodHitIndicator);
 		s.getPosition().set(x, y);
-		s.setSizeConfine(HIT_IND_SIZE/2);
-		particles.add(s);
+		s.setSizeConfine(HIT_IND_SIZE);
+		noteIndicatorParticles.add(s);
 	}
 
 	public void spawnMissHit(float x, float y){
+		garbageCollectNoteIndicators();
 		Particle s = new Particle();
 		s.setTexture(missIndicator);
 		s.getPosition().set(x, y);
-		s.setSizeConfine(HIT_IND_SIZE/2);
-		particles.add(s);
+		s.setSizeConfine(HIT_IND_SIZE);
+		noteIndicatorParticles.add(s);
 	}
 
 
@@ -515,6 +541,7 @@ public class GameplayController {
 						 boolean destroy,
 						 boolean[] hitReg,
 						 boolean lifted) {
+		garbageCollectNoteIndicators();
 		Note.NoteType nt = note.getNoteType();
 		// check for precondition that lifted is true iff note type is HELD
 		assert !lifted || nt == Note.NoteType.HELD;
@@ -537,13 +564,13 @@ public class GameplayController {
 				note.setHitStatus(isOnBeat ? onBeatGain : offBeatGain);
 				spawnHitEffect(note.getHitStatus(), note.getX(), spawnEffectY);
 
-				float hitStatusX = LEFTBOUND+((activeBandMember+1)*(HIT_IND_SIZE/6))+((activeBandMember+1) * smallwidth);
+				float hitStatusX = LEFTBOUND+((activeBandMember+1)*(HIT_IND_SIZE/3))+((activeBandMember+1) * smallwidth);
 				float hitStatusY = BOTTOMBOUND-(HIT_IND_SIZE/2);
 				if (isOnBeat) {
 					spawnPerfectHit(hitStatusX,hitStatusY);
 					spawnEnhancedHitEffect(note.getX(), spawnEffectY);
 				} else{
-					spawnOkHit(hitStatusX,hitStatusY);
+					spawnGoodHit(hitStatusX,hitStatusY);
 				}
 
 				if (note.getLine() != -1) hitReg[note.getLine()] = true;
@@ -559,15 +586,13 @@ public class GameplayController {
 
 			}
 
-		}else{
-			float hitStatusX = LEFTBOUND+((activeBandMember+1)*(HIT_IND_SIZE/6))+((activeBandMember+1) * smallwidth);
-			float hitStatusY = BOTTOMBOUND-(HIT_IND_SIZE/2);
-			spawnMissHit(hitStatusX,hitStatusY);
 		}
 		//if we let go too early we need to reset the combo
 		if (lifted && dist >= 10000){
 			sb.resetCombo();
 			note.setHitStatus(offBeatLoss);
+
+
 		}
 	}
 
@@ -621,6 +646,7 @@ public class GameplayController {
 		}
 		else {
 			// Transition phase
+			garbageCollectNoteIndicators();
 
 			// Increment progress
 			++t_progress;
