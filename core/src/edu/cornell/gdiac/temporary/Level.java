@@ -159,9 +159,9 @@ public class Level {
 
     float maxSample;
     public Level(JsonValue data, AssetDirectory directory) {
-
         JsonReader jr = new JsonReader();
         JsonValue assets = jr.parse(Gdx.files.internal("assets.json"));
+
         // load all related level textures
         hitNoteTexture = directory.getEntry("hit", Texture.class);
         switchNoteTexture = directory.getEntry("switch", Texture.class);
@@ -257,8 +257,7 @@ public class Level {
         }
     }
 
-
-
+    // TODO: document and multiply by the base music volume
     public void setMusicVolume(float vol) {
         music.setVolume(vol);
     }
@@ -512,7 +511,6 @@ public class Level {
     }
 
     public void dispose(){
-        music.dispose();
         laneBackground.dispose();
         hitNoteTexture.dispose();
         holdTrailTexture.dispose();
