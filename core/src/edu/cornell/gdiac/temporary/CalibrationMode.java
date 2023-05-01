@@ -128,7 +128,7 @@ public class CalibrationMode implements Screen {
             backButtonPressed = xInBounds && yInBounds;
         }
 
-        return inputController.didExit() || backButtonPressed;
+        return inputController.didExit() || backButtonPressed || isCalibrated;
     }
 
     /**
@@ -144,7 +144,7 @@ public class CalibrationMode implements Screen {
         JsonReader jr = new JsonReader();
         JsonValue assets = jr.parse(Gdx.files.internal("assets.json"));
 
-        displayFont = directory.getEntry("main", BitmapFont.class);
+        displayFont = directory.getEntry("calibration-font", BitmapFont.class);
         music = ((AudioEngine) Gdx.audio).newMusic(Gdx.files.internal(assets.get("samples").getString("calibration")));
         songSource = music.getSource(0);
         background = directory.getEntry("calibration-background", Texture.class);
@@ -185,10 +185,11 @@ public class CalibrationMode implements Screen {
         }
 
         canvas.drawTextCentered("Press the space bar to the beat", displayFont,200, textColor);
-        canvas.drawTextCentered("Make sure not to click out of the window while calibrating", displayFont,-300, textColor);
+        canvas.drawTextCentered("Make sure not to click out of the window", displayFont,-250, textColor);
+        canvas.drawTextCentered("while calibrating", displayFont,-300, textColor);
 
         if (isCalibrated) {
-            canvas.drawTextCentered("" + onBeat, displayFont, 150, textColor);
+//            canvas.drawTextCentered("" + onBeat, displayFont, 150, textColor);
 //            canvas.drawText("You have been calibrated!\nYou can exit this screen\nwith the esc key", displayFont, 100, canvas.getWidth() / 2);
         }
 
@@ -197,18 +198,19 @@ public class CalibrationMode implements Screen {
         float circleIndicatorScale = 0.75f;
         float circleIndicatorTrueWidth = 0.75f * circleIndicator.getWidth();
         float startingX = canvas.getWidth()/2f - (spaceApart * (totalHits / 2f - 1) + circleIndicatorTrueWidth * (totalHits / 2f));
+        float circleDrawY = canvas.getHeight()/2 - noteScale * calibrationNote.getHeight() + 25;
 
         // draw the beat needed:
         int i = 0;
         while (i < userHitBeats.size()) {
             canvas.draw(circleIndicatorHit, Color.WHITE, circleIndicator.getWidth()/2, circleIndicator.getHeight()/2,
-                    startingX + i * (circleIndicatorTrueWidth + spaceApart), canvas.getHeight()/2 - noteScale * calibrationNote.getHeight(), 0,
+                    startingX + i * (circleIndicatorTrueWidth + spaceApart), circleDrawY, 0,
                     circleIndicatorScale, circleIndicatorScale);
             i++;
         }
         while (i < totalHits) {
             canvas.draw(circleIndicator, Color.WHITE, circleIndicator.getWidth()/2, circleIndicator.getHeight()/2,
-                    startingX + i * (circleIndicatorTrueWidth + spaceApart), canvas.getHeight()/2 - noteScale * calibrationNote.getHeight(), 0,
+                    startingX + i * (circleIndicatorTrueWidth + spaceApart), circleDrawY, 0,
                     circleIndicatorScale, circleIndicatorScale);
             i++;
         }
