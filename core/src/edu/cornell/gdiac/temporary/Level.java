@@ -273,6 +273,10 @@ public class Level {
         return bpm * 2 / 60f / 60f;
     }
 
+    public int getSamplesPerBeat(){
+        return music.getSampleRate()*60/bpm;
+    }
+
     /**
      * Sets all the bottom left corners of the BandMembers. Call this after setting width and height properties
      * @param windowBL - Bottom Left of the play area

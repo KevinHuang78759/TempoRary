@@ -102,18 +102,43 @@ public class GameplayController {
 		//Values decided by pure look
 		setBounds(width, height);
 		sfx = new SoundController<>();
+		//populate sound effects
+		JsonReader jr = new JsonReader();
+		JsonValue allSounds = jr.parse(Gdx.files.internal("assets.json"));
+		allSounds = allSounds.get("soundEffects");
+		for(int i = 0; i < allSounds.size; ++i){
+			JsonValue cur = allSounds.get(i);
+			sfx.addSound(cur.getString(0), cur.getString(1));
+		}
 	}
 
 	float totalWidth;
 	float totalHeight;
 
 	public void setBounds(float width, float height){
+		//Ratio of play area width to play area height
+		float playAreaRatio = 2f;
 		totalHeight = height;
 		totalWidth = width;
 		LEFTBOUND = width/8f;
 		RIGHTBOUND = 7*width/8f;
 		TOPBOUND = 17f*height/20f;
 		BOTTOMBOUND = height/3f;
+
+		if((RIGHTBOUND - LEFTBOUND)/(TOPBOUND - BOTTOMBOUND) > playAreaRatio){
+			//If this is greater, then we are too wide, so we keep the height but scale the width
+			float playWidth = playAreaRatio*(TOPBOUND - BOTTOMBOUND);
+			float wCenter = (RIGHTBOUND + LEFTBOUND)/2f;
+			RIGHTBOUND = wCenter + playWidth/2f;
+			LEFTBOUND = wCenter - playWidth/2f;
+		}
+		else{
+			//Otherwise we are too narrow, so keep the width and scale the height
+			float playHeight = (RIGHTBOUND - LEFTBOUND)/playAreaRatio;
+			float hCenter = (TOPBOUND + BOTTOMBOUND)/2f;
+			TOPBOUND = hCenter + playHeight/2f;
+			BOTTOMBOUND = hCenter - playHeight/2f;
+		}
 
 	}
 
@@ -160,15 +185,8 @@ public class GameplayController {
 		setYVals();
 		switches = new boolean[NUM_LANES];
 		triggers = new boolean[lpl];
+		T_SwitchPhases = level.getSamplesPerBeat()/2;
 
-		//populate sound effects
-		JsonReader jr = new JsonReader();
-		JsonValue allSounds = jr.parse(Gdx.files.internal("assets.json"));
-		allSounds = allSounds.get("soundEffects");
-		for(int i = 0; i < allSounds.size; ++i){
-			JsonValue cur = allSounds.get(i);
-			sfx.addSound(cur.getString(0), cur.getString(1));
-		}
 	}
 
 	public void reloadLevel(){
@@ -438,11 +456,13 @@ public class GameplayController {
 	/** initiate to NOTES phase*/
 	PlayPhase curP = PlayPhase.NOTES;
 	/** Total progress needed before we declare ourselves fully transitioned */
-	int T_SwitchPhases = 8;
+	long T_SwitchPhases = 8;
 	/** The band member lane index that we are trying to switch to */
 	int goalBandMember;
 	/** The current transition progress */
-	int t_progress;
+	long t_progress;
+
+	long t_start;
 
 	/** Switch inputs */
 	public boolean[] switches;
@@ -550,6 +570,7 @@ public class GameplayController {
 					curP = PlayPhase.TRANSITION;
 					//reset progress
 					t_progress = 0;
+					t_start = level.getCurrentSample();
 					return;
 				}
 			}
@@ -558,10 +579,10 @@ public class GameplayController {
 			// Transition phase
 
 			// Increment progress
-			++t_progress;
+			t_progress = level.getCurrentSample() - t_start;
 
 			// Check if we are done, if so set active BM and change phase
-			if(t_progress == T_SwitchPhases){
+			if(t_progress >= T_SwitchPhases){
 				curP = PlayPhase.NOTES;
 				activeBandMember = goalBandMember;
 			}
