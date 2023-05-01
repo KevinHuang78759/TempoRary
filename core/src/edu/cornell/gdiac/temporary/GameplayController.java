@@ -38,8 +38,6 @@ public class GameplayController {
 	/** Texture for all stars, as they look the same */
 	private Texture particleTexture;
 
-
-
 	private Texture enhancedParticle;
 
 	private static final float GLOBAL_VOLUME_ADJ = 0.2f;
@@ -119,8 +117,6 @@ public class GameplayController {
 		//Values decided by pure look
 		setBounds(width, height);
 		sfx = new SoundController<>();
-
-
 
 	}
 
@@ -258,7 +254,7 @@ public class GameplayController {
 					if(i == activeBandMember){
 						sb.resetCombo();
 						float hitStatusX = LEFTBOUND+((activeBandMember+1)*(HIT_IND_SIZE/3))+((activeBandMember+1) * smallwidth);
-						float hitStatusY = BOTTOMBOUND-(HIT_IND_SIZE/2);
+						float hitStatusY = BOTTOMBOUND-(HIT_IND_SIZE/1.6f);
 						spawnMissHit(hitStatusX,hitStatusY);
 					}
 				}
@@ -400,6 +396,7 @@ public class GameplayController {
 	public void reset() {
 		particles.clear();
 		curP = PlayPhase.NOTES;
+		noteIndicatorParticles.clear();
 	}
 
 	/**
@@ -407,15 +404,17 @@ public class GameplayController {
 	 */
 	public int lpl = 4;
 
-	Array<Particle> backingNoteIndicator = new Array<Particle>();
-	public void garbageCollectNoteIndicators(){
-		for (Particle o : noteIndicatorParticles) {
-				if (!o.isDestroyed()) {
-					backingNoteIndicator.add(o);
-				}
-		}
-		Array<Particle> tmp = backingNoteIndicator;
 
+	private Array<Particle> noteIndicatorBacking = new Array<>();
+	public void garbageCollectNoteIndicators(){
+//		for (Particle n: noteIndicatorParticles){
+//			if (!n.isDestroyed()){
+//				noteIndicatorBacking.add(n);
+//			}
+//		}
+//		Array<Particle> tmp = noteIndicatorBacking;
+//		noteIndicatorBacking = noteIndicatorParticles;
+//		noteIndicatorParticles = tmp;
 		noteIndicatorParticles.clear();
 	}
 
@@ -480,7 +479,10 @@ public class GameplayController {
 		Particle s = new Particle();
 		s.setTexture(perfectHitIndicator);
 		s.getPosition().set(x, y);
-		s.setSizeConfine(HIT_IND_SIZE*1.2f);
+		s.setSizeConfine(HIT_IND_SIZE*1.4f);
+		float vy = RandomController.rollFloat(-inBetweenWidth*0.07f, inBetweenWidth*0.07f);
+		s.getVelocity().set(0,-smallwidth/50f);
+
 		noteIndicatorParticles.add(s);
 	}
 
@@ -490,15 +492,19 @@ public class GameplayController {
 		s.setTexture(goodHitIndicator);
 		s.getPosition().set(x, y);
 		s.setSizeConfine(HIT_IND_SIZE);
+		float vy = RandomController.rollFloat(-inBetweenWidth*0.07f, inBetweenWidth*0.07f);
+		s.getVelocity().set(0,-smallwidth/50f);
 		noteIndicatorParticles.add(s);
 	}
 
 	public void spawnMissHit(float x, float y){
+
 		garbageCollectNoteIndicators();
 		Particle s = new Particle();
 		s.setTexture(missIndicator);
 		s.getPosition().set(x, y);
 		s.setSizeConfine(HIT_IND_SIZE);
+		s.getVelocity().set(0,-smallwidth/50f);
 		noteIndicatorParticles.add(s);
 	}
 
@@ -541,7 +547,7 @@ public class GameplayController {
 						 boolean destroy,
 						 boolean[] hitReg,
 						 boolean lifted) {
-		garbageCollectNoteIndicators();
+//		garbageCollectNoteIndicators();
 		Note.NoteType nt = note.getNoteType();
 		// check for precondition that lifted is true iff note type is HELD
 		assert !lifted || nt == Note.NoteType.HELD;
@@ -565,7 +571,7 @@ public class GameplayController {
 				spawnHitEffect(note.getHitStatus(), note.getX(), spawnEffectY);
 
 				float hitStatusX = LEFTBOUND+((activeBandMember+1)*(HIT_IND_SIZE/3))+((activeBandMember+1) * smallwidth);
-				float hitStatusY = BOTTOMBOUND-(HIT_IND_SIZE/2);
+				float hitStatusY = BOTTOMBOUND-(HIT_IND_SIZE/1.6f);
 				if (isOnBeat) {
 					spawnPerfectHit(hitStatusX,hitStatusY);
 					spawnEnhancedHitEffect(note.getX(), spawnEffectY);
@@ -602,6 +608,10 @@ public class GameplayController {
 	 * @param input
 	 */
 	public void handleActions(InputController input){
+
+		for (Particle n: noteIndicatorParticles){
+			System.out.println("age"+n.getAge());
+		}
 		//Read in inputs
 		switches = input.switches();
 		triggers = input.didTrigger();

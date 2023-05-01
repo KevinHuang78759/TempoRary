@@ -212,6 +212,13 @@ public class Particle {
 	}
 
 	/**
+	 * Returns the current age of this particle
+	 *
+	 * @return the current age of this particle
+	 */
+	public int getAge(){return age;}
+
+	/**
 	 * Updates the age and angle of this particle.
 	 *
 	 * @param delta Number of seconds since last animation frame
@@ -220,7 +227,7 @@ public class Particle {
 		position.add(velocity);
 		
 		// Decrease time until death; die if it's time
-		if (--age == 0) {
+		if (--age <= 0) {
 			destroyed = true;
 		}
 		

@@ -358,6 +358,7 @@ public class GameMode implements Screen {
 		}
 
 		// Clean up destroyed objects
+//		gameplayController.garbageCollectNoteIndicators();
 		gameplayController.garbageCollect();
 	}
 
