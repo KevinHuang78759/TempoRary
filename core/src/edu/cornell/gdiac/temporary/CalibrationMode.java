@@ -12,7 +12,6 @@ import edu.cornell.gdiac.audio.AudioEngine;
 import edu.cornell.gdiac.audio.AudioSource;
 import edu.cornell.gdiac.audio.MusicQueue;
 import edu.cornell.gdiac.util.ScreenListener;
-import org.w3c.dom.Text;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -100,7 +99,7 @@ public class CalibrationMode implements Screen {
         music.setLooping(true);
     }
 
-    /** Returns the offset */
+    /** Returns the calibration offset */
     public int getOffset() {
         return offset;
     }
@@ -188,10 +187,10 @@ public class CalibrationMode implements Screen {
         canvas.drawTextCentered("Make sure not to click out of the window", displayFont,-250, textColor);
         canvas.drawTextCentered("while calibrating", displayFont,-300, textColor);
 
-        if (isCalibrated) {
+//        if (isCalibrated) {
 //            canvas.drawTextCentered("" + onBeat, displayFont, 150, textColor);
 //            canvas.drawText("You have been calibrated!\nYou can exit this screen\nwith the esc key", displayFont, 100, canvas.getWidth() / 2);
-        }
+//        }
 
         int totalHits = NUM_BEATS_TO_HIT + NUM_BEATS_REMOVED;
         int spaceApart = 10;
