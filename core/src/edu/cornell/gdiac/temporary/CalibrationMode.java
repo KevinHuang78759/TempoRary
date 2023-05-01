@@ -5,10 +5,13 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.utils.JsonReader;
+import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.audio.AudioEngine;
+import edu.cornell.gdiac.audio.AudioSource;
 import edu.cornell.gdiac.audio.MusicQueue;
 import edu.cornell.gdiac.util.ScreenListener;
-import org.w3c.dom.Text;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -23,6 +26,8 @@ public class CalibrationMode implements Screen {
     private BitmapFont displayFont;
     /** The song */
     private MusicQueue music;
+    /** Song source */
+    private AudioSource songSource;
     /** The background texture */
     private Texture background;
     /** White background */
@@ -33,10 +38,13 @@ public class CalibrationMode implements Screen {
     private Texture calibrationNote;
     /** The calibration display when input hit */
     private Texture calibrationNoteHit;
+    /** The indicator to show how many you need to hit */
+    private Texture circleIndicator;
+    /** The indicator to show how many you have hit */
+    private Texture circleIndicatorHit;
 
-
+    /** Color of the text for interface */
     private Color textColor = new Color(27f / 255, 1f / 255, 103f / 255, 1);
-
 
     /** Reference to drawing context to display graphics (VIEW CLASS) */
     private GameCanvas canvas;
@@ -61,7 +69,10 @@ public class CalibrationMode implements Screen {
     /** temp variable to draw whether the hit was on beat or not */
     private boolean onBeat;
 
+    /** Specified number of beats to hit */
     private final int NUM_BEATS_TO_HIT = 12;
+    /** Specified number of hit beats to remove from count in calibration calculation */
+    private final int NUM_BEATS_REMOVED = 2;
 
     /**
      * Constructs new CalibrationController
@@ -72,15 +83,23 @@ public class CalibrationMode implements Screen {
         this.canvas = canvas;
         userHitBeats = new LinkedList<>();
         offset = 0;
-        reset();
-    }
-
-    private void reset() {
-        userHitBeats.clear();
         isCalibrated = false;
     }
 
-    /** Returns the offset */
+    /** Resets the calibration mode by clearing beats, calibration is false, and resetting music */
+    private void reset() {
+        inputController.resetMouseClicks();
+        userHitBeats.clear();
+        isCalibrated = false;
+        music.stop();
+        music.reset();
+        music.clearSources();
+        music = ((AudioEngine) Gdx.audio).newMusicBuffer( songSource.getChannels() == 1, songSource.getSampleRate() );
+        music.addSource(songSource);
+        music.setLooping(true);
+    }
+
+    /** Returns the calibration offset */
     public int getOffset() {
         return offset;
     }
@@ -90,24 +109,25 @@ public class CalibrationMode implements Screen {
      * @return true if the player is ready to exit calibration mode
      */
     public boolean isReady() {
+        // Process the input into screen
         boolean backButtonPressed = false;
-        // TODO: FIX THIS
-//        if (inputController.didClick()) {
-////            0, backArrow.getHeight(), 25, canvas.getHeight() - 40, 0, 0.1f, 0.1f
-//            int screenX = (int) inputController.getMouseX();
-//            int screenY = (int) inputController.getMouseY();
-//            screenY = canvas.getHeight() - screenY;
-//
-//            float xRadius = backArrow.getWidth()*0.1f/2.0f;
-//            float xCoord = 25f + xRadius;
-//            boolean xInBounds = xCoord - xRadius <= screenX && xCoord + xRadius >= screenX;
-//            float yRadius = backArrow.getHeight()*0.1f/2.0f;
-//            float yCoord = canvas.getHeight() - 40 - yRadius;
-//            boolean yInBounds = yCoord - yRadius <= screenY && yCoord + yRadius >= screenY;
-//            backButtonPressed = xInBounds && yInBounds;
-//            System.out.println(backButtonPressed);
-//        }
-        return inputController.didExit();
+
+        if (inputController.didClick()) {
+//            0, backArrow.getHeight(), 25, canvas.getHeight() - 40, 0, 0.1f, 0.1f
+            int screenX = (int) inputController.getMouseX();
+            int screenY = (int) inputController.getMouseY();
+            screenY = canvas.getHeight() - screenY;
+
+            float xRadius = backArrow.getWidth()*0.1f/2.0f;
+            float xCoord = 25f + xRadius;
+            boolean xInBounds = xCoord - xRadius <= screenX && xCoord + xRadius >= screenX;
+            float yRadius = backArrow.getHeight()*0.1f/2.0f;
+            float yCoord = canvas.getHeight() - 40 - yRadius;
+            boolean yInBounds = yCoord - yRadius <= screenY && yCoord + yRadius >= screenY;
+            backButtonPressed = xInBounds && yInBounds;
+        }
+
+        return inputController.didExit() || backButtonPressed || isCalibrated;
     }
 
     /**
@@ -120,13 +140,22 @@ public class CalibrationMode implements Screen {
      * @param directory 	Reference to the asset directory.
      */
     public void populate(AssetDirectory directory) {
-        displayFont = directory.getEntry("main", BitmapFont.class);
-        music = directory.getEntry("calibration", MusicQueue.class);
-        background  = directory.getEntry("calibration-background", Texture.class); //calibration background?
+        JsonReader jr = new JsonReader();
+        JsonValue assets = jr.parse(Gdx.files.internal("assets.json"));
+
+        displayFont = directory.getEntry("calibration-font", BitmapFont.class);
+        music = ((AudioEngine) Gdx.audio).newMusic(Gdx.files.internal(assets.get("samples").getString("calibration")));
+        songSource = music.getSource(0);
+        background = directory.getEntry("calibration-background", Texture.class);
         whiteBackground = directory.getEntry("white-background", Texture.class);
         backArrow = directory.getEntry("calibration-back-arrow", Texture.class);
         calibrationNote = directory.getEntry("calibration-note", Texture.class);
-        calibrationNoteHit = directory.getEntry("calibration-note-hit", Texture.class);;
+        calibrationNoteHit = directory.getEntry("calibration-note-hit", Texture.class);
+        circleIndicator = directory.getEntry("calibration-circle", Texture.class);
+        circleIndicatorHit = directory.getEntry("calibration-circle-filled", Texture.class);
+
+        music.setLooping(true);
+        inputController.setEditorProcessor();
     }
 
     @Override
@@ -155,14 +184,37 @@ public class CalibrationMode implements Screen {
         }
 
         canvas.drawTextCentered("Press the space bar to the beat", displayFont,200, textColor);
-        canvas.drawTextCentered("Make sure not to click out of the window while calibrating", displayFont,-300, textColor);
+        canvas.drawTextCentered("Make sure not to click out of the window", displayFont,-250, textColor);
+        canvas.drawTextCentered("while calibrating", displayFont,-300, textColor);
 
-        if (isCalibrated) {
-            canvas.drawTextCentered("" + onBeat, displayFont, 150);
-            canvas.drawText("You have been calibrated!\nYou can exit this screen\nwith the esc key", displayFont, 100, canvas.getWidth() / 2);
+//        if (isCalibrated) {
+//            canvas.drawTextCentered("" + onBeat, displayFont, 150, textColor);
+//            canvas.drawText("You have been calibrated!\nYou can exit this screen\nwith the esc key", displayFont, 100, canvas.getWidth() / 2);
+//        }
+
+        int totalHits = NUM_BEATS_TO_HIT + NUM_BEATS_REMOVED;
+        int spaceApart = 10;
+        float circleIndicatorScale = 0.75f;
+        float circleIndicatorTrueWidth = 0.75f * circleIndicator.getWidth();
+        float startingX = canvas.getWidth()/2f - (spaceApart * (totalHits / 2f - 1) + circleIndicatorTrueWidth * (totalHits / 2f));
+        float circleDrawY = canvas.getHeight()/2 - noteScale * calibrationNote.getHeight() + 25;
+
+        // draw the beat needed:
+        int i = 0;
+        while (i < userHitBeats.size()) {
+            canvas.draw(circleIndicatorHit, Color.WHITE, circleIndicator.getWidth()/2, circleIndicator.getHeight()/2,
+                    startingX + i * (circleIndicatorTrueWidth + spaceApart), circleDrawY, 0,
+                    circleIndicatorScale, circleIndicatorScale);
+            i++;
+        }
+        while (i < totalHits) {
+            canvas.draw(circleIndicator, Color.WHITE, circleIndicator.getWidth()/2, circleIndicator.getHeight()/2,
+                    startingX + i * (circleIndicatorTrueWidth + spaceApart), circleDrawY, 0,
+                    circleIndicatorScale, circleIndicatorScale);
+            i++;
         }
 
-//        canvas.draw(backArrow, Color.WHITE, 0, backArrow.getHeight(), 25, canvas.getHeight() - 40, 0, 0.1f, 0.1f);
+        canvas.draw(backArrow, Color.WHITE, 0, backArrow.getHeight(), 25, canvas.getHeight() - 40, 0, 0.1f, 0.1f);
 
         canvas.end();
     }
@@ -171,16 +223,13 @@ public class CalibrationMode implements Screen {
     private void update() {
         // Process the input into screen
         inputController.readInput();
+
         // resolve inputs from the user
         resolveInputs();
 
         // check music and calibration states
-        if (!music.isPlaying() && !isCalibrated) {
+        if (userHitBeats.size() - NUM_BEATS_REMOVED >= NUM_BEATS_TO_HIT && !isCalibrated) {
             setCalibration();
-        }
-        else if (!music.isPlaying() && isCalibrated) {
-            music.setLooping(true);
-            music.play();
         }
     }
 
@@ -194,7 +243,7 @@ public class CalibrationMode implements Screen {
         // desync between user input and when it's processed
         int sum = 0;
         // skip first two because of potential initial noisy data
-        for (int i = 2; i < userHitBeats.size(); i++) {
+        for (int i = NUM_BEATS_REMOVED; i < userHitBeats.size(); i++) {
             sum += userHitBeats.get(i);
         }
         this.offset = userHitBeats.size() > 0 ? sum / userHitBeats.size() : 0;
@@ -243,20 +292,18 @@ public class CalibrationMode implements Screen {
     @Override
     public void show() {
         active = true;
-        inputController.setEditorProcessor();
         music.play();
-        reset();
     }
 
     @Override
     public void hide() {
         active = false;
-        music.pause();
+        reset();
     }
 
     @Override
     public void resize(int width, int height) {
-        // Auto-generated method stub
+        // TODO: Auto-generated method stub
     }
 
     @Override
@@ -273,6 +320,8 @@ public class CalibrationMode implements Screen {
     public void dispose() {
         inputController = null;
         canvas = null;
+        // TODO: dispose all assets
+        music.dispose();
     }
 
     /**

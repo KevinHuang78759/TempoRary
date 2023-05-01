@@ -10,6 +10,8 @@
         "calibration-back-arrow": "images/ui/Calibration_left_arrow.png",
         "calibration-note": "images/ui/Calibration_note_normal.png",
         "calibration-note-hit": "images/ui/Calibration_note_glowing.png",
+        "calibration-circle-filled": "images/ui/Calibration_Ellipse_1.png",
+        "calibration-circle": "images/ui/Ellipse_2.png",
         "level-editor": "images/leveleditor_button_v1.png",
         "easy": "images/easy.png",
         "medium": "images/medium.png",
@@ -77,13 +79,18 @@
         },
         "main": {
             "file": "fonts/TempoRaryFont.ttf",
-            "size": 20
+            "size": 25
+        },
+        "calibration-font": {
+            "file": "fonts/TempoRaryFont.ttf",
+            "size": 35
         }
     },
     "samples": {
       "challenger": "music/Challenger-Approaches.ogg",
       "aliens": "music/Aliens.ogg",
-      "american": "music/American_Finale.ogg"
+      "american": "music/American_Finale.ogg",
+      "calibration": "music/calibration.ogg"
     },
     "soundtrack": {
       "calibration": {

@@ -83,14 +83,10 @@ public class LoadingMode implements Screen {
 	private static int PROGRESS_HEIGHT = 93;
 	/** Height of the inner progress bar */
 	private static int INNER_PROGRESS_HEIGHT = 77;
-	/** Padding on the left and right sides of the inner bar */
-	private static int X_PADDING = 8;
 	/** Width of the rounded cap on left or right */
 	private static int PROGRESS_CAP    = 42;
 	/** Width of the rounded cap on the left or right for the inner bar */
 	private static int INNER_PROGRESS_CAP    = 33;
-	/** Width of the middle portion in texture atlas */
-	private static int PROGRESS_MIDDLE = 200;
 
 	/** Reference to GameCanvas created by the root */
 	private GameCanvas canvas;
@@ -151,7 +147,8 @@ public class LoadingMode implements Screen {
 	 * @return true if the player is ready to go
 	 */
 	public boolean isReady() {
-		return progress >= 1.0f;
+		return false;
+//		return progress >= 1.0f;
 	}
 
 	/**
@@ -337,7 +334,6 @@ public class LoadingMode implements Screen {
 	 */
 	public void pause() {
 		// TODO Auto-generated method stub
-
 	}
 
 	/**
@@ -347,7 +343,6 @@ public class LoadingMode implements Screen {
 	 */
 	public void resume() {
 		// TODO Auto-generated method stub
-
 	}
 	
 	/**
