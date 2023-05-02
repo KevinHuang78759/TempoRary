@@ -44,8 +44,6 @@ public class GameCanvas {
 	/** The current color blending mode */
 	private BlendState blend;
 
-	private static float BUTTON_SCALE  = 0.75f;
-	
 	/** Value to cache window width (if we are currently full screen) */
 	int width;
 	/** Value to cache window height (if we are currently full screen) */
@@ -80,9 +78,6 @@ public class GameCanvas {
 		pixel.setColor(Color.WHITE);
 		pixel.fill();
 		pixelTexture = new Texture(pixel);
-
-
-
 
 	}
 		

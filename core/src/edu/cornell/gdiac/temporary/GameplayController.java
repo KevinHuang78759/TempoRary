@@ -255,7 +255,7 @@ public class GameplayController {
 						sb.resetCombo();
 						float hitStatusX = LEFTBOUND+((activeBandMember+1)*(HIT_IND_SIZE/3))+((activeBandMember+1) * smallwidth);
 						float hitStatusY = BOTTOMBOUND-(HIT_IND_SIZE/1.6f);
-						spawnMissHit(hitStatusX,hitStatusY);
+						spawnHitIndicator(hitStatusX,hitStatusY,missIndicator,1);
 					}
 				}
 				if(n.isDestroyed()){
@@ -405,16 +405,14 @@ public class GameplayController {
 	public int lpl = 4;
 
 
-	private Array<Particle> noteIndicatorBacking = new Array<>();
+
+	/**
+	 * Garbage collect for note indicators.
+	 * The current implementation will only allow one indicator to appear at a time.
+	 * In the future, if we want to change that, we will need to create an additional
+	 * backings array.
+	 */
 	public void garbageCollectNoteIndicators(){
-//		for (Particle n: noteIndicatorParticles){
-//			if (!n.isDestroyed()){
-//				noteIndicatorBacking.add(n);
-//			}
-//		}
-//		Array<Particle> tmp = noteIndicatorBacking;
-//		noteIndicatorBacking = noteIndicatorParticles;
-//		noteIndicatorParticles = tmp;
 		noteIndicatorParticles.clear();
 	}
 
@@ -474,41 +472,15 @@ public class GameplayController {
 		}
 	}
 
-	public void spawnPerfectHit(float x, float y){
+	public void spawnHitIndicator(float x, float y, Texture texture, float scale){
 		garbageCollectNoteIndicators();
 		Particle s = new Particle();
-		s.setTexture(perfectHitIndicator);
+		s.setTexture(texture);
 		s.getPosition().set(x, y);
-		s.setSizeConfine(HIT_IND_SIZE*1.4f);
-		float vy = RandomController.rollFloat(-inBetweenWidth*0.07f, inBetweenWidth*0.07f);
-		s.getVelocity().set(0,-smallwidth/50f);
-
+		s.setSizeConfine(HIT_IND_SIZE*scale);
+		s.getVelocity().set(0,-smallwidth/60f);
 		noteIndicatorParticles.add(s);
 	}
-
-	public void spawnGoodHit(float x, float y){
-		garbageCollectNoteIndicators();
-		Particle s = new Particle();
-		s.setTexture(goodHitIndicator);
-		s.getPosition().set(x, y);
-		s.setSizeConfine(HIT_IND_SIZE);
-		float vy = RandomController.rollFloat(-inBetweenWidth*0.07f, inBetweenWidth*0.07f);
-		s.getVelocity().set(0,-smallwidth/50f);
-		noteIndicatorParticles.add(s);
-	}
-
-	public void spawnMissHit(float x, float y){
-
-		garbageCollectNoteIndicators();
-		Particle s = new Particle();
-		s.setTexture(missIndicator);
-		s.getPosition().set(x, y);
-		s.setSizeConfine(HIT_IND_SIZE);
-		s.getVelocity().set(0,-smallwidth/50f);
-		noteIndicatorParticles.add(s);
-	}
-
-
 
 	/**
 	 * Enum to determine whether or not we are in a phase of hitting notes or switching to another band member
@@ -547,7 +519,6 @@ public class GameplayController {
 						 boolean destroy,
 						 boolean[] hitReg,
 						 boolean lifted) {
-//		garbageCollectNoteIndicators();
 		Note.NoteType nt = note.getNoteType();
 		// check for precondition that lifted is true iff note type is HELD
 		assert !lifted || nt == Note.NoteType.HELD;
@@ -573,10 +544,10 @@ public class GameplayController {
 				float hitStatusX = LEFTBOUND+((activeBandMember+1)*(HIT_IND_SIZE/3))+((activeBandMember+1) * smallwidth);
 				float hitStatusY = BOTTOMBOUND-(HIT_IND_SIZE/1.6f);
 				if (isOnBeat) {
-					spawnPerfectHit(hitStatusX,hitStatusY);
+					spawnHitIndicator(hitStatusX,hitStatusY, perfectHitIndicator, 1.4f);
 					spawnEnhancedHitEffect(note.getX(), spawnEffectY);
 				} else{
-					spawnGoodHit(hitStatusX,hitStatusY);
+					spawnHitIndicator(hitStatusX,hitStatusY, goodHitIndicator, 1f);
 				}
 
 				if (note.getLine() != -1) hitReg[note.getLine()] = true;
@@ -608,10 +579,6 @@ public class GameplayController {
 	 * @param input
 	 */
 	public void handleActions(InputController input){
-
-		for (Particle n: noteIndicatorParticles){
-			System.out.println("age"+n.getAge());
-		}
 		//Read in inputs
 		switches = input.switches();
 		triggers = input.didTrigger();
