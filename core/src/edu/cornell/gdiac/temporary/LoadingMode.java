@@ -147,8 +147,7 @@ public class LoadingMode implements Screen {
 	 * @return true if the player is ready to go
 	 */
 	public boolean isReady() {
-		return false;
-//		return progress >= 1.0f;
+		return progress >= 1.0f;
 	}
 
 	/**
