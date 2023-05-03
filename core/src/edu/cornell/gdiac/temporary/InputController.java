@@ -40,6 +40,7 @@ public class InputController {
 	/** XBox Controller support */
 	private XBoxController xbox;
 
+	// Mouse controls
 	public float mouseX;
 
 	public float mouseY;
@@ -196,10 +197,26 @@ public class InputController {
 		this(4, 4);
 	}
 
+	// READ INPUT FUNCTIONS
+
+	/**
+	 * readInput for screens that don't need band member switching information but may need xbox support
+	 * i.e. calibration
+	 * */
+	public void readInput() {
+		// TODO: add XBox controller support to this
+		if (xbox != null && xbox.isConnected()) {
+			readGamepad();
+			readKeyboardCalibration(true); // Read as a back-up
+		} else {
+			readKeyboardCalibration(false);
+		}
+	}
+
 	/**
 	 * Reads the input for the player and converts the result into game logic.
 	 */
-	public void readInput() {
+	public void readInput(int numBandMembers) {
 		// Check to see if a GamePad is connected
 		if (xbox != null && xbox.isConnected()) {
 			readGamepad();
@@ -216,6 +233,20 @@ public class InputController {
 		// TODO: Map gamepad inputs
 		resetPressed = xbox.getA();
 		exitPressed  = xbox.getBack();
+	}
+
+	// READ KEYBOARD FOR THE ACTUAL GAME
+
+	/**
+	 * Reads input from the keyboard, but for calibration mode.
+	 *
+	 * The only variables that need to be set are exitPressed and playPress.
+	 *
+	 * @param secondary true if the keyboard should give priority to a gamepad
+	 */
+	private void readKeyboardCalibration(boolean secondary) {
+		exitPressed = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
+		playPress = (secondary && playPress) || Gdx.input.isKeyPressed(Input.Keys.SPACE);
 	}
 
 	public boolean[] getTriggers() {
@@ -241,18 +272,6 @@ public class InputController {
 	private static int[] switchesOrder;
 
 	/**
-	 * Reads input from the keyboard, but for calibration mode.
-	 *
-	 * The only variables that need to be set are exitPressed and playPress.
-	 *
-	 * @param secondary true if the keyboard should give priority to a gamepad
-	 */
-	private void readKeyboardCalibration(boolean secondary) {
-		exitPressed = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
-		playPress = (secondary && playPress) || Gdx.input.isKeyPressed(Input.Keys.SPACE);
-	}
-
-	/**
 	 * Reads input from the keyboard.
 	 *
 	 * This controller reads from the keyboard regardless of whether or not an X-Box
@@ -274,36 +293,6 @@ public class InputController {
 			switchesPress[i] = Gdx.input.isKeyPressed(switchesBindings[i]) || Gdx.input.isKeyPressed(switchesBindingsAlt[i]);
 		}
 
-		moves = new boolean[]{
-				Gdx.input.isKeyPressed(Input.Keys.UP),
-				Gdx.input.isKeyPressed(Input.Keys.DOWN),
-				Gdx.input.isKeyPressed(Input.Keys.LEFT),
-				Gdx.input.isKeyPressed(Input.Keys.RIGHT)
-		};
-
-		erasedPress = Gdx.input.isKeyPressed(Input.Keys.E);
-
-		undidPress = Gdx.input.isKeyPressed(Input.Keys.U);
-
-		redidPress = Gdx.input.isKeyPressed(Input.Keys.R);
-
-		playPress = Gdx.input.isKeyPressed(Input.Keys.SPACE);
-
-		trackPress = Gdx.input.isKeyPressed(Input.Keys.V);
-
-		placeStartPress = Gdx.input.isKeyPressed(Input.Keys.P);
-
-		placeFlagsPress = Gdx.input.isKeyPressed(Input.Keys.C);
-
-		placeHitsPress = Gdx.input.isKeyPressed(Input.Keys.X);
-
-		savePress = Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && Gdx.input.isKeyPressed(Input.Keys.S);
-
-		loadPress = Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && Gdx.input.isKeyPressed(Input.Keys.L);
-
-		upDurationPress = Gdx.input.isKeyPressed(Input.Keys.NUM_9);
-		downDurationPress = Gdx.input.isKeyPressed(Input.Keys.NUM_8);
-
 		//Compute actual values by comparing with previous value. We only register a click if the trigger or switch
 		// went from false to true. We only register a lift if the trigger went from true to false.
 		for (int i = 0; i < Math.max(switchesPress.length, triggerPress.length); ++i){
@@ -322,42 +311,6 @@ public class InputController {
 				}
 			}
 		}
-
-		erased = !erasedLast && erasedPress;
-		erasedLast = erasedPress;
-
-		undid = !undidLast && undidPress;
-		undidLast = undidPress;
-
-		redid = !redidLast && redidPress;
-		redidLast = redidPress;
-
-		play = !playLast && playPress;
-		playLast = playPress;
-
-		track = !trackLast && trackPress;
-		trackLast = trackPress;
-
-		save = !saveLast && savePress;
-		saveLast = savePress;
-
-		load = !loadLast && loadPress;
-		loadLast = loadPress;
-
-		upDuration = !upDurationLast && upDurationPress;
-		upDurationLast = upDurationPress;
-
-		downDuration = !downDurationLast && downDurationPress;
-		downDurationLast = downDurationPress;
-
-		placeStart = !placeStartLast && placeStartPress;
-		placeStartLast = placeStartPress;
-
-		placeFlags = !placeFlagsLast && placeFlagsPress;
-		placeFlagsLast = placeFlagsPress;
-
-		placeHits = !placeHitsLast && placeHitsPress;
-		placeHitsLast = placeHitsPress;
 	}
 
 	/**
@@ -400,6 +353,8 @@ public class InputController {
 		return triggers;
 	}
 
+	private boolean clicking;
+
 	public void resetMouseClicks() {
 		clicking = false;
 		mouseClicked = false;
@@ -429,7 +384,6 @@ public class InputController {
 
 	// START LEVEL EDITOR EXCLUSIVE KEYBINDINGS AND VARIABLES
 
-	private boolean clicking;
 	private char characterTyped;
 	private boolean typed;
 
@@ -483,15 +437,12 @@ public class InputController {
 	private Processor processor = new Processor();
 
 	private boolean erased;
-	private boolean erasedPress;
 	private boolean erasedLast;
 
 	private boolean undid;
-	private boolean undidPress;
 	private boolean undidLast;
 
 	private boolean redid;
-	private boolean redidPress;
 	private boolean redidLast;
 
 	private boolean play;
@@ -499,34 +450,26 @@ public class InputController {
 	private boolean playLast;
 
 	private boolean track;
-	private boolean trackPress;
 	private boolean trackLast;
 
 	private boolean save;
-	private boolean savePress;
 	private boolean saveLast;
 
 	private boolean load;
-	private boolean loadPress;
 	private boolean loadLast;
 
 	private boolean upDuration;
-	private boolean upDurationPress;
 	private boolean upDurationLast;
 	private boolean downDuration;
-	private boolean downDurationPress;
 	private boolean downDurationLast;
 
 	private boolean placeStart;
-	private boolean placeStartPress;
 	private boolean placeStartLast;
 
 	private boolean placeFlags;
-	private boolean placeFlagsPress;
 	private boolean placeFlagsLast;
 
 	private boolean placeHits;
-	private boolean placeHitsPress;
 	private boolean placeHitsLast;
 
 	/**
@@ -542,18 +485,18 @@ public class InputController {
 				Gdx.input.isKeyPressed(Input.Keys.RIGHT)
 		};
 
-		erasedPress = Gdx.input.isKeyPressed(Input.Keys.E);
-		undidPress = Gdx.input.isKeyPressed(Input.Keys.U);
-		redidPress = Gdx.input.isKeyPressed(Input.Keys.R);
+		boolean erasedPress = Gdx.input.isKeyPressed(Input.Keys.E);
+		boolean undidPress = Gdx.input.isKeyPressed(Input.Keys.U);
+		boolean redidPress = Gdx.input.isKeyPressed(Input.Keys.R);
 		playPress = Gdx.input.isKeyPressed(Input.Keys.SPACE);
-		trackPress = Gdx.input.isKeyPressed(Input.Keys.V);
-		placeStartPress = Gdx.input.isKeyPressed(Input.Keys.P);
-		placeFlagsPress = Gdx.input.isKeyPressed(Input.Keys.C);
-		placeHitsPress = Gdx.input.isKeyPressed(Input.Keys.X);
-		savePress = Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && Gdx.input.isKeyPressed(Input.Keys.S);
-		loadPress = Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && Gdx.input.isKeyPressed(Input.Keys.L);
-		upDurationPress = Gdx.input.isKeyPressed(Input.Keys.NUM_9);
-		downDurationPress = Gdx.input.isKeyPressed(Input.Keys.NUM_8);
+		boolean trackPress = Gdx.input.isKeyPressed(Input.Keys.V);
+		boolean placeStartPress = Gdx.input.isKeyPressed(Input.Keys.P);
+		boolean placeFlagsPress = Gdx.input.isKeyPressed(Input.Keys.C);
+		boolean placeHitsPress = Gdx.input.isKeyPressed(Input.Keys.X);
+		boolean savePress = Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && Gdx.input.isKeyPressed(Input.Keys.S);
+		boolean loadPress = Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && Gdx.input.isKeyPressed(Input.Keys.L);
+		boolean upDurationPress = Gdx.input.isKeyPressed(Input.Keys.NUM_9);
+		boolean downDurationPress = Gdx.input.isKeyPressed(Input.Keys.NUM_8);
 
 		erased = !erasedLast && erasedPress;
 		erasedLast = erasedPress;
@@ -649,7 +592,7 @@ public class InputController {
 
 	public boolean durationDown() {return downDuration;}
 
-	public boolean FinishedTyping() {return Gdx.input.isKeyPressed(Input.Keys.ENTER);}
+	public boolean finishedTyping() {return Gdx.input.isKeyPressed(Input.Keys.ENTER);}
 
 	public void setEditorProcessor() {
 		Gdx.input.setInputProcessor(processor);

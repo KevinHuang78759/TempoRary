@@ -253,7 +253,7 @@ public class GameMode implements Screen {
 
 	private void update(float delta) {
 		// Process the game input
-		inputController.readInput();
+		inputController.readInput(gameplayController.NUM_LANES);
 
 		boolean didInput = inputController.didClick();
 
