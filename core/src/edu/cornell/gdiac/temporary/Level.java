@@ -2,6 +2,7 @@ package edu.cornell.gdiac.temporary;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
@@ -154,6 +155,7 @@ public class Level {
      */
     private Texture laneBackground;
 
+    private Color ActiveTint;
     AudioSource songSource;
     JsonValue data;
 
@@ -254,6 +256,8 @@ public class Level {
                     bandMembers[i].setCharacterFilmstrip(voiceSprite);
                     break;
             }
+
+            ActiveTint = new Color(1f, 1f, 0.3f, 0.2f);
         }
     }
 
@@ -308,9 +312,11 @@ public class Level {
             bandMember.setWidth(short_width);
             bandMember.setLineHeight(0f);
             bandMember.setHeight(maxLineHeight);
+            bandMember.setLaneTint(Color.WHITE);
         }
         bandMembers[activeBandMember].setWidth(large_width);
         bandMembers[activeBandMember].setLineHeight(maxLineHeight);
+        bandMembers[activeBandMember].setLaneTint(ActiveTint);
     }
 
     /**
@@ -332,9 +338,25 @@ public class Level {
         //set the width and line heights of the active and goal bandmembers accordingly
         bandMembers[previousBM].setWidth(large_width - (large_width - short_width)*t_progress);
         bandMembers[nextBM].setWidth(short_width + (large_width - short_width)*t_progress);
-
+        bandMembers[nextBM].setLaneTint(findTintColorProgress(t_progress, new SingleOperator() {
+            @Override
+            public float op(float x) {
+                return (float)Math.sin(x * Math.PI/2);
+            }
+        }));
+        bandMembers[previousBM].setLaneTint(findTintColorProgress(1f - t_progress, new SingleOperator() {
+            @Override
+            public float op(float x) {
+                return x * x;
+            }
+        }));
         bandMembers[previousBM].setLineHeight(maxLineHeight*(1f-t_progress));
         bandMembers[nextBM].setLineHeight(maxLineHeight*t_progress);
+    }
+
+    private Color findTintColorProgress(float t_progress, SingleOperator op){
+        float prog = op.op(t_progress);
+        return new Color(ActiveTint.r *prog + (1f-prog)*Color.WHITE.r, ActiveTint.g * prog+ (1f-prog)*Color.WHITE.g, ActiveTint.b* prog+ (1f-prog)*Color.WHITE.b, ActiveTint.a*prog+ (1f-prog)*Color.WHITE.a);
     }
 
     /**
@@ -492,13 +514,13 @@ public class Level {
      * @param switches - which switches are pressed?
      */
     public void drawEverything(GameCanvas canvas, int active, int goal, boolean[] triggers, boolean[] switches, float borderThickness){
-        //first we get the sample, since this determines where the notes will be drawn
-        long sample = getCurrentSample();
         for(int i = 0; i < bandMembers.length; ++i){
             //Draw the border of each band member
             bandMembers[i].drawBackground(canvas, laneBackground);
             bandMembers[i].drawBorder(canvas, HUnit, VUnit, CUnit, borderThickness);
-
+            //draw the character sprite and the comp bar
+            bandMembers[i].drawCharacterSprite(canvas);
+            bandMembers[i].drawHPBar(canvas);
             //If we are the goal of the active lane we need to draw separation lines and held/beat notes
             //We also need to draw a separate hit bar for each line
             if(active == i || goal == i){

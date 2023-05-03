@@ -42,6 +42,12 @@ public class BandMember {
      */
     private float lineHeight;
 
+    private Color laneTint;
+
+    public void setLaneTint(Color c){
+        laneTint = c;
+    }
+
     public void setLineHeight(float l){
         lineHeight = l;
     }
@@ -392,9 +398,8 @@ public class BandMember {
     public void drawBackground(GameCanvas canvas, Texture background){
         float xScale = width/background.getWidth();
         float yScale = height/background.getHeight();
-        Color c = Color.WHITE;
-        c.a = 0.5f;
-        canvas.draw(background, c, 0, 0, bottomLeftCorner.x, bottomLeftCorner.y, 0.0f, xScale, yScale);
+
+        canvas.draw(background, laneTint, 0, 0, bottomLeftCorner.x, bottomLeftCorner.y, 0.0f, xScale, yScale);
     }
 
     public void drawHPBar(GameCanvas canvas){

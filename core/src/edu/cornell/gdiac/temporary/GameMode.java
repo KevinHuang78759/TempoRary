@@ -407,11 +407,6 @@ public class GameMode implements Screen {
 				o.draw(canvas);
 			}
 
-			for(BandMember bandMember : gameplayController.level.getBandMembers()){
-				//Draw the band member sprite and competency bar
-				bandMember.drawCharacterSprite(canvas);
-				bandMember.drawHPBar(canvas);
-			}
 
 			// draw the scoreboard
 			gameplayController.sb.displayScore(gameplayController.LEFTBOUND, gameplayController.TOPBOUND + gameplayController.inBetweenWidth/4f, canvas);

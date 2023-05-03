@@ -21,6 +21,7 @@
 package edu.cornell.gdiac.temporary;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.graphics.Texture;
@@ -58,6 +59,8 @@ public class GameplayController {
 	/** Level object, stores bandMembers */
 	public Level level;
 	/** The Y coordinate at which a note will spawn. Notes should spawn completely invisible. */
+
+
 	public float noteSpawnY;
 	/**
 	 * The y coordinate at which notes are considered "out of bounds." By the time a note reaches this y value
