@@ -81,20 +81,6 @@ public class GameMode implements Screen {
 	/// CONSTANTS
 	/** Offset for the game over message on the screen */
 	private static final float GAME_OVER_OFFSET = 40.0f;
-	/** The y-coordinate of the center of the progress bar (artifact of LoadingMode) */
-	private int centerY;
-	/** The x-coordinate of the center of the progress bar (artifact of LoadingMode) */
-	private int centerX;
-	/** The height of the canvas window (necessary since sprite origin != screen origin) */
-	private int heightY;
-	/** Standard window size (for scaling) */
-	private static int STANDARD_WIDTH  = 1200;
-	/** Standard window height (for scaling) */
-	private static int STANDARD_HEIGHT = 800;
-	/** Ration of the bar height to the screen (artifact of LoadingMode) */
-	private static float BAR_HEIGHT_RATIO = 0.25f;
-	/** Scaling factor for when the student changes the resolution. */
-	private float scale;
 
 	/** The current state of each button */
 	private int pressState;
@@ -118,8 +104,6 @@ public class GameMode implements Screen {
 	private InputController inputController;
 	/** Constructs the game models and handle basic gameplay (CONTROLLER CLASS) */
 	private GameplayController gameplayController;
-	/** Asset directory for level loading */
-	private AssetDirectory assetDirectory;
 	/** Lets the intro phase know to just resume the gameplay and not to reset the level */
 	private boolean justPaused;
 
@@ -224,13 +208,11 @@ public class GameMode implements Screen {
 	 * @param directory     Reference to the asset directory.
 	 */
 	public void populate(AssetDirectory directory) {
-		assetDirectory = directory;
 		streetLevelBackground = new FilmStrip(directory.getEntry("street-background", Texture.class), 1, 1);
 		displayFont = directory.getEntry("times",BitmapFont.class);
 		gameplayController.populate(directory);
 		playButton = directory.getEntry("restart-button",Texture.class);
 		playButtonCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 - 50);
-		inputController.setEditorProcessor();
 		resumeButton = directory.getEntry("resume-button", Texture.class);
 		restartButton = directory.getEntry("restart-button", Texture.class);
 		levelButton = directory.getEntry("level-select-button", Texture.class);
@@ -255,7 +237,7 @@ public class GameMode implements Screen {
 		// Process the game input
 		inputController.readInput(gameplayController.NUM_LANES);
 
-		boolean didInput = inputController.didClick();
+		boolean didInput = inputController.didMouseLift();
 
 		// Test whether to reset the game.
 		switch (gameState) {

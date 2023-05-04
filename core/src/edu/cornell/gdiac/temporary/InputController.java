@@ -37,21 +37,18 @@ public class InputController {
 	protected boolean resetPressed;
 	/** Whether the exit button was pressed. */
 	protected boolean exitPressed;
-	/** XBox Controller support */
-	private XBoxController xbox;
 
 	// Mouse controls
-	public float mouseX;
+	private boolean mouseLeftClicked;
+	private boolean mouseLifted;
+	private boolean mouseLast;
 
-	public float mouseY;
+	private boolean calibrationHitPressed;
+	private boolean calibrationHitJustPressed;
+	private boolean calibrationHitLast;
 
-	public float mouseMoveX;
-
-	public boolean mouseMoved;
-
-	public float mouseMoveY;
-
-	public boolean mouseClicked;
+	/** XBox Controller support */
+	private XBoxController xbox;
 
 	/**
 	 * Returns true if the reset button was pressed.
@@ -68,6 +65,31 @@ public class InputController {
 	 * @return true if the exit button was pressed.
 	 */
 	public boolean didExit() { return exitPressed; }
+
+	/**
+	 * Returns true if the calibration hit button was pressed.
+	 *
+	 * @return true if calibration hit button was pressed
+	 */
+	public boolean didCalibrationPress() {
+		return calibrationHitPressed;
+	}
+
+	/**
+	 * Returns true if calibration hit button was just hit
+	 * @return true if calibration hit button was just hit
+	 */
+	public boolean didCalibrationHit() {
+		return calibrationHitJustPressed;
+	}
+
+	/**
+	 * Returns true if left mouse button was released
+	 * @return true if left mouse button was released
+	 */
+	public boolean didMouseLift() {
+		return mouseLifted;
+	}
 
 	// DEFAULT PRESETS!
 //	private final int[] triggerBindingsL = new int[]{
@@ -114,10 +136,13 @@ public class InputController {
 		return theController;
 	}
 
-	// TODO: SET LPL TO BE 4 ALL THE TIME
-	// TODO: SEPARATE SAMI'S INPUT STUFF WITH THE GAME INPUT STUFF
-	// TODO: THERE SHOULD BE A WAY TO SPECIFY THE LANES
 	// TODO: SET KEYBINDS METHOD
+	public void setKeybinds() {
+
+	}
+
+	// TODO: SET LPL TO BE 4 ALL THE TIME
+	// TODO: THERE SHOULD BE A WAY TO SPECIFY THE LANES WHEN READING INPUT
 
 	/**
 	 * Creates a new input controller
@@ -198,19 +223,12 @@ public class InputController {
 	}
 
 	// READ INPUT FUNCTIONS
-
 	/**
 	 * readInput for screens that don't need band member switching information but may need xbox support
 	 * i.e. calibration
 	 * */
 	public void readInput() {
-		// TODO: add XBox controller support to this
-		if (xbox != null && xbox.isConnected()) {
-			readGamepad();
-			readKeyboardCalibration(true); // Read as a back-up
-		} else {
-			readKeyboardCalibration(false);
-		}
+		readInput(4);
 	}
 
 	/**
@@ -235,19 +253,7 @@ public class InputController {
 		exitPressed  = xbox.getBack();
 	}
 
-	// READ KEYBOARD FOR THE ACTUAL GAME
-
-	/**
-	 * Reads input from the keyboard, but for calibration mode.
-	 *
-	 * The only variables that need to be set are exitPressed and playPress.
-	 *
-	 * @param secondary true if the keyboard should give priority to a gamepad
-	 */
-	private void readKeyboardCalibration(boolean secondary) {
-		exitPressed = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
-		playPress = (secondary && playPress) || Gdx.input.isKeyPressed(Input.Keys.SPACE);
-	}
+	// READ KEYBOARD FOR THE GAME (not level editor)
 
 	public boolean[] getTriggers() {
 		return triggers;
@@ -284,6 +290,10 @@ public class InputController {
 		// Give priority to gamepad results, get input from keyboard
 		resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.ENTER));
 		exitPressed = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
+		calibrationHitPressed = (secondary && calibrationHitPressed) || Gdx.input.isKeyPressed(Input.Keys.SPACE);
+
+		calibrationHitJustPressed = !calibrationHitLast && calibrationHitPressed;
+		calibrationHitLast = calibrationHitPressed;
 
 		triggerPress = new boolean[4];
 		boolean[] switchesPress = new boolean[4];
@@ -311,6 +321,13 @@ public class InputController {
 				}
 			}
 		}
+
+		// get mouse input
+		boolean mousePressed = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
+
+		mouseLeftClicked = !mouseLast && mousePressed;
+		mouseLifted = mouseLast && !mousePressed;
+		mouseLast = mousePressed;
 	}
 
 	/**
@@ -355,26 +372,12 @@ public class InputController {
 
 	private boolean clicking;
 
-	public void resetMouseClicks() {
-		clicking = false;
-		mouseClicked = false;
-	}
-
 	public boolean didClick() {
 		if (!clicking && mouseClicked) {
 			clicking = true;
 			return true;
 		}
 		return false;
-	}
-
-	public boolean didType() {
-		if (typed){
-			typed = false;
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 	public float getMouseX() { return Gdx.input.getX(); }
@@ -386,6 +389,49 @@ public class InputController {
 
 	private char characterTyped;
 	private boolean typed;
+
+	private float mouseX;
+	private float mouseY;
+	public float mouseMoveX;
+	public float mouseMoveY;
+	public boolean mouseMoved;
+	public boolean mouseClicked;
+
+	private boolean erased;
+	private boolean erasedLast;
+
+	private boolean undid;
+	private boolean undidLast;
+
+	private boolean redid;
+	private boolean redidLast;
+
+	private boolean play;
+	private boolean playPress;
+	private boolean playLast;
+
+	private boolean track;
+	private boolean trackLast;
+
+	private boolean save;
+	private boolean saveLast;
+
+	private boolean load;
+	private boolean loadLast;
+
+	private boolean upDuration;
+	private boolean upDurationLast;
+	private boolean downDuration;
+	private boolean downDurationLast;
+
+	private boolean placeStart;
+	private boolean placeStartLast;
+
+	private boolean placeFlags;
+	private boolean placeFlagsLast;
+
+	private boolean placeHits;
+	private boolean placeHitsLast;
 
 	public class Processor implements InputProcessor {
 
@@ -435,42 +481,6 @@ public class InputController {
 	}
 
 	private Processor processor = new Processor();
-
-	private boolean erased;
-	private boolean erasedLast;
-
-	private boolean undid;
-	private boolean undidLast;
-
-	private boolean redid;
-	private boolean redidLast;
-
-	private boolean play;
-	private boolean playPress;
-	private boolean playLast;
-
-	private boolean track;
-	private boolean trackLast;
-
-	private boolean save;
-	private boolean saveLast;
-
-	private boolean load;
-	private boolean loadLast;
-
-	private boolean upDuration;
-	private boolean upDurationLast;
-	private boolean downDuration;
-	private boolean downDurationLast;
-
-	private boolean placeStart;
-	private boolean placeStartLast;
-
-	private boolean placeFlags;
-	private boolean placeFlagsLast;
-
-	private boolean placeHits;
-	private boolean placeHitsLast;
 
 	/**
 	 * Reads the keyboard input specifically for the level editor
@@ -536,6 +546,15 @@ public class InputController {
 	}
 
 	// getter methods input reading in level editor
+
+	public boolean didType() {
+		if (typed){
+			typed = false;
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 	public boolean[] getMoves(){
 		return moves;

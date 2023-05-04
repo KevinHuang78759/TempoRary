@@ -88,7 +88,6 @@ public class CalibrationMode implements Screen {
 
     /** Resets the calibration mode by clearing beats, calibration is false, and resetting music */
     private void reset() {
-        inputController.resetMouseClicks();
         userHitBeats.clear();
         isCalibrated = false;
         music.stop();
@@ -112,7 +111,7 @@ public class CalibrationMode implements Screen {
         // Process the input into screen
         boolean backButtonPressed = false;
 
-        if (inputController.didClick()) {
+        if (inputController.didMouseLift()) {
 //            0, backArrow.getHeight(), 25, canvas.getHeight() - 40, 0, 0.1f, 0.1f
             int screenX = (int) inputController.getMouseX();
             int screenY = (int) inputController.getMouseY();
@@ -155,7 +154,6 @@ public class CalibrationMode implements Screen {
         circleIndicatorHit = directory.getEntry("calibration-circle-filled", Texture.class);
 
         music.setLooping(true);
-        inputController.setEditorProcessor();
     }
 
     @Override
@@ -177,7 +175,7 @@ public class CalibrationMode implements Screen {
 
         float noteScale = 0.25f;
         // draw hit indicator
-        if (inputController.didHoldPlay()) {
+        if (inputController.didCalibrationPress()) {
             canvas.draw(calibrationNoteHit, Color.WHITE, calibrationNoteHit.getWidth() / 2, calibrationNoteHit.getHeight() / 2, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, noteScale, noteScale);
         } else {
             canvas.draw(calibrationNote, Color.WHITE, calibrationNote.getWidth() / 2, calibrationNote.getHeight() / 2, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, noteScale, noteScale);
@@ -254,7 +252,7 @@ public class CalibrationMode implements Screen {
     /** Resolves inputs from the input controller */
     private void resolveInputs() {
         // use space to take inputs
-        boolean hitSpace = inputController.didPressPlay();
+        boolean hitSpace = inputController.didCalibrationHit();
 
         // essentially, resolve the current position at which you hit the space bar
         // assign the beat it's at, and then determine how far off you are
