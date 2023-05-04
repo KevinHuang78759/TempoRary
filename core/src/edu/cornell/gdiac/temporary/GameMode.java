@@ -165,11 +165,7 @@ public class GameMode implements Screen {
 		JsonValue levelData = jr.parse(Gdx.files.internal(level));
 		System.out.println("level read");
 		gameplayController.loadLevel(levelData, directory);
-		if (gameplayController.NUM_LANES == 2) {
-			inputController = new InputController(new int[]{1, 2},  new int[gameplayController.lpl]);
-		} else {
-			inputController = new InputController(gameplayController.NUM_LANES, gameplayController.lpl);
-		}
+		inputController = InputController.getInstance();
 	}
 
 	public void setSoundVolume(float fxVolume, float musicVolume) {

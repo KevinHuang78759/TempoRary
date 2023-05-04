@@ -23,6 +23,8 @@ import edu.cornell.gdiac.util.*;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 
+import java.util.Arrays;
+
 /**
  * Class for reading player input. 
  *
@@ -46,6 +48,29 @@ public class InputController {
 	private boolean calibrationHitPressed;
 	private boolean calibrationHitJustPressed;
 	private boolean calibrationHitLast;
+
+	// Controls for the game
+
+	// DEFAULT PRESETS!
+	private int[] switchesBindingsMainAll;
+	private int[] switchesBindingsAltAll;
+
+	private IntMap<int[]> switchesBindingsMain;
+	private IntMap<int[]> switchesBindingsAlt;
+
+	private int[] triggerBindingsMain;
+	private int[] triggerBindingsAlt;
+
+	boolean[] triggerPress;
+	boolean[] triggerLifted;
+
+	//Arrays to registering switch and trigger presses
+	//We need to track their previous values so that we dont register a hold as repeated clicks
+	private static boolean[] triggers;
+	private boolean[] triggerLast;
+	private static boolean[] switches;
+	private boolean[] switchesLast;
+	private boolean[] moves;
 
 	/** XBox Controller support */
 	private XBoxController xbox;
@@ -91,35 +116,6 @@ public class InputController {
 		return mouseLifted;
 	}
 
-	// DEFAULT PRESETS!
-//	private final int[] triggerBindingsL = new int[]{
-//		Input.Keys.D,
-//		Input.Keys.F,
-//		Input.Keys.J,
-//		Input.Keys.K
-//	};
-//
-//	private final int[] switchesBindings1 = new int[]{
-//		Input.Keys.E,
-//		Input.Keys.R,
-//		Input.Keys.U,
-//		Input.Keys.I
-//	};
-//
-//	private final int[] switchesBindings2 = new int[]{
-//		Input.Keys.D,
-//		Input.Keys.F,
-//		Input.Keys.J,
-//		Input.Keys.K
-//	};
-//
-//	private final int[] switchesBindings3 = new int[]{
-//			Input.Keys.D,
-//			Input.Keys.F,
-//			Input.Keys.J,
-//			Input.Keys.K
-//	};
-
 	// TODO: TURN THIS INTO A SINGLETON INSTANCE PLEASE
 	/** The singleton instance of the input controller */
 	private static InputController theController = null;
@@ -150,7 +146,7 @@ public class InputController {
 	 * The input controller attempts to connect to the X-Box controller at device 0,
 	 * if it exists.  Otherwise, it falls back to the keyboard control.
 	 */
-	public InputController(int lanes, int lpl) {
+	public InputController() {
 		// If we have a game-pad for id, then use it.
 		Array<XBoxController> controllers = Controllers.get().getXBoxControllers();
 		if (controllers.size > 0) {
@@ -160,12 +156,13 @@ public class InputController {
 		}
 		clicking = false;
 		typed = false;
-		triggerLast = new boolean[lpl];
-		switchesLast = new boolean[lanes];
-		triggers = new boolean[lpl];
-		switches = new boolean[lanes];
-		triggerLifted = new boolean[lpl];
-		triggerBindings = new int[]{
+		// we hardcode 4 for this because this is now the specification for the game
+		triggerLast = new boolean[4];
+		switchesLast = new boolean[4];
+		triggers = new boolean[4];
+		switches = new boolean[4];
+		triggerLifted = new boolean[4];
+		triggerBindingsMain = new int[]{
 				Input.Keys.D,
 				Input.Keys.F,
 				Input.Keys.J,
@@ -177,49 +174,24 @@ public class InputController {
 				Input.Keys.UP,
 				Input.Keys.RIGHT
 		};
-		switchesBindings = new int[]{
+		switchesBindingsMainAll = new int[]{
 				Input.Keys.E,
 				Input.Keys.R,
 				Input.Keys.U,
 				Input.Keys.I,
 		};
-		switchesBindingsAlt = new int[]{
+		switchesBindingsAltAll = new int[]{
 				Input.Keys.NUM_1,
 				Input.Keys.NUM_2,
 				Input.Keys.NUM_3,
 				Input.Keys.NUM_4,
 		};
-		switchesOrder = new int[] {
-				0,
-				1,
-				2,
-				3,
-		};
-	}
-
-	/** if you want custom ordering, use this controller (note that lpl is useless rn) */
-	public InputController(int[] lanes, int[] lpl) {
-		// If we have a game-pad for id, then use it.
-		Array<XBoxController> controllers = Controllers.get().getXBoxControllers();
-		if (controllers.size > 0) {
-			xbox = controllers.get(0);
-		} else {
-			xbox = null;
+		switchesBindingsMain = new IntMap<>();
+		switchesBindingsAlt = new IntMap<>();
+		for (int i = 0; i < 4; i++) {
+			switchesBindingsMain.put(i, Arrays.copyOfRange(switchesBindingsMainAll, 0, i + 1));
+			switchesBindingsAlt.put(i, Arrays.copyOfRange(switchesBindingsAltAll, 0, i + 1));
 		}
-		clicking = false;
-		triggerLast = new boolean[lpl.length];
-		switchesLast = new boolean[lanes.length];
-		triggers = new boolean[lpl.length];
-		switches = new boolean[lanes.length];
-		triggerLifted = new boolean[lpl.length];
-		switchesOrder = lanes;
-	}
-
-	/*
-	 * Default constructor (lanes and lpl default to 4)
-	 */
-	public InputController() {
-		this(4, 4);
 	}
 
 	// READ INPUT FUNCTIONS
@@ -238,9 +210,9 @@ public class InputController {
 		// Check to see if a GamePad is connected
 		if (xbox != null && xbox.isConnected()) {
 			readGamepad();
-			readKeyboard(true); // Read as a back-up
+			readKeyboard(true, numBandMembers); // Read as a back-up
 		} else {
-			readKeyboard(false);
+			readKeyboard(false, numBandMembers);
 		}
 	}
 
@@ -259,24 +231,6 @@ public class InputController {
 		return triggers;
 	}
 
-	boolean[] triggerPress;
-	boolean[] triggerLifted;
-
-	//Arrays to registering switch and trigger presses
-	//We need to track their previous values so that we dont register a hold as repeated clicks
-	private static boolean[] triggers;
-	private boolean[] triggerLast;
-	private static int[] triggerBindings;
-	private static int[] triggerBindingsAlt;
-	private static boolean[] switches;
-	private boolean[] switchesLast;
-	private static int[] switchesBindings;
-	private static int[] switchesBindingsAlt;
-	private boolean[] moves;
-
-	// for use with remapping ordering of keys
-	private static int[] switchesOrder;
-
 	/**
 	 * Reads input from the keyboard.
 	 *
@@ -286,7 +240,7 @@ public class InputController {
 	 *
 	 * @param secondary true if the keyboard should give priority to a gamepad
 	 */
-	private void readKeyboard(boolean secondary) {
+	private void readKeyboard(boolean secondary, int numBandMembers) {
 		// Give priority to gamepad results, get input from keyboard
 		resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.ENTER));
 		exitPressed = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
@@ -298,9 +252,12 @@ public class InputController {
 		triggerPress = new boolean[4];
 		boolean[] switchesPress = new boolean[4];
 
-		for (int i = 0; i < triggerBindings.length; i++) {
-			triggerPress[i] = Gdx.input.isKeyPressed(triggerBindings[i]) || Gdx.input.isKeyPressed(triggerBindingsAlt[i]);
-			switchesPress[i] = Gdx.input.isKeyPressed(switchesBindings[i]) || Gdx.input.isKeyPressed(switchesBindingsAlt[i]);
+		for (int i = 0; i < triggerBindingsMain.length; i++) {
+			triggerPress[i] = Gdx.input.isKeyPressed(triggerBindingsMain[i]) || Gdx.input.isKeyPressed(triggerBindingsAlt[i]);
+			if (i < numBandMembers) {
+				switchesPress[i] = Gdx.input.isKeyPressed(switchesBindingsMain.get(numBandMembers - 1)[i])
+						|| Gdx.input.isKeyPressed(switchesBindingsAlt.get(numBandMembers - 1)[i]);
+			}
 		}
 
 		//Compute actual values by comparing with previous value. We only register a click if the trigger or switch
@@ -312,13 +269,8 @@ public class InputController {
 				triggerLast[i] = triggerPress[i];
 			}
 			if (i < switches.length) {
-				if (switchesOrder != null) {
-					switches[i] = !switchesLast[i] && switchesPress[switchesOrder[i]];
-					switchesLast[i] = switchesPress[switchesOrder[i]];
-				} else {
-					switches[i] = !switchesLast[i] && switchesPress[i];
-					switchesLast[i] = switchesPress[i];
-				}
+				switches[i] = !switchesLast[i] && switchesPress[i];
+				switchesLast[i] = switchesPress[i];
 			}
 		}
 
@@ -332,30 +284,33 @@ public class InputController {
 
 	/**
 	 * Returns the current key bindings for switching
+	 *
+	 * TODO: FIX THIS
 	 * @return
 	 */
-	public static String[] switchKeyBinds() {
+	public static String[] switchKeyBinds(int numBandMembers) {
 		String[] bindings = new String[switches.length];
-		for (int i = 0; i < switches.length; i++) {
-			if (switchesOrder != null) {
-				bindings[i] = Input.Keys.toString(switchesBindings[switchesOrder[i]]);
-			}
-			else {
-				bindings[i] = Input.Keys.toString(switchesBindings[i]);
-			}
-		}
+//		for (int i = 0; i < switches.length; i++) {
+//			if (switchesOrder != null) {
+//				bindings[i] = Input.Keys.toString(switchesBindingsMain.get()[switchesOrder[i]]);
+//			}
+//			else {
+//				bindings[i] = Input.Keys.toString(switchesBindingsMain[i]);
+//			}
+//		}
 		return bindings;
 	}
 
 	/**
 	 * Returns the current key bindings for note hitting
+	 * TODO: FIX
 	 * @return
 	 */
 	public static String[] triggerKeyBinds() {
 		String[] bindings = new String[triggers.length];
-		for (int i = 0; i < bindings.length; i++) {
-			bindings[i] = Input.Keys.toString(triggerBindings[i]);
-		}
+//		for (int i = 0; i < bindings.length; i++) {
+//			bindings[i] = Input.Keys.toString(triggerBindingsMain[i]);
+//		}
 		return bindings;
 	}
 
@@ -368,16 +323,6 @@ public class InputController {
 
 	public boolean[] didTrigger(){
 		return triggers;
-	}
-
-	private boolean clicking;
-
-	public boolean didClick() {
-		if (!clicking && mouseClicked) {
-			clicking = true;
-			return true;
-		}
-		return false;
 	}
 
 	public float getMouseX() { return Gdx.input.getX(); }
@@ -546,6 +491,16 @@ public class InputController {
 	}
 
 	// getter methods input reading in level editor
+
+	private boolean clicking;
+
+	public boolean didClick() {
+		if (!clicking && mouseClicked) {
+			clicking = true;
+			return true;
+		}
+		return false;
+	}
 
 	public boolean didType() {
 		if (typed){
