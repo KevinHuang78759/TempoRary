@@ -238,7 +238,7 @@ public class GameMode implements Screen {
 		// Test whether to reset the game.
 		switch (gameState) {
 			case INTRO:
-				for (boolean k : inputController.getTriggers()){
+				for (boolean k : inputController.didTrigger()){
 					if (k) {
 						gameplayController.sfx.playSound("tap", 0.2f);
 					}
@@ -377,7 +377,7 @@ public class GameMode implements Screen {
 			//Draw everything in the current level
 			gameplayController.level.drawEverything(canvas,
 					gameplayController.activeBandMember, gameplayController.goalBandMember,
-					inputController.triggerPress, inputController.switches(),
+					inputController.triggerPress, inputController.didSwitch(),
 					gameplayController.inBetweenWidth/5f);
 
 			// Draw the particles on top

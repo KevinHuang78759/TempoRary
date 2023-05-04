@@ -61,11 +61,10 @@ public class InputController {
 	private int[] triggerBindingsMain;
 	private int[] triggerBindingsAlt;
 
-	boolean[] triggerPress;
-	boolean[] triggerLifted;
-
 	//Arrays to registering switch and trigger presses
 	//We need to track their previous values so that we dont register a hold as repeated clicks
+	boolean[] triggerPress;
+	boolean[] triggerLifted;
 	private static boolean[] triggers;
 	private boolean[] triggerLast;
 	private static boolean[] switches;
@@ -116,6 +115,27 @@ public class InputController {
 		return mouseLifted;
 	}
 
+	/** Returns an array that represents if the switch lane keys are being pressed */
+	public boolean[] didSwitch() {
+		return switches;
+	}
+
+	/** Returns an array that represents if the note hit trigger keys are being pressed  */
+	public boolean[] didTrigger(){
+		return triggers;
+	}
+
+	/** Returns x coordinate of mouse */
+	public float getMouseX() {
+		return Gdx.input.getX();
+	}
+
+	/** Returns y coordinate of mouse */
+	public float getMouseY() {
+		return Gdx.input.getY();
+	}
+
+
 	// TODO: TURN THIS INTO A SINGLETON INSTANCE PLEASE
 	/** The singleton instance of the input controller */
 	private static InputController theController = null;
@@ -131,14 +151,6 @@ public class InputController {
 		}
 		return theController;
 	}
-
-	// TODO: SET KEYBINDS METHOD
-	public void setKeybinds() {
-
-	}
-
-	// TODO: SET LPL TO BE 4 ALL THE TIME
-	// TODO: THERE SHOULD BE A WAY TO SPECIFY THE LANES WHEN READING INPUT
 
 	/**
 	 * Creates a new input controller
@@ -194,6 +206,31 @@ public class InputController {
 		}
 	}
 
+	// keybinds for switching
+
+	/**
+	 *
+	 * @param numBandMembers number of band members for the new keybindings to change
+	 * @param lane number of which lane to change the keybinding for, must be < numBandMembers
+	 * @param newKeybind new keybinding to set
+	 * @param main true if setting the main keybindings, else set the alt binding
+	 */
+	public void setKeybinding(int numBandMembers, int lane, int newKeybind, boolean main) {
+		assert lane < numBandMembers && lane >= 0;
+		if (main)
+			switchesBindingsMain.get(numBandMembers)[lane] = newKeybind;
+		else
+			switchesBindingsAlt.get(numBandMembers)[lane] = newKeybind;
+	}
+
+	// keybindings for hitting the notes (triggers)
+	public void setKeybinding(int line, int newKeybind, boolean main) {
+		if (main)
+			triggerBindingsMain[line] = newKeybind;
+		else
+			triggerBindingsAlt[line] = newKeybind;
+	}
+
 	// READ INPUT FUNCTIONS
 	/**
 	 * readInput for screens that don't need band member switching information but may need xbox support
@@ -226,10 +263,6 @@ public class InputController {
 	}
 
 	// READ KEYBOARD FOR THE GAME (not level editor)
-
-	public boolean[] getTriggers() {
-		return triggers;
-	}
 
 	/**
 	 * Reads input from the keyboard.
@@ -313,21 +346,6 @@ public class InputController {
 //		}
 		return bindings;
 	}
-
-	/*
-	 * Returns an array that represents if the switch lane keys are being pressed
-	 */
-	public boolean[] switches() {
-		return switches;
-	}
-
-	public boolean[] didTrigger(){
-		return triggers;
-	}
-
-	public float getMouseX() { return Gdx.input.getX(); }
-
-	public float getMouseY() { return Gdx.input.getY(); }
 
 
 	// START LEVEL EDITOR EXCLUSIVE KEYBINDINGS AND VARIABLES

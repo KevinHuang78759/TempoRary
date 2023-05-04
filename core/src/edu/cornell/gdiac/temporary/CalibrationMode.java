@@ -1,6 +1,7 @@
 package edu.cornell.gdiac.temporary;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -79,7 +80,7 @@ public class CalibrationMode implements Screen {
      * @param canvas
      */
     public CalibrationMode(GameCanvas canvas) {
-        inputController = new InputController();
+        inputController = InputController.getInstance();
         this.canvas = canvas;
         userHitBeats = new LinkedList<>();
         offset = 0;
