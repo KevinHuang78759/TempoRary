@@ -158,7 +158,6 @@ public class Level {
     private Color ActiveTint;
     AudioSource songSource;
     JsonValue data;
-
     float maxSample;
     public Level(JsonValue data, AssetDirectory directory) {
 
@@ -190,10 +189,8 @@ public class Level {
         String song = data.getString("song");
         music = ((AudioEngine) Gdx.audio).newMusic(Gdx.files.internal(assets.get("samples").getString(song)));
         songSource = music.getSource(0);
-        System.out.println(songSource.getDuration());
         music.setVolume(0.8f);
         maxSample = songSource.getDuration() * songSource.getSampleRate();
-
         HUnit = directory.getEntry("borderHUnit", Texture.class);
         VUnit = directory.getEntry("borderVUnit", Texture.class);
         CUnit = directory.getEntry("borderCorner", Texture.class);

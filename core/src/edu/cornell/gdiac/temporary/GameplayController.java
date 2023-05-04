@@ -175,7 +175,10 @@ public class GameplayController {
 		level = new Level(levelData, directory);
 		NUM_LANES = level.getBandMembers().length;
 		// 70 is referring to ms
-		baseLeniency = (int) ((70f / 1000f) * level.getMusic().getSampleRate());
+		perfectHit = (int) ((0.05f) * level.getMusic().getSampleRate());
+		goodHit = (int) ((0.08f) * level.getMusic().getSampleRate());
+		okHit = (int) ((0.12f) * level.getMusic().getSampleRate());
+		miss = (int) ((0.18f) * level.getMusic().getSampleRate());
 
 		//The space in between two lanes is 1/4 the width of a small lane
 		//the width of the large lane is 6x the width of a small lane
@@ -200,8 +203,10 @@ public class GameplayController {
 		level.resetLevel();
 		NUM_LANES = level.getBandMembers().length;
 		// 70 is referring to ms
-		baseLeniency = (int) ((70f / 1000f) * level.getMusic().getSampleRate());
-
+		perfectHit = (int) ((0.05f) * level.getMusic().getSampleRate());
+		goodHit = (int) ((0.08f) * level.getMusic().getSampleRate());
+		okHit = (int) ((0.12f) * level.getMusic().getSampleRate());
+		miss = (int) ((0.18f) * level.getMusic().getSampleRate());
 		//The space in between two lanes is 1/4 the width of a small lane
 		//the width of the large lane is 6x the width of a small lane
 		//In total, we have NUM_LANES - 1 small lanes, 1 large lane, and n - 1 in between segments
@@ -472,6 +477,11 @@ public class GameplayController {
 	/** Trigger inputs */
 	public boolean[] triggers;
 
+	public int perfectHit;
+	public int goodHit;
+	public int okHit;
+	public int miss;
+
 
 	/**
 	 * Handles logic of a hit, whether it is on beat or not, etc.
@@ -482,7 +492,7 @@ public class GameplayController {
 	 */
 	public void checkHit(Note note,
 						 long currentSample,
-						 int onBeatGain, int offBeatGain, int offBeatLoss,
+						 int perfectGain, int goodGain, int okgain, int offBeatLoss,
 						 float spawnEffectY,
 						 boolean destroy,
 						 boolean[] hitReg,
@@ -498,24 +508,28 @@ public class GameplayController {
 				: Math.abs(adjustedPosition - note.getHitSample());
 
 		// check if note was hit or on beat
-		if(dist < 15000) {
-			if (dist < 10000) {
+		if(dist < miss) {
+			if (dist < okHit) {
 				//If so, destroy the note and set a positive hit status. Also set that we
 				//have registered a hit for this line for this click. This ensures that
 				//We do not have a single hit count for two notes that are close together
-				boolean isOnBeat = dist < baseLeniency;
+				int compGain = dist < perfectHit ? perfectGain : (dist < goodHit ? goodGain : okgain);
 				note.setHolding(true);
-				note.setHitStatus(isOnBeat ? onBeatGain : offBeatGain);
+				note.setHitStatus(compGain);
 				spawnHitEffect(note.getHitStatus(), note.getX(), spawnEffectY);
-				if (isOnBeat) {
+				if (dist < perfectHit) {
 					spawnEnhancedHitEffect(note.getX(), spawnEffectY);
 				}
-				if (note.getLine() != -1) hitReg[note.getLine()] = true;
+				if (note.getLine() != -1){
+					hitReg[note.getLine()] = true;
+				}
 				note.setDestroyed(destroy);
 				// move the note to where the indicator is
-				note.setBottomY(level.getBandMembers()[0].getHitY());
-				sfx.playSound(isOnBeat ? (nt == Note.NoteType.SWITCH ? "switchHit" : "perfectHit") : "goodHit", GLOBAL_VOLUME_ADJ);
-				sb.recieveHit(isOnBeat ? 1000 : 500);
+				note.setBottomY(hitY);
+				String soundKey = nt == Note.NoteType.SWITCH ? "switchHit" : (dist < perfectHit ? "perfectHit" : (dist < goodHit ? "goodHit" : "okHit"));
+				sfx.playSound(soundKey, GLOBAL_VOLUME_ADJ);
+				int pointsRecieved = dist < perfectHit ? 500 : (dist < goodHit ? 250 : 100);
+				sb.recieveHit(pointsRecieved);
 			} else {
 				// lose some competency since you played a bit off beat
 				sb.resetCombo();
@@ -523,7 +537,7 @@ public class GameplayController {
 			}
 		}
 		//if we let go too early we need to reset the combo
-		if (lifted && dist >= 10000){
+		if (lifted && dist >= miss){
 			sb.resetCombo();
 			note.setHitStatus(offBeatLoss);
 		}
@@ -565,7 +579,7 @@ public class GameplayController {
 				if (switches[i] && i != activeBandMember){
 					//Check only the lanes that are not the current active lane
 					for(Note n : level.getBandMembers()[i].getSwitchNotes()) {
-						checkHit(n, currentSample, 10, 8, 0, n.getY(),true, hitReg, false);
+						checkHit(n, currentSample, 5, 4, 3, 0, n.getY(),true, hitReg, false);
 					}
 					//set goalBM
 					goalBandMember = i;
@@ -600,18 +614,18 @@ public class GameplayController {
 				if (triggers[n.getLine()] && !hitReg[n.getLine()]){
 					//Check for all the notes in this line and in the active band member
 					//See if any are close enough
-					checkHit(n, currentSample, 4, 2, -1, n.getY(),true, hitReg, false);
+					checkHit(n, currentSample, 4, 3, 2, -1, n.getY(),true, hitReg, false);
 				}
 			}
 			// HOLD NOTE
 			else {
 				//Check if we hit the trigger down close enough to the head
 				if(triggers[n.getLine()] && !hitReg[n.getLine()]){
-					checkHit(n, currentSample, 4, 2, -1, n.getBottomY(),false, hitReg, false);
+					checkHit(n, currentSample, 4, 3, 2, -1, n.getBottomY(),false, hitReg, false);
 				}
 				//check if we lifted close to the end (we only check if we ended up holding the note in the first place)
 				if(lifted[n.getLine()] && n.isHolding()){
-					checkHit(n, currentSample, 1, 0, -1, n.getBottomY(),true, hitReg, true);
+					checkHit(n, currentSample, 3, 2, 1, -1, n.getBottomY(),true, hitReg, true);
 					n.setHeldFor(0);
 					// destroy (if you are already holding)
 					if (n.isHolding()) n.setDestroyed(true);
