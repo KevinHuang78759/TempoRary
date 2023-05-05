@@ -48,6 +48,17 @@ public class EditorMode implements Screen {
     private Vector2 flagSettingsButtonLocation;
     private float flagSettingsButtonSize;
 
+    private Vector2 flagSettingsScreenLocation;
+    private Vector2 flagSettingsScreenDimensions;
+    private Vector2 flagSettingsTitleLocation;
+    private Vector2 closeFlagSettingsButtonLocation;
+    private float closeFlagSettingsButtonSize;
+    private Vector2 rateButtonLocation;
+    private Vector2 gainButtonLocation;
+    private Vector2 rateTextLocation;
+    private Vector2 gainTextLocation;
+    private float flagRateButtonSize;
+
     /**Location and size of the UI buttons for placing random hits */
     private Vector2 hitButtonLocation;
     private float hitButtonSize;
@@ -56,10 +67,14 @@ public class EditorMode implements Screen {
 
     private Vector2 hitSettingsScreenLocation;
     private Vector2 hitSettingsScreenDimensions;
+    private Vector2 hitSettingsTitleLocation;
     private Vector2 closeHitSettingsButtonLocation;
-    float closeHitSettingsButtonSize;
+    private float closeHitSettingsButtonSize;
     private Vector2[] probabilityButtonLocations;
+
+    private Vector2[] probabilityTextLocations;
     private float probabilityButtonSize;
+
 
     /**Location and size of the UI buttons for changing duration of held notes */
     private Vector2 upDurationButtonLocation;
@@ -237,8 +252,11 @@ public class EditorMode implements Screen {
     /** Selected probability distribution of random hits to be placed */
     private int[] selectedProbabilities;
 
-    /** Selected loss rate of competency drain flags to be placed */
+    /** Selected loss rate of competency flags to be placed */
     private int selectedLossRate;
+
+    /** Selected note reward of competency flags to be placed */
+    private int selectedNoteGain;
 
     /** True if the user is placing the start location*/
     private boolean placing_start;
@@ -260,6 +278,9 @@ public class EditorMode implements Screen {
 
     /** True if the user is in the random hit settings */
     private boolean hitSetting;
+
+    /** True if the user is in the competency flag settings */
+    private boolean flagSetting;
 
     /** True if the user is in the instruments setting */
     private boolean instrumentSetting;
@@ -290,6 +311,9 @@ public class EditorMode implements Screen {
 
     /** True if the user is typing in the competency loss rate text prompt */
     private boolean typingLossRate;
+
+    /** True if the user is typing in the note competency reward text prompt */
+    private boolean typingNoteGain;
 
     /** True if the user is typing in the hit probabilities text prompt */
     private boolean[] typingProbabilities;
@@ -491,6 +515,16 @@ public class EditorMode implements Screen {
         flagButtonSize = (1f/20f)*width*0.05f;
         flagSettingsButtonLocation.set(width*0.075f, height*0.7f - width*0.35f);
         flagSettingsButtonSize = width*0.03f;
+        flagSettingsScreenLocation.set(width*0.15f, height*0.35f);
+        flagSettingsScreenDimensions.set(width*0.6f, height*0.3f);
+        flagSettingsTitleLocation.set(width*0.21f, height*0.62f);
+        closeFlagSettingsButtonLocation.set(width*0.16f, height*0.64f - width*0.04f);
+        closeFlagSettingsButtonSize = width*0.04f;
+        rateButtonLocation.set(width*0.3f, height*0.45f);
+        gainButtonLocation.set(width*0.55f, height*0.45f);
+        rateTextLocation.set(width*0.27f, height*0.40f);
+        gainTextLocation.set(width*0.52f, height*0.40f);
+        flagRateButtonSize = width*0.04f;
 
         //Hit Type Buttons
         hitButtonLocation.set(width*0.035f, height*0.7f - width*0.4f);
@@ -499,10 +533,12 @@ public class EditorMode implements Screen {
         hitSettingsButtonSize = width*0.03f;
         hitSettingsScreenLocation.set(width*0.25f, height*0.35f);
         hitSettingsScreenDimensions.set(width*0.5f, height*0.3f);
+        hitSettingsTitleLocation.set(width*0.35f, height*0.62f);
         closeHitSettingsButtonLocation.set(width*0.26f, height*0.64f - width*0.04f);
         closeHitSettingsButtonSize = width*0.04f;
         for (int i=0; i < laneNumber; i++){
             probabilityButtonLocations[i].set(width*0.3f - width*0.02f + (width*0.4f/((float) laneNumber))*(((float) i) + 1f/2f), height*0.45f);
+            probabilityTextLocations[i].set(width*0.3f - width*0.02f + (width*0.4f/((float) laneNumber))*(((float) i) + 1f/2f), height*0.4f);
         }
         probabilityButtonSize = width*0.04f;
 
@@ -582,6 +618,7 @@ public class EditorMode implements Screen {
         precision = 2;
         selectedNoteType = EditorNote.NoteType.BEAT;
         selectedLossRate = 3;
+        selectedNoteGain = 3;
         placing_start = false;
         placing_notes = true;
         placing_flags = false;
@@ -589,6 +626,7 @@ public class EditorMode implements Screen {
         playing = false;
         setting = false;
         hitSetting = false;
+        flagSetting = false;
         instrumentSetting = false;
         typing = false;
         typingBPM = false;
@@ -599,6 +637,7 @@ public class EditorMode implements Screen {
         typingMaxComp = false;
         typingFallSpeed = false;
         typingLossRate = false;
+        typingNoteGain = false;
         typedString = "";
         trackSong = true;
         levelName = "New Level";
@@ -622,10 +661,19 @@ public class EditorMode implements Screen {
         downDurationButtonLocation = new Vector2();
         flagButtonLocation = new Vector2();
         flagSettingsButtonLocation = new Vector2();
+        flagSettingsScreenLocation = new Vector2();
+        flagSettingsScreenDimensions = new Vector2();
+        flagSettingsTitleLocation = new Vector2();
+        closeFlagSettingsButtonLocation = new Vector2();
+        rateButtonLocation = new Vector2();
+        gainButtonLocation = new Vector2();
+        rateTextLocation = new Vector2();
+        gainTextLocation = new Vector2();
         hitButtonLocation = new Vector2();
         hitSettingsButtonLocation = new Vector2();
         hitSettingsScreenLocation = new Vector2();
         hitSettingsScreenDimensions = new Vector2();
+        hitSettingsTitleLocation = new Vector2();
         closeHitSettingsButtonLocation = new Vector2();
         playButtonLocation = new Vector2();
         trackButtonLocation = new Vector2();
@@ -680,6 +728,7 @@ public class EditorMode implements Screen {
         selectedProbabilities = new int[laneNumber];
         typingProbabilities = new boolean[laneNumber];
         probabilityButtonLocations = new Vector2[laneNumber];
+        probabilityTextLocations = new Vector2[laneNumber];
         instruments = new Instrument[laneNumber];
         instrumentsButtonLocations = new Vector2[laneNumber];
         instrumentsTextLocations = new Vector2[laneNumber];
@@ -687,6 +736,7 @@ public class EditorMode implements Screen {
             selectedProbabilities[i] = 10;
             typingProbabilities[i] = false;
             probabilityButtonLocations[i] = new Vector2();
+            probabilityTextLocations[i] = new Vector2();
             instruments[i] = Instrument.VIOLIN;
             instrumentsButtonLocations[i] = new Vector2();
             instrumentsTextLocations[i] = new Vector2();
@@ -733,6 +783,7 @@ public class EditorMode implements Screen {
         selectedProbabilities = new int[laneNumber];
         typingProbabilities = new boolean[laneNumber];
         probabilityButtonLocations = new Vector2[laneNumber];
+        probabilityTextLocations = new Vector2[laneNumber];
         instruments = new Instrument[laneNumber];
         instrumentsButtonLocations = new Vector2[laneNumber];
         instrumentsTextLocations = new Vector2[laneNumber];
@@ -740,6 +791,7 @@ public class EditorMode implements Screen {
             selectedProbabilities[i] = 10;
             typingProbabilities[i] = false;
             probabilityButtonLocations[i] = new Vector2();
+            probabilityTextLocations[i] = new Vector2();
             instrumentsButtonLocations[i] = new Vector2();
             instrumentsTextLocations[i] = new Vector2();
         }
@@ -801,13 +853,14 @@ public class EditorMode implements Screen {
                 addNote(type, lane, line, position, duration);
                 currentPlaceType = tmpPlaceType;
             }
-            JsonValue memberFlags = level.get("bandMembers").get(lane).get("lossRates");
+            JsonValue memberFlags = level.get("bandMembers").get(lane).get("compFlags");
             for (int i = 0; i < memberFlags.size; i++){
                 int position = memberFlags.get(i).getInt("position") + startPosition;
                 int lossRate = memberFlags.get(i).getInt("rate");
+                int noteGain = memberFlags.get(i).getInt("gain");
                 PlaceType tmpPlaceType = currentPlaceType;
                 currentPlaceType = PlaceType.AUTO;
-                addFlag(lane, position, lossRate);
+                addFlag(lane, position, lossRate, noteGain);
                 currentPlaceType = tmpPlaceType;
             }
         }
@@ -840,6 +893,7 @@ public class EditorMode implements Screen {
         }
         class Flag {
             public int rate;
+            public int gain;
             public int position;
         }
         class Probability {
@@ -850,9 +904,9 @@ public class EditorMode implements Screen {
             public int position;
         }
         class BandMember {
-            public ArrayList<Note> notes;
-            public ArrayList<Flag> lossRates;
             public String instrument;
+            public ArrayList<Note> notes;
+            public ArrayList<Flag> compFlags;
         }
         class Level {
             public String levelName;
@@ -885,7 +939,7 @@ public class EditorMode implements Screen {
         for (int lane = 0; lane < laneNumber; lane++){
             BandMember b = new BandMember();
             b.notes = new ArrayList<Note>();
-            b.lossRates = new ArrayList<Flag>();
+            b.compFlags = new ArrayList<Flag>();
             if (instruments[lane] == Instrument.VIOLIN){
                 b.instrument = "violin";
             }
@@ -919,8 +973,9 @@ public class EditorMode implements Screen {
         for (EditorFlag flag : Flags){
             Flag f = new Flag();
             f.rate = flag.getLossRate();
+            f.gain = flag.getNoteGain();
             f.position = flag.getPos() - startPosition;
-            l.bandMembers.get(flag.getLane()).lossRates.add(f);
+            l.bandMembers.get(flag.getLane()).compFlags.add(f);
         }
         l.randomHits = new ArrayList<Hit>();
         for (EditorHit hit : Hits){
@@ -1057,7 +1112,7 @@ public class EditorMode implements Screen {
      * @return flag which was added
      *
      */
-    public EditorFlag addFlag(int lane, int songPos, int lossRate){
+    public EditorFlag addFlag(int lane, int songPos, int lossRate, int noteGain){
         int PlacePos = PlacePosition(songPos, currentPlaceType);
         boolean flagConflict = false;
         for (EditorFlag flag : Flags){
@@ -1074,7 +1129,7 @@ public class EditorMode implements Screen {
         }
         if (!flagConflict) {
             System.out.println("No Flag Conflict");
-            EditorFlag f = new EditorFlag(lane, PlacePos, lossRate);
+            EditorFlag f = new EditorFlag(lane, PlacePos, lossRate, noteGain);
             Flags.add(f);
             return f;
         }
@@ -1298,7 +1353,7 @@ public class EditorMode implements Screen {
             songPosition = (int) ((4/zoom)*beat) - 2*beat;
         }
 
-        typing = typingName || typingSongName || typingMaxComp || typingBPM || typingLaneNum || typingLineNum || typingFallSpeed || typingLossRate;
+        typing = typingName || typingSongName || typingMaxComp || typingBPM || typingLaneNum || typingLineNum || typingFallSpeed || typingLossRate || typingNoteGain;
         for (int i =0; i<laneNumber;i++){
             if (typingProbabilities[i]){
                 typing = true;
@@ -1492,6 +1547,15 @@ public class EditorMode implements Screen {
             }
             typedString = "";
         }
+        if (typingNoteGain) {
+            typingNoteGain = false;
+            if (typedString.equals("")){
+                selectedNoteGain = 3;
+            } else {
+                selectedNoteGain = Integer.parseInt(typedString);
+            }
+            typedString = "";
+        }
         for(int i=0;i<laneNumber;i++){
             if (typingProbabilities[i]){
                 typingProbabilities[i] = false;
@@ -1522,7 +1586,7 @@ public class EditorMode implements Screen {
      * @param y the vertical screen location
      */
     private void buttonClick(float x, float y){
-        if (!setting && !hitSetting && !instrumentSetting) {
+        if (!setting && !hitSetting && !flagSetting && !instrumentSetting) {
             if (x >= quarterPrecision1ButtonLocation.x && x <= quarterPrecision1ButtonLocation.x + buttonSize) {
                 if (y >= quarterPrecision1ButtonLocation.y && y <= quarterPrecision1ButtonLocation.y + buttonSize) {
                     currentPlaceType = PlaceType.QUARTER;
@@ -1598,7 +1662,7 @@ public class EditorMode implements Screen {
 
             if (x >= flagSettingsButtonLocation.x && x <= flagSettingsButtonLocation.x + flagSettingsButtonSize) {
                 if (y >= flagSettingsButtonLocation.y && y <= flagSettingsButtonLocation.y + flagSettingsButtonSize) {
-                    typingLossRate = true;
+                    flagSetting = true;
                 }
             }
             if (x >= hitSettingsButtonLocation.x && x <= hitSettingsButtonLocation.x + hitSettingsButtonSize) {
@@ -1710,6 +1774,22 @@ public class EditorMode implements Screen {
                     }
                 }
             }
+        } else if (flagSetting){
+            if (x >= closeFlagSettingsButtonLocation.x && x <= closeFlagSettingsButtonLocation.x + closeFlagSettingsButtonSize) {
+                if (y >= closeFlagSettingsButtonLocation.y && y <= closeFlagSettingsButtonLocation.y + closeFlagSettingsButtonSize) {
+                    flagSetting = false;
+                }
+            }
+            if (x >= rateButtonLocation.x && x <= rateButtonLocation.x + flagRateButtonSize) {
+                if (y >= rateButtonLocation.y && y <= rateButtonLocation.y + flagRateButtonSize) {
+                    typingLossRate = true;
+                }
+            }
+            if (x >= gainButtonLocation.x && x <= gainButtonLocation.x + flagRateButtonSize) {
+                if (y >= gainButtonLocation.y && y <= gainButtonLocation.y + flagRateButtonSize) {
+                    typingNoteGain = true;
+                }
+            }
         } else {
             if (x >= instrumentsSettingsCloseButtonLocation.x && x <= instrumentsSettingsCloseButtonLocation.x + instrumentSettingsButtonSize) {
                 if (y >= instrumentsSettingsCloseButtonLocation.y && y <= instrumentsSettingsCloseButtonLocation.y + instrumentSettingsButtonSize) {
@@ -1719,7 +1799,18 @@ public class EditorMode implements Screen {
             for (int i = 0; i < laneNumber; i++){
                 if (x >= instrumentsButtonLocations[i].x && x <= instrumentsButtonLocations[i].x + instrumentSettingsButtonSize) {
                     if (y >= instrumentsButtonLocations[i].y && y <= instrumentsButtonLocations[i].y + instrumentSettingsButtonSize) {
-                         System.out.println("not done yet :(");
+                         if(instruments[i] == Instrument.VIOLIN){
+                             instruments[i] = Instrument.PIANO;
+                         }
+                         else if(instruments[i] == Instrument.PIANO){
+                            instruments[i] = Instrument.DRUM;
+                         }
+                         else if(instruments[i] == Instrument.DRUM){
+                            instruments[i] = Instrument.VOICE;
+                         }
+                         else if(instruments[i] == Instrument.VOICE){
+                            instruments[i] = Instrument.VIOLIN;
+                         }
                     }
                 }
             }
@@ -1793,7 +1884,7 @@ public class EditorMode implements Screen {
 
 
     private void resolveAction(){
-        if (!(typing || setting || hitSetting)) {
+        if (!(typing || setting || hitSetting || flagSetting)) {
             //Get Movement Input
             moves = inputController.getMoves();
             if (moves[0]) {
@@ -1836,7 +1927,7 @@ public class EditorMode implements Screen {
                     startPosition = PlacePosition(clickedSongPosition, currentPlaceType);
                 }
                 if (placing_flags && clickedLane != -1 && clickedSongPosition != -3 * beat && clickedSongPosition > 0) {
-                    addFlag(clickedLane, clickedSongPosition, selectedLossRate);
+                    addFlag(clickedLane, clickedSongPosition, selectedLossRate, selectedNoteGain);
                 }
                 if (placing_hits  && clickedLane != -1 && clickedSongPosition != -3 * beat && clickedSongPosition > 0) {
                     addHit(clickedSongPosition, selectedProbabilities);
@@ -1970,7 +2061,7 @@ public class EditorMode implements Screen {
                 loadLevel(defaultLevel);
             }
         } else if (typing){
-            if (typingBPM || typingLaneNum || typingLineNum || typingMaxComp || typingLossRate || typingFallSpeed) {
+            if (typingBPM || typingLaneNum || typingLineNum || typingMaxComp || typingLossRate || typingNoteGain || typingFallSpeed) {
                 typePrompt(true);
             } else if (typingName || typingSongName) {
                 typePrompt(false);
@@ -2007,6 +2098,22 @@ public class EditorMode implements Screen {
      */
     public float getLaneWidth() {
         return laneWidth;
+    }
+
+    private String instrumentToString(Instrument inst) {
+        if (inst == Instrument.VIOLIN){
+            return "violin";
+        }
+        if (inst == Instrument.PIANO){
+            return "piano";
+        }
+        if (inst == Instrument.DRUM){
+            return "drum";
+        }
+        if (inst == Instrument.VOICE){
+            return "voice";
+        }
+        return "null";
     }
 
     /**
@@ -2292,7 +2399,7 @@ public class EditorMode implements Screen {
             String lineMsg = "Line Number: " + String.valueOf(lineNumber);
             String InstrumentsMsg = "Instruments: ";
             for (int i = 0; i < laneNumber; i++){
-                InstrumentsMsg += "piano" + ", ";
+                InstrumentsMsg += instrumentToString(instruments[i]) + ", ";
             }
             canvas.drawText(nameMsg, displayFont, nameTextLocation.x, nameTextLocation.y);
             canvas.drawText(songNameMsg, displayFont, songNameTextLocation.x, songNameTextLocation.y);
@@ -2307,6 +2414,7 @@ public class EditorMode implements Screen {
         if (hitSetting) {
             canvas.drawRect(hitSettingsScreenLocation, hitSettingsScreenDimensions.x, hitSettingsScreenDimensions.y, Color.YELLOW, true);
             canvas.drawRect(hitSettingsScreenLocation, hitSettingsScreenDimensions.x, hitSettingsScreenDimensions.y, Color.BLACK, false);
+            canvas.drawText("Select Random Hit Probabilities", displayFont, hitSettingsTitleLocation.x, hitSettingsTitleLocation.y);
 
             canvas.drawRect(closeHitSettingsButtonLocation, closeHitSettingsButtonSize, closeHitSettingsButtonSize, Color.RED, true);
             canvas.drawRect(closeHitSettingsButtonLocation, closeHitSettingsButtonSize, closeHitSettingsButtonSize, Color.BLACK, false);
@@ -2314,7 +2422,25 @@ public class EditorMode implements Screen {
             for (int i=0; i < laneNumber; i++){
                 canvas.drawRect(probabilityButtonLocations[i], probabilityButtonSize, probabilityButtonSize, Color.LIGHT_GRAY, true);
                 canvas.drawRect(probabilityButtonLocations[i], probabilityButtonSize, probabilityButtonSize, Color.BLACK, false);
+                canvas.drawText(String.valueOf(selectedProbabilities[i]) + "%", displayFont, probabilityTextLocations[i].x, probabilityTextLocations[i].y);
             }
+        }
+
+        if (flagSetting) {
+            canvas.drawRect(flagSettingsScreenLocation, flagSettingsScreenDimensions.x, flagSettingsScreenDimensions.y, Color.FIREBRICK, true);
+            canvas.drawRect(flagSettingsScreenLocation, flagSettingsScreenDimensions.x, flagSettingsScreenDimensions.y, Color.BLACK, false);
+            canvas.drawText("Select Competency Loss Rate and Note Gain", displayFont, flagSettingsTitleLocation.x, flagSettingsTitleLocation.y);
+
+            canvas.drawRect(closeFlagSettingsButtonLocation, closeFlagSettingsButtonSize, closeFlagSettingsButtonSize, Color.RED, true);
+            canvas.drawRect(closeFlagSettingsButtonLocation, closeFlagSettingsButtonSize, closeFlagSettingsButtonSize, Color.BLACK, false);
+
+            canvas.drawRect(rateButtonLocation, flagRateButtonSize, flagRateButtonSize, Color.LIGHT_GRAY, true);
+            canvas.drawRect(rateButtonLocation, flagRateButtonSize, flagRateButtonSize, Color.BLACK, false);
+            canvas.drawRect(gainButtonLocation, flagRateButtonSize, flagRateButtonSize, Color.LIGHT_GRAY, true);
+            canvas.drawRect(gainButtonLocation, flagRateButtonSize, flagRateButtonSize, Color.BLACK, false);
+
+            canvas.drawText("Loss Rate: " + String.valueOf(selectedLossRate), displayFont, rateTextLocation.x, rateTextLocation.y);
+            canvas.drawText("Note Gain: " + String.valueOf(selectedNoteGain), displayFont, gainTextLocation.x, gainTextLocation.y);
         }
 
         if (instrumentSetting) {
@@ -2327,6 +2453,7 @@ public class EditorMode implements Screen {
             for (int i=0; i < laneNumber; i++){
                 canvas.drawRect(instrumentsButtonLocations[i], instrumentSettingsButtonSize, instrumentSettingsButtonSize, Color.LIGHT_GRAY, true);
                 canvas.drawRect(instrumentsButtonLocations[i], instrumentSettingsButtonSize, instrumentSettingsButtonSize, Color.BLACK, false);
+                canvas.drawText(instrumentToString(instruments[i]), displayFont, instrumentsTextLocations[i].x,instrumentsTextLocations[i].y);
             }
         }
 
