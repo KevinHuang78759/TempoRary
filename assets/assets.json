@@ -163,6 +163,7 @@
     "soundEffects": [
         ["tap", "sound/tap.ogg"],
         ["goodHit","sound/goodhit.ogg"],
+        ["okHit","sound/goodhit.ogg"],
         ["perfectHit","sound/perfecthit.ogg"],
         ["switch", "sound/switch.ogg"],
         ["switchHit", "sound/switchHit.ogg"],
