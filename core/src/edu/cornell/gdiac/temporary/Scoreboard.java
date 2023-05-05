@@ -98,6 +98,14 @@ public class Scoreboard {
     public long getScore(){
         return totalScore;
     }
+
+    public long getMeter(){
+        return meter;
+    }
+
+    public long getMaxCombo(){
+        return maxLevel;
+    }
     public void dispose(){
         sfx.dispose();
         fontGenerator.dispose();

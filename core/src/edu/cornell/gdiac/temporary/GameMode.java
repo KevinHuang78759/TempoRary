@@ -374,19 +374,12 @@ public class GameMode implements Screen {
 		// TODO: SWITCH BACKGROUND BASED ON LEVEL JSON (may need to move this to a different location)
 		canvas.drawBackground(streetLevelBackground.getTexture(),0,0);
 		if (gameState == GameState.OVER) {
-			//Draw game over text
-			displayFont.setColor(Color.NAVY);
-			canvas.drawTextCentered("Game Over!", displayFont, GAME_OVER_OFFSET+50);
-			displayFont.setColor(Color.NAVY);
-			canvas.drawTextCentered("Press ENTER to Restart", displayFont, 0);
+			drawLose();
 		} else if (gameState == GameState.WON) {
-			displayFont.setColor(Color.NAVY);
-			canvas.drawTextCentered("You won!", displayFont, GAME_OVER_OFFSET+100);
-			canvas.drawTextCentered("Final score: " + gameplayController.sb.getScore(), displayFont, GAME_OVER_OFFSET+50);
-			canvas.draw(playButton, Color.WHITE, playButton.getWidth()/2, playButton.getHeight()/2,
-					playButtonCoords.x, playButtonCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
+			drawWin();
 		} else if (gameState == GameState.PAUSE) {
 			//Draw the buttons for the pause menu
+
 			canvas.draw(resumeButton, Color.WHITE, resumeButton.getWidth()/2, resumeButton.getHeight()/2,
 					resumeCoords.x, resumeCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
 			canvas.draw(restartButton, Color.WHITE, restartButton.getWidth()/2, restartButton.getHeight()/2,
@@ -422,6 +415,65 @@ public class GameMode implements Screen {
 			}
 		}
 		canvas.end();
+	}
+
+	/**
+	 * Draws win screen
+	 *
+	 */
+	public void drawWin(){
+		displayFont.setColor(Color.WHITE);
+		canvas.drawTextCentered("Result", displayFont, GAME_OVER_OFFSET+100);
+		canvas.draw(playButton, Color.WHITE, playButton.getWidth()/2, playButton.getHeight()/2,
+				playButtonCoords.x, playButtonCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
+		// draw the next button; next should be
+
+		long score = gameplayController.sb.getScore();
+		canvas.drawTextCentered("SCORE " + score, displayFont, GAME_OVER_OFFSET+50);
+
+		long maxCombo =gameplayController.sb.getMaxCombo();
+		canvas.drawTextCentered("COMBO " + maxCombo, displayFont, GAME_OVER_OFFSET+50);
+
+		long nPerfect =gameplayController.sb.getMaxCombo();
+		canvas.drawTextCentered("PERFECT " + nPerfect, displayFont, GAME_OVER_OFFSET+50);
+
+		long nGood =gameplayController.sb.getMaxCombo();
+		canvas.drawTextCentered("GOOD " + nGood, displayFont, GAME_OVER_OFFSET+50);
+
+		long nOk =gameplayController.sb.getMaxCombo();
+		canvas.drawTextCentered("OK " + nOk, displayFont, GAME_OVER_OFFSET+50);
+
+		long nMiss = 0;
+		canvas.drawTextCentered("MISS " + nMiss, displayFont, GAME_OVER_OFFSET+50);
+
+		//			max combo
+		canvas.draw(levelButton, Color.WHITE, levelButton.getWidth()/3, levelButton.getHeight()/2,
+				playButtonCoords.x, playButtonCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
+
+		drawNextRetryLevel();
+	}
+
+
+	/**
+	 * Draws lose screen
+	 *
+	 * */
+	public void drawLose(){
+		displayFont.setColor(Color.WHITE);
+		canvas.drawTextCentered("Result", displayFont, GAME_OVER_OFFSET+100);
+		displayFont.setColor(Color.RED);
+		canvas.drawTextCentered("You ruined the show!", displayFont, GAME_OVER_OFFSET+100);
+
+		drawNextRetryLevel();
+	}
+
+
+	/**
+	 * Draws next, retry, and level on the right of the win/lose screen
+	 *
+	 */
+	public void drawNextRetryLevel(){
+
 	}
 
 	/**
