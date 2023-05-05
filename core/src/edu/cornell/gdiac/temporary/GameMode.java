@@ -279,6 +279,7 @@ public class GameMode implements Screen {
 				waiting -= delta;
 				if (waiting < 1f) {
 					gameState = GameState.PLAY;
+					waiting = 4f;
 					gameplayController.level.startmusic();
 				}
 				break;
@@ -359,8 +360,11 @@ public class GameMode implements Screen {
 		// in the future, we should prob move this else where.
 		// so that it is checked near the end of the game.
 		if (gameplayController.checkWinCon()){
-			gameState = GameState.WON;
-			gameplayController.level.stopMusic();
+			waiting -= delta;
+			if (waiting < 1f) {
+				gameState = GameState.WON;
+				gameplayController.level.stopMusic();
+			}
 		}
 
 		// Clean up destroyed objects
