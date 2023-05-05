@@ -23,6 +23,8 @@
         "quit-button": "images/ui/quit.png",
         "restart-button": "images/ui/restart.png",
         "resume-button": "images/ui/resume.png",
+        "menu-button": "images/ui/menu.png",
+        "pause-background": "images/ui/pause_background.png",
         "slider": {
           "file":      "images/loading_bar.png",
           "minFilter": "linear",
