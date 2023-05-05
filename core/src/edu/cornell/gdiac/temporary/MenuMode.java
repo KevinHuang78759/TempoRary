@@ -44,7 +44,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private Texture settingsButton;
     private Texture exitButton;
 
-    private Texture backButton;
+    private Texture backButtonTexture;
 
     /** Left cap to the status background (grey region) */
     private TextureRegion statusBkgLeft;
@@ -102,9 +102,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     /** The current state of each button */
     private int pressState;
 
-    /** States for the volumes */
-    private float musicVolume;
-    private float soundFXVolume;
+    private Vector2 v;
 
     /* PRESS STATES **/
     /** Initial button state */
@@ -118,10 +116,14 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private static final int SETTINGS_PRESSED = 104;
     private static final int EXIT_PRESSED = 105;
 
-    BitmapFont blinkerBold;
-    BitmapFont blinkerSemiBold;
-    BitmapFont blinkerSemiBoldSmaller;
-    BitmapFont blinkerRegular;
+    // START SETTINGS
+
+    /** */
+    private float currBandMemberCount;
+
+    /** Values for the volumes */
+    private float musicVolume;
+    private float soundFXVolume;
 
     private MenuState currentMenuState;
     private int innerWidth;
@@ -130,9 +132,20 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     // SCENES FOR THE SETTINGS PAGE
     private Stage stage;
     private Table mainTable;
-    Container<Table> tableContainer;
-    private BitmapFont font;
-    private Vector2 v;
+    private Container<Table> tableContainer;
+
+    // settings image assets
+    private Texture headerLine;
+    private Texture primaryBox;
+    private Texture secondaryBox;
+    private Texture fishOutline;
+    private Texture catOutline;
+
+    // fonts
+    private BitmapFont blinkerBold;
+    private BitmapFont blinkerSemiBold;
+    private BitmapFont blinkerSemiBoldSmaller;
+    private BitmapFont blinkerRegular;
 
     // MenuState
     private enum MenuState {
@@ -163,6 +176,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         levelEditorButtonCoords = new Vector2(centerX + levelEditorButton.getWidth(), canvas.getHeight()/2);
         calibrationButtonCoords = new Vector2(centerX + calibrationButton.getWidth()*2 , centerY);
 
+        // TODO: delete this
         statusBkgLeft = directory.getEntry( "slider.backleft", TextureRegion.class );
         statusBkgRight = directory.getEntry( "slider.backright", TextureRegion.class );
         statusBkgMiddle = directory.getEntry( "slider.background", TextureRegion.class );
@@ -171,10 +185,15 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         statusFrgRight = directory.getEntry( "slider.foreright", TextureRegion.class );
         statusFrgMiddle = directory.getEntry( "slider.foreground", TextureRegion.class );
 
-        backButton = directory.getEntry("back-arrow", Texture.class);
+        // UI assets for settings
+        backButtonTexture = directory.getEntry("back-arrow", Texture.class);
+        headerLine = directory.getEntry("header-line", Texture.class);
+        primaryBox = directory.getEntry("primary-box", Texture.class);
+        secondaryBox = directory.getEntry("secondary-box", Texture.class);
+        fishOutline = directory.getEntry("fish-outline", Texture.class);
+        catOutline = directory.getEntry("cat-outline", Texture.class);
 
-        font = directory.getEntry("main", BitmapFont.class);
-
+        // add Scene2D
         addSceneElements();
     }
 
@@ -191,14 +210,13 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 //        buttonTable.add(buttonA).width(cw/3.0f);
 //        buttonTable.add(buttonB).width(cw/3.0f);
 
-
         // TODO: add calibration button
 
         Button.ButtonStyle backButtonStyle = new Button.ButtonStyle();
-        backButtonStyle.up = new TextureRegionDrawable(backButton);
-        backButtonStyle.down = new TextureRegionDrawable(backButton);
+        backButtonStyle.up = new TextureRegionDrawable(backButtonTexture);
+        backButtonStyle.down = new TextureRegionDrawable(backButtonTexture);
 
-        final Button button = new Button(backButtonStyle);
+        final Button backButton = new Button(backButtonStyle);
 
         Slider.SliderStyle musicVolumeSliderStyle = new Slider.SliderStyle();
         musicVolumeSliderStyle.background = new TextureRegionDrawable(statusFrgMiddle);
@@ -223,75 +241,65 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         Label.LabelStyle header2Style = new Label.LabelStyle();
         header2Style.font = blinkerSemiBold;
 
-        final Label musicLabel = new Label("Music Volume", labelStyle);
-        final Label fxLabel = new Label("Sound Effects Volume", labelStyle);
+        Label.LabelStyle regularStyle = new Label.LabelStyle();
+        regularStyle.font = blinkerRegular;
 
         // back button
-        mainTable.add(button);
+        mainTable.add(backButton).left();
         // header for the
         mainTable.add(new Label("SETTINGS", headerStyle));
         mainTable.add(switchTable);
 
         mainTable.row();
 
-        mainTable.add(new Label("Placeholder", labelStyle));
-        mainTable.add(new Label("CLICK TO REBIND", header2Style)).expandX();
-        mainTable.add(new Label("Placeholder", labelStyle));
+        mainTable.add(new Image(headerLine)).bottom().right().expandX();
+        mainTable.add(new Label("CLICK TO REBIND", header2Style));
+        mainTable.add(new Image(headerLine)).bottom().left().expandX();
 
-        mainTable.row().expand().fill();
+        mainTable.row().padLeft(16).padRight(16).expand().fill();
 
 //        controlTable.add(new Label("Notes", labelStyle)).colspan(2);
 
         // TODO: CHANGE THIS TO LOOP AND ADD SWITCHES
 
-        controlTable.add(new Label("Lane 1", labelStyle)).expandX();
-        controlTable.add(new Label("D", labelStyle)).expand();
+        // controls for note hits
+        controlTable.add(new Label("Note Hits", labelStyle));
 
-        controlTable.add( new Label("Lane 2", labelStyle)).expandX();
-        controlTable.add( new Label("F", labelStyle)).expand();
-
-        controlTable.add( new Label("Lane 3", labelStyle)).expandX();
-        controlTable.add( new Label("J", labelStyle)).expand();
-
-        controlTable.add( new Label("Lane 4", labelStyle)).expandX();
-        controlTable.add( new Label("K", labelStyle)).expand();
+        for (int i = 0; i < 4; i++) {
+            controlTable.add(getControlWidget(i + 1, fishOutline));
+        }
 
         controlTable.row();
 
-        controlTable.add(new Label("Lane 1", labelStyle)).expandX();
-        controlTable.add(new Label("D", labelStyle)).expand();
+        // controls for switching
+        controlTable.add(new Label("Members", labelStyle));
 
-        controlTable.add( new Label("Lane 2", labelStyle)).expandX();
-        controlTable.add( new Label("F", labelStyle)).expand();
+        for (int i = 0; i < 4; i++) {
+            controlTable.add(getControlWidget(i + 1, catOutline)).expandX();
+        }
 
-        controlTable.add( new Label("Lane 3", labelStyle)).expandX();
-        controlTable.add( new Label("J", labelStyle)).expand();
-
-        controlTable.add( new Label("Lane 4", labelStyle)).expandX();
-        controlTable.add( new Label("K", labelStyle)).expand();
-
-        mainTable.add(controlTable).colspan(3);
+        mainTable.add(controlTable).expandX().colspan(3);
 
         mainTable.row();
 
         // Volume table stuff
 
-        mainTable.add(new Label("Placeholder", labelStyle));
-        mainTable.add(new Label("DRAG TO ADJUST VOLUME", header2Style)).expandX();
-        mainTable.add(new Label("Placeholder", labelStyle));
+        mainTable.add(new Image(headerLine)).bottom().right().expandX();
+        mainTable.add(new Label("DRAG TO ADJUST VOLUME", header2Style));
+        mainTable.add(new Image(headerLine)).bottom().left().expandX();
 
         mainTable.row().expand().fill();
         mainTable.add(volumeTable).expand().colspan(3);
 
-        volumeTable.add(musicLabel);
+        volumeTable.add(new Label("Music", labelStyle)).expandX();
         volumeTable.add(musicVolumeSlider).width(800);
         volumeTable.row();
 
-        volumeTable.add(fxLabel);
+        volumeTable.add(new Label("Sound FX", labelStyle)).expandX();
         volumeTable.add(fxVolumeSlider).width(800);
 
         // LISTENERS
-        button.addListener(new ChangeListener() {
+        backButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 switchToHome();
@@ -311,6 +319,36 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
                 soundFXVolume = ((Slider) actor).getValue();
             }
         });
+    }
+
+    private Table getControlWidget(int nth, Texture outlineImage) {
+        Table tempTable = new Table();
+
+        Label.LabelStyle regularStyle = new Label.LabelStyle();
+        regularStyle.font = blinkerRegular;
+
+        Button.ButtonStyle primaryKeyStyle = new Button.ButtonStyle();
+        primaryKeyStyle.up = new TextureRegionDrawable(primaryBox);
+        primaryKeyStyle.down = new TextureRegionDrawable(primaryBox);
+
+        Button.ButtonStyle secondaryKeyStyle = new Button.ButtonStyle();
+        secondaryKeyStyle.up = new TextureRegionDrawable(secondaryBox);
+        secondaryKeyStyle.down = new TextureRegionDrawable(secondaryBox);
+
+        tempTable.add(new Label("" + nth, regularStyle));
+
+        tempTable.row();
+
+        Image image = new Image(outlineImage);
+        tempTable.add(image);
+
+        VerticalGroup stack = new VerticalGroup();
+        stack.addActor(new Button(primaryKeyStyle));
+        stack.addActor(new Button(secondaryKeyStyle));
+
+        tempTable.add(stack);
+
+        return tempTable;
     }
 
     private void switchToHome() {
@@ -352,9 +390,13 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         float sw = canvas.getWidth();
         float sh = canvas.getHeight();
 
+        float cw = sw * 0.90f;
+        float ch = sh * 0.95f;
+
         // scene 2D UI
-        tableContainer.setSize(sw, sh);
-        tableContainer.fillY();
+        tableContainer.setSize(cw, ch);
+        tableContainer.setPosition((sw - cw) / 2.0f, (sh - ch) / 2.0f);
+        tableContainer.fill();
         tableContainer.setActor(mainTable);
         stage.addActor(tableContainer);
         stage.setDebugAll(true);
@@ -367,15 +409,20 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         blinkerBold = generator.generateFont(parameter);
 
         generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Blinker-SemiBold.ttf"));
-        parameter.size = 40;
+        parameter.size = 50;
         parameter.color = Color.BLACK;
         blinkerSemiBold = generator.generateFont(parameter); // font size 24 pixels
 
-        parameter.size = 25;
+        parameter.size = 35;
         blinkerSemiBoldSmaller = generator.generateFont(parameter);
+
+        generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Blinker-Regular.ttf"));
+        parameter.size = 20;
+        blinkerRegular = generator.generateFont(parameter);
 
         // Compute the dimensions from the canvas
         resize(canvas.getWidth(),canvas.getHeight());
+        currBandMemberCount = 4;
         musicVolume = 1f;
         soundFXVolume = 1f;
         active = false;
