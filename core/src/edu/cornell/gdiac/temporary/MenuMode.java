@@ -34,7 +34,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
     /** Background texture */
     private Texture background;
-    private Texture plainBackground;
+    private Texture settingsBackground;
     /** Tempo-Rary logo */
     private Texture logo;
     /** Buttons */
@@ -153,7 +153,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         logo = directory.getEntry("title", Texture.class);
         background = directory.getEntry( "loading-background", Texture.class );
         background.setFilter( Texture.TextureFilter.Linear, Texture.TextureFilter.Linear );
-        plainBackground = directory.getEntry("background", Texture.class);
+        settingsBackground = directory.getEntry("settings-background", Texture.class);
         playButton = directory.getEntry("play", Texture.class);
         levelEditorButton = directory.getEntry("level-editor", Texture.class);
         calibrationButton = directory.getEntry("play-old", Texture.class);
@@ -171,7 +171,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         statusFrgRight = directory.getEntry( "slider.foreright", TextureRegion.class );
         statusFrgMiddle = directory.getEntry( "slider.foreground", TextureRegion.class );
 
-        backButton = directory.getEntry("play-old", Texture.class);
+        backButton = directory.getEntry("back-arrow", Texture.class);
 
         font = directory.getEntry("main", BitmapFont.class);
 
@@ -352,11 +352,8 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         float sw = canvas.getWidth();
         float sh = canvas.getHeight();
 
-        float cw = sw;
-        float ch = sh;
-
         // scene 2D UI
-        tableContainer.setSize(cw, ch);
+        tableContainer.setSize(sw, sh);
         tableContainer.fillY();
         tableContainer.setActor(mainTable);
         stage.addActor(tableContainer);
@@ -443,7 +440,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
     private void drawSettings() {
         canvas.begin();
-        canvas.draw(plainBackground, 0, 0, canvas.getWidth(), canvas.getHeight());
+        canvas.draw(settingsBackground, 0, 0, canvas.getWidth(), canvas.getHeight());
         canvas.end();
 
         stage.act(Gdx.graphics.getDeltaTime());
