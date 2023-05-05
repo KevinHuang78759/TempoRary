@@ -185,6 +185,7 @@ public class BandMember {
      * Constructor
      */
     public BandMember(){
+        laneTint = Color.WHITE;
         bottomLeftCorner = new Vector2();
         hitNotes = new Array<>();
         switchNotes = new Array<>();
