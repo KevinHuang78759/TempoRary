@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -117,13 +118,18 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private static final int SETTINGS_PRESSED = 104;
     private static final int EXIT_PRESSED = 105;
 
+    BitmapFont blinkerBold;
+    BitmapFont blinkerSemiBold;
+    BitmapFont blinkerSemiBoldSmaller;
+    BitmapFont blinkerRegular;
+
     private MenuState currentMenuState;
     private int innerWidth;
     private boolean holdingBar;
 
     // SCENES FOR THE SETTINGS PAGE
     private Stage stage;
-    private Table table;
+    private Table mainTable;
     Container<Table> tableContainer;
     private BitmapFont font;
     private Vector2 v;
@@ -174,15 +180,17 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
     private void addSceneElements() {
 
-        Table headerTable = new Table();
+        Table switchTable = new Table();
         Table controlTable = new Table();
         Table volumeTable = new Table();
 
-        table.add(headerTable).top().left();;
-        table.row();
-        table.add(controlTable).expand();
-        table.row();
-        table.add(volumeTable).expand();
+//        table.add(buttonTable).colspan(3);
+//
+//        buttonTable.pad(16);
+//        buttonTable.row().fillX().expandX();
+//        buttonTable.add(buttonA).width(cw/3.0f);
+//        buttonTable.add(buttonB).width(cw/3.0f);
+
 
         // TODO: add calibration button
 
@@ -207,44 +215,73 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         fxVolumeSlider.setValue(soundFXVolume);
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
-        labelStyle.fontColor = Color.BLACK;
+        labelStyle.font = blinkerSemiBoldSmaller;
+
+        Label.LabelStyle headerStyle = new Label.LabelStyle();
+        headerStyle.font = blinkerBold;
+
+        Label.LabelStyle header2Style = new Label.LabelStyle();
+        header2Style.font = blinkerSemiBold;
 
         final Label musicLabel = new Label("Music Volume", labelStyle);
         final Label fxLabel = new Label("Sound Effects Volume", labelStyle);
 
-        table.row();
+        // back button
+        mainTable.add(button);
+        // header for the
+        mainTable.add(new Label("SETTINGS", headerStyle));
+        mainTable.add(switchTable);
 
-        headerTable.add(button);
+        mainTable.row();
 
-        // TODO: fix this mess
+        mainTable.add(new Label("Placeholder", labelStyle));
+        mainTable.add(new Label("CLICK TO REBIND", header2Style)).expandX();
+        mainTable.add(new Label("Placeholder", labelStyle));
 
-//        table.row();
+        mainTable.row().expand().fill();
 
 //        controlTable.add(new Label("Notes", labelStyle)).colspan(2);
 
         // TODO: CHANGE THIS TO LOOP AND ADD SWITCHES
-//        controlTable.row();
-//
-//        controlTable.add(new Label("Lane 1", labelStyle)).expand();
-//        controlTable.add(new Label("D", labelStyle)).expand();
-//
-//        controlTable.row();
-//
-//        controlTable.add( new Label("Lane 2", labelStyle)).expandX();
-//        controlTable.add( new Label("F", labelStyle)).expandX();
-//
-//        controlTable.row();
-//
-//        controlTable.add( new Label("Lane 3", labelStyle)).expandX();
-//        controlTable.add( new Label("J", labelStyle)).expandX();
-//
-//        controlTable.row();
-//
-//        controlTable.add( new Label("Lane 4", labelStyle)).expandX();
-//        controlTable.add( new Label("K", labelStyle)).expandX();
 
-        table.row();
+        controlTable.add(new Label("Lane 1", labelStyle)).expandX();
+        controlTable.add(new Label("D", labelStyle)).expand();
+
+        controlTable.add( new Label("Lane 2", labelStyle)).expandX();
+        controlTable.add( new Label("F", labelStyle)).expand();
+
+        controlTable.add( new Label("Lane 3", labelStyle)).expandX();
+        controlTable.add( new Label("J", labelStyle)).expand();
+
+        controlTable.add( new Label("Lane 4", labelStyle)).expandX();
+        controlTable.add( new Label("K", labelStyle)).expand();
+
+        controlTable.row();
+
+        controlTable.add(new Label("Lane 1", labelStyle)).expandX();
+        controlTable.add(new Label("D", labelStyle)).expand();
+
+        controlTable.add( new Label("Lane 2", labelStyle)).expandX();
+        controlTable.add( new Label("F", labelStyle)).expand();
+
+        controlTable.add( new Label("Lane 3", labelStyle)).expandX();
+        controlTable.add( new Label("J", labelStyle)).expand();
+
+        controlTable.add( new Label("Lane 4", labelStyle)).expandX();
+        controlTable.add( new Label("K", labelStyle)).expand();
+
+        mainTable.add(controlTable).colspan(3);
+
+        mainTable.row();
+
+        // Volume table stuff
+
+        mainTable.add(new Label("Placeholder", labelStyle));
+        mainTable.add(new Label("DRAG TO ADJUST VOLUME", header2Style)).expandX();
+        mainTable.add(new Label("Placeholder", labelStyle));
+
+        mainTable.row().expand().fill();
+        mainTable.add(volumeTable).expand().colspan(3);
 
         volumeTable.add(musicLabel);
         volumeTable.add(musicVolumeSlider).width(800);
@@ -309,11 +346,36 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     public MenuMode(GameCanvas canvas) {
         this.canvas = canvas;
         stage = new Stage();
-        table = new Table();
-        table.setFillParent(true);
-        stage.addActor(table);
-//        table.setDebug(true);
-//        tableContainer = new Container<>();
+        mainTable = new Table();
+        tableContainer = new Container<>();
+
+        float sw = canvas.getWidth();
+        float sh = canvas.getHeight();
+
+        float cw = sw;
+        float ch = sh;
+
+        // scene 2D UI
+        tableContainer.setSize(cw, ch);
+        tableContainer.fillY();
+        tableContainer.setActor(mainTable);
+        stage.addActor(tableContainer);
+        stage.setDebugAll(true);
+
+        // fonts
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Blinker-Bold.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 70;
+        parameter.color = Color.WHITE;
+        blinkerBold = generator.generateFont(parameter);
+
+        generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Blinker-SemiBold.ttf"));
+        parameter.size = 40;
+        parameter.color = Color.BLACK;
+        blinkerSemiBold = generator.generateFont(parameter); // font size 24 pixels
+
+        parameter.size = 25;
+        blinkerSemiBoldSmaller = generator.generateFont(parameter);
 
         // Compute the dimensions from the canvas
         resize(canvas.getWidth(),canvas.getHeight());
@@ -382,30 +444,8 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private void drawSettings() {
         canvas.begin();
         canvas.draw(plainBackground, 0, 0, canvas.getWidth(), canvas.getHeight());
-//        canvas.draw(backButton, Color.WHITE, backButton.getWidth()/2, backButton.getHeight()/2,
-//                calibrationButton.getWidth(), calibrationButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
-//
-//        float scale = 0.5f;
-//
-//        canvas.draw(statusBkgLeft,   centerX-barWidth/2, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
-//        canvas.draw(statusBkgRight,  centerX+barWidth/2-scale*PROGRESS_CAP, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
-//        canvas.draw(statusBkgMiddle, centerX-barWidth/2+scale*PROGRESS_CAP, centerY, barWidth-2*scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
-//
-//        float padding = (barWidth - innerWidth) / 2f;
-//        canvas.draw(statusFrgLeft,   centerX-innerWidth/2, centerY +(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, scale*INNER_PROGRESS_CAP, scale*INNER_PROGRESS_HEIGHT);
-//        float span = (musicVolume)*(innerWidth-2*scale*INNER_PROGRESS_CAP);
-//        canvas.draw(statusFrgRight,  centerX-innerWidth/2+scale*INNER_PROGRESS_CAP+span, centerY+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, scale*INNER_PROGRESS_CAP, scale*INNER_PROGRESS_HEIGHT);
-//        canvas.draw(statusFrgMiddle, centerX-innerWidth/2+scale*INNER_PROGRESS_CAP, centerY+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, span, scale*INNER_PROGRESS_HEIGHT);
-//
-//        canvas.draw(statusBkgLeft,   centerX-barWidth/2, centerY + 100, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
-//        canvas.draw(statusBkgRight,  centerX+barWidth/2-scale*PROGRESS_CAP, centerY + 100, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
-//        canvas.draw(statusBkgMiddle, centerX-barWidth/2+scale*PROGRESS_CAP, centerY + 100, barWidth-2*scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
-//
-//        canvas.draw(statusFrgLeft,   centerX-innerWidth/2, centerY + 100+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, scale*INNER_PROGRESS_CAP, scale*INNER_PROGRESS_HEIGHT);
-//        float span2 = (soundFXVolume)*(innerWidth-2*scale*INNER_PROGRESS_CAP);
-//        canvas.draw(statusFrgRight,  centerX-innerWidth/2+scale*INNER_PROGRESS_CAP+span2, centerY + 100+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, scale*INNER_PROGRESS_CAP, scale*INNER_PROGRESS_HEIGHT);
-//        canvas.draw(statusFrgMiddle, centerX-innerWidth/2+scale*INNER_PROGRESS_CAP, centerY + 100+(PROGRESS_HEIGHT - INNER_PROGRESS_HEIGHT)/4f+1, span2, scale*INNER_PROGRESS_HEIGHT);
         canvas.end();
+
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
     }

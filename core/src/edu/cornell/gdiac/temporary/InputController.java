@@ -34,6 +34,9 @@ import java.util.Arrays;
  */
 public class InputController {
 
+	public static final int MAX_LINES_PER_LANE = 4;
+	public static final int MAX_BAND_MEMBERS = 4;
+
 	// Fields to manage game state
 	/** Whether the reset button was pressed. */
 	protected boolean resetPressed;
