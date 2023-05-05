@@ -140,6 +140,9 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private Texture secondaryBox;
     private Texture fishOutline;
     private Texture catOutline;
+    private Texture sliderBackground;
+    private Texture sliderForeground;
+    private Texture sliderButton;
 
     // fonts
     private BitmapFont blinkerBold;
@@ -192,6 +195,9 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         secondaryBox = directory.getEntry("secondary-box", Texture.class);
         fishOutline = directory.getEntry("fish-outline", Texture.class);
         catOutline = directory.getEntry("cat-outline", Texture.class);
+        sliderBackground = directory.getEntry("slider-background", Texture.class);
+        sliderForeground = directory.getEntry("slider-foreground", Texture.class);
+        sliderButton = directory.getEntry("slider-button", Texture.class);
 
         // add Scene2D
         addSceneElements();
@@ -218,18 +224,15 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
         final Button backButton = new Button(backButtonStyle);
 
-        Slider.SliderStyle musicVolumeSliderStyle = new Slider.SliderStyle();
-        musicVolumeSliderStyle.background = new TextureRegionDrawable(statusFrgMiddle);
-        musicVolumeSliderStyle.knob = new TextureRegionDrawable(statusFrgRight);
+        Slider.SliderStyle sliderStyle = new Slider.SliderStyle();
+        sliderStyle.background = new TextureRegionDrawable(sliderBackground);
+        sliderStyle.knob = new TextureRegionDrawable(sliderButton);
+        sliderStyle.knobBefore = new TextureRegionDrawable(sliderForeground);
 
-        final Slider musicVolumeSlider = new Slider(0f, 1f, 0.1f, false, musicVolumeSliderStyle);
+        final Slider musicVolumeSlider = new Slider(0f, 1f, 0.1f, false, sliderStyle);
         musicVolumeSlider.setValue(musicVolume);
 
-        Slider.SliderStyle fxVolumeSliderStyle = new Slider.SliderStyle();
-        fxVolumeSliderStyle.background = new TextureRegionDrawable(statusFrgMiddle);
-        fxVolumeSliderStyle.knob = new TextureRegionDrawable(statusFrgRight);
-
-        final Slider fxVolumeSlider = new Slider(0f, 1f, 0.05f, false, fxVolumeSliderStyle);
+        final Slider fxVolumeSlider = new Slider(0f, 1f, 0.05f, false, sliderStyle);
         fxVolumeSlider.setValue(soundFXVolume);
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
@@ -293,7 +296,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
         volumeTable.add(new Label("Music", labelStyle)).expandX();
         volumeTable.add(musicVolumeSlider).width(800);
-        volumeTable.row();
+        volumeTable.row().padTop(10).padBottom(10);
 
         volumeTable.add(new Label("Sound FX", labelStyle)).expandX();
         volumeTable.add(fxVolumeSlider).width(800);
