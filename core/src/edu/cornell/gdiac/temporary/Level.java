@@ -156,9 +156,8 @@ public class Level {
     /**
      * background of each lane
      */
-    private Texture laneBackground;
-
-    private Color ActiveTint;
+    private Texture activeLane;
+    private Texture inactiveLane;
     AudioSource songSource;
     JsonValue data;
     float maxSample;
@@ -199,7 +198,8 @@ public class Level {
         HUnit = directory.getEntry("borderHUnit", Texture.class);
         VUnit = directory.getEntry("borderVUnit", Texture.class);
         CUnit = directory.getEntry("borderCorner", Texture.class);
-        laneBackground = directory.getEntry("laneBackground", Texture.class);
+        activeLane = directory.getEntry("activeLane", Texture.class);
+        inactiveLane = directory.getEntry("inactiveLane", Texture.class);
         sepLine = directory.getEntry("separationLine", Texture.class);
 
         // preallocate band members
@@ -257,8 +257,6 @@ public class Level {
                     bandMembers[i].setCharacterFilmstrip(voiceSprite);
                     break;
             }
-
-            ActiveTint = new Color(1f, 1f, 0.3f, 0.2f);
         }
     }
 
@@ -313,11 +311,11 @@ public class Level {
             bandMember.setWidth(short_width);
             bandMember.setLineHeight(0f);
             bandMember.setHeight(maxLineHeight);
-            bandMember.setLaneTint(Color.WHITE);
+            bandMember.setLaneTint(0f);
         }
         bandMembers[activeBandMember].setWidth(large_width);
         bandMembers[activeBandMember].setLineHeight(maxLineHeight);
-        bandMembers[activeBandMember].setLaneTint(ActiveTint);
+        bandMembers[activeBandMember].setLaneTint(1f);
     }
 
     /**
@@ -355,9 +353,9 @@ public class Level {
         bandMembers[nextBM].setLineHeight(maxLineHeight*t_progress);
     }
 
-    private Color findTintColorProgress(float t_progress, SingleOperator op){
+    private float findTintColorProgress(float t_progress, SingleOperator op){
         float prog = op.op(t_progress);
-        return new Color(ActiveTint.r *prog + (1f-prog)*Color.WHITE.r, ActiveTint.g * prog+ (1f-prog)*Color.WHITE.g, ActiveTint.b* prog+ (1f-prog)*Color.WHITE.b, ActiveTint.a*prog+ (1f-prog)*Color.WHITE.a);
+        return prog;
     }
 
     /**
@@ -516,7 +514,7 @@ public class Level {
     public void drawEverything(GameCanvas canvas, int active, int goal, boolean[] triggers, boolean[] switches, float borderThickness){
         for(int i = 0; i < bandMembers.length; ++i){
             //Draw the border of each band member
-            bandMembers[i].drawBackground(canvas, laneBackground);
+            bandMembers[i].drawBackground(canvas, activeLane, inactiveLane);
             bandMembers[i].drawBorder(canvas, HUnit, VUnit, CUnit, borderThickness);
             //draw the character sprite and the comp bar
             bandMembers[i].drawCharacterSprite(canvas);
@@ -539,7 +537,8 @@ public class Level {
 
     public void dispose(){
         music.dispose();
-        laneBackground.dispose();
+        activeLane.dispose();
+        inactiveLane.dispose();
         hitNoteTexture.dispose();
         holdTrailTexture.dispose();
         holdNoteTexture.dispose();

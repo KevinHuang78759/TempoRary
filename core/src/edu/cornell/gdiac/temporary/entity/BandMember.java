@@ -40,9 +40,9 @@ public class BandMember {
      */
     private float lineHeight;
 
-    private Color laneTint;
+    private float laneTint;
 
-    public void setLaneTint(Color c){
+    public void setLaneTint(float c){
         laneTint = c;
     }
 
@@ -183,7 +183,7 @@ public class BandMember {
      * Constructor
      */
     public BandMember(){
-        laneTint = Color.WHITE;
+        laneTint = 1f;
         bottomLeftCorner = new Vector2();
         hitNotes = new Array<>();
         switchNotes = new Array<>();
@@ -392,13 +392,20 @@ public class BandMember {
     /**
      * Draw the background of this bandMember
      * @param canvas
-     * @param background
-     */
-    public void drawBackground(GameCanvas canvas, Texture background){
-        float xScale = width/background.getWidth();
-        float yScale = height/background.getHeight();
 
-        canvas.draw(background, laneTint, 0, 0, bottomLeftCorner.x, bottomLeftCorner.y, 0.0f, xScale, yScale);
+     */
+    public void drawBackground(GameCanvas canvas, Texture activeBackground, Texture inactiveBackground){
+        float xScale = width/activeBackground.getWidth();
+        float yScale = height/activeBackground.getHeight();
+
+        float ixScale = width/inactiveBackground.getWidth();
+        float iyScale = height/inactiveBackground.getHeight();
+        Color tint = Color.WHITE;
+        tint.a = laneTint;
+        canvas.draw(activeBackground, tint, 0, 0, bottomLeftCorner.x, bottomLeftCorner.y, 0.0f, xScale, yScale);
+        Color itint = Color.WHITE;
+        itint.a = 1f - laneTint;
+        canvas.draw(inactiveBackground, tint, 0, 0, bottomLeftCorner.x, bottomLeftCorner.y, 0.0f, ixScale, iyScale);
     }
 
     public void drawHPBar(GameCanvas canvas){

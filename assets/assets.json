@@ -102,7 +102,8 @@
         "borderVUnit" : "images/bandmember_lanes/lane_edge_unit.png",
         "borderHUnit" : "images/bandmember_lanes/lane_edge_unit.png",
         "borderCorner" : "images/bandmember_lanes/laneCornerBL.png",
-        "activeLane" : "images/bandmember_lanes/laneBackground.png",
+        "activeLane" : "images/bandmember_lanes/active_lane.png",
+        "inactiveLane" : "images/bandmember_lanes/inactive_lane.png",
         "separationLine" : "images/bandmember_lanes/lane-separation-line.png",
         "back-splash": "images/notes/hold_back.png",
         "front-splash": "images/notes/hold_front.png"
