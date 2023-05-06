@@ -497,6 +497,11 @@ public class InputController {
 		return moves;
 	}
 
+	public void resetMouseClicks() {
+		clicking = false;
+		mouseClicked = false;
+	}
+
 	public boolean didClick() {
 		if (!clicking && mouseClicked) {
 			clicking = true;

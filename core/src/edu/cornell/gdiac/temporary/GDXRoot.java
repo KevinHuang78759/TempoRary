@@ -151,13 +151,14 @@ public class GDXRoot extends Game implements ScreenListener {
 			loading = null;
 		}
 		else if (exitCode == ExitCode.TO_LEVEL) {
+			screen.hide();
 			levelscreen.reset();
 			levelscreen.setScreenListener(this);
 			levelscreen.populate(directory);
 			setScreen(levelscreen);
-
 			levelscreen.show();
 		} else if (exitCode ==ExitCode.TO_PLAYING){
+			screen.hide();
 			playing.setScreenListener(this);
 			String fileName = levelscreen.getSelectedJson();
 			playing.readLevel(fileName, directory);
@@ -180,7 +181,8 @@ public class GDXRoot extends Game implements ScreenListener {
 			setScreen(calibration);
 			calibration.show();
 		} else if (exitCode == ExitCode.TO_MENU) {
-			//System.out.println(calibration.getOffset());
+			if (screen == calibration)
+				System.out.println(calibration.getOffset());
 			screen.hide();
 			menu.setScreenListener(this);
 			setScreen(menu);

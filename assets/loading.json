@@ -13,9 +13,9 @@
                 "background" : [43, 0, 340, 93],
                 "backleft"   : [0, 0, 42, 93],
                 "backright"  : [544, 0, 587, 93],
-                "foreground" : [48, 97,  538, 170],
-                "foreleft"   : [14, 97, 47, 170],
-                "foreright"  : [539, 97, 573, 170]
+                "foreground" : [52, 97,  534, 170],
+                "foreleft"   : [14, 97, 51, 170],
+                "foreright"  : [535, 97, 573, 170]
             }
         }
 	},
