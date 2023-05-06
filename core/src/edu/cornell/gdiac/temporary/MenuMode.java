@@ -222,13 +222,16 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         fxVolumeSlider.setValue(soundFXVolume);
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = blinkerSemiBoldSmaller;
+        labelStyle.font = blinkerSemiBold;
 
         Label.LabelStyle headerStyle = new Label.LabelStyle();
         headerStyle.font = blinkerBold;
 
         Label.LabelStyle header2Style = new Label.LabelStyle();
-        header2Style.font = blinkerSemiBold;
+        header2Style.font = blinkerBold;
+
+        Label.LabelStyle boldLabelStyle = new Label.LabelStyle();
+        boldLabelStyle.font = blinkerSemiBoldSmaller;
 
         Label.LabelStyle regularStyle = new Label.LabelStyle();
         regularStyle.font = blinkerRegular;
@@ -264,9 +267,9 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         mainTable.row().padLeft(16).padRight(16).expand().fill();
 
         // controls for note hits
-        controlTable.add(new Label("Note Hits", labelStyle));
+        controlTable.add(new Label("Note Hits", labelStyle)).padBottom(30);
         for (int i = 0; i < 4; i++) {
-            controlTable.add(getControlWidget(i + 1, fishOutline));
+            controlTable.add(getControlWidget(i + 1, fishOutline)).padBottom(30);
         }
 
         controlTable.row();
@@ -276,11 +279,11 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         membersLabel.addActor(new Label("Members", labelStyle));
 
         SelectBox.SelectBoxStyle dropdownStyle = new SelectBox.SelectBoxStyle();
-        dropdownStyle.font = blinkerRegular;
+        dropdownStyle.font = blinkerSemiBoldSmaller;
         dropdownStyle.background = new TextureRegionDrawable(selectBackground);
         dropdownStyle.listStyle = new List.ListStyle();
         dropdownStyle.listStyle.selection = new TextureRegionDrawable(sliderBackground);
-        dropdownStyle.listStyle.font = blinkerRegular;
+        dropdownStyle.listStyle.font = blinkerSemiBoldSmaller;
         dropdownStyle.scrollStyle = new ScrollPane.ScrollPaneStyle();
         dropdownStyle.scrollStyle.background = new TextureRegionDrawable(checkboxOn);
         SelectBox<Integer> dropdown = new SelectBox<>(dropdownStyle);
@@ -307,7 +310,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
         volumeTable.add(new Label("Music", labelStyle)).expandX();
         volumeTable.add(musicVolumeSlider).width(800);
-        volumeTable.row().padTop(10).padBottom(10);
+        volumeTable.row().padTop(30);
 
         volumeTable.add(new Label("Sound FX", labelStyle)).expandX();
         volumeTable.add(fxVolumeSlider).width(800);
@@ -341,6 +344,9 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         Label.LabelStyle regularStyle = new Label.LabelStyle();
         regularStyle.font = blinkerRegular;
 
+        Label.LabelStyle boldLabelStyle = new Label.LabelStyle();
+        boldLabelStyle.font = blinkerSemiBoldSmaller;
+
         TextButton.TextButtonStyle primaryKeyStyle = new TextButton.TextButtonStyle();
         primaryKeyStyle.up = new TextureRegionDrawable(primaryBox);
         primaryKeyStyle.down = new TextureRegionDrawable(primaryBox);
@@ -351,7 +357,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         secondaryKeyStyle.down = new TextureRegionDrawable(secondaryBox);
         secondaryKeyStyle.font = blinkerRegular;
 
-        tempTable.add(new Label("" + nth, regularStyle));
+        tempTable.add(new Label("" + nth, boldLabelStyle));
 
         tempTable.row();
 
@@ -408,7 +414,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         float sh = canvas.getHeight();
 
         float cw = sw * 0.90f;
-        float ch = sh * 0.95f;
+        float ch = sh * 0.90f;
 
         // scene 2D UI
         tableContainer.setSize(cw, ch);
@@ -421,16 +427,15 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         // fonts
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Blinker-Bold.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 70;
-        parameter.color = Color.WHITE;
+        parameter.size = 50;
+        parameter.color = Color.BLACK;
         blinkerBold = generator.generateFont(parameter);
 
         generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Blinker-SemiBold.ttf"));
-        parameter.size = 50;
-        parameter.color = Color.BLACK;
-        blinkerSemiBold = generator.generateFont(parameter); // font size 24 pixels
-
         parameter.size = 35;
+        blinkerSemiBold = generator.generateFont(parameter);
+
+        parameter.size = 20;
         blinkerSemiBoldSmaller = generator.generateFont(parameter);
 
         generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Blinker-Regular.ttf"));
