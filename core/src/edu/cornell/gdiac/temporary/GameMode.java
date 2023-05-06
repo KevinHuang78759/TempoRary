@@ -132,8 +132,11 @@ public class GameMode implements Screen {
 	/** Listener that will update the player mode when we are done */
 	private ScreenListener listener;
 
-	/** used for "counting down" before game starts */
-	private float waiting = 4f;
+	/** used for tracking frames during intro */
+	private int ticks = 0;
+
+	/** time in special units for measuring how far we are in the intro sequence */
+	private int introTime;
 
 	/** Play button x and y coordinates represented as a vector */
 	private Vector2 playButtonCoords;
@@ -266,12 +269,14 @@ public class GameMode implements Screen {
 					}
 				}
 				// wait a few frames before starting
-				if (waiting >= 4f) {
+				if (ticks == 0) {
 					gameplayController.start();
 					gameplayController.update();
 				}
-				waiting -= delta;
-				if (waiting < 1f) {
+				introTime = gameplayController.updateIntro(ticks);
+				ticks += 1;
+				if (introTime >= 40) {
+					introTime = 0;
 					gameState = GameState.PLAY;
 					gameplayController.level.startmusic();
 				}
@@ -303,7 +308,7 @@ public class GameMode implements Screen {
 					} else if (didMenu) {
 						pressState = ExitCode.TO_MENU;
 					} else if (didResume) {
-						waiting = 4f;
+						ticks = 0;
 						justPaused = true;
 						gameState = GameState.INTRO;
 					} else if (didRestart) {
@@ -330,7 +335,7 @@ public class GameMode implements Screen {
 	private void resetLevel() {
 		gameplayController.reset();
 		gameplayController.reloadLevel();
-		waiting = 4f;
+		ticks = 0;
 		gameState = GameState.INTRO;
 	}
 
@@ -418,7 +423,14 @@ public class GameMode implements Screen {
 
 			// draw the countdown
 			if (gameState == GameState.INTRO) {
-				canvas.drawTextCentered("" + (int) waiting, displayFont, 0);
+				if (introTime < 10) {
+				} else if (introTime < 20){
+					canvas.drawTextCentered("-3-", displayFont, 0);
+				} else if (introTime < 30){
+					canvas.drawTextCentered("-2-", displayFont, 0);
+				} else if (introTime < 40){
+					canvas.drawTextCentered("-1-", displayFont, 0);
+				}
 			}
 		}
 		canvas.end();
@@ -522,7 +534,7 @@ public class GameMode implements Screen {
 	public void show() {
 		// Useless if called in outside animation loop
 		active = true;
-		waiting = 4f;
+		ticks = 0;
 		gameState = GameState.INTRO;
 	}
 

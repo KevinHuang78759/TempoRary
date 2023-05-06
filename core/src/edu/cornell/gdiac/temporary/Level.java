@@ -221,7 +221,7 @@ public class Level {
                     if(thisNote.getLong("position") > maxSample){
                         continue;
                     }
-                    n = new Note(thisNote.getInt("line"), Note.NoteType.SWITCH, thisNote.getLong("position") - spawnOffset, switchNoteTexture);
+                    n = new Note(thisNote.getInt("line"), Note.NoteType.SWITCH, thisNote.getLong("position") - 2*spawnOffset, switchNoteTexture);
                 }
                 else {
                     if(thisNote.getLong("position") + thisNote.getLong("duration")> maxSample){
