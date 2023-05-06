@@ -21,7 +21,6 @@
 package edu.cornell.gdiac.temporary;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.graphics.Texture;
@@ -43,8 +42,6 @@ public class GameplayController {
 
 	private static final float GLOBAL_VOLUME_ADJ = 0.2f;
 
-	/** Maximum amount of health */
-	final int MAX_HEALTH = 30;
 	/** Number of band member lanes */
 	int NUM_LANES;
 
@@ -59,8 +56,6 @@ public class GameplayController {
 	/** Level object, stores bandMembers */
 	public Level level;
 	/** The Y coordinate at which a note will spawn. Notes should spawn completely invisible. */
-
-
 	public float noteSpawnY;
 	/**
 	 * The y coordinate at which notes are considered "out of bounds." By the time a note reaches this y value
@@ -69,8 +64,6 @@ public class GameplayController {
 	public float noteDieY;
 	/** The calibration offset (int samples */
 	public int offset;
-	/** Base offset for leniency in samples */
-	private int baseLeniency;
 
 	/** The minimum x value margin */
 	public float LEFTBOUND;
@@ -258,7 +251,9 @@ public class GameplayController {
 				//If a note is out of bounds and it has not been hit, we need to mark it destroyed and assign
 				//a negative hit status
 				if(n.getY() < noteDieY && !n.isDestroyed()){
-//					n.setHitStatus(-2);
+					if (n.getNoteType() == Note.NoteType.HELD) {
+						System.out.println("hello + " + n.getY());
+					}
 					n.setDestroyed(true);
 					if(i == activeBandMember){
 						sb.resetCombo();
@@ -268,7 +263,6 @@ public class GameplayController {
 					//if this note is destroyed we need to increment the competency of the
 					//lane it was destroyed in by its hitstatus
 					if(i == activeBandMember || i == goalBandMember){
-//						System.out.println("hit gained: " + n.getHitStatus());
 						level.getBandMembers()[i].compUpdate(n.getHitStatus());
 					}
 				}
@@ -422,6 +416,7 @@ public class GameplayController {
 		}
 	}
 
+	// TODO: combine these
 	/**
 	 * Spawns hit particles at x, y, more hit particles with k
 	 */
@@ -492,7 +487,7 @@ public class GameplayController {
 	 */
 	public void checkHit(Note note,
 						 long currentSample,
-						 int perfectGain, int goodGain, int okgain, int offBeatLoss,
+						 int perfectGain, int goodGain, int okGain, int offBeatLoss,
 						 float spawnEffectY,
 						 boolean destroy,
 						 boolean[] hitReg,
@@ -513,7 +508,7 @@ public class GameplayController {
 				//If so, destroy the note and set a positive hit status. Also set that we
 				//have registered a hit for this line for this click. This ensures that
 				//We do not have a single hit count for two notes that are close together
-				int compGain = dist < perfectHit ? perfectGain : (dist < goodHit ? goodGain : okgain);
+				int compGain = dist < perfectHit ? perfectGain : (dist < goodHit ? goodGain : okGain);
 				note.setHolding(true);
 				note.setHitStatus(compGain);
 				spawnHitEffect(note.getHitStatus(), note.getX(), spawnEffectY);
@@ -526,10 +521,11 @@ public class GameplayController {
 				note.setDestroyed(destroy);
 				// move the note to where the indicator is
 				note.setBottomY(hitY);
-				String soundKey = nt == Note.NoteType.SWITCH ? "switchHit" : (dist < perfectHit ? "perfectHit" : (dist < goodHit ? "goodHit" : "okHit"));
+				String soundKey = nt == Note.NoteType.SWITCH ?
+						"switchHit" : (dist < perfectHit ? "perfectHit" : (dist < goodHit ? "goodHit" : "okHit"));
 				sfx.playSound(soundKey, GLOBAL_VOLUME_ADJ);
-				int pointsRecieved = dist < perfectHit ? 500 : (dist < goodHit ? 250 : 100);
-				sb.recieveHit(pointsRecieved);
+				int pointsReceived = dist < perfectHit ? 500 : (dist < goodHit ? 250 : 100);
+				sb.receiveHit(pointsReceived);
 			} else {
 				// lose some competency since you played a bit off beat
 				sb.resetCombo();
@@ -644,7 +640,8 @@ public class GameplayController {
 				}
 				// destroy if the note head has gone past (will only be true while you're holding)
 				// also reset the combo
-				if (((currentSample - this.offset) - (n.getHitSample() + n.getHoldSamples())) > baseLeniency && n.isHolding()) {
+				if (((currentSample - this.offset) - (n.getHitSample() + n.getHoldSamples())) > okHit && n.isHolding()) {
+					spawnHitEffect(n.getHitStatus(), n.getX(), n.getBottomY());
 					n.setDestroyed(true);
 					sb.resetCombo();
 				}

@@ -219,8 +219,12 @@ public class BandMember {
                 if (!n.isHolding()) {
                     n.setBottomY(bottomYCalc);
                 }
-                n.setHoldMiddleBottomY(bottomYCalc);
-                n.setY(spawnY + Math.max(0, (float)(currentSample - n.getStartSample() - n.getHoldSamples())/(n.getHitSample() - n.getStartSample()))*(hitY - spawnY));
+                if (n.isHolding() && n.getY() <= n.getBottomY()) {
+                    n.setY(n.getBottomY());
+                } else {
+                    n.setHoldMiddleBottomY(bottomYCalc);
+                    n.setY(spawnY + Math.max(0, (float) (currentSample - n.getStartSample() - n.getHoldSamples()) / (n.getHitSample() - n.getStartSample())) * (hitY - spawnY));
+                }
             }
             else{
                 n.setY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample())*(hitY - spawnY));
