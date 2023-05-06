@@ -109,6 +109,17 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         hasSelectedLevel = false;
     }
 
+    public int getSelectedLevel(){
+        return selectedLevel;
+    }
+
+    public int getSelectedDifficulty(){
+        return selectedDifficulty;
+    }
+    public Texture[] getAlbumCovers(){
+        return albumCovers;
+    }
+
     /**
      * Sets the ScreenListener for this mode
      *

@@ -7,6 +7,8 @@
         "play": "images/play_button_v1.png",
         "calibration-background": "images/backgrounds/Calibration_Background.png",
         "white-background": "images/backgrounds/white_background.png",
+        "win-background": "images/backgrounds/win_screen_bg.png",
+        "lose-background": "images/backgrounds/lose_screen_bg.png",
         "calibration-back-arrow": "images/ui/Calibration_left_arrow.png",
         "calibration-note": "images/ui/Calibration_note_normal.png",
         "calibration-note-hit": "images/ui/Calibration_note_glowing.png",
@@ -15,6 +17,9 @@
         "level-editor": "images/leveleditor_button_v1.png",
         "easy": "images/easy.png",
         "medium": "images/medium.png",
+        "x": "images/win_lose/X.png",
+        "ruin-show": "images/win_lose/ruin_show.png",
+        "result": "images/win_lose/results.png",
         "hard": "images/hard.png",
         "1": "images/album_covers/aliens_album.png",
         "2": "images/album_covers/challenger_album.png",
@@ -62,7 +67,10 @@
         "laneBackground" : "images/bandmember_lanes/laneBackground.png",
         "separationLine" : "images/bandmember_lanes/lane-separation-line.png",
         "back-splash": "images/notes/hold_back.png",
-        "front-splash": "images/notes/hold_front.png"
+        "front-splash": "images/notes/hold_front.png",
+        "win-lose-select": "images/win_lose/win_screen_select.png",
+        "win-lose-restart": "images/win_lose/win_screen_retry.png",
+        "win-lose-next": "images/win_lose/win_screen_next.png"
     },
     "fonts": {
         "lucida": {
