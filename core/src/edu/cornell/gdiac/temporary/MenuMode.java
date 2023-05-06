@@ -195,8 +195,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         Table controlTable = new Table();
         Table volumeTable = new Table();
 
-//        table.add(buttonTable).colspan(3);
-//
 //        buttonTable.pad(16);
 //        buttonTable.row().fillX().expandX();
 //        buttonTable.add(buttonA).width(cw/3.0f);
@@ -314,6 +312,17 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
         volumeTable.add(new Label("Sound FX", labelStyle)).expandX();
         volumeTable.add(fxVolumeSlider).width(800);
+
+        // WINDOW FOR KEYBINDING
+        Window.WindowStyle windowStyle = new Window.WindowStyle();
+        windowStyle.background = new TextureRegionDrawable(sliderBackground);
+        windowStyle.titleFont = blinkerRegular;
+        Dialog dialog = new Dialog("", windowStyle);
+        dialog.setPosition(0, 0);
+        dialog.add(new Label("hello", labelStyle));
+        dialog.setModal(true);
+        dialog.setMovable(false);
+//        dialog.show(stage, null);
 
         // LISTENERS
         backButton.addListener(new ChangeListener() {
