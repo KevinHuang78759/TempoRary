@@ -135,6 +135,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private Container<Table> tableContainer;
 
     // settings image assets
+    private Texture settingsHeader;
     private Texture headerLine;
     private Texture primaryBox;
     private Texture secondaryBox;
@@ -143,6 +144,8 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private Texture sliderBackground;
     private Texture sliderForeground;
     private Texture sliderButton;
+    private Texture checkboxOff;
+    private Texture checkboxOn;
 
     // fonts
     private BitmapFont blinkerBold;
@@ -189,6 +192,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         statusFrgMiddle = directory.getEntry( "slider.foreground", TextureRegion.class );
 
         // UI assets for settings
+        settingsHeader = directory.getEntry("settings-header", Texture.class);
         backButtonTexture = directory.getEntry("back-arrow", Texture.class);
         headerLine = directory.getEntry("header-line", Texture.class);
         primaryBox = directory.getEntry("primary-box", Texture.class);
@@ -198,13 +202,17 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         sliderBackground = directory.getEntry("slider-background", Texture.class);
         sliderForeground = directory.getEntry("slider-foreground", Texture.class);
         sliderButton = directory.getEntry("slider-button", Texture.class);
+        checkboxOff = directory.getEntry("checkbox", Texture.class);
+        checkboxOn = directory.getEntry("checkbox-checked", Texture.class);
 
         // add Scene2D
         addSceneElements();
     }
 
     private void addSceneElements() {
+        // MAIN TABLE IS 3 COLUMNS, EACH TABLE ADDED SHOULD SPAN 3 COLUMNS
 
+        Table headerTable = new Table();
         Table switchTable = new Table();
         Table controlTable = new Table();
         Table volumeTable = new Table();
@@ -247,27 +255,38 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         Label.LabelStyle regularStyle = new Label.LabelStyle();
         regularStyle.font = blinkerRegular;
 
+        mainTable.row().padBottom(10).expandX().fill();
+
         // back button
-        mainTable.add(backButton).left();
-        // header for the
-        mainTable.add(new Label("SETTINGS", headerStyle));
-        mainTable.add(switchTable);
+        headerTable.add(backButton).top().left();
+        // SETTINGS header
+        headerTable.add(new Image(settingsHeader)).expand();
+
+        CheckBox.CheckBoxStyle checkBoxStyle = new CheckBox.CheckBoxStyle();
+        checkBoxStyle.checkboxOff = new TextureRegionDrawable(checkboxOff);
+        checkBoxStyle.checkboxOn = new TextureRegionDrawable(checkboxOn);
+        checkBoxStyle.font = blinkerRegular;
+
+        switchTable.add(new Label("Full Screen", labelStyle)).left().padRight(30).padBottom(5);
+        switchTable.add(new CheckBox("", checkBoxStyle)).padBottom(5);
+        switchTable.row();
+        switchTable.add(new Label("Spacebar Mode", labelStyle)).left().padRight(30);
+        switchTable.add(new CheckBox("", checkBoxStyle));
+
+        headerTable.add(switchTable);
+
+        mainTable.add(headerTable).expandX().colspan(3);
 
         mainTable.row();
 
         mainTable.add(new Image(headerLine)).bottom().right().expandX();
-        mainTable.add(new Label("CLICK TO REBIND", header2Style));
+        mainTable.add(new Label("CLICK TO REBIND CONTROLS", header2Style));
         mainTable.add(new Image(headerLine)).bottom().left().expandX();
 
         mainTable.row().padLeft(16).padRight(16).expand().fill();
 
-//        controlTable.add(new Label("Notes", labelStyle)).colspan(2);
-
-        // TODO: CHANGE THIS TO LOOP AND ADD SWITCHES
-
         // controls for note hits
         controlTable.add(new Label("Note Hits", labelStyle));
-
         for (int i = 0; i < 4; i++) {
             controlTable.add(getControlWidget(i + 1, fishOutline));
         }
@@ -275,8 +294,20 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         controlTable.row();
 
         // controls for switching
-        controlTable.add(new Label("Members", labelStyle));
+        VerticalGroup membersLabel = new VerticalGroup();
+        membersLabel.addActor(new Label("Members", labelStyle));
 
+        // TODO: fix all select box styles
+//        SelectBox.SelectBoxStyle dropdownStyle = new SelectBox.SelectBoxStyle();
+//        dropdownStyle.font = blinkerRegular;
+//        dropdownStyle.listStyle = new List.ListStyle();
+//        dropdownStyle.listStyle.selection = new TextureRegionDrawable(sliderBackground);
+//        dropdownStyle.scrollStyle = new ScrollPane.ScrollPaneStyle();
+//        SelectBox<Integer> dropdown = new SelectBox<>(dropdownStyle);
+//        dropdown.setItems(2, 3, 4);
+//        membersLabel.addActor(dropdown);
+
+        controlTable.add(membersLabel);
         for (int i = 0; i < 4; i++) {
             controlTable.add(getControlWidget(i + 1, catOutline)).expandX();
         }
@@ -291,7 +322,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         mainTable.add(new Label("DRAG TO ADJUST VOLUME", header2Style));
         mainTable.add(new Image(headerLine)).bottom().left().expandX();
 
-        mainTable.row().expand().fill();
+        mainTable.row().padLeft(20).padRight(20).expand().fill();
         mainTable.add(volumeTable).expand().colspan(3);
 
         volumeTable.add(new Label("Music", labelStyle)).expandX();
@@ -330,13 +361,15 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         Label.LabelStyle regularStyle = new Label.LabelStyle();
         regularStyle.font = blinkerRegular;
 
-        Button.ButtonStyle primaryKeyStyle = new Button.ButtonStyle();
+        TextButton.TextButtonStyle primaryKeyStyle = new TextButton.TextButtonStyle();
         primaryKeyStyle.up = new TextureRegionDrawable(primaryBox);
         primaryKeyStyle.down = new TextureRegionDrawable(primaryBox);
+        primaryKeyStyle.font = blinkerRegular;
 
-        Button.ButtonStyle secondaryKeyStyle = new Button.ButtonStyle();
+        TextButton.TextButtonStyle secondaryKeyStyle = new TextButton.TextButtonStyle();
         secondaryKeyStyle.up = new TextureRegionDrawable(secondaryBox);
         secondaryKeyStyle.down = new TextureRegionDrawable(secondaryBox);
+        secondaryKeyStyle.font = blinkerRegular;
 
         tempTable.add(new Label("" + nth, regularStyle));
 
@@ -346,8 +379,9 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         tempTable.add(image);
 
         VerticalGroup stack = new VerticalGroup();
-        stack.addActor(new Button(primaryKeyStyle));
-        stack.addActor(new Button(secondaryKeyStyle));
+        stack.space(10);
+        stack.addActor(new TextButton("E", primaryKeyStyle));
+        stack.addActor(new TextButton("E", secondaryKeyStyle));
 
         tempTable.add(stack);
 

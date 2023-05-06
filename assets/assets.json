@@ -2,6 +2,7 @@
 	"textures": {
         "loading-background": "images/backgrounds/loading_screen_background_2.png",
         "settings-background": "images/backgrounds/settings_screen_bg.png",
+        "settings-header": "images/ui/settings.png",
         "back-arrow": "images/ui/left_arrow.png",
         "primary-box": "images/ui/box_1.png",
         "secondary-box": "images/ui/box_2.png",
@@ -11,6 +12,8 @@
         "slider-background": "images/ui/drag_2.png",
         "slider-foreground": "images/ui/drag_1.png",
         "slider-button": "images/ui/drag_button.png",
+        "checkbox": "images/ui/checkbox_empty.png",
+        "checkbox-checked": "images/ui/checkbox_checked.png",
         "title": "images/title_v1.png",
         "ghost-cat": "images/ghost_cat.jpg",
         "play-old": "images/play.png",
