@@ -9,7 +9,6 @@ import com.badlogic.gdx.controllers.ControllerMapping;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -43,21 +42,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private Texture levelEditorButton;
     private Texture settingsButton;
     private Texture exitButton;
-
-    private Texture backButtonTexture;
-
-    /** Left cap to the status background (grey region) */
-    private TextureRegion statusBkgLeft;
-    /** Middle portion of the status background (grey region) */
-    private TextureRegion statusBkgMiddle;
-    /** Right cap to the status background (grey region) */
-    private TextureRegion statusBkgRight;
-    /** Left cap to the status forground (colored region) */
-    private TextureRegion statusFrgLeft;
-    /** Middle portion of the status forground (colored region) */
-    private TextureRegion statusFrgMiddle;
-    /** Right cap to the status forground (colored region) */
-    private TextureRegion statusFrgRight;
 
     /* BUTTON LOCATIONS */
     /** Play button x and y coordinates represented as a vector */
@@ -136,6 +120,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
     // settings image assets
     private Texture settingsHeader;
+    private Texture backButtonTexture;
     private Texture headerLine;
     private Texture primaryBox;
     private Texture secondaryBox;
@@ -146,6 +131,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private Texture sliderButton;
     private Texture checkboxOff;
     private Texture checkboxOn;
+    private Texture selectBackground;
 
     // fonts
     private BitmapFont blinkerBold;
@@ -182,15 +168,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         levelEditorButtonCoords = new Vector2(centerX + levelEditorButton.getWidth(), canvas.getHeight()/2);
         calibrationButtonCoords = new Vector2(centerX + calibrationButton.getWidth()*2 , centerY);
 
-        // TODO: delete this
-        statusBkgLeft = directory.getEntry( "slider.backleft", TextureRegion.class );
-        statusBkgRight = directory.getEntry( "slider.backright", TextureRegion.class );
-        statusBkgMiddle = directory.getEntry( "slider.background", TextureRegion.class );
-
-        statusFrgLeft = directory.getEntry( "slider.foreleft", TextureRegion.class );
-        statusFrgRight = directory.getEntry( "slider.foreright", TextureRegion.class );
-        statusFrgMiddle = directory.getEntry( "slider.foreground", TextureRegion.class );
-
         // UI assets for settings
         settingsHeader = directory.getEntry("settings-header", Texture.class);
         backButtonTexture = directory.getEntry("back-arrow", Texture.class);
@@ -204,6 +181,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         sliderButton = directory.getEntry("slider-button", Texture.class);
         checkboxOff = directory.getEntry("checkbox", Texture.class);
         checkboxOn = directory.getEntry("checkbox-checked", Texture.class);
+        selectBackground = directory.getEntry("select-background", Texture.class);
 
         // add Scene2D
         addSceneElements();
@@ -297,15 +275,17 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         VerticalGroup membersLabel = new VerticalGroup();
         membersLabel.addActor(new Label("Members", labelStyle));
 
-        // TODO: fix all select box styles
-//        SelectBox.SelectBoxStyle dropdownStyle = new SelectBox.SelectBoxStyle();
-//        dropdownStyle.font = blinkerRegular;
-//        dropdownStyle.listStyle = new List.ListStyle();
-//        dropdownStyle.listStyle.selection = new TextureRegionDrawable(sliderBackground);
-//        dropdownStyle.scrollStyle = new ScrollPane.ScrollPaneStyle();
-//        SelectBox<Integer> dropdown = new SelectBox<>(dropdownStyle);
-//        dropdown.setItems(2, 3, 4);
-//        membersLabel.addActor(dropdown);
+        SelectBox.SelectBoxStyle dropdownStyle = new SelectBox.SelectBoxStyle();
+        dropdownStyle.font = blinkerRegular;
+        dropdownStyle.background = new TextureRegionDrawable(selectBackground);
+        dropdownStyle.listStyle = new List.ListStyle();
+        dropdownStyle.listStyle.selection = new TextureRegionDrawable(sliderBackground);
+        dropdownStyle.listStyle.font = blinkerRegular;
+        dropdownStyle.scrollStyle = new ScrollPane.ScrollPaneStyle();
+        dropdownStyle.scrollStyle.background = new TextureRegionDrawable(checkboxOn);
+        SelectBox<Integer> dropdown = new SelectBox<>(dropdownStyle);
+        dropdown.setItems(2, 3, 4);
+        membersLabel.addActor(dropdown);
 
         controlTable.add(membersLabel);
         for (int i = 0; i < 4; i++) {
