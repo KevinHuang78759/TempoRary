@@ -24,9 +24,7 @@ public class BandMember {
      */
     private Vector2 bottomLeftCorner;
 
-    /** Textures */
-    private Texture noteIndicator;
-    private Texture noteIndicatorHit;
+
     private FilmStrip characterSprite;
 
     public void setBottomLeft(Vector2 V){
@@ -284,7 +282,7 @@ public class BandMember {
     /**
      * Draw the indicator in a certain color according to if we triggered the line. Pass in an array for the active lane
      */
-    public void drawIndicator(GameCanvas canvas, boolean[] hits){
+    public void drawIndicator(GameCanvas canvas, Texture noteIndicator, Texture noteIndicatorHit, boolean[] hits){
         //If we get passed an array we must draw 4 hit bars
         float scale = NOTE_SIZE_SCALE*(width/4)/noteIndicatorHit.getWidth();
         for(int i = 0; i < numLines; ++i){
@@ -299,8 +297,8 @@ public class BandMember {
      * Draw the hit bar in a certain color according to if we triggered the line. Pass in a value for a switchable lane
      * also draw the keyBind
      */
-    public void drawIndicator(GameCanvas canvas, boolean hit){
-       float scale = NOTE_SIZE_SCALE*width/noteIndicatorHit.getWidth();
+    public void drawIndicator(GameCanvas canvas, Texture noteIndicator, Texture noteIndicatorHit, boolean hit){
+       float scale = width/noteIndicatorHit.getWidth();
         canvas.draw(hit ? noteIndicatorHit : noteIndicator, Color.WHITE, noteIndicatorHit.getWidth() / 2, noteIndicatorHit.getHeight() / 2,
                 bottomLeftCorner.x + width/2, hitY,
                 0.0f,scale, scale);
@@ -318,7 +316,7 @@ public class BandMember {
                 //Set the Y coordinate according to sampleProgression
                 //Calculate the spawning y coordinate to be high enough such that none of the note is
                 //visible
-                n.draw(canvas, NOTE_SIZE_SCALE*width, NOTE_SIZE_SCALE*width, bottomLeftCorner.y + height, bottomLeftCorner.y);
+                n.draw(canvas, width, width, bottomLeftCorner.y + height, bottomLeftCorner.y);
             }
         }
     }
@@ -429,11 +427,6 @@ public class BandMember {
         for(int i = 1; i < numLines; ++i){
             canvas.draw(lineSep, Color.WHITE, lineSep.getWidth()/2f, lineSep.getHeight()/2f, bottomLeftCorner.x + i * (width/numLines), yCoord, 0.0f, xScale, yScale);
         }
-    }
-
-    public void setIndicatorTextures(Texture texture, Texture textureHit) {
-        noteIndicator = texture;
-        noteIndicatorHit = textureHit;
     }
     private int characterFrames;
     public int getCharacterFrames(){

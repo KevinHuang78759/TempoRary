@@ -107,6 +107,9 @@ public class Level {
     private Texture hpbar;
     private Texture noteIndicator;
     private Texture noteIndicatorHit;
+
+    private Texture switchIndicator;
+    private Texture switchIndicatorHit;
     private FilmStrip violinSprite;
     private FilmStrip drummerSprite;
     private FilmStrip voiceSprite;
@@ -173,6 +176,8 @@ public class Level {
         holdEndTexture = directory.getEntry("hold-end", Texture.class);
         noteIndicator = directory.getEntry("note-indicator", Texture.class);
         noteIndicatorHit = directory.getEntry("note-indicator-hit", Texture.class);
+        switchIndicator = directory.getEntry("switch-indicator", Texture.class);
+        switchIndicatorHit = directory.getEntry("switch-indicator-hit", Texture.class);
         violinSprite = new FilmStrip(directory.getEntry("violin-cat", Texture.class), 2, 5, 6);
         voiceSprite = new FilmStrip(directory.getEntry("singer-cat", Texture.class), 2, 5, 6);
         drummerSprite = new FilmStrip(directory.getEntry("drummer-cat", Texture.class), 2, 5, 6);
@@ -238,7 +243,6 @@ public class Level {
             bandMembers[i].setMaxComp(maxCompetency);
             bandMembers[i].setLossRate(bandMemberData.getInt("competencyLossRate"));
             bandMembers[i].setHpBarFilmStrip(hpbar, 47);
-            bandMembers[i].setIndicatorTextures(noteIndicator, noteIndicatorHit);
             switch (bandMemberData.getString("instrument")) {
                 case "violin":
                     bandMembers[i].setCharacterFilmstrip(violinSprite);
@@ -454,7 +458,6 @@ public class Level {
             bandMembers[i].setMaxComp(maxCompetency);
             bandMembers[i].setLossRate(bandMemberData.getInt("competencyLossRate"));
             bandMembers[i].setHpBarFilmStrip(hpbar, 47);
-            bandMembers[i].setIndicatorTextures(noteIndicator, noteIndicatorHit);
             switch (bandMemberData.getString("instrument")) {
                 case "violin":
                     bandMembers[i].setCharacterFilmstrip(violinSprite);
@@ -523,12 +526,12 @@ public class Level {
             if(active == i || goal == i){
                 bandMembers[i].drawHitNotes(canvas);
                 bandMembers[i].drawLineSeps(canvas, sepLine);
-                bandMembers[i].drawIndicator(canvas, triggers);
+                bandMembers[i].drawIndicator(canvas, noteIndicator, noteIndicatorHit, triggers);
             }
             //Otherwise just draw the switch notes, and we only have 1 hit bar to draw
             else{
                 bandMembers[i].drawSwitchNotes(canvas);
-                bandMembers[i].drawIndicator(canvas, switches[i]);
+                bandMembers[i].drawIndicator(canvas, switchIndicator, switchIndicatorHit, switches[i]);
             }
         }
 

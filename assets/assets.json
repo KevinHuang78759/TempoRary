@@ -93,6 +93,8 @@
         "actual-star": "images/star.png",
         "note-indicator": "images/bandmember_lanes/note_indicator.png",
         "note-indicator-hit": "images/bandmember_lanes/note_indicator_hit.png",
+        "switch-indicator": "images/bandmember_lanes/switch_indicator_line.png",
+        "switch-indicator-hit": "images/bandmember_lanes/switch_indicator_line.png",
         "violin-cat": "images/cats/violin_spritesheet.png",
         "singer-cat": "images/cats/sing_spritesheet.png",
         "drummer-cat": "images/cats/drum_spritesheet.png",
