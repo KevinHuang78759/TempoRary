@@ -412,8 +412,19 @@ public class GameplayController {
 	 * In the future, if we want to change that, we will need to create an additional
 	 * backings array.
 	 */
-	public void garbageCollectNoteIndicators(){
+	public void garbageCollectNoteIndicators() {
+//		Array<Particle> backing = new Array<>();
+//		for (Particle o : noteIndicatorParticles) {
+//			if (!o.isDestroyed()) {
+//				backing.add(o);
+//			}
+//		}
+//		Array<Particle> tmp = backing;
+//		backing = noteIndicatorParticles;
+//		noteIndicatorParticles = tmp;
+//		backing.clear();
 		noteIndicatorParticles.clear();
+
 	}
 
 	/**
@@ -445,6 +456,7 @@ public class GameplayController {
 	 * Spawns hit particles at x, y, more hit particles with k
 	 */
 	public void spawnHitEffect(int k, float x, float y){
+
 		for(int i = 0; i < k; ++i){
 			for (int j = 0; j < 3; j++) {
 				Particle s = new Particle();
@@ -479,6 +491,7 @@ public class GameplayController {
 		s.getPosition().set(x, y);
 		s.setSizeConfine(HIT_IND_SIZE*scale);
 		s.getVelocity().set(0,-smallwidth/60f);
+		s.setAge(2);
 		noteIndicatorParticles.add(s);
 	}
 

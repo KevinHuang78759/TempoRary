@@ -57,6 +57,10 @@ public class Particle {
 		age = RandomController.rollInt(PARTICLE_AGE - AGE_RANGE, PARTICLE_AGE + AGE_RANGE);
 	}
 
+	public void setAge(int dieAge){
+		age = dieAge;
+	}
+
 	// ACCESSORS
 	public void setTexture(Texture texture) {
 		animator = new FilmStrip(texture,1,1,1);
@@ -225,6 +229,9 @@ public class Particle {
 	 */
 	public void update(float delta) {
 		position.add(velocity);
+		System.out.println("age"+age);
+
+		System.out.println("is destroyed"+destroyed);
 		
 		// Decrease time until death; die if it's time
 		if (--age <= 0) {
