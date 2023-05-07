@@ -52,6 +52,8 @@
         "actual-star": "images/star.png",
         "note-indicator": "images/bandmember_lanes/note_indicator.png",
         "note-indicator-hit": "images/bandmember_lanes/note_indicator_hit.png",
+        "switch-indicator": "images/bandmember_lanes/switch_indicator_line.png",
+        "switch-indicator-hit": "images/bandmember_lanes/switch_indicator_line.png",
         "violin-cat": "images/cats/violin_spritesheet.png",
         "singer-cat": "images/cats/sing_spritesheet.png",
         "drummer-cat": "images/cats/drum_spritesheet.png",
@@ -59,7 +61,8 @@
         "borderVUnit" : "images/bandmember_lanes/lane_edge_unit.png",
         "borderHUnit" : "images/bandmember_lanes/lane_edge_unit.png",
         "borderCorner" : "images/bandmember_lanes/laneCornerBL.png",
-        "laneBackground" : "images/bandmember_lanes/laneBackground.png",
+        "activeLane" : "images/bandmember_lanes/active_lane.png",
+        "inactiveLane" : "images/bandmember_lanes/inactive_lane.png",
         "separationLine" : "images/bandmember_lanes/lane-separation-line.png",
         "back-splash": "images/notes/hold_back.png",
         "front-splash": "images/notes/hold_front.png"
@@ -127,6 +130,7 @@
     "soundEffects": [
         ["tap", "sound/tap.ogg"],
         ["goodHit","sound/goodhit.ogg"],
+        ["okHit","sound/goodhit.ogg"],
         ["perfectHit","sound/perfecthit.ogg"],
         ["switch", "sound/switch.ogg"],
         ["switchHit", "sound/switchHit.ogg"],
