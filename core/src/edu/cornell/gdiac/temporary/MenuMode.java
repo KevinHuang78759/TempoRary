@@ -1,8 +1,6 @@
 package edu.cornell.gdiac.temporary;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.ControllerMapping;
@@ -12,6 +10,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -96,7 +96,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     // START SETTINGS
 
     /** */
-    private float currBandMemberCount;
+    private int currBandMemberCount;
 
     /** Values for the volumes */
     private float musicVolume;
@@ -110,6 +110,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private Stage stage;
     private Table mainTable;
     private Container<Table> tableContainer;
+    private Dialog dialog;
 
     // styles
     private Button.ButtonStyle backButtonStyle = new Button.ButtonStyle();
@@ -143,6 +144,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private Texture selectBackground;
     private Texture scrollBackground;
     private Texture listSelectBackground;
+    private Texture dialogBackground;
 
     // fonts
     private BitmapFont blinkerBold;
@@ -195,9 +197,11 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         selectBackground = directory.getEntry("select-background", Texture.class);
         scrollBackground = directory.getEntry("scroll-background", Texture.class);
         listSelectBackground =  directory.getEntry("list-select-background", Texture.class);
+        dialogBackground = directory.getEntry("dialog-background", Texture.class);
 
         // add Scene2D
         defineStyles();
+        dialog = new Dialog("", windowStyle);
         addSceneElements();
     }
 
@@ -240,7 +244,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         dropdownStyle.scrollStyle = new ScrollPane.ScrollPaneStyle();
         dropdownStyle.scrollStyle.background = new TextureRegionDrawable(scrollBackground);
 
-        windowStyle.background = new TextureRegionDrawable(sliderBackground);
+        windowStyle.background = new TextureRegionDrawable(dialogBackground);
         windowStyle.titleFont = blinkerRegular;
 
         primaryKeyStyle.up = new TextureRegionDrawable(primaryBox);
@@ -283,7 +287,9 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         headerTable.add(new Image(settingsHeader)).expand();
 
         switchTable.add(new Label("Full Screen", labelStyle)).left().padRight(30).padBottom(5);
-        switchTable.add(new CheckBox("", checkBoxStyle)).padBottom(5);
+
+        final CheckBox fullscreenCheckbox = new CheckBox("", checkBoxStyle);
+        switchTable.add(fullscreenCheckbox).padBottom(5);
         switchTable.row();
         switchTable.add(new Label("Spacebar Mode", labelStyle)).left().padRight(30);
         switchTable.add(new CheckBox("", checkBoxStyle));
@@ -312,14 +318,15 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         VerticalGroup membersLabel = new VerticalGroup();
         membersLabel.addActor(new Label("Members", labelStyle));
 
-        SelectBox<Integer> dropdown = new SelectBox<>(dropdownStyle);
+        final SelectBox<Integer> dropdown = new SelectBox<>(dropdownStyle);
         dropdown.setItems(2, 3, 4);
         dropdown.setAlignment(Align.center);
         dropdown.getList().setAlignment(Align.center);
+        dropdown.getList().setSelected(currBandMemberCount);
         membersLabel.addActor(dropdown);
 
         controlTable.add(membersLabel);
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < currBandMemberCount; i++) {
             controlTable.add(getControlWidget(i + 1, catOutline)).expandX();
         }
 
@@ -345,18 +352,57 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
         // WINDOW FOR KEYBINDING
 
-        Dialog dialog = new Dialog("", windowStyle);
-        dialog.setPosition(0, 0);
-        dialog.add(new Label("hello", labelStyle));
         dialog.setModal(true);
         dialog.setMovable(false);
-//        dialog.show(stage, null);
+        dialog.text(new Label("Press a button to rebind", labelStyle));
+        dialog.addListener(new InputListener() {
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                dialog.hide(null);
+                return false;
+            }
+
+            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+            }
+
+            public boolean keyDown(InputEvent event, int keycode) {
+                if (keycode == Input.Keys.ESCAPE) {
+                    dialog.hide(null);
+                } else {
+                    dialog.hide(null);
+                }
+                return true;
+            }
+
+            public boolean keyUp (InputEvent event, int keycode) {
+                return true;
+            }
+        });
 
         // LISTENERS
         backButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 switchToHome();
+            }
+        });
+
+        fullscreenCheckbox.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                Graphics.DisplayMode currentMode = Gdx.graphics.getDisplayMode();
+                if (!fullscreenCheckbox.isChecked()) {
+                    Gdx.graphics.setWindowedMode(currentMode.width, currentMode.height);
+                } else {
+                    Gdx.graphics.setFullscreenMode(currentMode);
+                }
+            }
+        });
+
+        dropdown.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                // TODO: fix this
+                currBandMemberCount = dropdown.getSelected();
             }
         });
 
@@ -387,8 +433,22 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
         VerticalGroup stack = new VerticalGroup();
         stack.space(10);
-        stack.addActor(new TextButton("E", primaryKeyStyle));
-        stack.addActor(new TextButton("E", secondaryKeyStyle));
+
+        final Button primaryKeyButton = new TextButton("E", primaryKeyStyle);
+        final Button secondaryKeyButton = new TextButton("E", secondaryKeyStyle);
+        stack.addActor(primaryKeyButton);
+        stack.addActor(secondaryKeyButton);
+
+        ChangeListener buttonChangeListener = new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                dialog.show(stage,null);
+                dialog.setPosition((float)Math.round((stage.getWidth() - dialog.getWidth()) / 2.0F), (float)Math.round((stage.getHeight() - dialog.getHeight()) / 2.0F));
+            }
+        };
+
+        primaryKeyButton.addListener(buttonChangeListener);
+        secondaryKeyButton.addListener(buttonChangeListener);
 
         tempTable.add(stack);
 
