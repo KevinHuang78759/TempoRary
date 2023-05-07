@@ -185,7 +185,8 @@ public class GameplayController {
 		switches = new boolean[NUM_LANES];
 		triggers = new boolean[lpl];
 		T_SwitchPhases = level.getSamplesPerBeat()/2;
-
+		activeBandMember = 0;
+		goalBandMember = 0;
 	}
 
 	public void reloadLevel(){
@@ -211,6 +212,8 @@ public class GameplayController {
 		setYVals();
 		switches = new boolean[NUM_LANES];
 		triggers = new boolean[lpl];
+		activeBandMember = 0;
+		goalBandMember = 0;
 	}
 
 	/**
@@ -341,8 +344,6 @@ public class GameplayController {
 	 */
 	public void start() {
 		setupBandMembers();
-		activeBandMember = 0;
-		goalBandMember = 0;
 		updateBandMemberCoords();
 	}
 
