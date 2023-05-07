@@ -86,6 +86,12 @@ public class GameplayController {
 
 	public Scoreboard sb;
 
+	private int nMiss;
+	private int nOk;
+	private int nGood;
+	private int nPerfect;
+
+
 	/**
 	 * Create gameplaycontroler
 	 * @param width
@@ -106,10 +112,31 @@ public class GameplayController {
 			JsonValue cur = allSounds.get(i);
 			sfx.addSound(cur.getString(0), cur.getString(1));
 		}
+		nMiss=0;
+		nOk=0;
+		nGood=0;
+		nPerfect=0;
 	}
 
 	float totalWidth;
 	float totalHeight;
+
+	public int getNMiss(){
+		return nMiss;
+	}
+
+	public int getNOk(){
+		return nOk;
+	}
+
+	public int getNGood(){
+		return nGood;
+	}
+
+	public int getNPerfect(){
+		return nPerfect;
+	}
+
 
 	public void setBounds(float width, float height){
 		//Ratio of play area width to play area height
@@ -187,6 +214,11 @@ public class GameplayController {
 		T_SwitchPhases = level.getSamplesPerBeat()/2;
 		activeBandMember = 0;
 		goalBandMember = 0;
+
+		nMiss=0;
+		nOk=0;
+		nGood=0;
+		nPerfect=0;
 	}
 
 	public void reloadLevel(){
@@ -214,6 +246,12 @@ public class GameplayController {
 		triggers = new boolean[lpl];
 		activeBandMember = 0;
 		goalBandMember = 0;
+
+
+		nMiss=0;
+		nOk=0;
+		nGood=0;
+		nPerfect=0;
 	}
 
 	/**
@@ -510,6 +548,17 @@ public class GameplayController {
 				//have registered a hit for this line for this click. This ensures that
 				//We do not have a single hit count for two notes that are close together
 				int compGain = dist < perfectHit ? perfectGain : (dist < goodHit ? goodGain : okGain);
+
+				if (dist < perfectHit){
+					nPerfect++;
+				} else{
+					if (dist < goodHit){
+						nGood++;
+					} else{
+						nOk++;
+					}
+				}
+
 				note.setHolding(true);
 				note.setHitStatus(compGain);
 				spawnHitEffect(note.getHitStatus(), note.getX(), spawnEffectY);
@@ -538,6 +587,7 @@ public class GameplayController {
 			sb.resetCombo();
 			note.setHitStatus(offBeatLoss);
 		}
+		nMiss++;
 	}
 
 

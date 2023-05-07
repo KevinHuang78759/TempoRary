@@ -123,6 +123,8 @@ public class GameMode implements Screen {
 
 	private static float BUTTON_SCALE  = 1f;
 
+	private static float ALBUM_SCALE  = 0.15f;
+
 	/// CONSTANTS
 	/** Offset for the game over message on the screen */
 	private static final float GAME_OVER_OFFSET = 40.0f;
@@ -462,7 +464,7 @@ public class GameMode implements Screen {
 
 					if (didRestartWon){
 						System.out.println("pressed restart");
-						pressState = ExitCode.TO_PLAYING;
+//						pressState = ExitCode.TO_PLAYING;
 						resetLevel();
 					}
 
@@ -684,25 +686,25 @@ public class GameMode implements Screen {
 
 		canvas.draw(perfect, Color.WHITE, perfect.getWidth()/2, perfect.getHeight()/2,
 				perfectCoords.x, perfectCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
-		long nPerfect =0;
+		long nPerfect = gameplayController.getNPerfect();
 		canvas.drawText(String.valueOf(nPerfect), lucidaFont,perfectCoords.x+combo.getWidth()/2,perfectCoords.y,
 				Color.WHITE);
 
 		canvas.draw(good, Color.WHITE, good.getWidth()/2, good.getHeight()/2,
 				goodCoords.x, goodCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
-		long nGood =10;
+		long nGood = gameplayController.getNGood();
 		canvas.drawText(String.valueOf(nGood), lucidaFont,goodCoords.x+good.getWidth()/2,goodCoords.y,
 				Color.WHITE);
 
 		canvas.draw(ok, Color.WHITE, ok.getWidth()/2, ok.getHeight()/2,
 				okCoords.x, okCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
-		long nOk =gameplayController.sb.getMaxCombo();
+		long nOk =gameplayController.getNOk();
 		canvas.drawText(String.valueOf(nOk), lucidaFont,okCoords.x+good.getWidth()/2,okCoords.y,
 				Color.WHITE);
 
 		canvas.draw(miss, Color.WHITE, miss.getWidth()/2, miss.getHeight()/2,
 				missCoords.x, missCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
-		long nMiss = 0;
+		long nMiss = gameplayController.getNOk();
 		canvas.drawText(String.valueOf(nMiss), lucidaFont,missCoords.x+good.getWidth()/2,missCoords.y,
 				Color.WHITE);
 
@@ -712,7 +714,7 @@ public class GameMode implements Screen {
 		canvas.draw(scoreIcon, Color.WHITE, scoreIcon.getWidth()/2, scoreIcon.getHeight()/2,
 				scoreIconCoords.x, scoreIconCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
 
-		canvas.drawText(String.valueOf(score), lucidaFont,scoreIconCoords.x+good.getWidth()/2,scoreIconCoords.y,
+		canvas.drawText(String.valueOf(score), lucidaFont,scoreIconCoords.x+good.getWidth(),scoreIconCoords.y,
 				Color.WHITE);
 
 		drawNextRetryLevel();
@@ -783,7 +785,7 @@ public class GameMode implements Screen {
 				levelWonCoords.x, levelWonCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
 
 		canvas.draw(levelAlbumCover,Color.WHITE, levelAlbumCover.getWidth()/2,levelAlbumCover.getHeight()/2,
-				levelAlbumCoverCoords.x,levelAlbumCoverCoords.y,0,BUTTON_SCALE*0.7f,BUTTON_SCALE*0.7f );
+				levelAlbumCoverCoords.x,levelAlbumCoverCoords.y,0,ALBUM_SCALE,ALBUM_SCALE );
 
 		canvas.draw(difficultyIcon, Color.WHITE, difficultyIcon.getWidth()/2,difficultyIcon.getHeight()/2,
 				difficultyIconCoords.x,difficultyIconCoords.y,0,WON_BUTTON_SCALE,WON_BUTTON_SCALE);
