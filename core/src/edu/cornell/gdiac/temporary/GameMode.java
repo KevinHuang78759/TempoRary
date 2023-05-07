@@ -22,7 +22,14 @@ import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.util.FilmStrip;
+import edu.cornell.gdiac.temporary.entity.Particle;
+
+
+import edu.cornell.gdiac.temporary.entity.BandMember;
+
 import edu.cornell.gdiac.util.ScreenListener;
+
+
 
 /**
  * The primary controller class for the game.
@@ -59,6 +66,8 @@ public class GameMode implements Screen {
 	private FilmStrip loseBackground;
 	/** The font for giving messages to the player */
 	private BitmapFont displayFont;
+
+	private BitmapFont lucidaFont;
 	/** Button textures */
 	private Texture resumeButton;
 	private Texture restartButton;
@@ -105,6 +114,9 @@ public class GameMode implements Screen {
 	private Texture playButton;
 	float WON_BUTTON_SCALE = 0.7f;
 
+	private Texture goBack;
+	private Vector2 goBackCoords;
+
 	private static float BUTTON_SCALE  = 0.25f;
 
 	/// CONSTANTS
@@ -124,6 +136,8 @@ public class GameMode implements Screen {
 	private static float BAR_HEIGHT_RATIO = 0.25f;
 	/** Scaling factor for when the student changes the resolution. */
 	private float scale;
+
+
 
 	/** The current state of each button */
 	private int pressState;
@@ -174,6 +188,28 @@ public class GameMode implements Screen {
 
 	private Texture cross;
 	private Vector2  crossCoords;
+
+	private Texture combo;
+	private Vector2 comboCoords;
+	private Texture perfect;
+	private Vector2 perfectCoords;
+
+	private Texture good;
+	private Vector2 goodCoords;
+
+	private Texture ok;
+	private Vector2 okCoords;
+
+	private Texture miss;
+	private Vector2 missCoords;
+
+	private Texture line;
+	private Vector2 lineCoords;
+
+	private Texture scoreIcon;
+	private Vector2 scoreIconCoords;
+
+
 
 
 	/**
@@ -268,6 +304,7 @@ public class GameMode implements Screen {
 		winBackground = new FilmStrip(directory.getEntry("win-background", Texture.class), 1, 1);
 		loseBackground = new FilmStrip(directory.getEntry("lose-background", Texture.class), 1, 1);
 		displayFont = directory.getEntry("times",BitmapFont.class);
+		lucidaFont = directory.getEntry("lucida", BitmapFont.class);
 		gameplayController.populate(directory);
 		playButton = directory.getEntry("restart-button",Texture.class);
 		playButtonCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 - 50);
@@ -291,21 +328,47 @@ public class GameMode implements Screen {
 		levelCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 - 100);
 		menuCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 - 250);
 
-		nextWonCoords = new Vector2(canvas.getWidth()*3/4+ nextButtonWon.getWidth(), canvas.getHeight()/5);
-		restartWonCoords = new Vector2(canvas.getWidth()*3/4 - nextButtonWon.getWidth(), canvas.getHeight()/5);
-		levelWonCoords = new Vector2(canvas.getWidth()*3/4, canvas.getHeight()/5);
+		nextWonCoords = new Vector2(canvas.getWidth()*3/4+ nextButtonWon.getWidth()*2, canvas.getHeight()/7);
+		restartWonCoords = new Vector2(canvas.getWidth()*3/4 - nextButtonWon.getWidth()*2, canvas.getHeight()/7);
+		levelWonCoords = new Vector2(canvas.getWidth()*3/4, canvas.getHeight()/7);
 
 		System.out.println("currSong:"+currLevel);
 		levelAlbumCover = directory.getEntry(String.valueOf(currLevel), Texture.class);
-		levelAlbumCoverCoords = new Vector2(canvas.getWidth()*3/4, canvas.getHeight()*3/5);
+		levelAlbumCoverCoords = new Vector2(canvas.getWidth()*3/4, canvas.getHeight()/2);
 
 		difficultyIcon = directory.getEntry(matchDifficulty(currDifficulty), Texture.class);
-		difficultyIconCoords = new Vector2(levelAlbumCoverCoords.x+(difficultyIcon.getWidth()*1.5f),
-				levelAlbumCoverCoords.y-(difficultyIcon.getWidth()*1.3f));
+		difficultyIconCoords = new Vector2(levelAlbumCoverCoords.x+(difficultyIcon.getWidth()*1.3f),
+				levelAlbumCoverCoords.y-(difficultyIcon.getWidth()*1.2f));
 
-		crossCoords = new Vector2(canvas.getWidth()*6/5, 0);
+		crossCoords = new Vector2(levelAlbumCoverCoords.x-cross.getWidth(), levelAlbumCoverCoords.y+cross.getHeight());
 
 		ruinShowCoords= new Vector2(canvas.getWidth()/3,canvas.getHeight()/2);
+
+		goBack = directory.getEntry("go-back", Texture.class);
+		goBackCoords=new Vector2 (goBack.getWidth(), canvas.getHeight()-goBack.getWidth());
+
+
+
+		combo = directory.getEntry("combo", Texture.class);
+		comboCoords = new Vector2((canvas.getWidth()/7f)+(combo.getWidth()/2)-2,levelAlbumCoverCoords.y+cross.getHeight());
+
+		perfect = directory.getEntry("perfect", Texture.class);
+		perfectCoords = new Vector2((canvas.getWidth()/7f)+(perfect.getWidth()/2)-2,comboCoords.y-perfect.getHeight()*2f);
+
+		good=directory.getEntry("good", Texture.class);
+		goodCoords = new Vector2((canvas.getWidth()/7f)+(good.getWidth()/2)+3,perfectCoords.y-perfect.getHeight()*2f);
+
+		ok=directory.getEntry("ok", Texture.class);
+		okCoords =new Vector2((canvas.getWidth()/7f)+(ok.getWidth()/2)+10,goodCoords.y-perfect.getHeight()*2f);
+
+		miss=directory.getEntry("miss", Texture.class);
+		missCoords=new Vector2((canvas.getWidth()/7f)+(miss.getWidth()/2)+5,okCoords.y-perfect.getHeight()*2f);
+
+		line=directory.getEntry("line", Texture.class);
+		lineCoords=new Vector2(canvas.getWidth()/3f-30,missCoords.y-perfect.getHeight()*2f);
+
+		scoreIcon = directory.getEntry("score", Texture.class);
+		scoreIconCoords=new Vector2((canvas.getWidth()/7f)+(scoreIcon.getWidth()/2)-6,lineCoords.y-perfect.getHeight()*2f);
 
 	}
 
@@ -362,6 +425,28 @@ public class GameMode implements Screen {
 			case OVER:
 				if (inputController.didReset()) {
 					resetLevel();
+				}
+				if (didInput) {
+					int screenX = (int) inputController.getMouseX();
+					int screenY = (int) inputController.getMouseY();
+					screenY = canvas.getHeight() - screenY;
+					boolean didGoBack = (isButtonPressed(screenX, screenY, goBack, goBackCoords));
+					if (didGoBack){
+						System.out.println("pressed back");
+						pressState = ExitCode.TO_MENU;
+					}
+
+					boolean didRestartWon = (isButtonPressed(screenX, screenY, restartButtonWon, restartWonCoords));
+					if (didRestartWon){
+						System.out.println("pressed restart");
+						pressState = ExitCode.TO_PLAYING;
+						resetLevel();
+					}
+					boolean didLevel = (isButtonPressed(screenX, screenY, levelButtonWon, levelWonCoords));
+					if (didLevel){
+						System.out.println("pressed level");
+						pressState = ExitCode.TO_LEVEL;
+					}
 				}
 				break;
 			case PLAY:
@@ -478,32 +563,33 @@ public class GameMode implements Screen {
 					menuCoords.x, menuCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
 		} else{
 			drawLose();
-		}
-//			//Draw everything in the current level
-//			gameplayController.level.drawEverything(canvas,
-//					gameplayController.activeBandMember, gameplayController.goalBandMember,
+			gameState = GameState.OVER;
+//		}
+			//Draw everything in the current level
+//		gameplayController.level.drawEverything(canvas,
+//		gameplayController.activeBandMember, gameplayController.goalBandMember,
 //					inputController.triggerPress, inputController.switches(),
 //					gameplayController.inBetweenWidth/5f);
 //
 //			// Draw the particles on top
-//			for (Particle o : gameplayController.getParticles()) {
+//		for (Particle o : gameplayController.getParticles()) {
 //				o.draw(canvas);
-//			}
+//		}
 //
-//			for(BandMember bandMember : gameplayController.level.getBandMembers()){
+//		for(BandMember bandMember : gameplayController.level.getBandMembers()){
 //				//Draw the band member sprite and competency bar
 //				bandMember.drawCharacterSprite(canvas);
 //				bandMember.drawHPBar(canvas);
-//			}
+//		}
 //
 //			// draw the scoreboard
-//			gameplayController.sb.displayScore(gameplayController.LEFTBOUND, gameplayController.TOPBOUND + gameplayController.inBetweenWidth/4f, canvas);
+//		gameplayController.sb.displayScore(gameplayController.LEFTBOUND, gameplayController.TOPBOUND + gameplayController.inBetweenWidth/4f, canvas);
 //
 //			// draw the countdown
-//			if (gameState == GameState.INTRO) {
+//		if (gameState == GameState.INTRO) {
 //				canvas.drawTextCentered("" + (int) waiting, displayFont, 0);
-//			}
 //		}
+		}
 		canvas.end();
 	}
 
@@ -514,32 +600,50 @@ public class GameMode implements Screen {
 	public void drawWin(){
 		canvas.drawBackground(winBackground.getTexture(),0,0);
 		displayFont.setColor(Color.WHITE);
-		canvas.drawTextCentered("Result", displayFont, GAME_OVER_OFFSET+100);
-		canvas.draw(playButton, Color.WHITE, playButton.getWidth()/2, playButton.getHeight()/2,
-				playButtonCoords.x, playButtonCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
+
 		// draw the next button; next should be
 
 		long score = gameplayController.sb.getScore();
-		canvas.drawTextCentered("SCORE " + score, displayFont, GAME_OVER_OFFSET+50);
+		canvas.draw(combo, Color.WHITE, combo.getWidth()/2, combo.getHeight()/2,
+				comboCoords.x, comboCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+		long maxCombo =gameplayController.sb.getMeter();
+//		long maxCombo =1000;
+		canvas.drawText(String.valueOf(maxCombo), lucidaFont,comboCoords.x+combo.getWidth()/2,comboCoords.y,
+				Color.WHITE);
 
-		long maxCombo =gameplayController.sb.getMaxCombo();
-		canvas.drawTextCentered("COMBO " + maxCombo, displayFont, GAME_OVER_OFFSET+50);
+		canvas.draw(perfect, Color.WHITE, perfect.getWidth()/2, perfect.getHeight()/2,
+				perfectCoords.x, perfectCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+		long nPerfect =0;
+		canvas.drawText(String.valueOf(nPerfect), lucidaFont,perfectCoords.x+combo.getWidth()/2,perfectCoords.y,
+				Color.WHITE);
 
-		long nPerfect =gameplayController.sb.getMaxCombo();
-		canvas.drawTextCentered("PERFECT " + nPerfect, displayFont, GAME_OVER_OFFSET+50);
+		canvas.draw(good, Color.WHITE, good.getWidth()/2, good.getHeight()/2,
+				goodCoords.x, goodCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+		long nGood =10;
+		canvas.drawText(String.valueOf(nGood), lucidaFont,goodCoords.x+good.getWidth()/2,goodCoords.y,
+				Color.WHITE);
 
-		long nGood =gameplayController.sb.getMaxCombo();
-		canvas.drawTextCentered("GOOD " + nGood, displayFont, GAME_OVER_OFFSET+50);
-
+		canvas.draw(ok, Color.WHITE, ok.getWidth()/2, ok.getHeight()/2,
+				okCoords.x, okCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
 		long nOk =gameplayController.sb.getMaxCombo();
-		canvas.drawTextCentered("OK " + nOk, displayFont, GAME_OVER_OFFSET+50);
+		canvas.drawText(String.valueOf(nOk), lucidaFont,okCoords.x+good.getWidth()/2,okCoords.y,
+				Color.WHITE);
 
+		canvas.draw(miss, Color.WHITE, miss.getWidth()/2, miss.getHeight()/2,
+				missCoords.x, missCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
 		long nMiss = 0;
-		canvas.drawTextCentered("MISS " + nMiss, displayFont, GAME_OVER_OFFSET+50);
+		canvas.drawText(String.valueOf(nMiss), lucidaFont,missCoords.x+good.getWidth()/2,missCoords.y,
+				Color.WHITE);
 
-		//			max combo
-		canvas.draw(levelButton, Color.WHITE, levelButton.getWidth()/2, levelButton.getHeight()/2,
-				playButtonCoords.x, playButtonCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
+		canvas.draw(line, Color.WHITE, line.getWidth()/2, line.getHeight()/2,
+				lineCoords.x, lineCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+
+		canvas.draw(scoreIcon, Color.WHITE, scoreIcon.getWidth()/2, scoreIcon.getHeight()/2,
+				scoreIconCoords.x, scoreIconCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+
+		canvas.drawText(String.valueOf(score), lucidaFont,scoreIconCoords.x+good.getWidth()/2,scoreIconCoords.y,
+				Color.WHITE);
+
 
 		drawNextRetryLevel();
 	}
@@ -553,20 +657,24 @@ public class GameMode implements Screen {
 		canvas.drawBackground(loseBackground.getTexture(),0,0);
 		canvas.draw(ruinShow, Color.WHITE,ruinShow.getWidth()/2,ruinShow.getHeight()/2,ruinShowCoords.x,ruinShowCoords.y,
 				0,WON_BUTTON_SCALE,WON_BUTTON_SCALE);
+		drawNextRetryLevel();
+
 		canvas.draw(cross, Color.WHITE, cross.getWidth()/2, cross.getHeight()/2,
 				crossCoords.x, crossCoords.y, 0, WON_BUTTON_SCALE,WON_BUTTON_SCALE);
-		drawNextRetryLevel();
 
 	}
 
 
 	/**
-	 * Draws next, retry, and level on the right of the win/lose screen
+	 * Draws next, retry, and level on the right of the win/lose screen; things in common for win/lose screen.
 	 *
 	 */
 	public void drawNextRetryLevel(){
 		canvas.draw(resultIcon,Color.WHITE,resultIcon.getWidth()/2,resultIcon.getHeight()/2,resultIconCoords.x,
 		resultIconCoords.y,0,WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+
+		canvas.draw(goBack, Color.WHITE, goBack.getWidth()/2, goBack.getHeight()/2,
+				goBackCoords.x, goBackCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
 
 		canvas.draw(nextButtonWon, Color.WHITE, nextButtonWon.getWidth()/2, nextButtonWon.getHeight()/2,
 				nextWonCoords.x, nextWonCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
@@ -576,7 +684,7 @@ public class GameMode implements Screen {
 				levelWonCoords.x, levelWonCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
 
 		canvas.draw(levelAlbumCover,Color.WHITE, levelAlbumCover.getWidth()/2,levelAlbumCover.getHeight()/2,
-				levelAlbumCoverCoords.x,levelAlbumCoverCoords.y,0,BUTTON_SCALE*0.8f,BUTTON_SCALE*0.8f );
+				levelAlbumCoverCoords.x,levelAlbumCoverCoords.y,0,BUTTON_SCALE*0.7f,BUTTON_SCALE*0.7f );
 
 		canvas.draw(difficultyIcon, Color.WHITE, difficultyIcon.getWidth()/2,difficultyIcon.getHeight()/2,
 				difficultyIconCoords.x,difficultyIconCoords.y,0,WON_BUTTON_SCALE,WON_BUTTON_SCALE);

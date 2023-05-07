@@ -19,7 +19,17 @@
         "medium": "images/medium.png",
         "x": "images/win_lose/X.png",
         "ruin-show": "images/win_lose/ruin_show.png",
-        "result": "images/win_lose/results.png",
+        "go-back": "images/win_lose/back.png",
+      "result": "images/win_lose/results.png",
+
+      "combo": "images/win_lose/combo.png",
+      "perfect": "images/win_lose/perfect.png",
+      "good": "images/win_lose/good.png",
+      "ok": "images/win_lose/ok.png",
+      "miss": "images/win_lose/miss.png",
+      "score": "images/win_lose/score.png",
+      "line": "images/win_lose/Line.png",
+
         "hard": "images/hard.png",
         "1": "images/album_covers/aliens_album.png",
         "2": "images/album_covers/challenger_album.png",
