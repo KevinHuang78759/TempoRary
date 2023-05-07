@@ -108,8 +108,6 @@ public class GameMode implements Screen {
 	private InputController inputController;
 	/** Constructs the game models and handle basic gameplay (CONTROLLER CLASS) */
 	private GameplayController gameplayController;
-	/** Asset directory for level loading */
-	private AssetDirectory assetDirectory;
 	/** Lets the intro phase know to just resume the gameplay and not to reset the level */
 	private boolean justPaused;
 
@@ -173,11 +171,7 @@ public class GameMode implements Screen {
 		JsonValue levelData = jr.parse(Gdx.files.internal(level));
 		System.out.println("level read");
 		gameplayController.loadLevel(levelData, directory);
-		if (gameplayController.NUM_LANES == 2) {
-			inputController = new InputController(new int[]{1, 2},  new int[gameplayController.lpl]);
-		} else {
-			inputController = new InputController(gameplayController.NUM_LANES, gameplayController.lpl);
-		}
+		inputController = InputController.getInstance();
 	}
 
 	public void setSoundVolume(float fxVolume, float musicVolume) {
@@ -216,13 +210,11 @@ public class GameMode implements Screen {
 	 * @param directory     Reference to the asset directory.
 	 */
 	public void populate(AssetDirectory directory) {
-		assetDirectory = directory;
 		streetLevelBackground = new FilmStrip(directory.getEntry("street-background", Texture.class), 1, 1);
 		displayFont = directory.getEntry("times",BitmapFont.class);
 		gameplayController.populate(directory);
 		playButton = directory.getEntry("restart-button",Texture.class);
 		playButtonCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 - 50);
-		inputController.setEditorProcessor();
 		resumeButton = directory.getEntry("resume-button", Texture.class);
 		restartButton = directory.getEntry("restart-button", Texture.class);
 		levelButton = directory.getEntry("level-select-button", Texture.class);
@@ -248,14 +240,14 @@ public class GameMode implements Screen {
 
 	private void update(float delta) {
 		// Process the game input
-		inputController.readInput();
+		inputController.readInput(gameplayController.NUM_LANES);
 
-		boolean didInput = inputController.didClick();
+		boolean didInput = inputController.didMouseLift();
 
 		// Test whether to reset the game.
 		switch (gameState) {
 			case INTRO:
-				for (boolean k : inputController.getTriggers()){
+				for (boolean k : inputController.didTrigger()){
 					if (k) {
 						gameplayController.sfx.playSound("tap", 0.2f);
 					}
@@ -389,7 +381,7 @@ public class GameMode implements Screen {
 			//Draw everything in the current level
 			gameplayController.level.drawEverything(canvas,
 					gameplayController.activeBandMember, gameplayController.goalBandMember,
-					inputController.triggerPress, inputController.switches(),
+					inputController.triggerPress, inputController.didSwitch(),
 					gameplayController.inBetweenWidth/5f);
 
 			// Draw the particles on top

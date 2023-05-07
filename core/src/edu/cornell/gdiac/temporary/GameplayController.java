@@ -547,7 +547,7 @@ public class GameplayController {
 	 */
 	public void handleActions(InputController input){
 		//Read in inputs
-		switches = input.switches();
+		switches = input.didSwitch();
 		triggers = input.didTrigger();
 
 		for (boolean trigger : triggers) {
