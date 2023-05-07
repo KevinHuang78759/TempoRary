@@ -30,7 +30,10 @@
       "score": "images/win_lose/score.png",
       "line": "images/win_lose/Line.png",
 
-
+      "score-a": "images/win_lose/score_A.png",
+      "score-b": "images/win_lose/score_B.png",
+      "score-c": "images/win_lose/score_C.png",
+      "score-s": "images/win_lose/score_S.png",
 
         "hard": "images/hard.png",
         "1": "images/album_covers/aliens_album.png",

@@ -214,6 +214,20 @@ public class GameMode implements Screen {
 	private Vector2 scoreIconCoords;
 	AssetDirectory directory;
 
+	private Texture scoreA;
+	private Vector2 scoreACoords;
+
+	private Texture scoreB;
+	private Vector2 scoreBCoords;
+
+	private Texture scoreC;
+	private Vector2 scoreCCoords;
+
+	private Texture scoreS;
+	private Vector2 scoreSCoords;
+
+	String levelString;
+
 
 
 
@@ -253,6 +267,8 @@ public class GameMode implements Screen {
 
 	public void readLevel(String level, AssetDirectory assetDirectory, int selectedLevel, int difficulty) {
 //		SetCurrLevel("1");
+		levelString = level;
+
 		currLevel = selectedLevel+1;
 		currDifficulty = difficulty;
 
@@ -379,6 +395,16 @@ public class GameMode implements Screen {
 
 		scoreIcon = directory.getEntry("score", Texture.class);
 		scoreIconCoords=new Vector2((canvas.getWidth()/7f)+(scoreIcon.getWidth()/2)-6,lineCoords.y-perfect.getHeight()*2f);
+
+		scoreA = directory.getEntry("score-a", Texture.class);
+		scoreB = directory.getEntry("score-b", Texture.class);
+		scoreC = directory.getEntry("score-c", Texture.class);
+		scoreS = directory.getEntry("score-s", Texture.class);
+
+		scoreACoords=new Vector2(levelAlbumCoverCoords.x-scoreA.getWidth()+10, levelAlbumCoverCoords.y+(scoreA.getHeight()));
+		scoreBCoords=new Vector2(levelAlbumCoverCoords.x-scoreA.getWidth()+10, levelAlbumCoverCoords.y+(scoreA.getHeight()));
+		scoreCCoords=new Vector2(levelAlbumCoverCoords.x-scoreA.getWidth()+10, levelAlbumCoverCoords.y+(scoreA.getHeight()));
+		scoreSCoords=new Vector2(levelAlbumCoverCoords.x-scoreA.getWidth()+10, levelAlbumCoverCoords.y+(scoreA.getHeight()));
 
 	}
 
@@ -694,8 +720,32 @@ public class GameMode implements Screen {
 		canvas.drawText(String.valueOf(score), lucidaFont,scoreIconCoords.x+good.getWidth()/2,scoreIconCoords.y,
 				Color.WHITE);
 
-
 		drawNextRetryLevel();
+
+		//draw score from JSON thresholds
+
+		JsonReader jr = new JsonReader();
+
+		JsonValue levelData = jr.parse(Gdx.files.internal(levelString));
+		long aThreshold = levelData.get("a-threshold").asLong();
+		long bThreshold = levelData.get("b-threshold").asLong();
+		long cThreshold = levelData.get("c-threshold").asLong();
+		long sThreshold = levelData.get("s-threshold").asLong();
+
+		if (score<=cThreshold){
+			canvas.draw(scoreC, Color.WHITE, scoreC.getWidth()/2, scoreC.getHeight()/2,
+					scoreCCoords.x, scoreCCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+		} else if (score<=bThreshold) {
+			canvas.draw(scoreB, Color.WHITE, scoreB.getWidth()/2, scoreB.getHeight()/2,
+					scoreBCoords.x, scoreBCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+		}else if (score<=aThreshold) {
+			canvas.draw(scoreA, Color.WHITE, scoreA.getWidth()/2, scoreA.getHeight()/2,
+					scoreACoords.x, scoreACoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+		} else if (score>=sThreshold) {
+			canvas.draw(scoreS, Color.WHITE, scoreS.getWidth()/2, scoreS.getHeight()/2,
+					scoreSCoords.x, scoreSCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+		}
+
 	}
 
 
