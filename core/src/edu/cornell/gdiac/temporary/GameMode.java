@@ -62,6 +62,8 @@ public class GameMode implements Screen {
 	private Texture restartButton;
 	private Texture levelButton;
 	private Texture menuButton;
+	private Texture pauseBackground;
+	private Texture whiteBackground;
 
 	/* BUTTON LOCATIONS */
 	/** Resume button x and y coordinates represented as a vector */
@@ -72,29 +74,17 @@ public class GameMode implements Screen {
 	private Vector2 levelCoords;
 	/** Main menu button x and y coordinates represented as a vector */
 	private Vector2 menuCoords;
+	/** Pause background x and y coordinates represented as a vector*/
+	private Vector2 pauseCoords;
 
 	/** Play button to display when done */
 	private Texture playButton;
 
-	private static float BUTTON_SCALE  = 0.25f;
+	private static float BUTTON_SCALE  = 1f;
 
 	/// CONSTANTS
 	/** Offset for the game over message on the screen */
 	private static final float GAME_OVER_OFFSET = 40.0f;
-	/** The y-coordinate of the center of the progress bar (artifact of LoadingMode) */
-	private int centerY;
-	/** The x-coordinate of the center of the progress bar (artifact of LoadingMode) */
-	private int centerX;
-	/** The height of the canvas window (necessary since sprite origin != screen origin) */
-	private int heightY;
-	/** Standard window size (for scaling) */
-	private static int STANDARD_WIDTH  = 1200;
-	/** Standard window height (for scaling) */
-	private static int STANDARD_HEIGHT = 800;
-	/** Ration of the bar height to the screen (artifact of LoadingMode) */
-	private static float BAR_HEIGHT_RATIO = 0.25f;
-	/** Scaling factor for when the student changes the resolution. */
-	private float scale;
 
 	/** The current state of each button */
 	private int pressState;
@@ -140,6 +130,7 @@ public class GameMode implements Screen {
 
 	/** the current level */
 	private int currLevel;
+	private int activeBM;
 
 	/**
 	 * Creates a new game with the given drawing context.
@@ -151,6 +142,7 @@ public class GameMode implements Screen {
 		this.canvas = canvas;
 		active = false;
 		playButton = null;
+		activeBM = 0;
 
 		// Null out all pointers, 0 out all ints, etc.
 		gameState = GameState.INTRO;
@@ -234,11 +226,14 @@ public class GameMode implements Screen {
 		resumeButton = directory.getEntry("resume-button", Texture.class);
 		restartButton = directory.getEntry("restart-button", Texture.class);
 		levelButton = directory.getEntry("level-select-button", Texture.class);
-		menuButton = directory.getEntry("quit-button", Texture.class);
-		resumeCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 + 250);
-		restartCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 + 100);
-		levelCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 - 100);
-		menuCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 - 250);
+		menuButton = directory.getEntry("menu-button", Texture.class);
+		pauseBackground = directory.getEntry("pause-background", Texture.class);
+		whiteBackground = directory.getEntry("white-background", Texture.class);
+		resumeCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 + 130);
+		restartCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 + 43);
+		levelCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 - 43);
+		menuCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 - 130);
+		pauseCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2);
 	}
 
 	/**
@@ -273,6 +268,7 @@ public class GameMode implements Screen {
 				waiting -= delta;
 				if (waiting < 1f) {
 					gameState = GameState.PLAY;
+					waiting = 4f;
 					gameplayController.level.startmusic();
 				}
 				break;
@@ -284,6 +280,7 @@ public class GameMode implements Screen {
 			case PLAY:
 				if (inputController.didExit()) {
 					gameplayController.level.pauseMusic();
+					activeBM = gameplayController.activeBandMember;
 					gameState = GameState.PAUSE;
 				} else {
 					play(delta);
@@ -353,8 +350,11 @@ public class GameMode implements Screen {
 		// in the future, we should prob move this else where.
 		// so that it is checked near the end of the game.
 		if (gameplayController.checkWinCon()){
-			gameState = GameState.WON;
-			gameplayController.level.stopMusic();
+			waiting -= delta;
+			if (waiting < 1f) {
+				gameState = GameState.WON;
+				gameplayController.level.stopMusic();
+			}
 		}
 
 		// Clean up destroyed objects
@@ -385,16 +385,6 @@ public class GameMode implements Screen {
 			canvas.drawTextCentered("Final score: " + gameplayController.sb.getScore(), displayFont, GAME_OVER_OFFSET+50);
 			canvas.draw(playButton, Color.WHITE, playButton.getWidth()/2, playButton.getHeight()/2,
 					playButtonCoords.x, playButtonCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
-		} else if (gameState == GameState.PAUSE) {
-			//Draw the buttons for the pause menu
-			canvas.draw(resumeButton, Color.WHITE, resumeButton.getWidth()/2, resumeButton.getHeight()/2,
-					resumeCoords.x, resumeCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
-			canvas.draw(restartButton, Color.WHITE, restartButton.getWidth()/2, restartButton.getHeight()/2,
-					restartCoords.x, restartCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
-			canvas.draw(levelButton, Color.WHITE, levelButton.getWidth()/2, levelButton.getHeight()/2,
-					levelCoords.x, levelCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
-			canvas.draw(menuButton, Color.WHITE, menuButton.getWidth()/2, menuButton.getHeight()/2,
-					menuCoords.x, menuCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
 		} else{
 			//Draw everything in the current level
 			gameplayController.level.drawEverything(canvas,
@@ -410,6 +400,22 @@ public class GameMode implements Screen {
 
 			// draw the scoreboard
 			gameplayController.sb.displayScore(gameplayController.LEFTBOUND, gameplayController.TOPBOUND + gameplayController.inBetweenWidth/4f, canvas);
+
+			// draw pause menu UI if paused
+			if (gameState == GameState.PAUSE) {
+				//Draw the buttons for the pause menu
+				//canvas.draw(whiteBackground, Color.LIGHT_GRAY, 0, 0, 0, 0, 0, 1f, 1f);
+				canvas.draw(pauseBackground, Color.WHITE, pauseBackground.getWidth() / 2, pauseBackground.getHeight() / 2,
+						pauseCoords.x, pauseCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
+				canvas.draw(resumeButton, Color.WHITE, resumeButton.getWidth() / 2, resumeButton.getHeight() / 2,
+						resumeCoords.x, resumeCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
+				canvas.draw(restartButton, Color.WHITE, restartButton.getWidth() / 2, restartButton.getHeight() / 2,
+						restartCoords.x, restartCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
+				canvas.draw(levelButton, Color.WHITE, levelButton.getWidth() / 2, levelButton.getHeight() / 2,
+						levelCoords.x, levelCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
+				canvas.draw(menuButton, Color.WHITE, menuButton.getWidth() / 2, menuButton.getHeight() / 2,
+						menuCoords.x, menuCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
+			}
 
 			// draw the countdown
 			if (gameState == GameState.INTRO) {
