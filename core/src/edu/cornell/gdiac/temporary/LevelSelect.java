@@ -98,7 +98,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     private boolean pressedEscape;
 
     public LevelSelect(GameCanvas canvas) {
-//        selectedJson = "";
         this.canvas  = canvas;
         selectedDifficulty= -1;
         selectedLevel = -1;
