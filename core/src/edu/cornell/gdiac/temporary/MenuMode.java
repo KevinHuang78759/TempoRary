@@ -59,18 +59,10 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     /** The height of the canvas window (necessary since sprite origin != screen origin) */
     private int heightY;
 
-    /** Height of the progress bar */
-    private static int PROGRESS_HEIGHT = 93;
     /** Height of the inner progress bar */
     private static int INNER_PROGRESS_HEIGHT = 77;
-    /** Padding on the left and right sides of the inner bar */
-    private static int X_PADDING = 8;
-    /** Width of the rounded cap on left or right */
-    private static int PROGRESS_CAP    = 42;
     /** Width of the rounded cap on the left or right for the inner bar */
     private static int INNER_PROGRESS_CAP    = 33;
-
-    private int barWidth;
 
     /** Standard window size (for scaling) */
     private static int STANDARD_WIDTH  = 1200;
@@ -117,6 +109,22 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private Stage stage;
     private Table mainTable;
     private Container<Table> tableContainer;
+
+    // styles
+    private Button.ButtonStyle backButtonStyle = new Button.ButtonStyle();
+    private Slider.SliderStyle sliderStyle = new Slider.SliderStyle();
+    private Label.LabelStyle labelStyle = new Label.LabelStyle();
+    private Label.LabelStyle headerStyle = new Label.LabelStyle();
+    private Label.LabelStyle header2Style = new Label.LabelStyle();
+    private Label.LabelStyle boldLabelStyle = new Label.LabelStyle();
+    private Label.LabelStyle regularStyle = new Label.LabelStyle();
+    private CheckBox.CheckBoxStyle checkBoxStyle = new CheckBox.CheckBoxStyle();
+    private SelectBox.SelectBoxStyle dropdownStyle = new SelectBox.SelectBoxStyle();
+    private Window.WindowStyle windowStyle = new Window.WindowStyle();
+    private TextButton.TextButtonStyle primaryKeyStyle = new TextButton.TextButtonStyle();
+    private TextButton.TextButtonStyle secondaryKeyStyle = new TextButton.TextButtonStyle();
+
+    // Scene2D UI components
 
     // settings image assets
     private Texture settingsHeader;
@@ -184,7 +192,55 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         selectBackground = directory.getEntry("select-background", Texture.class);
 
         // add Scene2D
+        defineStyles();
         addSceneElements();
+    }
+
+    private void defineStyles() {
+        backButtonStyle.up = new TextureRegionDrawable(backButtonTexture);
+        backButtonStyle.down = new TextureRegionDrawable(backButtonTexture);
+
+        sliderStyle.background = new TextureRegionDrawable(sliderBackground);
+        sliderStyle.knob = new TextureRegionDrawable(sliderButton);
+        sliderStyle.knobBefore = new TextureRegionDrawable(sliderForeground);
+
+        labelStyle = new Label.LabelStyle();
+        labelStyle.font = blinkerSemiBold;
+
+        headerStyle = new Label.LabelStyle();
+        headerStyle.font = blinkerBold;
+
+        header2Style = new Label.LabelStyle();
+        header2Style.font = blinkerBold;
+
+        boldLabelStyle = new Label.LabelStyle();
+        boldLabelStyle.font = blinkerSemiBoldSmaller;
+
+        regularStyle = new Label.LabelStyle();
+        regularStyle.font = blinkerRegular;
+
+        checkBoxStyle.checkboxOff = new TextureRegionDrawable(checkboxOff);
+        checkBoxStyle.checkboxOn = new TextureRegionDrawable(checkboxOn);
+        checkBoxStyle.font = blinkerRegular;
+
+        dropdownStyle.font = blinkerSemiBoldSmaller;
+        dropdownStyle.background = new TextureRegionDrawable(selectBackground);
+        dropdownStyle.listStyle = new List.ListStyle();
+        dropdownStyle.listStyle.selection = new TextureRegionDrawable(sliderBackground);
+        dropdownStyle.listStyle.font = blinkerSemiBoldSmaller;
+        dropdownStyle.scrollStyle = new ScrollPane.ScrollPaneStyle();
+        dropdownStyle.scrollStyle.background = new TextureRegionDrawable(checkboxOn);
+
+        windowStyle.background = new TextureRegionDrawable(sliderBackground);
+        windowStyle.titleFont = blinkerRegular;
+
+        primaryKeyStyle.up = new TextureRegionDrawable(primaryBox);
+        primaryKeyStyle.down = new TextureRegionDrawable(primaryBox);
+        primaryKeyStyle.font = blinkerRegular;
+
+        secondaryKeyStyle.up = new TextureRegionDrawable(secondaryBox);
+        secondaryKeyStyle.down = new TextureRegionDrawable(secondaryBox);
+        secondaryKeyStyle.font = blinkerRegular;
     }
 
     private void addSceneElements() {
@@ -202,37 +258,13 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
         // TODO: add calibration button
 
-        Button.ButtonStyle backButtonStyle = new Button.ButtonStyle();
-        backButtonStyle.up = new TextureRegionDrawable(backButtonTexture);
-        backButtonStyle.down = new TextureRegionDrawable(backButtonTexture);
-
         final Button backButton = new Button(backButtonStyle);
 
-        Slider.SliderStyle sliderStyle = new Slider.SliderStyle();
-        sliderStyle.background = new TextureRegionDrawable(sliderBackground);
-        sliderStyle.knob = new TextureRegionDrawable(sliderButton);
-        sliderStyle.knobBefore = new TextureRegionDrawable(sliderForeground);
-
-        final Slider musicVolumeSlider = new Slider(0f, 1f, 0.1f, false, sliderStyle);
+        final Slider musicVolumeSlider = new Slider(0f, 1f, 0.05f, false, sliderStyle);
         musicVolumeSlider.setValue(musicVolume);
 
         final Slider fxVolumeSlider = new Slider(0f, 1f, 0.05f, false, sliderStyle);
         fxVolumeSlider.setValue(soundFXVolume);
-
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = blinkerSemiBold;
-
-        Label.LabelStyle headerStyle = new Label.LabelStyle();
-        headerStyle.font = blinkerBold;
-
-        Label.LabelStyle header2Style = new Label.LabelStyle();
-        header2Style.font = blinkerBold;
-
-        Label.LabelStyle boldLabelStyle = new Label.LabelStyle();
-        boldLabelStyle.font = blinkerSemiBoldSmaller;
-
-        Label.LabelStyle regularStyle = new Label.LabelStyle();
-        regularStyle.font = blinkerRegular;
 
         mainTable.row().padBottom(10).expandX().fill();
 
@@ -240,11 +272,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         headerTable.add(backButton).top().left();
         // SETTINGS header
         headerTable.add(new Image(settingsHeader)).expand();
-
-        CheckBox.CheckBoxStyle checkBoxStyle = new CheckBox.CheckBoxStyle();
-        checkBoxStyle.checkboxOff = new TextureRegionDrawable(checkboxOff);
-        checkBoxStyle.checkboxOn = new TextureRegionDrawable(checkboxOn);
-        checkBoxStyle.font = blinkerRegular;
 
         switchTable.add(new Label("Full Screen", labelStyle)).left().padRight(30).padBottom(5);
         switchTable.add(new CheckBox("", checkBoxStyle)).padBottom(5);
@@ -276,14 +303,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         VerticalGroup membersLabel = new VerticalGroup();
         membersLabel.addActor(new Label("Members", labelStyle));
 
-        SelectBox.SelectBoxStyle dropdownStyle = new SelectBox.SelectBoxStyle();
-        dropdownStyle.font = blinkerSemiBoldSmaller;
-        dropdownStyle.background = new TextureRegionDrawable(selectBackground);
-        dropdownStyle.listStyle = new List.ListStyle();
-        dropdownStyle.listStyle.selection = new TextureRegionDrawable(sliderBackground);
-        dropdownStyle.listStyle.font = blinkerSemiBoldSmaller;
-        dropdownStyle.scrollStyle = new ScrollPane.ScrollPaneStyle();
-        dropdownStyle.scrollStyle.background = new TextureRegionDrawable(checkboxOn);
         SelectBox<Integer> dropdown = new SelectBox<>(dropdownStyle);
         dropdown.setItems(2, 3, 4);
         membersLabel.addActor(dropdown);
@@ -314,9 +333,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         volumeTable.add(fxVolumeSlider).width(800);
 
         // WINDOW FOR KEYBINDING
-        Window.WindowStyle windowStyle = new Window.WindowStyle();
-        windowStyle.background = new TextureRegionDrawable(sliderBackground);
-        windowStyle.titleFont = blinkerRegular;
+
         Dialog dialog = new Dialog("", windowStyle);
         dialog.setPosition(0, 0);
         dialog.add(new Label("hello", labelStyle));
@@ -349,22 +366,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
     private Table getControlWidget(int nth, Texture outlineImage) {
         Table tempTable = new Table();
-
-        Label.LabelStyle regularStyle = new Label.LabelStyle();
-        regularStyle.font = blinkerRegular;
-
-        Label.LabelStyle boldLabelStyle = new Label.LabelStyle();
-        boldLabelStyle.font = blinkerSemiBoldSmaller;
-
-        TextButton.TextButtonStyle primaryKeyStyle = new TextButton.TextButtonStyle();
-        primaryKeyStyle.up = new TextureRegionDrawable(primaryBox);
-        primaryKeyStyle.down = new TextureRegionDrawable(primaryBox);
-        primaryKeyStyle.font = blinkerRegular;
-
-        TextButton.TextButtonStyle secondaryKeyStyle = new TextButton.TextButtonStyle();
-        secondaryKeyStyle.up = new TextureRegionDrawable(secondaryBox);
-        secondaryKeyStyle.down = new TextureRegionDrawable(secondaryBox);
-        secondaryKeyStyle.font = blinkerRegular;
 
         tempTable.add(new Label("" + nth, boldLabelStyle));
 
@@ -543,7 +544,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         float sy = ((float)height)/STANDARD_HEIGHT;
         scale = (sx < sy ? sx : sy);
 
-        barWidth = (int)(BAR_WIDTH_RATIO*width);
         innerWidth = (int)(BAR_WIDTH_RATIO*0.97*width);
         centerY = (int)(BAR_HEIGHT_RATIO*height);
         centerX = width/2;
