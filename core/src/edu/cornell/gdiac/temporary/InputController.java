@@ -53,16 +53,11 @@ public class InputController {
 	private boolean calibrationHitLast;
 
 	// Controls for the game
+	private static IntMap<int[]> switchesBindingsMain;
+	private static IntMap<int[]> switchesBindingsAlt;
 
-	// DEFAULT PRESETS!
-	private int[] switchesBindingsMainAll;
-	private int[] switchesBindingsAltAll;
-
-	private IntMap<int[]> switchesBindingsMain;
-	private IntMap<int[]> switchesBindingsAlt;
-
-	private int[] triggerBindingsMain;
-	private int[] triggerBindingsAlt;
+	private static int[] triggerBindingsMain;
+	private static int[] triggerBindingsAlt;
 
 	//Arrays to registering switch and trigger presses
 	//We need to track their previous values so that we dont register a hold as repeated clicks
@@ -138,8 +133,6 @@ public class InputController {
 		return Gdx.input.getY();
 	}
 
-
-	// TODO: TURN THIS INTO A SINGLETON INSTANCE PLEASE
 	/** The singleton instance of the input controller */
 	private static InputController theController = null;
 
@@ -189,13 +182,14 @@ public class InputController {
 				Input.Keys.UP,
 				Input.Keys.RIGHT
 		};
-		switchesBindingsMainAll = new int[]{
+		// DEFAULT PRESETS!
+		int[] switchesBindingsMainAll = new int[]{
 				Input.Keys.E,
 				Input.Keys.R,
 				Input.Keys.U,
 				Input.Keys.I,
 		};
-		switchesBindingsAltAll = new int[]{
+		int[] switchesBindingsAltAll = new int[]{
 				Input.Keys.NUM_1,
 				Input.Keys.NUM_2,
 				Input.Keys.NUM_3,
@@ -324,16 +318,11 @@ public class InputController {
 	 * TODO: FIX THIS
 	 * @return
 	 */
-	public static String[] switchKeyBinds(int numBandMembers) {
+	public static String[] switchKeyBinds(int numBandMembers, boolean main) {
 		String[] bindings = new String[switches.length];
-//		for (int i = 0; i < switches.length; i++) {
-//			if (switchesOrder != null) {
-//				bindings[i] = Input.Keys.toString(switchesBindingsMain.get()[switchesOrder[i]]);
-//			}
-//			else {
-//				bindings[i] = Input.Keys.toString(switchesBindingsMain[i]);
-//			}
-//		}
+		for (int i = 0; i < switches.length; i++) {
+			bindings[i] = main ? Input.Keys.toString(switchesBindingsMain.get(numBandMembers)[i]) : Input.Keys.toString(switchesBindingsAlt.get(numBandMembers)[i]);
+		}
 		return bindings;
 	}
 
@@ -342,11 +331,11 @@ public class InputController {
 	 * TODO: FIX
 	 * @return
 	 */
-	public static String[] triggerKeyBinds() {
+	public static String[] triggerKeyBinds(boolean main) {
 		String[] bindings = new String[triggers.length];
-//		for (int i = 0; i < bindings.length; i++) {
-//			bindings[i] = Input.Keys.toString(triggerBindingsMain[i]);
-//		}
+		for (int i = 0; i < bindings.length; i++) {
+			bindings[i] = main ? Input.Keys.toString(triggerBindingsMain[i]) : Input.Keys.toString(triggerBindingsAlt[i]);
+		}
 		return bindings;
 	}
 
