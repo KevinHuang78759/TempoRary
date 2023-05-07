@@ -12,6 +12,10 @@
         "calibration-note-hit": "images/ui/Calibration_note_glowing.png",
         "calibration-circle-filled": "images/ui/Calibration_Ellipse_1.png",
         "calibration-circle": "images/ui/Ellipse_2.png",
+        "intro-3": "images/ui/3.png",
+        "intro-2": "images/ui/2.png",
+        "intro-1": "images/ui/1.png",
+        "intro-go": "images/ui/GO!.png",
         "level-editor": "images/leveleditor_button_v1.png",
         "easy": "images/easy.png",
         "medium": "images/medium.png",
@@ -40,6 +44,7 @@
         "concert-background": "images/backgrounds/background_temp_concert_1.png",
         "street-background": "images/backgrounds/background_temp_streets_1.png",
         "cafe-background": "images/backgrounds/background_temp_cafe_1.png",
+        "white-background": "images/backgrounds/white_background.png",
         "switch":    "images/notes/switch.png",
         "hit":      "images/notes/press.png",
         "hold-start":      "images/notes/hold_note_bottom.png",
@@ -130,6 +135,10 @@
         ["perfectHit","sound/perfecthit.ogg"],
         ["switch", "sound/switch.ogg"],
         ["switchHit", "sound/switchHit.ogg"],
-        ["meow", "sound/meow.mp3"]
+        ["meow", "sound/meow.mp3"],
+        ["one", "sound/1.mp3"],
+        ["two", "sound/2.mp3"],
+        ["three", "sound/3.mp3"],
+        ["go", "sound/go.mp3"]
     ]
 }

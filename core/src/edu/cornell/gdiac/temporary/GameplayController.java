@@ -330,16 +330,19 @@ public class GameplayController {
 	 * Steps time within the intro sequence of the level
 	 *
 	 * @param frame amount of frame we have been in the intro sequence for
-	 * @return progress of the intro sequence (40 means done)
+	 * @return progress of the intro sequence (300 means done)
 	 */
 	public int updateIntro(int frame){
-		float countTime = (1f/2f)*level.getAnimationRateFromBPM(level.getBpm());
-		//if we notice bpm is too fast, half the speed so its one count every 2 beats
-		System.out.println(1f/countTime);
-		if (countTime >= 1f/30f){
-			countTime = countTime*(1f/2f);
+		//start countdown after 2 seconds.
+		if (frame >= 120) {
+			float countTime = (1f / 1f) * level.getAnimationRateFromBPM(level.getBpm());
+			//if we notice bpm is too fast, half the speed so its one count every 2 beats
+			if (countTime >= 1f / 20f) {
+				countTime = countTime * (1f / 2f);
+			}
+			return (int) (100 * countTime * (frame - 120));
 		}
-		return (int) (10*countTime*frame);
+		else return -1;
 
 	}
 

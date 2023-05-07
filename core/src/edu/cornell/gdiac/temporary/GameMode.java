@@ -55,6 +55,23 @@ public class GameMode implements Screen {
 	// Loaded assets
 	// background images
 	private FilmStrip streetLevelBackground;
+
+	/** Textures for the intro sequence of the level*/
+	private Texture introMask;
+	private Texture introThree;
+	private Texture introTwo;
+	private Texture introOne;
+	private Texture introGo;
+
+	private SoundController<String> introOneSFX;
+	private SoundController<String> introTwoSFX;
+	private SoundController<String> introThreeSFX;
+	private SoundController<String> introGoSFX;
+
+	private boolean saidThree;
+	private boolean saidTwo;
+	private boolean saidOne;
+	private Color mask = new Color();
 	/** The font for giving messages to the player */
 	private BitmapFont displayFont;
 	/** Button textures */
@@ -132,7 +149,7 @@ public class GameMode implements Screen {
 	/** Listener that will update the player mode when we are done */
 	private ScreenListener listener;
 
-	/** used for tracking frames during intro */
+	/** used for tracking frames during intro and then again during play */
 	private int ticks = 0;
 
 	/** time in special units for measuring how far we are in the intro sequence */
@@ -154,12 +171,19 @@ public class GameMode implements Screen {
 		this.canvas = canvas;
 		active = false;
 		playButton = null;
+		saidThree = false;
+		saidTwo = false;
+		saidOne = false;
 
 		// Null out all pointers, 0 out all ints, etc.
 		gameState = GameState.INTRO;
 
 		// Create the controllers.
 		gameplayController = new GameplayController(canvas.getWidth(),canvas.getHeight());
+		introOneSFX = new SoundController<>();
+		introTwoSFX = new SoundController<>();
+		introThreeSFX = new SoundController<>();
+		introGoSFX = new SoundController<>();
 	}
 
 	/**
@@ -238,6 +262,15 @@ public class GameMode implements Screen {
 		restartButton = directory.getEntry("restart-button", Texture.class);
 		levelButton = directory.getEntry("level-select-button", Texture.class);
 		menuButton = directory.getEntry("quit-button", Texture.class);
+		introMask = directory.getEntry("white-background", Texture.class);
+		introThree = directory.getEntry("intro-3", Texture.class);
+		introTwo = directory.getEntry("intro-2", Texture.class);
+		introOne = directory.getEntry("intro-1", Texture.class);
+		introGo = directory.getEntry("intro-go", Texture.class);
+		introOneSFX.addSound("one", "sound/1.mp3");
+		introTwoSFX.addSound("two", "sound/2.mp3");
+		introThreeSFX.addSound("three", "sound/3.mp3");
+		introGoSFX.addSound("go", "sound/go.mp3");
 		resumeCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 + 250);
 		restartCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 + 100);
 		levelCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 - 100);
@@ -272,11 +305,28 @@ public class GameMode implements Screen {
 				if (ticks == 0) {
 					gameplayController.start();
 					gameplayController.update();
+					saidThree = false;
+					saidTwo = false;
+					saidOne = false;
 				}
 				introTime = gameplayController.updateIntro(ticks);
-				ticks += 1;
-				if (introTime >= 40) {
+				ticks++;
+				if (introTime >= 0 && !saidThree){
+					introThreeSFX.playSound("three", 0.3f);
+					saidThree = true;
+				}
+				if (introTime >= 100 && !saidTwo){
+					introTwoSFX.playSound("two", 0.3f);
+					saidTwo = true;
+				}
+				if (introTime >= 200 && !saidOne){
+					introOneSFX.playSound("one", 0.3f);
+					saidOne = true;
+				}
+				if (introTime >= 300) {
+					introGoSFX.playSound("go", 0.3f);
 					introTime = 0;
+					ticks = 0;
 					gameState = GameState.PLAY;
 					gameplayController.level.startmusic();
 				}
@@ -292,6 +342,7 @@ public class GameMode implements Screen {
 					gameState = GameState.PAUSE;
 				} else {
 					play(delta);
+					ticks++;
 				}
 				break;
 			case PAUSE:
@@ -423,13 +474,43 @@ public class GameMode implements Screen {
 
 			// draw the countdown
 			if (gameState == GameState.INTRO) {
-				if (introTime < 10) {
-				} else if (introTime < 20){
-					canvas.drawTextCentered("-3-", displayFont, 0);
-				} else if (introTime < 30){
-					canvas.drawTextCentered("-2-", displayFont, 0);
-				} else if (introTime < 40){
-					canvas.drawTextCentered("-1-", displayFont, 0);
+				float scl = 1f;
+				float lerpFactor = 0f;
+				if (introTime%100 <= 20){
+					//lerp from 0 to 1.25
+					lerpFactor = ((float) (introTime%100))/20f;
+					scl = 1.25f*lerpFactor;
+				} else if (introTime%100 <= 30){
+					//lerp from 1.25 to 1
+					lerpFactor = ((float) ((introTime%100)-20))/10f;
+					scl = 1.25f*(1f - lerpFactor) + 1.0f*lerpFactor;
+				} else {
+					scl = 1f;
+				}
+				if (introTime < 0) {
+					mask.set(0.0f,0.0f,0.0f,1f);
+					if (ticks >= 30 && ticks <= 90) {
+						mask.set(0.0f, 0.0f, 0.0f, (1f - ((float) ticks-30) / 60f));
+					}
+					if (ticks > 90) {
+						mask.set(0.0f, 0.0f, 0.0f, 0.0f);
+					}
+					canvas.draw(introMask, mask, canvas.getWidth()/2, canvas.getHeight()/2, 0, 0, 0, 3, 3);
+				} else if (introTime < 100){
+					canvas.draw(introThree, Color.WHITE, introThree.getWidth()/2, introThree.getHeight()/2, canvas.getWidth()/2, canvas.getHeight()/2, 0, scl, scl);
+				} else if (introTime < 200){
+					canvas.draw(introTwo, Color.WHITE, introTwo.getWidth()/2, introTwo.getHeight()/2, canvas.getWidth()/2, canvas.getHeight()/2, 0, scl, scl);
+				} else if (introTime < 300){
+					canvas.draw(introOne, Color.WHITE, introOne.getWidth()/2, introOne.getHeight()/2, canvas.getWidth()/2, canvas.getHeight()/2, 0, scl, scl);
+				}
+			}
+			if (gameState == GameState.PLAY){
+				if (ticks <= 75) {
+					mask.set(1.0f, 1.0f, 1.0f, 1f);
+					if (ticks >= 15) {
+						mask.set(1.0f, 1.0f, 1.0f, 1f - ((float) ticks - 15) / 60f);
+					}
+					canvas.draw(introGo, mask, introGo.getWidth() / 2, introGo.getHeight() / 2, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, 1.25f, 1.25f);
 				}
 			}
 		}
