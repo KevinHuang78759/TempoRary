@@ -451,7 +451,7 @@ public class GameCanvas {
 		
 		// Unlike Lab 1, we can shortcut without a master drawing method
     	spriteBatch.setColor(Color.WHITE);
-		spriteBatch.draw(image, x,  y);
+		spriteBatch.draw(image, x, y);
 	}
 
 	public void draw(Texture image, float x, float y, float width, float height) {
@@ -709,7 +709,7 @@ public class GameCanvas {
 		font.setColor(tint);
 		font.draw(spriteBatch, layout, x, y+offset);
 	}
-    
+
 
 	/**
 	 * Enumeration of supported BlendStates.

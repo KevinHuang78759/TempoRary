@@ -63,6 +63,7 @@ public class GameMode implements Screen {
 	private Texture levelButton;
 	private Texture menuButton;
 	private Texture pauseBackground;
+	private Texture whiteBackground;
 
 	/* BUTTON LOCATIONS */
 	/** Resume button x and y coordinates represented as a vector */
@@ -80,25 +81,10 @@ public class GameMode implements Screen {
 	private Texture playButton;
 
 	private static float BUTTON_SCALE  = 1f;
-	private static float PAUSE_SCALE = 1f;
 
 	/// CONSTANTS
 	/** Offset for the game over message on the screen */
 	private static final float GAME_OVER_OFFSET = 40.0f;
-	/** The y-coordinate of the center of the progress bar (artifact of LoadingMode) */
-	private int centerY;
-	/** The x-coordinate of the center of the progress bar (artifact of LoadingMode) */
-	private int centerX;
-	/** The height of the canvas window (necessary since sprite origin != screen origin) */
-	private int heightY;
-	/** Standard window size (for scaling) */
-	private static int STANDARD_WIDTH  = 1200;
-	/** Standard window height (for scaling) */
-	private static int STANDARD_HEIGHT = 800;
-	/** Ration of the bar height to the screen (artifact of LoadingMode) */
-	private static float BAR_HEIGHT_RATIO = 0.25f;
-	/** Scaling factor for when the student changes the resolution. */
-	private float scale;
 
 	/** The current state of each button */
 	private int pressState;
@@ -144,6 +130,7 @@ public class GameMode implements Screen {
 
 	/** the current level */
 	private int currLevel;
+	private int activeBM;
 
 	/**
 	 * Creates a new game with the given drawing context.
@@ -155,6 +142,7 @@ public class GameMode implements Screen {
 		this.canvas = canvas;
 		active = false;
 		playButton = null;
+		activeBM = 0;
 
 		// Null out all pointers, 0 out all ints, etc.
 		gameState = GameState.INTRO;
@@ -240,6 +228,7 @@ public class GameMode implements Screen {
 		levelButton = directory.getEntry("level-select-button", Texture.class);
 		menuButton = directory.getEntry("menu-button", Texture.class);
 		pauseBackground = directory.getEntry("pause-background", Texture.class);
+		whiteBackground = directory.getEntry("white-background", Texture.class);
 		resumeCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 + 130);
 		restartCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 + 43);
 		levelCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 - 43);
@@ -291,6 +280,7 @@ public class GameMode implements Screen {
 			case PLAY:
 				if (inputController.didExit()) {
 					gameplayController.level.pauseMusic();
+					activeBM = gameplayController.activeBandMember;
 					gameState = GameState.PAUSE;
 				} else {
 					play(delta);
@@ -419,6 +409,7 @@ public class GameMode implements Screen {
 			// draw pause menu UI if paused
 			if (gameState == GameState.PAUSE) {
 				//Draw the buttons for the pause menu
+				//canvas.draw(whiteBackground, Color.LIGHT_GRAY, 0, 0, 0, 0, 0, 1f, 1f);
 				canvas.draw(pauseBackground, Color.WHITE, pauseBackground.getWidth() / 2, pauseBackground.getHeight() / 2,
 						pauseCoords.x, pauseCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
 				canvas.draw(resumeButton, Color.WHITE, resumeButton.getWidth() / 2, resumeButton.getHeight() / 2,
