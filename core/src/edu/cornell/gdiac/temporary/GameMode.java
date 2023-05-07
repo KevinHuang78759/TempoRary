@@ -186,6 +186,10 @@ public class GameMode implements Screen {
 
 	private int currDifficulty;
 
+	/** the index of the next game */
+
+	private int nextIdx;
+
 	private Texture cross;
 	private Vector2  crossCoords;
 
@@ -208,6 +212,7 @@ public class GameMode implements Screen {
 
 	private Texture scoreIcon;
 	private Vector2 scoreIconCoords;
+	AssetDirectory directory;
 
 
 
@@ -246,13 +251,20 @@ public class GameMode implements Screen {
 		gameplayController.setOffset(offset);
 	}
 
-	public void readLevel(String level, AssetDirectory directory, int selectedLevel, int difficulty) {
-		JsonReader jr = new JsonReader();
+	public void readLevel(String level, AssetDirectory assetDirectory, int selectedLevel, int difficulty) {
 //		SetCurrLevel("1");
 		currLevel = selectedLevel+1;
 		currDifficulty = difficulty;
-		JsonValue levelData = jr.parse(Gdx.files.internal(level));
 
+		directory = assetDirectory;
+
+		int start = level.indexOf("/");
+		int end = level.indexOf(".");
+
+		JsonReader jr = new JsonReader();
+		nextIdx = Integer.parseInt(level.substring(start + 1, end))+3;
+
+		JsonValue levelData = jr.parse(Gdx.files.internal(level));
 
 //		System.out.println("level read");
 		gameplayController.loadLevel(levelData, directory);
@@ -340,14 +352,12 @@ public class GameMode implements Screen {
 		difficultyIconCoords = new Vector2(levelAlbumCoverCoords.x+(difficultyIcon.getWidth()*1.3f),
 				levelAlbumCoverCoords.y-(difficultyIcon.getWidth()*1.2f));
 
-		crossCoords = new Vector2(levelAlbumCoverCoords.x-cross.getWidth(), levelAlbumCoverCoords.y+cross.getHeight());
+		crossCoords = new Vector2(levelAlbumCoverCoords.x-cross.getWidth()+10, levelAlbumCoverCoords.y+(cross.getHeight())-20);
 
 		ruinShowCoords= new Vector2(canvas.getWidth()/3,canvas.getHeight()/2);
 
 		goBack = directory.getEntry("go-back", Texture.class);
 		goBackCoords=new Vector2 (goBack.getWidth(), canvas.getHeight()-goBack.getWidth());
-
-
 
 		combo = directory.getEntry("combo", Texture.class);
 		comboCoords = new Vector2((canvas.getWidth()/7f)+(combo.getWidth()/2)-2,levelAlbumCoverCoords.y+cross.getHeight());
@@ -430,12 +440,12 @@ public class GameMode implements Screen {
 					boolean didGoBack = (isButtonPressed(screenX, screenY, goBack, goBackCoords,WON_BUTTON_SCALE));
 					boolean didRestartWon = (isButtonPressed(screenX, screenY, restartButtonWon, restartWonCoords,WON_BUTTON_SCALE));
 					boolean didLevel = (isButtonPressed(screenX, screenY, levelButtonWon, levelWonCoords,WON_BUTTON_SCALE));
+					boolean didNext = (isButtonPressed(screenX, screenY, nextButtonWon, nextWonCoords,WON_BUTTON_SCALE));
 
 					if (didGoBack){
 						System.out.println("pressed back");
 						pressState = ExitCode.TO_MENU;
 					}
-
 
 					if (didRestartWon){
 						System.out.println("pressed restart");
@@ -444,10 +454,12 @@ public class GameMode implements Screen {
 					}
 
 					if (didLevel){
-
 						System.out.println("pressed level");
 						pressState = ExitCode.TO_LEVEL;
+					}
 
+					if (didNext){
+						goNextLevel();
 					}
 
 				}
@@ -493,8 +505,8 @@ public class GameMode implements Screen {
 					boolean didGoBack = (isButtonPressed(screenX, screenY, goBack, goBackCoords,WON_BUTTON_SCALE));
 					boolean didRestartWon = (isButtonPressed(screenX, screenY, restartButtonWon, restartWonCoords,WON_BUTTON_SCALE));
 					boolean didLevel = (isButtonPressed(screenX, screenY, levelButtonWon, levelWonCoords,WON_BUTTON_SCALE));
+					boolean didNext = (isButtonPressed(screenX, screenY, nextButtonWon, nextWonCoords,WON_BUTTON_SCALE));
 					if (didGoBack){
-						System.out.println("pressed back");
 						pressState = ExitCode.TO_MENU;
 					}
 					if (didRestartWon){
@@ -505,7 +517,10 @@ public class GameMode implements Screen {
 					if (didLevel){
 						System.out.println("pressed level");
 						pressState = ExitCode.TO_LEVEL;
+					}
+					if (didNext){
 
+						goNextLevel();
 					}
 				}
 
@@ -513,6 +528,23 @@ public class GameMode implements Screen {
 			default:
 				break;
 		}
+	}
+
+
+	private void goNextLevel(){
+		System.out.println("next pressed:" + nextIdx);
+//						JsonReader jr = new JsonReader();
+
+//						JsonValue levelData = jr.parse(Gdx.files.internal("levels/"+nextIdx+".json"));
+
+//						gameplayController.loadLevel(levelData, directory);
+//						if (gameplayController.NUM_LANES == 2) {
+//							inputController = new InputController(new int[]{1, 2},  new int[gameplayController.lpl]);
+//						} else {
+//							inputController = new InputController(gameplayController.NUM_LANES, gameplayController.lpl);
+//						}
+		LevelSelect.setSelectedJson("levels/"+nextIdx+".json");
+		pressState = ExitCode.TO_PLAYING;
 	}
 
 	/**
@@ -694,8 +726,12 @@ public class GameMode implements Screen {
 		canvas.draw(goBack, Color.WHITE, goBack.getWidth()/2, goBack.getHeight()/2,
 				goBackCoords.x, goBackCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
 
-		canvas.draw(nextButtonWon, Color.WHITE, nextButtonWon.getWidth()/2, nextButtonWon.getHeight()/2,
-				nextWonCoords.x, nextWonCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+
+		if (nextIdx<=9){
+			canvas.draw(nextButtonWon, Color.WHITE, nextButtonWon.getWidth()/2, nextButtonWon.getHeight()/2,
+					nextWonCoords.x, nextWonCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+		}
+
 		canvas.draw(restartButtonWon, Color.WHITE, restartButtonWon.getWidth()/2, restartButtonWon.getHeight()/2,
 				restartWonCoords.x, restartWonCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
 		canvas.draw(levelButtonWon, Color.WHITE, levelButtonWon.getWidth()/2, levelButtonWon.getHeight()/2,
@@ -717,7 +753,7 @@ public class GameMode implements Screen {
 	 * @return true if the player is ready to go
 	 */
 	public boolean isReady() {
-		return pressState == ExitCode.TO_MENU || pressState == ExitCode.TO_LEVEL;
+		return pressState == ExitCode.TO_MENU || pressState == ExitCode.TO_LEVEL || pressState == ExitCode.TO_PLAYING;
 	}
 
 
