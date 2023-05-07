@@ -15,6 +15,8 @@
         "checkbox": "images/ui/checkbox_empty.png",
         "checkbox-checked": "images/ui/checkbox_checked.png",
         "select-background": "images/ui/dropbar_fold_1.png",
+        "scroll-background": "images/ui/dropdown_background.png",
+        "list-select-background": "images/ui/dropdown_blue.png",
         "title": "images/title_v1.png",
         "ghost-cat": "images/ghost_cat.jpg",
         "play-old": "images/play.png",

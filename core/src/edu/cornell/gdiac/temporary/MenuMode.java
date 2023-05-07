@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.util.ScreenListener;
 
@@ -140,6 +141,8 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private Texture checkboxOff;
     private Texture checkboxOn;
     private Texture selectBackground;
+    private Texture scrollBackground;
+    private Texture listSelectBackground;
 
     // fonts
     private BitmapFont blinkerBold;
@@ -190,6 +193,8 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         checkboxOff = directory.getEntry("checkbox", Texture.class);
         checkboxOn = directory.getEntry("checkbox-checked", Texture.class);
         selectBackground = directory.getEntry("select-background", Texture.class);
+        scrollBackground = directory.getEntry("scroll-background", Texture.class);
+        listSelectBackground =  directory.getEntry("list-select-background", Texture.class);
 
         // add Scene2D
         defineStyles();
@@ -224,12 +229,16 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         checkBoxStyle.font = blinkerRegular;
 
         dropdownStyle.font = blinkerSemiBoldSmaller;
+        dropdownStyle.fontColor = Color.GREEN;
+        dropdownStyle.overFontColor = Color.WHITE;
         dropdownStyle.background = new TextureRegionDrawable(selectBackground);
         dropdownStyle.listStyle = new List.ListStyle();
-        dropdownStyle.listStyle.selection = new TextureRegionDrawable(sliderBackground);
+        dropdownStyle.listStyle.selection = new TextureRegionDrawable(listSelectBackground);
         dropdownStyle.listStyle.font = blinkerSemiBoldSmaller;
+        dropdownStyle.listStyle.fontColorUnselected = Color.GREEN;
+        dropdownStyle.listStyle.fontColorSelected = Color.WHITE;
         dropdownStyle.scrollStyle = new ScrollPane.ScrollPaneStyle();
-        dropdownStyle.scrollStyle.background = new TextureRegionDrawable(checkboxOn);
+        dropdownStyle.scrollStyle.background = new TextureRegionDrawable(scrollBackground);
 
         windowStyle.background = new TextureRegionDrawable(sliderBackground);
         windowStyle.titleFont = blinkerRegular;
@@ -305,6 +314,8 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
         SelectBox<Integer> dropdown = new SelectBox<>(dropdownStyle);
         dropdown.setItems(2, 3, 4);
+        dropdown.setAlignment(Align.center);
+        dropdown.getList().setAlignment(Align.center);
         membersLabel.addActor(dropdown);
 
         controlTable.add(membersLabel);
