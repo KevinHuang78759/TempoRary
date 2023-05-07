@@ -732,18 +732,18 @@ public class GameMode implements Screen {
 		long cThreshold = levelData.get("c-threshold").asLong();
 		long sThreshold = levelData.get("s-threshold").asLong();
 
-		if (score<=cThreshold){
-			canvas.draw(scoreC, Color.WHITE, scoreC.getWidth()/2, scoreC.getHeight()/2,
-					scoreCCoords.x, scoreCCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
-		} else if (score<=bThreshold) {
-			canvas.draw(scoreB, Color.WHITE, scoreB.getWidth()/2, scoreB.getHeight()/2,
-					scoreBCoords.x, scoreBCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
-		}else if (score<=aThreshold) {
-			canvas.draw(scoreA, Color.WHITE, scoreA.getWidth()/2, scoreA.getHeight()/2,
-					scoreACoords.x, scoreACoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
-		} else if (score>=sThreshold) {
+		if (score>=sThreshold){
 			canvas.draw(scoreS, Color.WHITE, scoreS.getWidth()/2, scoreS.getHeight()/2,
 					scoreSCoords.x, scoreSCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+		} else if (score>=aThreshold) {
+			canvas.draw(scoreA, Color.WHITE, scoreA.getWidth()/2, scoreA.getHeight()/2,
+					scoreACoords.x, scoreACoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+		}else if (score>=bThreshold) {
+			canvas.draw(scoreB, Color.WHITE, scoreB.getWidth()/2, scoreB.getHeight()/2,
+					scoreBCoords.x, scoreBCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+		} else if (score>=cThreshold) {
+			canvas.draw(scoreC, Color.WHITE, scoreC.getWidth()/2, scoreC.getHeight()/2,
+					scoreCCoords.x, scoreCCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
 		}
 
 	}
