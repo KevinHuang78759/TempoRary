@@ -423,30 +423,36 @@ public class GameMode implements Screen {
 				}
 				break;
 			case OVER:
-				if (inputController.didReset()) {
-					resetLevel();
-				}
 				if (didInput) {
 					int screenX = (int) inputController.getMouseX();
 					int screenY = (int) inputController.getMouseY();
 					screenY = canvas.getHeight() - screenY;
-					boolean didGoBack = (isButtonPressed(screenX, screenY, goBack, goBackCoords));
+					boolean didGoBack = (isButtonPressed(screenX, screenY, goBack, goBackCoords,WON_BUTTON_SCALE));
+					boolean didRestartWon = (isButtonPressed(screenX, screenY, restartButtonWon, restartWonCoords,WON_BUTTON_SCALE));
+					boolean didLevel = (isButtonPressed(screenX, screenY, levelButtonWon, levelWonCoords,WON_BUTTON_SCALE));
+
 					if (didGoBack){
 						System.out.println("pressed back");
 						pressState = ExitCode.TO_MENU;
 					}
 
-					boolean didRestartWon = (isButtonPressed(screenX, screenY, restartButtonWon, restartWonCoords));
+
 					if (didRestartWon){
 						System.out.println("pressed restart");
 						pressState = ExitCode.TO_PLAYING;
 						resetLevel();
 					}
-					boolean didLevel = (isButtonPressed(screenX, screenY, levelButtonWon, levelWonCoords));
+
 					if (didLevel){
+
 						System.out.println("pressed level");
 						pressState = ExitCode.TO_LEVEL;
+
 					}
+
+				}
+				if (inputController.didReset()) {
+					resetLevel();
 				}
 				break;
 			case PLAY:
@@ -480,16 +486,28 @@ public class GameMode implements Screen {
 				}
 				break;
 			case WON:
-				int screenX = (int) inputController.getMouseX();
-				int screenY = (int) inputController.getMouseY();
-				screenY = canvas.getHeight() - screenY;
-				if (didInput && isButtonPressed(screenX, screenY, playButton, playButtonCoords)) {
-					resetLevel();
-				}
+				if (didInput) {
+					int screenX = (int) inputController.getMouseX();
+					int screenY = (int) inputController.getMouseY();
+					screenY = canvas.getHeight() - screenY;
+					boolean didGoBack = (isButtonPressed(screenX, screenY, goBack, goBackCoords,WON_BUTTON_SCALE));
+					boolean didRestartWon = (isButtonPressed(screenX, screenY, restartButtonWon, restartWonCoords,WON_BUTTON_SCALE));
+					boolean didLevel = (isButtonPressed(screenX, screenY, levelButtonWon, levelWonCoords,WON_BUTTON_SCALE));
+					if (didGoBack){
+						System.out.println("pressed back");
+						pressState = ExitCode.TO_MENU;
+					}
+					if (didRestartWon){
+						System.out.println("pressed restart");
+						pressState = ExitCode.TO_PLAYING;
+						resetLevel();
+					}
+					if (didLevel){
+						System.out.println("pressed level");
+						pressState = ExitCode.TO_LEVEL;
 
-				boolean didRestartWon = (isButtonPressed(screenX, screenY, resumeButton, resumeCoords));
-				boolean didLevelWon = (isButtonPressed(screenX, screenY, levelButton, levelCoords));
-				boolean didMenuWon = (isButtonPressed(screenX, screenY, menuButton, menuCoords));
+					}
+				}
 
 				break;
 			default:
@@ -562,33 +580,33 @@ public class GameMode implements Screen {
 			canvas.draw(menuButton, Color.WHITE, menuButton.getWidth()/2, menuButton.getHeight()/2,
 					menuCoords.x, menuCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
 		} else{
-			drawLose();
-			gameState = GameState.OVER;
+//			drawLose();
+//			gameState = GameState.OVER;
 //		}
-			//Draw everything in the current level
-//		gameplayController.level.drawEverything(canvas,
-//		gameplayController.activeBandMember, gameplayController.goalBandMember,
-//					inputController.triggerPress, inputController.switches(),
-//					gameplayController.inBetweenWidth/5f);
-//
-//			// Draw the particles on top
-//		for (Particle o : gameplayController.getParticles()) {
-//				o.draw(canvas);
-//		}
-//
-//		for(BandMember bandMember : gameplayController.level.getBandMembers()){
-//				//Draw the band member sprite and competency bar
-//				bandMember.drawCharacterSprite(canvas);
-//				bandMember.drawHPBar(canvas);
-//		}
-//
-//			// draw the scoreboard
-//		gameplayController.sb.displayScore(gameplayController.LEFTBOUND, gameplayController.TOPBOUND + gameplayController.inBetweenWidth/4f, canvas);
-//
-//			// draw the countdown
-//		if (gameState == GameState.INTRO) {
-//				canvas.drawTextCentered("" + (int) waiting, displayFont, 0);
-//		}
+//			Draw everything in the current level
+		gameplayController.level.drawEverything(canvas,
+		gameplayController.activeBandMember, gameplayController.goalBandMember,
+					inputController.triggerPress, inputController.switches(),
+					gameplayController.inBetweenWidth/5f);
+
+			// Draw the particles on top
+		for (Particle o : gameplayController.getParticles()) {
+				o.draw(canvas);
+		}
+
+		for(BandMember bandMember : gameplayController.level.getBandMembers()){
+				//Draw the band member sprite and competency bar
+				bandMember.drawCharacterSprite(canvas);
+				bandMember.drawHPBar(canvas);
+		}
+
+			// draw the scoreboard
+		gameplayController.sb.displayScore(gameplayController.LEFTBOUND, gameplayController.TOPBOUND + gameplayController.inBetweenWidth/4f, canvas);
+
+			// draw the countdown
+		if (gameState == GameState.INTRO) {
+				canvas.drawTextCentered("" + (int) waiting, displayFont, 0);
+		}
 		}
 		canvas.end();
 	}
@@ -606,7 +624,7 @@ public class GameMode implements Screen {
 		long score = gameplayController.sb.getScore();
 		canvas.draw(combo, Color.WHITE, combo.getWidth()/2, combo.getHeight()/2,
 				comboCoords.x, comboCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
-		long maxCombo =gameplayController.sb.getMeter();
+		long maxCombo =gameplayController.sb.getMaxCombo();
 //		long maxCombo =1000;
 		canvas.drawText(String.valueOf(maxCombo), lucidaFont,comboCoords.x+combo.getWidth()/2,comboCoords.y,
 				Color.WHITE);
@@ -722,6 +740,30 @@ public class GameMode implements Screen {
 
 		// get half the y length of the button portrayed
 		float yRadius = BUTTON_SCALE * buttonTexture.getHeight()/2.0f;
+		boolean yInBounds = buttonCoords.y - yRadius <= screenY && buttonCoords.y + yRadius >= screenY;
+		return xInBounds && yInBounds;
+	}
+
+
+	/**
+	 * Checks to see if the location clicked at `screenX`, `screenY` are within the bounds of the given button
+	 * `buttonTexture` and `buttonCoords` should refer to the appropriate button parameters
+	 *
+	 * @param screenX the x-coordinate of the mouse on the screen
+	 * @param screenY the y-coordinate of the mouse on the screen
+	 * @param buttonTexture the specified button texture
+	 * @param buttonCoords the specified button coordinates as a Vector2 object
+	 * @return whether the button specified was pressed
+	 */
+	public boolean isButtonPressed(int screenX, int screenY, Texture buttonTexture, Vector2 buttonCoords, float scale) {
+		// buttons are rectangles
+		// buttonCoords hold the center of the rectangle, buttonTexture has the width and height
+		// get half the x length of the button portrayed
+		float xRadius = scale * buttonTexture.getWidth()/2.0f;
+		boolean xInBounds = buttonCoords.x - xRadius <= screenX && buttonCoords.x + xRadius >= screenX;
+
+		// get half the y length of the button portrayed
+		float yRadius = scale * buttonTexture.getHeight()/2.0f;
 		boolean yInBounds = buttonCoords.y - yRadius <= screenY && buttonCoords.y + yRadius >= screenY;
 		return xInBounds && yInBounds;
 	}
