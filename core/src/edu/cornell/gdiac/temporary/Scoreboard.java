@@ -81,7 +81,7 @@ public class Scoreboard {
         level = 0;
     }
 
-    public void recieveHit(int hitVal){
+    public void receiveHit(int hitVal){
         ++meter;
         if(level < maxLevel-1 && meter > levelMeters[level]){
             ++level;
