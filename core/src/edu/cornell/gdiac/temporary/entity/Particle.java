@@ -260,7 +260,11 @@ public class Particle {
 	 */
 	public void draw(GameCanvas canvas) {
 		float scale = Math.min(sizeConfine/animator.getRegionWidth(), sizeConfine/animator.getRegionHeight());
-		canvas.draw(animator, Color.WHITE, origin.x, origin.y, position.x, position.y, angle, scale, scale);
+		if (age>0){
+			canvas.draw(animator, Color.WHITE, origin.x, origin.y, position.x, position.y, angle, scale, scale);
+
+		}
+
 	}
 	
 }

@@ -435,18 +435,17 @@ public class GameplayController {
 	 * backings array.
 	 */
 	public void garbageCollectNoteIndicators() {
-		Array<Particle> backing = new Array<>();
-		for (Particle o : noteIndicatorParticles) {
-			if (!o.isDestroyed()) {
-				backing.add(o);
-			}
-		}
-		Array<Particle> tmp = backing;
-		backing = noteIndicatorParticles;
-		noteIndicatorParticles = tmp;
-		backing.clear();
-//		noteIndicatorParticles.clear();
-
+//		Array<Particle> backing = new Array<>();
+//		for (Particle o : noteIndicatorParticles) {
+//			if (!o.isDestroyed()) {
+//				backing.add(o);
+//			}
+//		}
+//		Array<Particle> tmp = backing;
+//		backing = noteIndicatorParticles;
+//		noteIndicatorParticles = tmp;
+//		backing.clear();
+		noteIndicatorParticles.clear();
 	}
 
 	/**
@@ -511,7 +510,7 @@ public class GameplayController {
 		s.getPosition().set(x, y);
 		s.setSizeConfine(HIT_IND_SIZE*scale);
 		s.getVelocity().set(0,-smallwidth/60f);
-		s.setAge(5);
+		s.setAge(10);
 		noteIndicatorParticles.add(s);
 	}
 
@@ -579,9 +578,8 @@ public class GameplayController {
 
 				float hitStatusX = LEFTBOUND+((activeBandMember+1)*(HIT_IND_SIZE/3))+((activeBandMember+1) * smallwidth);
 				float hitStatusY = BOTTOMBOUND-(HIT_IND_SIZE/1.6f);
-
 				if (dist < perfectHit){
-					spawnHitIndicator(hitStatusX,hitStatusY,perfectHitIndicator,1);
+					spawnHitIndicator(hitStatusX,hitStatusY,perfectHitIndicator,1.3f);
 				} else{
 					if (dist < goodHit){
 						spawnHitIndicator(hitStatusX,hitStatusY,goodHitIndicator,1);
@@ -589,9 +587,6 @@ public class GameplayController {
 						spawnHitIndicator(hitStatusX,hitStatusY,okIndicator,1);
 					}
 				}
-
-
-
 
 				note.setHolding(true);
 				note.setHitStatus(compGain);
