@@ -92,14 +92,6 @@ public class GameMode implements Screen {
 	/* PRESS STATES **/
 	/** Initial button state */
 	private static final int NO_BUTTON_PRESSED = 0;
-	/** Pressed down button state for the resume button */
-	private static final int RESUME_PRESSED = 101;
-	/** Pressed down button state for the restart button */
-	private static final int RESTART_PRESSED = 102;
-	/** Pressed down button state for the level select button */
-	private static final int LEVEL_PRESSED = 103;
-	/** Pressed down button state for the main menu button */
-	private static final int MENU_PRESSED = 104;
 
 	/** Reference to drawing context to display graphics (VIEW CLASS) */
 	private GameCanvas canvas;
@@ -108,8 +100,6 @@ public class GameMode implements Screen {
 	private InputController inputController;
 	/** Constructs the game models and handle basic gameplay (CONTROLLER CLASS) */
 	private GameplayController gameplayController;
-	/** Lets the intro phase know to just resume the gameplay and not to reset the level */
-	private boolean justPaused;
 
 	/** Variable to track the game state (SIMPLE FIELDS) */
 	private GameState gameState;
@@ -276,7 +266,6 @@ public class GameMode implements Screen {
 						pressState = ExitCode.TO_MENU;
 					} else if (didResume) {
 						waiting = 4f;
-						justPaused = true;
 						gameState = GameState.INTRO;
 					} else if (didRestart) {
 						resetLevel();
