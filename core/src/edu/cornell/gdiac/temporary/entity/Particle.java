@@ -229,9 +229,9 @@ public class Particle {
 	 */
 	public void update(float delta) {
 		position.add(velocity);
-		System.out.println("age"+age);
-
-		System.out.println("is destroyed"+destroyed);
+//		System.out.println("age"+age);
+//
+//		System.out.println("is destroyed"+destroyed);
 		
 		// Decrease time until death; die if it's time
 		if (--age <= 0) {

@@ -52,6 +52,8 @@ public class GameplayController {
 	private Texture perfectHitIndicator;
 	private Texture goodHitIndicator;
 
+	private Texture okIndicator;
+
 	private Texture missIndicator;
 
 
@@ -272,7 +274,6 @@ public class GameplayController {
 				//a negative hit status
 				if(n.getY() < noteDieY && !n.isDestroyed()){
 					if (n.getNoteType() == Note.NoteType.HELD) {
-						System.out.println("hello + " + n.getY());
 					}
 					n.setDestroyed(true);
 					if(i == activeBandMember){
@@ -347,6 +348,7 @@ public class GameplayController {
 
 		perfectHitIndicator = directory.getEntry("perfect-hit", Texture.class);
 		goodHitIndicator = directory.getEntry("good-hit", Texture.class);
+		okIndicator = directory.getEntry("ok-hit", Texture.class);
 		missIndicator = directory.getEntry("miss-hit", Texture.class);
 
 	}
@@ -385,6 +387,9 @@ public class GameplayController {
 		level.updateBandMemberNotes(noteSpawnY);
 		//Update the objects of this class (mostly stars)
 		for(Particle o : particles){
+			o.update(0f);
+		}
+		for (Particle o: noteIndicatorParticles){
 			o.update(0f);
 		}
 
@@ -430,17 +435,17 @@ public class GameplayController {
 	 * backings array.
 	 */
 	public void garbageCollectNoteIndicators() {
-//		Array<Particle> backing = new Array<>();
-//		for (Particle o : noteIndicatorParticles) {
-//			if (!o.isDestroyed()) {
-//				backing.add(o);
-//			}
-//		}
-//		Array<Particle> tmp = backing;
-//		backing = noteIndicatorParticles;
-//		noteIndicatorParticles = tmp;
-//		backing.clear();
-		noteIndicatorParticles.clear();
+		Array<Particle> backing = new Array<>();
+		for (Particle o : noteIndicatorParticles) {
+			if (!o.isDestroyed()) {
+				backing.add(o);
+			}
+		}
+		Array<Particle> tmp = backing;
+		backing = noteIndicatorParticles;
+		noteIndicatorParticles = tmp;
+		backing.clear();
+//		noteIndicatorParticles.clear();
 
 	}
 
@@ -506,7 +511,7 @@ public class GameplayController {
 		s.getPosition().set(x, y);
 		s.setSizeConfine(HIT_IND_SIZE*scale);
 		s.getVelocity().set(0,-smallwidth/60f);
-		s.setAge(2);
+		s.setAge(5);
 		noteIndicatorParticles.add(s);
 	}
 
@@ -571,6 +576,23 @@ public class GameplayController {
 				//have registered a hit for this line for this click. This ensures that
 				//We do not have a single hit count for two notes that are close together
 				int compGain = dist < perfectHit ? perfectGain : (dist < goodHit ? goodGain : okGain);
+
+				float hitStatusX = LEFTBOUND+((activeBandMember+1)*(HIT_IND_SIZE/3))+((activeBandMember+1) * smallwidth);
+				float hitStatusY = BOTTOMBOUND-(HIT_IND_SIZE/1.6f);
+
+				if (dist < perfectHit){
+					spawnHitIndicator(hitStatusX,hitStatusY,perfectHitIndicator,1);
+				} else{
+					if (dist < goodHit){
+						spawnHitIndicator(hitStatusX,hitStatusY,goodHitIndicator,1);
+					}else{
+						spawnHitIndicator(hitStatusX,hitStatusY,okIndicator,1);
+					}
+				}
+
+
+
+
 				note.setHolding(true);
 				note.setHitStatus(compGain);
 				spawnHitEffect(note.getHitStatus(), note.getX(), spawnEffectY);

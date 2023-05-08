@@ -18,6 +18,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
@@ -404,7 +405,9 @@ public class GameMode implements Screen {
 			for (Particle o : gameplayController.getParticles()) {
 				o.draw(canvas);
 			}
-
+			for (Particle o : gameplayController.getNoteIndicatorParticles()){
+				o.draw(canvas);
+			}
 
 			// draw the scoreboard
 			gameplayController.sb.displayScore(gameplayController.LEFTBOUND, gameplayController.TOPBOUND + gameplayController.inBetweenWidth/4f, canvas);
