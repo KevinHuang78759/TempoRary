@@ -277,16 +277,6 @@ public class GameMode implements Screen {
 		gameplayController.level.setMusicVolume(musicVolume);
 	}
 
-	/**
-	 * Get the current level from LevelSelect
-	 * Note this function
-	 */
-	public void SetCurrLevel(String level) {
-//		TODO: need to merge with level screen
-//		currLevel is some versions of levelscreen.getSelectedJson();
-		currLevel = Integer.parseInt(level);
-	}
-
 
 	/**
 	 * Dispose of all (non-static) resources allocated to this mode.
