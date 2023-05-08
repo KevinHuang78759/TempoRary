@@ -126,10 +126,6 @@ public class GameMode implements Screen {
 	/** Play button x and y coordinates represented as a vector */
 	private Vector2 playButtonCoords;
 
-	/** the current level */
-	private int currLevel;
-	private int activeBM;
-
 	/**
 	 * Creates a new game with the given drawing context.
 	 *
@@ -140,7 +136,6 @@ public class GameMode implements Screen {
 		this.canvas = canvas;
 		active = false;
 		playButton = null;
-		activeBM = 0;
 
 		// Null out all pointers, 0 out all ints, etc.
 		gameState = GameState.INTRO;
@@ -167,7 +162,6 @@ public class GameMode implements Screen {
 
 	public void readLevel(String level, AssetDirectory directory) {
 		JsonReader jr = new JsonReader();
-		SetCurrLevel("1");
 		JsonValue levelData = jr.parse(Gdx.files.internal(level));
 		System.out.println("level read");
 		gameplayController.loadLevel(levelData, directory);
@@ -177,16 +171,6 @@ public class GameMode implements Screen {
 	public void setSoundVolume(float fxVolume, float musicVolume) {
 		gameplayController.setFxVolume(fxVolume);
 		gameplayController.level.setMusicVolume(musicVolume);
-	}
-
-	/**
-	 * Get the current level from LevelSelect
-	 * Note this function
-	 */
-	public void SetCurrLevel(String level) {
-//		TODO: need to merge with level screen
-//		currLevel is some versions of levelscreen.getSelectedJson();
-		currLevel = Integer.parseInt(level);
 	}
 
 
@@ -272,7 +256,6 @@ public class GameMode implements Screen {
 			case PLAY:
 				if (inputController.didExit()) {
 					gameplayController.level.pauseMusic();
-					activeBM = gameplayController.activeBandMember;
 					gameState = GameState.PAUSE;
 				} else {
 					play(delta);
@@ -396,7 +379,8 @@ public class GameMode implements Screen {
 			// draw pause menu UI if paused
 			if (gameState == GameState.PAUSE) {
 				//Draw the buttons for the pause menu
-				//canvas.draw(whiteBackground, Color.LIGHT_GRAY, 0, 0, 0, 0, 0, 1f, 1f);
+				Color color = new Color(1f, 1f, 1f, 0.65f);
+				canvas.draw(whiteBackground, color, 0, 0, 0, 0, 0, 1f, 1f);
 				canvas.draw(pauseBackground, Color.WHITE, pauseBackground.getWidth() / 2, pauseBackground.getHeight() / 2,
 						pauseCoords.x, pauseCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
 				canvas.draw(resumeButton, Color.WHITE, resumeButton.getWidth() / 2, resumeButton.getHeight() / 2,
