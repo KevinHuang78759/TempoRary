@@ -294,9 +294,6 @@ public class GameplayController {
 				//If a note is out of bounds and it has not been hit, we need to mark it destroyed and assign
 				//a negative hit status
 				if(n.getY() < noteDieY && !n.isDestroyed()){
-					if (n.getNoteType() == Note.NoteType.HELD) {
-						System.out.println("hello + " + n.getY());
-					}
 					n.setDestroyed(true);
 					if(i == activeBandMember){
 						sb.resetCombo();

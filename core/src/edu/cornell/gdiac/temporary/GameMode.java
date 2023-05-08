@@ -276,7 +276,6 @@ public class GameMode implements Screen {
 	}
 
 	public void readLevel(String level, AssetDirectory assetDirectory, int selectedLevel, int difficulty) {
-//		SetCurrLevel("1");
 		levelString = level;
 
 		currLevel = selectedLevel+1;
@@ -409,10 +408,6 @@ public class GameMode implements Screen {
 		introTwoSFX.addSound("two", "sound/2.mp3");
 		introThreeSFX.addSound("three", "sound/3.mp3");
 		introGoSFX.addSound("go", "sound/go.mp3");
-		resumeCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 + 250);
-		restartCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 + 100);
-		levelCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 - 100);
-		menuCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 - 250);
 	}
 
 	private String matchDifficulty(int diff) {

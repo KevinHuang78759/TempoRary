@@ -22,6 +22,7 @@ import javax.swing.plaf.TextUI;
 import java.nio.ByteBuffer;
 
 public class Level {
+
     public BandMember[] getBandMembers() {
         return bandMembers;
     }
@@ -154,6 +155,7 @@ public class Level {
     private int levelNumber;
     private int maxCompetency;
     private int spawnOffset;
+    private long spawnOffsetSwitch;
     private int bpm;
     private long aThreshold;
     private long bThreshold;
@@ -245,6 +247,8 @@ public class Level {
         // preallocate band members
         bandMembers = new BandMember[data.get("bandMembers").size];
         spawnOffset = music.getSampleRate();
+        // switch note is twice as slow
+        spawnOffsetSwitch = 2L * spawnOffset;
         System.out.println(spawnOffset);
         for(int i = 0; i < bandMembers.length; i++){
             bandMembers[i] = new BandMember();
@@ -265,7 +269,7 @@ public class Level {
                     if(thisNote.getLong("position") > maxSample){
                         continue;
                     }
-                    n = new Note(thisNote.getInt("line"), Note.NoteType.SWITCH, thisNote.getLong("position") - 2*spawnOffset, switchNoteTexture);
+                    n = new Note(thisNote.getInt("line"), Note.NoteType.SWITCH, thisNote.getLong("position") - spawnOffsetSwitch, switchNoteTexture);
                 }
                 else {
                     if(thisNote.getLong("position") + thisNote.getLong("duration")> maxSample){
@@ -281,6 +285,7 @@ public class Level {
             bandMembers[i].setAllNotes(notes);
             bandMembers[i].setCurComp(maxCompetency);
             bandMembers[i].setMaxComp(maxCompetency);
+            // TODO: FIX THIS SO THAT IT FITS THE LEVEL JSON
             bandMembers[i].setLossRate(bandMemberData.getInt("competencyLossRate"));
             bandMembers[i].setHpBarFilmStrip(hpbar, 47);
             switch (bandMemberData.getString("instrument")) {
@@ -459,6 +464,7 @@ public class Level {
         music.setVolume(oldVolume);
         bandMembers = new BandMember[data.get("bandMembers").size];
         spawnOffset = music.getSampleRate();
+        spawnOffsetSwitch = spawnOffset * 2L;
         for(int i = 0; i < bandMembers.length; i++){
             bandMembers[i] = new BandMember();
             JsonValue bandMemberData = data.get("bandMembers").get(i);
@@ -477,7 +483,7 @@ public class Level {
                     if(thisNote.getLong("position") > maxSample){
                         continue;
                     }
-                    n = new Note(thisNote.getInt("line"), Note.NoteType.SWITCH, thisNote.getLong("position") - spawnOffset, switchNoteTexture);
+                    n = new Note(thisNote.getInt("line"), Note.NoteType.SWITCH, thisNote.getLong("position") - spawnOffsetSwitch, switchNoteTexture);
                 }
                 else {
                     if(thisNote.getLong("position") + thisNote.getLong("duration")> maxSample){
