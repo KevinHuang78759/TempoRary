@@ -66,8 +66,8 @@ public class LoadingMode implements Screen {
 	/** Right cap to the status forground (colored region) */
 	private TextureRegion statusFrgRight;
 
-	/** Font for drawing "Loading..." */
-	private BitmapFont font;
+	/** Texture for "Loading..." */
+	private Texture loadingText;
 
 	/** Default budget for asset loader (do nothing but load 60 fps) */
 	private static int DEFAULT_BUDGET = 15;
@@ -200,7 +200,7 @@ public class LoadingMode implements Screen {
 		background = internal.getEntry( "background", Texture.class );
 		background.setFilter( TextureFilter.Linear, TextureFilter.Linear );
 
-		font = internal.getEntry("lucida", BitmapFont.class);
+		loadingText = internal.getEntry("loading", Texture.class);
 
 		// Break up the status bar texture into regions
 		statusBkgLeft = internal.getEntry( "progress.backleft", TextureRegion.class );
@@ -252,7 +252,7 @@ public class LoadingMode implements Screen {
 	private void draw() {
 		canvas.begin();
 		canvas.draw(background, 0, 0, canvas.getWidth(), canvas.getHeight());
-		canvas.drawTextCentered("Loading...", font, -230, Color.WHITE);
+		canvas.draw(loadingText, Color.WHITE, loadingText.getWidth()/2, loadingText.getHeight()/2, canvas.getWidth()/2, canvas.getHeight()/2 - 220, 0, 1, 1);
 		drawProgress(canvas);
 		canvas.end();
 	}

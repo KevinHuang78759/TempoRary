@@ -5,6 +5,11 @@
           "minFilter": "linear",
           "magFilter": "linear"
         },
+        "loading": {
+          "file":     "images/ui/loading.png",
+          "minFilter": "linear",
+          "magFilter": "linear"
+        },
         "progress": {
             "file":      "images/loading_bar.png",
             "minFilter": "linear",
@@ -18,11 +23,5 @@
                 "foreright"  : [535, 97, 573, 170]
             }
         }
-	},
-    "fonts": {
-      "lucida": {
-        "file": "fonts/TempoRaryFont.ttf",
-        "size": 50
-      }
-    }
+	}
 }
