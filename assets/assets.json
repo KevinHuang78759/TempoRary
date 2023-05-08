@@ -4,6 +4,8 @@
         "title": "images/title_v1.png",
         "ghost-cat": "images/ghost_cat.jpg",
         "play-old": "images/play.png",
+        "level-select-left": "images/level_select_left_arrow.png",
+        "level-select-right": "images/level_select_right_arrow.png",
         "play": "images/play_button_v1.png",
         "ghost-play": "images/ghost_and_play_button.png",
         "calibration-background": "images/backgrounds/Calibration_Background.png",

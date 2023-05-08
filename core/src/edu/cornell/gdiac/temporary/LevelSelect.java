@@ -88,6 +88,13 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
     private String[] allLevels;
 
+    private Texture goLeft;
+
+    private Vector2 goLeftCoords;
+
+    private Texture goRight;
+
+    private Vector2 goRightCoords;
 
     private AssetDirectory directory;
 
@@ -162,6 +169,13 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         mediumButton = directory.getEntry("medium",Texture.class);
         hardButton = directory.getEntry("hard",Texture.class);
 
+        goLeft = directory.getEntry("level-select-left",Texture.class);
+        goRight = directory.getEntry("level-select-right",Texture.class);
+
+        goLeftCoords = new Vector2(goLeft.getWidth(),canvas.getHeight()/2);
+        goRightCoords = new Vector2(canvas.getWidth()-goLeft.getWidth(),canvas.getHeight()/2);
+
+
         levelBackground = new FilmStrip(directory.getEntry("level-select-background", Texture.class), 1, 1);
 
         playButtonCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/8);
@@ -213,6 +227,12 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         canvas.begin();
         canvas.drawBackground(levelBackground.getTexture(),0,0);
 //        canvas.drawBackground(background,0,0);
+
+        canvas.draw(goLeft, Color.WHITE, goLeft.getWidth()/2, goLeft.getHeight()/2,
+                goLeftCoords.x, goLeftCoords.y, 0, 0.9f*scale, 0.9f*scale);
+
+        canvas.draw(goRight, Color.WHITE, goRight.getWidth()/2, goRight.getHeight()/2,
+                goRightCoords.x, goRightCoords.y, 0, 0.9f*scale, 0.9f*scale);
 
         // draw easy, medium, and hard buttons
         Color easyButtonTint = (selectedDifficulty == EASY ? Color.GRAY: Color.WHITE);
@@ -318,6 +338,16 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
         if (isButtonPressed(screenX, screenY, hardButton, hardButtonCoords, scale)) {
             selectedDifficulty = 3;
+        }
+
+        if (isButtonPressed(screenX, screenY, goLeft, goLeftCoords, 0.9f*scale)) {
+            System.out.println("go left pressed");
+
+        }
+
+        if (isButtonPressed(screenX, screenY, goRight, goRightCoords, 0.9f*scale)) {
+            System.out.println("go right pressed");
+
         }
 
 //        System.out.println("selected difficulty is: " + selectedDifficulty);
