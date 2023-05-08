@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
+import static java.lang.Math.max;
+
 public class Scoreboard {
     private FreeTypeFontGenerator fontGenerator;
     private FreeTypeFontGenerator.FreeTypeFontParameter fontParameter;
@@ -19,6 +21,8 @@ public class Scoreboard {
      * Our current meter - starts at 0
      */
     private long meter;
+
+    private long maxCombo;
     /**
      * Our current level - starts at 0
      */
@@ -89,6 +93,7 @@ public class Scoreboard {
             }
         }
         totalScore += (long) hitVal* (long)levelMultipliers[level];
+        maxCombo = max(maxCombo,meter);
     }
 
     public void setVolume(float volume) {
@@ -97,6 +102,14 @@ public class Scoreboard {
 
     public long getScore(){
         return totalScore;
+    }
+
+    public long getMeter(){
+        return meter;
+    }
+
+    public long getMaxCombo(){
+        return maxCombo;
     }
     public void dispose(){
         sfx.dispose();
