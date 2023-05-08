@@ -38,7 +38,7 @@
         "hard": "images/hard.png",
         "1": "images/album_covers/aliens_album.png",
         "2": "images/album_covers/challenger_album.png",
-        "3": "images/album_covers/challenger_album.png",
+        "3": "images/album_covers/locked_level_album.png",
         "level-select-button": "images/ui/level_select.png",
         "quit-button": "images/ui/quit.png",
         "restart-button": "images/ui/restart.png",

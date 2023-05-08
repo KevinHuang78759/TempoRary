@@ -49,7 +49,8 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     /** button for a level */
     private Texture[] albumCovers;
 
-    /** coord for level button */
+    /** coordinates for each album; will always have 3 elements;
+     * albumCoverCoords[0] left, [1] center, [2] right, */
 
     private Vector2[] albumCoverCoords;
 
@@ -102,15 +103,17 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     private int MEDIUM = 2;
     private  int HARD = 3;
 
+    /** Selected song; index from 0. */
     public int selectedLevel;
 
+    /** Selected song; 1 is easy, 2 is medium, 3 is hard. */
     public int selectedDifficulty;
     private boolean pressedEscape;
 
     public LevelSelect(GameCanvas canvas) {
         this.canvas  = canvas;
         selectedDifficulty= -1;
-        selectedLevel = -1;
+        selectedLevel = 1;
         playButton = null;
         easyButton=null;
         mediumButton=null;
@@ -159,7 +162,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         JsonValue levelData = jr.parse(Gdx.files.internal("assets.json"));
         numLevels = levelData.get("jsons").size;
         allLevels= new String[numLevels*3];
-        albumCoverCoords = new Vector2[numLevels];
+        albumCoverCoords = new Vector2[3];
 //        System.out.println("num levels "+numLevels);
         gameplayController = new GameplayController(canvas.getWidth(),canvas.getHeight());
         albumCovers = new Texture[numLevels];
@@ -188,17 +191,13 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             albumCovers[i] = directory.getEntry(Integer.toString(i+1),Texture.class);
         }
 
-//        float w = albumCovers[1].getWidth()*scale2/2;
-        albumCoverCoords[0]=new Vector2((canvas.getWidth()/4 ),canvas.getHeight()-canvas.getHeight()/3);
-        albumCoverCoords[1]=new Vector2((canvas.getWidth()/2 ),canvas.getHeight()-canvas.getHeight()/3);
-        albumCoverCoords[2]=new Vector2((canvas.getWidth()/2 )+ canvas.getWidth()/4,canvas.getHeight()-canvas.getHeight()/3);
+        albumCoverCoords[0]=new Vector2((canvas.getWidth()/4 ),(canvas.getHeight()*2/3)-25);
+        albumCoverCoords[1]=new Vector2((canvas.getWidth()/2 ),(canvas.getHeight()*2/3)-25);
+        albumCoverCoords[2]=new Vector2((canvas.getWidth()/2 )+ canvas.getWidth()/4,(canvas.getHeight()*2/3)-25);
 
         for (int i = 0; i <numLevels*3;i++){
-            String levelString = "levels/"+(i+1)+".json";
-            allLevels[i]=levelString;
+            allLevels[i]="levels/"+(i+1)+".json";
         }
-
-
     }
 
     /**
@@ -207,7 +206,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     public void reset() {
         Gdx.input.setInputProcessor( this );
         selectedDifficulty= -1;
-        selectedLevel = -1;
+        selectedLevel = 1;
         playButton = null;
         easyButton=null;
         mediumButton=null;
@@ -248,12 +247,26 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                 hardButtonCoords.x, hardButtonCoords.y, 0, 0.5f*scale, 0.5f*scale);
 
         // draw each song
-        for (int i=0;i<numLevels;i++){
-//            Level l = new Level (j,loadDirectory);
-            Color albumCoverTint = (selectedLevel == i ? Color.GRAY: Color.WHITE);
-            canvas.draw(albumCovers[i],albumCoverTint,albumCovers[i].getWidth()/2,albumCovers[i].getHeight()/2,albumCoverCoords[i].x,
-                    albumCoverCoords[i].y,0, 0.5f*scale, 0.5f*scale);
+        float centerScale = 0.65f*scale;
+        float cornerScale = 0.5f*scale;
+
+        // selectedLevel starts from 1, while array are zero-indexed.
+        if (selectedLevel>=1){
+            canvas.draw(albumCovers[selectedLevel-1], Color.WHITE, albumCovers[selectedLevel-1].getWidth()/2,
+                    albumCovers[selectedLevel-1].getHeight()/2, albumCoverCoords[0].x,
+                    albumCoverCoords[0].y, 0, cornerScale, cornerScale);
         }
+
+        canvas.draw(albumCovers[selectedLevel],Color.WHITE,albumCovers[selectedLevel].getWidth()/2,
+                albumCovers[selectedLevel].getHeight()/2,albumCoverCoords[1].x,
+                albumCoverCoords[1].y,0, centerScale, centerScale);
+
+        if (selectedLevel+1<numLevels) {
+            canvas.draw(albumCovers[selectedLevel+1],Color.WHITE,albumCovers[selectedLevel+1].getWidth()/2,
+                    albumCovers[selectedLevel+1].getHeight()/2,albumCoverCoords[2].x,
+                    albumCoverCoords[2].y,0, cornerScale, cornerScale);
+        }
+
 
         // draw play button
         Color playButtonTint = (playPressed ? Color.GRAY: Color.WHITE);
@@ -341,26 +354,39 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         }
 
         if (isButtonPressed(screenX, screenY, goLeft, goLeftCoords, 0.9f*scale)) {
-            System.out.println("go left pressed");
-
-        }
-
-        if (isButtonPressed(screenX, screenY, goRight, goRightCoords, 0.9f*scale)) {
-            System.out.println("go right pressed");
-
-        }
-
-//        System.out.println("selected difficulty is: " + selectedDifficulty);
-
-        for (int i=0;i<numLevels;i++){
-//            System.out.println("numLevels is "+(numLevels));
-            if (isButtonPressed(screenX, screenY, albumCovers[i], albumCoverCoords[i], scale)){
-//                System.out.println("selected song is "+(i));
-                selectedLevel=i;
+            if (selectedLevel-1>=0){
+                selectedLevel--;
             }
         }
 
-        if (selectedDifficulty != -1 && selectedLevel!=-1){
+        if (isButtonPressed(screenX, screenY, goRight, goRightCoords, 0.9f*scale)) {
+            if (selectedLevel+1<numLevels){
+                selectedLevel++;
+            }
+
+        }
+
+        // check touched albums
+        if (selectedLevel-1>=0){
+            if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel-1], albumCoverCoords[0], 0.5f*scale)) {
+                selectedLevel = selectedLevel - 1;
+            }
+
+        }
+
+
+        if (selectedLevel+1<numLevels){
+            if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel+1], albumCoverCoords[2], 0.5f*scale)) {
+                selectedLevel = selectedLevel+1;
+            }
+
+        }
+
+
+
+
+
+        if (selectedDifficulty != -1){
             hasSelectedLevel=true;
         }
 
