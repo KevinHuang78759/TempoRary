@@ -296,11 +296,6 @@ public class GameMode implements Screen {
 		// Test whether to reset the game.
 		switch (gameState) {
 			case INTRO:
-				for (boolean k : inputController.getTriggers()){
-					if (k) {
-						gameplayController.sfx.playSound("tap", 0.2f);
-					}
-				}
 				// wait a few frames before starting
 				if (ticks == 0) {
 					gameplayController.start();
@@ -311,6 +306,13 @@ public class GameMode implements Screen {
 				}
 				introTime = gameplayController.updateIntro(ticks);
 				ticks++;
+				if (introTime >= 0) {
+					for (boolean k : inputController.getTriggers()){
+						if (k) {
+							gameplayController.sfx.playSound("tap", 0.2f);
+						}
+					}
+				}
 				if (introTime >= 0 && !saidThree){
 					introThreeSFX.playSound("three", 0.3f);
 					saidThree = true;
