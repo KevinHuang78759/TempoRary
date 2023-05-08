@@ -319,8 +319,8 @@ public class InputController {
 	 * @return
 	 */
 	public static String[] switchKeyBinds(int numBandMembers, boolean main) {
-		String[] bindings = new String[switches.length];
-		for (int i = 0; i < switches.length; i++) {
+		String[] bindings = new String[numBandMembers + 1];
+		for (int i = 0; i < numBandMembers + 1; i++) {
 			bindings[i] = main ? Input.Keys.toString(switchesBindingsMain.get(numBandMembers)[i]) : Input.Keys.toString(switchesBindingsAlt.get(numBandMembers)[i]);
 		}
 		return bindings;
