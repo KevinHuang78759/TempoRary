@@ -5,6 +5,7 @@
         "ghost-cat": "images/ghost_cat.jpg",
         "play-old": "images/play.png",
         "play": "images/play_button_v1.png",
+        "ghost-play": "images/ghost_and_play_button.png",
         "calibration-background": "images/backgrounds/Calibration_Background.png",
         "white-background": "images/backgrounds/white_background.png",
         "win-background": "images/backgrounds/win_screen_bg.png",
@@ -87,7 +88,8 @@
         "front-splash": "images/notes/hold_front.png",
         "win-lose-select": "images/win_lose/win_screen_select.png",
         "win-lose-restart": "images/win_lose/win_screen_retry.png",
-        "win-lose-next": "images/win_lose/win_screen_next.png"
+        "win-lose-next": "images/win_lose/win_screen_next.png",
+        "level-select-background": "images/level_select_background.png"
     },
     "fonts": {
         "lucida": {

@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.ScreenListener;
 
 public class LevelSelect implements Screen, InputProcessor, ControllerListener {
@@ -42,6 +43,8 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
     /** Play button to display hard level */
     private Texture hardButton;
+
+    private FilmStrip levelBackground;
 
     /** button for a level */
     private Texture[] albumCovers;
@@ -154,22 +157,24 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         gameplayController = new GameplayController(canvas.getWidth(),canvas.getHeight());
         albumCovers = new Texture[numLevels];
 
-        playButton = directory.getEntry("play",Texture.class);
+        playButton = directory.getEntry("ghost-play",Texture.class);
         easyButton = directory.getEntry("easy",Texture.class);
         mediumButton = directory.getEntry("medium",Texture.class);
         hardButton = directory.getEntry("hard",Texture.class);
 
+        levelBackground = new FilmStrip(directory.getEntry("level-select-background", Texture.class), 1, 1);
+
         playButtonCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/8);
-        easyButtonCoords = new Vector2(canvas.getWidth()/4 , canvas.getHeight()/3);
-        mediumButtonCoords = new Vector2(canvas.getWidth()/2 , canvas.getHeight()/3);
-        hardButtonCoords = new Vector2(canvas.getWidth()/2+ canvas.getWidth()/4, canvas.getHeight()/3);
+        mediumButtonCoords = new Vector2(canvas.getWidth()/2 , canvas.getHeight()/4);
+        easyButtonCoords = new Vector2(mediumButtonCoords.x-easyButton.getWidth(), canvas.getHeight()/4);
+        hardButtonCoords = new Vector2(mediumButtonCoords.x+easyButton.getWidth(), canvas.getHeight()/4);
 
 //        temp implementation for temp assets
         for (int i = 0; i < numLevels;i++){
             albumCovers[i] = directory.getEntry(Integer.toString(i+1),Texture.class);
         }
 
-        float w = albumCovers[1].getWidth()*scale2/2;
+//        float w = albumCovers[1].getWidth()*scale2/2;
         albumCoverCoords[0]=new Vector2((canvas.getWidth()/4 ),canvas.getHeight()-canvas.getHeight()/3);
         albumCoverCoords[1]=new Vector2((canvas.getWidth()/2 ),canvas.getHeight()-canvas.getHeight()/3);
         albumCoverCoords[2]=new Vector2((canvas.getWidth()/2 )+ canvas.getWidth()/4,canvas.getHeight()-canvas.getHeight()/3);
@@ -206,27 +211,28 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
     public void draw(){
         canvas.begin();
-        canvas.drawBackground(background,0,0);
+        canvas.drawBackground(levelBackground.getTexture(),0,0);
+//        canvas.drawBackground(background,0,0);
 
         // draw easy, medium, and hard buttons
         Color easyButtonTint = (selectedDifficulty == EASY ? Color.GRAY: Color.WHITE);
         canvas.draw(easyButton, easyButtonTint, easyButton.getWidth()/2, easyButton.getHeight()/2,
-                easyButtonCoords.x, easyButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+                easyButtonCoords.x, easyButtonCoords.y, 0, 0.5f*scale, 0.5f*scale);
 
         Color medButtonTint = (selectedDifficulty == MEDIUM ? Color.GRAY: Color.WHITE);
         canvas.draw(mediumButton, medButtonTint, mediumButton.getWidth()/2, mediumButton.getHeight()/2,
-                mediumButtonCoords.x, mediumButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+                mediumButtonCoords.x, mediumButtonCoords.y, 0, 0.5f*scale, 0.5f*scale);
 
         Color hardButtonTint = (selectedDifficulty == HARD ? Color.GRAY: Color.WHITE);
         canvas.draw(hardButton, hardButtonTint, hardButton.getWidth()/2, hardButton.getHeight()/2,
-                hardButtonCoords.x, hardButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+                hardButtonCoords.x, hardButtonCoords.y, 0, 0.5f*scale, 0.5f*scale);
 
         // draw each song
         for (int i=0;i<numLevels;i++){
 //            Level l = new Level (j,loadDirectory);
             Color albumCoverTint = (selectedLevel == i ? Color.GRAY: Color.WHITE);
             canvas.draw(albumCovers[i],albumCoverTint,albumCovers[i].getWidth()/2,albumCovers[i].getHeight()/2,albumCoverCoords[i].x,
-                    albumCoverCoords[i].y,0, BUTTON_SCALE*scale2, BUTTON_SCALE*scale2);
+                    albumCoverCoords[i].y,0, 0.5f*scale, 0.5f*scale);
         }
 
         // draw play button
@@ -318,7 +324,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
         for (int i=0;i<numLevels;i++){
 //            System.out.println("numLevels is "+(numLevels));
-            if (isButtonPressed(screenX, screenY, albumCovers[i], albumCoverCoords[i], scale2)){
+            if (isButtonPressed(screenX, screenY, albumCovers[i], albumCoverCoords[i], scale)){
 //                System.out.println("selected song is "+(i));
                 selectedLevel=i;
             }
