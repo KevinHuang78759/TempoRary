@@ -1,69 +1,30 @@
 {
 	"textures": {
-        "loading-background": {
-          "file":     "images/backgrounds/loading_screen_background_2.png",
-          "minFilter": "linear",
-          "magFilter": "linear"
-        },
-        "title": {
-          "file": "images/title_v1.png",
-          "minFilter": "linear",
-          "magFilter": "linear"
-        },
-        "ghost-cat": {
-          "file": "images/ghost_cat.jpg",
-          "minFilter": "linear",
-          "maxFilter": "linear"
-        },
-        "play-old": {
-          "file": "images/play.png",
-          "minFilter": "linear",
-          "maxFilter": "linear"
-        },
-        "play": {
-          "file":     "images/play_button_v1.png",
-          "minFilter": "linear",
-          "magFilter": "linear"
-        },
-        "level-editor": {
-          "file": "images/leveleditor_button_v1.png",
-          "minFilter": "linear",
-          "maxFilter": "linear"
-        },
-        "easy": {
-          "file": "images/easy.png",
-          "minFilter": "linear",
-          "maxFilter": "linear"
-        },
-        "medium": {
-          "file": "images/medium.png",
-          "minFilter": "linear",
-          "maxFilter": "linear"
-        },
-        "hard": {
-          "file": "images/hard.png",
-          "minFilter": "linear",
-          "maxFilter": "linear"
-        },
-        "1": {
-          "file": "images/album_covers/aliens_album.png",
-          "minFilter": "linear",
-          "maxFilter": "linear"
-        },
-        "2": {
-          "file": "images/album_covers/challenger_album.png",
-          "minFilter": "linear",
-          "maxFilter": "linear"
-        },
-        "3": {
-          "file": "images/album_covers/locked_level_album.png",
-          "minFilter": "linear",
-          "maxFilter": "linear"
-        },
+        "loading-background": "images/backgrounds/loading_screen_background_2.png",
+        "title": "images/title_v1.png",
+        "ghost-cat": "images/ghost_cat.jpg",
+        "play-old": "images/play.png",
+        "play": "images/play_button_v1.png",
+        "calibration-background": "images/backgrounds/Calibration_Background.png",
+        "white-background": "images/backgrounds/white_background.png",
+        "calibration-back-arrow": "images/ui/Calibration_left_arrow.png",
+        "calibration-note": "images/ui/Calibration_note_normal.png",
+        "calibration-note-hit": "images/ui/Calibration_note_glowing.png",
+        "calibration-circle-filled": "images/ui/Calibration_Ellipse_1.png",
+        "calibration-circle": "images/ui/Ellipse_2.png",
+        "level-editor": "images/leveleditor_button_v1.png",
+        "easy": "images/easy.png",
+        "medium": "images/medium.png",
+        "hard": "images/hard.png",
+        "1": "images/album_covers/aliens_album.png",
+        "2": "images/album_covers/challenger_album.png",
+        "3": "images/album_covers/challenger_album.png",
         "level-select-button": "images/ui/level_select.png",
         "quit-button": "images/ui/quit.png",
         "restart-button": "images/ui/restart.png",
         "resume-button": "images/ui/resume.png",
+        "menu-button": "images/ui/menu.png",
+        "pause-background": "images/ui/pause_background.png",
         "slider": {
           "file":      "images/loading_bar.png",
           "minFilter": "linear",
@@ -93,6 +54,8 @@
         "actual-star": "images/star.png",
         "note-indicator": "images/bandmember_lanes/note_indicator.png",
         "note-indicator-hit": "images/bandmember_lanes/note_indicator_hit.png",
+        "switch-indicator": "images/bandmember_lanes/switch_indicator_line.png",
+        "switch-indicator-hit": "images/bandmember_lanes/switch_indicator_line.png",
         "violin-cat": "images/cats/violin_spritesheet.png",
         "singer-cat": "images/cats/sing_spritesheet.png",
         "drummer-cat": "images/cats/drum_spritesheet.png",
@@ -100,7 +63,8 @@
         "borderVUnit" : "images/bandmember_lanes/lane_edge_unit.png",
         "borderHUnit" : "images/bandmember_lanes/lane_edge_unit.png",
         "borderCorner" : "images/bandmember_lanes/laneCornerBL.png",
-        "laneBackground" : "images/bandmember_lanes/laneBackground.png",
+        "activeLane" : "images/bandmember_lanes/active_lane.png",
+        "inactiveLane" : "images/bandmember_lanes/inactive_lane.png",
         "separationLine" : "images/bandmember_lanes/lane-separation-line.png",
         "back-splash": "images/notes/hold_back.png",
         "front-splash": "images/notes/hold_front.png",
@@ -125,13 +89,18 @@
         },
         "main": {
             "file": "fonts/TempoRaryFont.ttf",
-            "size": 20
+            "size": 25
+        },
+        "calibration-font": {
+            "file": "fonts/TempoRaryFont.ttf",
+            "size": 35
         }
     },
     "samples": {
       "challenger": "music/Challenger-Approaches.ogg",
       "aliens": "music/Aliens.ogg",
-      "american": "music/American_Finale.ogg"
+      "american": "music/American_Finale.ogg",
+      "calibration": "music/calibration.ogg"
     },
     "soundtrack": {
       "calibration": {
@@ -168,6 +137,7 @@
     "soundEffects": [
         ["tap", "sound/tap.ogg"],
         ["goodHit","sound/goodhit.ogg"],
+        ["okHit","sound/goodhit.ogg"],
         ["perfectHit","sound/perfecthit.ogg"],
         ["switch", "sound/switch.ogg"],
         ["switchHit", "sound/switchHit.ogg"],

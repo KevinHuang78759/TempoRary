@@ -43,7 +43,7 @@ public class GameCanvas {
 	
 	/** The current color blending mode */
 	private BlendState blend;
-
+	
 	/** Value to cache window width (if we are currently full screen) */
 	int width;
 	/** Value to cache window height (if we are currently full screen) */
@@ -57,8 +57,6 @@ public class GameCanvas {
 	Pixmap pixel;
 	ArrayList<Texture> disp;
 	Texture pixelTexture;
-
-
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.
 	 * 
@@ -78,7 +76,6 @@ public class GameCanvas {
 		pixel.setColor(Color.WHITE);
 		pixel.fill();
 		pixelTexture = new Texture(pixel);
-
 	}
 		
     /**
@@ -454,7 +451,7 @@ public class GameCanvas {
 		
 		// Unlike Lab 1, we can shortcut without a master drawing method
     	spriteBatch.setColor(Color.WHITE);
-		spriteBatch.draw(image, x,  y);
+		spriteBatch.draw(image, x, y);
 	}
 
 	public void draw(Texture image, float x, float y, float width, float height) {
@@ -712,9 +709,7 @@ public class GameCanvas {
 		font.setColor(tint);
 		font.draw(spriteBatch, layout, x, y+offset);
 	}
-
-
-
+    
 
 	/**
 	 * Enumeration of supported BlendStates.

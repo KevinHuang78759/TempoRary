@@ -32,6 +32,7 @@ public class BandMember {
     private Texture okHitIndicator;
 
     private Texture missIndicator;
+
     private FilmStrip characterSprite;
 
     public void setBottomLeft(Vector2 V){
@@ -46,6 +47,12 @@ public class BandMember {
      * The height of separator lines from the top of the lane
      */
     private float lineHeight;
+
+    private float laneTint;
+
+    public void setLaneTint(float c){
+        laneTint = c;
+    }
 
     public void setLineHeight(float l){
         lineHeight = l;
@@ -184,6 +191,7 @@ public class BandMember {
      * Constructor
      */
     public BandMember(){
+        laneTint = 1f;
         bottomLeftCorner = new Vector2();
         hitNotes = new Array<>();
         switchNotes = new Array<>();
@@ -219,8 +227,12 @@ public class BandMember {
                 if (!n.isHolding()) {
                     n.setBottomY(bottomYCalc);
                 }
-                n.setHoldMiddleBottomY(bottomYCalc);
-                n.setY(spawnY + Math.max(0, (float)(currentSample - n.getStartSample() - n.getHoldSamples())/(n.getHitSample() - n.getStartSample()))*(hitY - spawnY));
+                if (n.isHolding() && n.getY() <= n.getBottomY()) {
+                    n.setY(n.getBottomY());
+                } else {
+                    n.setHoldMiddleBottomY(bottomYCalc);
+                    n.setY(spawnY + Math.max(0, (float) (currentSample - n.getStartSample() - n.getHoldSamples()) / (n.getHitSample() - n.getStartSample())) * (hitY - spawnY));
+                }
             }
             else{
                 n.setY(spawnY + (float)(currentSample - n.getStartSample())/(n.getHitSample() - n.getStartSample())*(hitY - spawnY));
@@ -282,7 +294,7 @@ public class BandMember {
     /**
      * Draw the indicator in a certain color according to if we triggered the line. Pass in an array for the active lane
      */
-    public void drawIndicator(GameCanvas canvas, boolean[] hits){
+    public void drawIndicator(GameCanvas canvas, Texture noteIndicator, Texture noteIndicatorHit, boolean[] hits){
         //If we get passed an array we must draw 4 hit bars
         float scale = NOTE_SIZE_SCALE*(width/4)/noteIndicatorHit.getWidth();
         for(int i = 0; i < numLines; ++i){
@@ -297,8 +309,8 @@ public class BandMember {
      * Draw the hit bar in a certain color according to if we triggered the line. Pass in a value for a switchable lane
      * also draw the keyBind
      */
-    public void drawIndicator(GameCanvas canvas, boolean hit){
-       float scale = NOTE_SIZE_SCALE*width/noteIndicatorHit.getWidth();
+    public void drawIndicator(GameCanvas canvas, Texture noteIndicator, Texture noteIndicatorHit, boolean hit){
+       float scale = width/noteIndicatorHit.getWidth();
         canvas.draw(hit ? noteIndicatorHit : noteIndicator, Color.WHITE, noteIndicatorHit.getWidth() / 2, noteIndicatorHit.getHeight() / 2,
                 bottomLeftCorner.x + width/2, hitY,
                 0.0f,scale, scale);
@@ -316,7 +328,7 @@ public class BandMember {
                 //Set the Y coordinate according to sampleProgression
                 //Calculate the spawning y coordinate to be high enough such that none of the note is
                 //visible
-                n.draw(canvas, NOTE_SIZE_SCALE*width, NOTE_SIZE_SCALE*width, bottomLeftCorner.y + height, bottomLeftCorner.y);
+                n.draw(canvas, width, width, bottomLeftCorner.y + height, bottomLeftCorner.y);
             }
         }
     }
@@ -335,9 +347,6 @@ public class BandMember {
 
         }
     }
-
-
-
 
     private float borderthickness;
     /**
@@ -395,14 +404,20 @@ public class BandMember {
     /**
      * Draw the background of this bandMember
      * @param canvas
-     * @param background
+
      */
-    public void drawBackground(GameCanvas canvas, Texture background){
-        float xScale = width/background.getWidth();
-        float yScale = height/background.getHeight();
-        Color c = Color.WHITE;
-        c.a = 0.5f;
-        canvas.draw(background, c, 0, 0, bottomLeftCorner.x, bottomLeftCorner.y, 0.0f, xScale, yScale);
+    public void drawBackground(GameCanvas canvas, Texture activeBackground, Texture inactiveBackground){
+        float xScale = width/activeBackground.getWidth();
+        float yScale = height/activeBackground.getHeight();
+
+        float ixScale = width/inactiveBackground.getWidth();
+        float iyScale = height/inactiveBackground.getHeight();
+        Color tint = Color.WHITE;
+        tint.a = laneTint;
+        canvas.draw(activeBackground, tint, 0, 0, bottomLeftCorner.x, bottomLeftCorner.y, 0.0f, xScale, yScale);
+        Color itint = Color.WHITE;
+        itint.a = 1f - laneTint;
+        canvas.draw(inactiveBackground, tint, 0, 0, bottomLeftCorner.x, bottomLeftCorner.y, 0.0f, ixScale, iyScale);
     }
 
     public void drawHPBar(GameCanvas canvas){

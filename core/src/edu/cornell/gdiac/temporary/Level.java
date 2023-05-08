@@ -34,6 +34,10 @@ public class Level {
         return switchNoteTexture;
     }
 
+    private Texture switchIndicator;
+
+    private Texture switchIndicatorHit;
+
     public Texture getHoldNoteTexture() {
         return holdNoteTexture;
     }
@@ -105,11 +109,8 @@ public class Level {
     private Texture holdEndTexture;
     private Texture holdTrailTexture;
     private Texture hpbar;
-
     private Texture noteIndicator;
     private Texture noteIndicatorHit;
-
-
     private FilmStrip violinSprite;
     private FilmStrip drummerSprite;
     private FilmStrip voiceSprite;
@@ -124,7 +125,6 @@ public class Level {
     private int spawnOffset;
     private int bpm;
     private MusicQueue music;
-
 
     /**
      * The last sample that health was decremented due to continuous decay
@@ -157,29 +157,27 @@ public class Level {
     /**
      * background of each lane
      */
-    private Texture laneBackground;
-
+    private Texture activeLane;
+    private Texture inactiveLane;
     AudioSource songSource;
     JsonValue data;
-
-
-
     float maxSample;
     public Level(JsonValue data, AssetDirectory directory) {
-
         JsonReader jr = new JsonReader();
         JsonValue assets = jr.parse(Gdx.files.internal("assets.json"));
+
         // load all related level textures
         hitNoteTexture = directory.getEntry("hit", Texture.class);
         switchNoteTexture = directory.getEntry("switch", Texture.class);
         holdNoteTexture = directory.getEntry("hold-start", Texture.class);
         holdTrailTexture = directory.getEntry("hold-trail", Texture.class);
-
         hpbar = directory.getEntry("hp-bar", Texture.class);
         holdTrailTexture.setWrap(Texture.TextureWrap.ClampToEdge, Texture.TextureWrap.Repeat);
         holdEndTexture = directory.getEntry("hold-end", Texture.class);
         noteIndicator = directory.getEntry("note-indicator", Texture.class);
         noteIndicatorHit = directory.getEntry("note-indicator-hit", Texture.class);
+        switchIndicator = directory.getEntry("switch-indicator", Texture.class);
+        switchIndicatorHit = directory.getEntry("switch-indicator-hit", Texture.class);
         violinSprite = new FilmStrip(directory.getEntry("violin-cat", Texture.class), 2, 5, 6);
         voiceSprite = new FilmStrip(directory.getEntry("singer-cat", Texture.class), 2, 5, 6);
         drummerSprite = new FilmStrip(directory.getEntry("drummer-cat", Texture.class), 2, 5, 6);
@@ -196,14 +194,13 @@ public class Level {
         String song = data.getString("song");
         music = ((AudioEngine) Gdx.audio).newMusic(Gdx.files.internal(assets.get("samples").getString(song)));
         songSource = music.getSource(0);
-        System.out.println(songSource.getDuration());
         music.setVolume(0.8f);
         maxSample = songSource.getDuration() * songSource.getSampleRate();
-
         HUnit = directory.getEntry("borderHUnit", Texture.class);
         VUnit = directory.getEntry("borderVUnit", Texture.class);
         CUnit = directory.getEntry("borderCorner", Texture.class);
-        laneBackground = directory.getEntry("laneBackground", Texture.class);
+        activeLane = directory.getEntry("activeLane", Texture.class);
+        inactiveLane = directory.getEntry("inactiveLane", Texture.class);
         sepLine = directory.getEntry("separationLine", Texture.class);
 
         // preallocate band members
@@ -218,8 +215,6 @@ public class Level {
             for(int j = 0; j < noteData.size; ++j){
                 JsonValue thisNote = noteData.get(j);
                 Note n;
-
-
 
                 if (thisNote.getString("type").equals("beat")){
                     if(thisNote.getLong("position") > maxSample){
@@ -241,15 +236,9 @@ public class Level {
                     n.setHoldTextures(holdTrailTexture,1,holdEndTexture,1, backSplash, frontSplash, getAnimationRateFromBPM(bpm));
                     n.setHoldSamples(thisNote.getLong("duration"));
                 }
-
-
-
-
                 n.setHitSample(thisNote.getInt("position"));
                 notes.addLast(n);
-
             }
-
             bandMembers[i].setAllNotes(notes);
             bandMembers[i].setCurComp(maxCompetency);
             bandMembers[i].setMaxComp(maxCompetency);
@@ -273,10 +262,7 @@ public class Level {
         }
     }
 
-
-
-
-
+    // TODO: document and multiply by the base music volume
     public void setMusicVolume(float vol) {
         music.setVolume(vol);
     }
@@ -289,6 +275,10 @@ public class Level {
      */
     public float getAnimationRateFromBPM(int bpm) {
         return bpm * 2 / 60f / 60f;
+    }
+
+    public int getSamplesPerBeat(){
+        return music.getSampleRate()*60/bpm;
     }
 
     /**
@@ -322,9 +312,11 @@ public class Level {
             bandMember.setWidth(short_width);
             bandMember.setLineHeight(0f);
             bandMember.setHeight(maxLineHeight);
+            bandMember.setLaneTint(0f);
         }
         bandMembers[activeBandMember].setWidth(large_width);
         bandMembers[activeBandMember].setLineHeight(maxLineHeight);
+        bandMembers[activeBandMember].setLaneTint(1f);
     }
 
     /**
@@ -346,9 +338,25 @@ public class Level {
         //set the width and line heights of the active and goal bandmembers accordingly
         bandMembers[previousBM].setWidth(large_width - (large_width - short_width)*t_progress);
         bandMembers[nextBM].setWidth(short_width + (large_width - short_width)*t_progress);
-
+        bandMembers[nextBM].setLaneTint(findTintColorProgress(t_progress, new SingleOperator() {
+            @Override
+            public float op(float x) {
+                return (float)Math.sin(x * Math.PI/2);
+            }
+        }));
+        bandMembers[previousBM].setLaneTint(findTintColorProgress(1f - t_progress, new SingleOperator() {
+            @Override
+            public float op(float x) {
+                return x * x;
+            }
+        }));
         bandMembers[previousBM].setLineHeight(maxLineHeight*(1f-t_progress));
         bandMembers[nextBM].setLineHeight(maxLineHeight*t_progress);
+    }
+
+    private float findTintColorProgress(float t_progress, SingleOperator op){
+        float prog = op.op(t_progress);
+        return prog;
     }
 
     /**
@@ -449,7 +457,6 @@ public class Level {
             bandMembers[i].setMaxComp(maxCompetency);
             bandMembers[i].setLossRate(bandMemberData.getInt("competencyLossRate"));
             bandMembers[i].setHpBarFilmStrip(hpbar, 47);
-            bandMembers[i].setIndicatorTextures(noteIndicator, noteIndicatorHit);
             switch (bandMemberData.getString("instrument")) {
                 case "violin":
                     bandMembers[i].setCharacterFilmstrip(violinSprite);
@@ -466,9 +473,6 @@ public class Level {
             }
         }
     }
-
-
-
 
     public void stopMusic() {
         music.stop();
@@ -509,33 +513,33 @@ public class Level {
      * @param switches - which switches are pressed?
      */
     public void drawEverything(GameCanvas canvas, int active, int goal, boolean[] triggers, boolean[] switches, float borderThickness){
-        //first we get the sample, since this determines where the notes will be drawn
-        long sample = getCurrentSample();
         for(int i = 0; i < bandMembers.length; ++i){
             //Draw the border of each band member
-            bandMembers[i].drawBackground(canvas, laneBackground);
+            bandMembers[i].drawBackground(canvas, activeLane, inactiveLane);
             bandMembers[i].drawBorder(canvas, HUnit, VUnit, CUnit, borderThickness);
-
+            //draw the character sprite and the comp bar
+            bandMembers[i].drawCharacterSprite(canvas);
+            bandMembers[i].drawHPBar(canvas);
             //If we are the goal of the active lane we need to draw separation lines and held/beat notes
             //We also need to draw a separate hit bar for each line
             if(active == i || goal == i){
                 bandMembers[i].drawHitNotes(canvas);
                 bandMembers[i].drawLineSeps(canvas, sepLine);
-                bandMembers[i].drawIndicator(canvas, triggers);
+                bandMembers[i].drawIndicator(canvas, noteIndicator, noteIndicatorHit, triggers);
             }
             //Otherwise just draw the switch notes, and we only have 1 hit bar to draw
             else{
                 bandMembers[i].drawSwitchNotes(canvas);
-                bandMembers[i].drawIndicator(canvas, switches[i]);
+                bandMembers[i].drawIndicator(canvas, switchIndicator, switchIndicatorHit, switches[i]);
             }
-
         }
 
     }
 
     public void dispose(){
         music.dispose();
-        laneBackground.dispose();
+        activeLane.dispose();
+        inactiveLane.dispose();
         hitNoteTexture.dispose();
         holdTrailTexture.dispose();
         holdNoteTexture.dispose();

@@ -1,6 +1,7 @@
 package edu.cornell.gdiac.temporary;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.controllers.Controller;
@@ -14,11 +15,8 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.util.ScreenListener;
 
 public class LevelSelect implements Screen, InputProcessor, ControllerListener {
-    /** Internal assets for this loading screen */
-    private AssetDirectory internal;
 
     private String selectedJson;
-
 
     /** Whether this player mode is still active */
     private boolean active;
@@ -59,11 +57,8 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     /** temp scale b/c album cover too big */
     private float scale2=0.15f;
 
-    /** Reads input from keyboard or game pad (CONTROLLER CLASS) */
-    private InputController inputController;
     /** Listener that will update the player mode when we are done */
     private ScreenListener listener;
-
 
     /** Constructs the game models and handle basic gameplay (CONTROLLER CLASS) */
     private GameplayController gameplayController;
@@ -100,6 +95,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     public int selectedLevel;
 
     public int selectedDifficulty;
+    private boolean pressedEscape;
 
     public LevelSelect(GameCanvas canvas) {
         this.canvas  = canvas;
@@ -111,8 +107,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         hardButton=null;
 
         hasSelectedLevel = false;
-
-
     }
 
     /**
@@ -144,8 +138,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 //        System.out.println("num levels "+numLevels);
         gameplayController = new GameplayController(canvas.getWidth(),canvas.getHeight());
         albumCovers = new Texture[numLevels];
-
-        Gdx.input.setInputProcessor( this );
 
         playButton = directory.getEntry("play",Texture.class);
         easyButton = directory.getEntry("easy",Texture.class);
@@ -188,6 +180,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         hardButton=null;
         playPressed=false;
         hasSelectedLevel = false;
+        pressedEscape = false;
     }
 
     public boolean getHasSelectedLevel(){
@@ -262,6 +255,9 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
     @Override
     public boolean keyUp(int keycode) {
+        if (keycode == Input.Keys.ESCAPE) {
+            pressedEscape = true;
+        }
         return false;
     }
 
@@ -364,7 +360,9 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 //                System.out.println("file name:"+allLevels[gameIdx-1]);
                 System.out.println(gameIdx);
                 selectedJson=allLevels[gameIdx-1];
-                listener.exitScreen(playing, ExitCode.TO_PLAYING);
+                listener.exitScreen(this, ExitCode.TO_PLAYING);
+            } else if (pressedEscape && listener != null) {
+                listener.exitScreen(this, ExitCode.TO_MENU);
             }
         }
     }
