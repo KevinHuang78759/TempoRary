@@ -115,7 +115,6 @@ public class GameMode implements Screen {
 	private Vector2 levelWonCoords;
 
 	/** Play button to display when done */
-	private Texture playButton;
 	float WON_BUTTON_SCALE = 0.7f;
 
 	private Texture goBack;
@@ -168,9 +167,6 @@ public class GameMode implements Screen {
 	/** used for "counting down" before game starts */
 	private float waiting = 4f;
 
-	/** Play button x and y coordinates represented as a vector */
-	private Vector2 playButtonCoords;
-
 	/** the current level */
 	private int currLevel;
 	private int activeBM;
@@ -181,8 +177,9 @@ public class GameMode implements Screen {
 
 	private int nextIdx;
 
+	// TODO: REMOVE ALL INSTANCES OF VECTOR2
 	private Texture cross;
-	private Vector2  crossCoords;
+	private Vector2 crossCoords;
 
 	private Texture combo;
 	private Vector2 comboCoords;
@@ -219,9 +216,6 @@ public class GameMode implements Screen {
 
 	String levelString;
 
-
-
-
 	/**
 	 * Creates a new game with the given drawing context.
 	 *
@@ -231,7 +225,6 @@ public class GameMode implements Screen {
 	public GameMode(GameCanvas canvas)  {
 		this.canvas = canvas;
 		active = false;
-		playButton = null;
 		activeBM = 0;
 
 		// Null out all pointers, 0 out all ints, etc.
@@ -321,8 +314,6 @@ public class GameMode implements Screen {
 		displayFont = directory.getEntry("times",BitmapFont.class);
 		lucidaFont = directory.getEntry("lucida", BitmapFont.class);
 		gameplayController.populate(directory);
-		playButton = directory.getEntry("restart-button",Texture.class);
-		playButtonCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 - 50);
 		resumeButton = directory.getEntry("resume-button", Texture.class);
 		restartButton = directory.getEntry("restart-button", Texture.class);
 		levelButton = directory.getEntry("level-select-button", Texture.class);
@@ -464,7 +455,6 @@ public class GameMode implements Screen {
 
 					if (didRestartWon){
 						System.out.println("pressed restart");
-//						pressState = ExitCode.TO_PLAYING;
 						resetLevel();
 					}
 
@@ -535,7 +525,6 @@ public class GameMode implements Screen {
 						pressState = ExitCode.TO_LEVEL;
 					}
 					if (didNext){
-
 						goNextLevel();
 					}
 				}
@@ -545,19 +534,8 @@ public class GameMode implements Screen {
 		}
 	}
 
-
 	private void goNextLevel(){
 		System.out.println("next pressed:" + nextIdx);
-//						JsonReader jr = new JsonReader();
-
-//						JsonValue levelData = jr.parse(Gdx.files.internal("levels/"+nextIdx+".json"));
-
-//						gameplayController.loadLevel(levelData, directory);
-//						if (gameplayController.NUM_LANES == 2) {
-//							inputController = new InputController(new int[]{1, 2},  new int[gameplayController.lpl]);
-//						} else {
-//							inputController = new InputController(gameplayController.NUM_LANES, gameplayController.lpl);
-//						}
 		LevelSelect.setSelectedJson("levels/"+nextIdx+".json");
 		pressState = ExitCode.TO_PLAYING;
 	}
@@ -623,10 +601,10 @@ public class GameMode implements Screen {
 //			gameState = GameState.OVER;
 //		}
 //			Draw everything in the current level
-		gameplayController.level.drawEverything(canvas,
-		gameplayController.activeBandMember, gameplayController.goalBandMember,
-					inputController.triggerPress, inputController.didSwitch(),
-					gameplayController.inBetweenWidth/5f);
+			gameplayController.level.drawEverything(canvas,
+			gameplayController.activeBandMember, gameplayController.goalBandMember,
+						inputController.triggerPress, inputController.didSwitch(),
+						gameplayController.inBetweenWidth/5f);
 
 			// Draw the particles on top
 			for (Particle o : gameplayController.getParticles()) {
@@ -680,7 +658,6 @@ public class GameMode implements Screen {
 		canvas.draw(combo, Color.WHITE, combo.getWidth()/2, combo.getHeight()/2,
 				comboCoords.x, comboCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
 		long maxCombo =gameplayController.sb.getMaxCombo();
-//		long maxCombo =1000;
 		canvas.drawText(String.valueOf(maxCombo), lucidaFont,comboCoords.x+combo.getWidth()/2,comboCoords.y,
 				Color.WHITE);
 
@@ -717,17 +694,14 @@ public class GameMode implements Screen {
 		canvas.drawText(String.valueOf(score), lucidaFont,scoreIconCoords.x+good.getWidth(),scoreIconCoords.y,
 				Color.WHITE);
 
-		drawNextRetryLevel();
+		drawNextRetryLevel(true);
 
 		//draw score from JSON thresholds
 
-		JsonReader jr = new JsonReader();
-
-		JsonValue levelData = jr.parse(Gdx.files.internal(levelString));
-		long aThreshold = levelData.get("a-threshold").asLong();
-		long bThreshold = levelData.get("b-threshold").asLong();
-		long cThreshold = levelData.get("c-threshold").asLong();
-		long sThreshold = levelData.get("s-threshold").asLong();
+		long aThreshold = gameplayController.level.getaThreshold();
+		long bThreshold = gameplayController.level.getbThreshold();
+		long cThreshold = gameplayController.level.getcThreshold();
+		long sThreshold = gameplayController.level.getsThreshold();
 
 		if (score>=sThreshold){
 			canvas.draw(scoreS, Color.WHITE, scoreS.getWidth()/2, scoreS.getHeight()/2,
@@ -754,11 +728,9 @@ public class GameMode implements Screen {
 		canvas.drawBackground(loseBackground.getTexture(),0,0);
 		canvas.draw(ruinShow, Color.WHITE,ruinShow.getWidth()/2,ruinShow.getHeight()/2,ruinShowCoords.x,ruinShowCoords.y,
 				0,WON_BUTTON_SCALE,WON_BUTTON_SCALE);
-		drawNextRetryLevel();
-
+		drawNextRetryLevel(false);
 		canvas.draw(cross, Color.WHITE, cross.getWidth()/2, cross.getHeight()/2,
 				crossCoords.x, crossCoords.y, 0, WON_BUTTON_SCALE,WON_BUTTON_SCALE);
-
 	}
 
 
@@ -766,15 +738,14 @@ public class GameMode implements Screen {
 	 * Draws next, retry, and level on the right of the win/lose screen; things in common for win/lose screen.
 	 *
 	 */
-	public void drawNextRetryLevel(){
+	public void drawNextRetryLevel(boolean drawNextLevel){
 		canvas.draw(resultIcon,Color.WHITE,resultIcon.getWidth()/2,resultIcon.getHeight()/2,resultIconCoords.x,
 		resultIconCoords.y,0,WON_BUTTON_SCALE, WON_BUTTON_SCALE);
 
 		canvas.draw(goBack, Color.WHITE, goBack.getWidth()/2, goBack.getHeight()/2,
 				goBackCoords.x, goBackCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
 
-
-		if (nextIdx<=9){
+		if (nextIdx<=9 && drawNextLevel){
 			canvas.draw(nextButtonWon, Color.WHITE, nextButtonWon.getWidth()/2, nextButtonWon.getHeight()/2,
 					nextWonCoords.x, nextWonCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
 		}
@@ -789,9 +760,6 @@ public class GameMode implements Screen {
 
 		canvas.draw(difficultyIcon, Color.WHITE, difficultyIcon.getWidth()/2,difficultyIcon.getHeight()/2,
 				difficultyIconCoords.x,difficultyIconCoords.y,0,WON_BUTTON_SCALE,WON_BUTTON_SCALE);
-
-
-
 	}
 
 	/**

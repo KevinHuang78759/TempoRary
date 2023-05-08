@@ -86,11 +86,14 @@ public class GameplayController {
 
 	public Scoreboard sb;
 
-	private int nMiss;
-	private int nOk;
-	private int nGood;
-	private int nPerfect;
-
+	/** number of notes missed */
+	private int numberMiss;
+	/** number of notes hit okay */
+	private int numberOk;
+	/** number of notes hit good */
+	private int numberGood;
+	/** number of notes hit perfect */
+	private int numberPerfect;
 
 	/**
 	 * Create gameplaycontroler
@@ -112,31 +115,30 @@ public class GameplayController {
 			JsonValue cur = allSounds.get(i);
 			sfx.addSound(cur.getString(0), cur.getString(1));
 		}
-		nMiss=0;
-		nOk=0;
-		nGood=0;
-		nPerfect=0;
+		numberMiss =0;
+		numberOk =0;
+		numberGood =0;
+		numberPerfect =0;
 	}
 
 	float totalWidth;
 	float totalHeight;
 
 	public int getNMiss(){
-		return nMiss;
+		return numberMiss;
 	}
 
 	public int getNOk(){
-		return nOk;
+		return numberOk;
 	}
 
 	public int getNGood(){
-		return nGood;
+		return numberGood;
 	}
 
 	public int getNPerfect(){
-		return nPerfect;
+		return numberPerfect;
 	}
-
 
 	public void setBounds(float width, float height){
 		//Ratio of play area width to play area height
@@ -215,10 +217,10 @@ public class GameplayController {
 		activeBandMember = 0;
 		goalBandMember = 0;
 
-		nMiss=0;
-		nOk=0;
-		nGood=0;
-		nPerfect=0;
+		numberMiss =0;
+		numberOk =0;
+		numberGood =0;
+		numberPerfect =0;
 	}
 
 	public void reloadLevel(){
@@ -248,10 +250,10 @@ public class GameplayController {
 		goalBandMember = 0;
 
 
-		nMiss=0;
-		nOk=0;
-		nGood=0;
-		nPerfect=0;
+		numberMiss =0;
+		numberOk =0;
+		numberGood =0;
+		numberPerfect =0;
 	}
 
 	/**
@@ -550,12 +552,12 @@ public class GameplayController {
 				int compGain = dist < perfectHit ? perfectGain : (dist < goodHit ? goodGain : okGain);
 
 				if (dist < perfectHit){
-					nPerfect++;
+					numberPerfect++;
 				} else{
 					if (dist < goodHit){
-						nGood++;
+						numberGood++;
 					} else{
-						nOk++;
+						numberOk++;
 					}
 				}
 
@@ -587,7 +589,7 @@ public class GameplayController {
 			sb.resetCombo();
 			note.setHitStatus(offBeatLoss);
 		}
-		nMiss++;
+		numberMiss++;
 	}
 
 
