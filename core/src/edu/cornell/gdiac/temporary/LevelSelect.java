@@ -198,7 +198,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         easyButtonCoords = new Vector2(mediumButtonCoords.x-easyButton.getWidth(), canvas.getHeight()/4);
         hardButtonCoords = new Vector2(mediumButtonCoords.x+easyButton.getWidth(), canvas.getHeight()/4);
 
-//      album covers are called 1, 2, 3 and so on in assets.json; we can change that later
+//      album covers are called 1, 2, 3 and so on in assets.json
         for (int i = 0; i < numSongs; i++){
             albumCovers[i] = directory.getEntry(Integer.toString(i+1),Texture.class);
         }
@@ -377,13 +377,13 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         // check if the albums on the sides are touched; if so, update selected level
         if (selectedLevel-1>=0){
             if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel-1], albumCoverCoords[0], cornerScale)) {
-                selectedLevel = selectedLevel - 1;
+                selectedLevel--;
             }
         }
 
         if (selectedLevel+1< numSongs){
             if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel+1], albumCoverCoords[2], cornerScale)) {
-                selectedLevel = selectedLevel+1;
+                selectedLevel++;
             }
         }
 

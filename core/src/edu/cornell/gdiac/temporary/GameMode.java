@@ -122,7 +122,8 @@ public class GameMode implements Screen {
 
 	private static float BUTTON_SCALE  = 1f;
 
-	private static float ALBUM_SCALE  = 0.15f;
+	private static float ALBUM_SCALE  = 0.75f;
+
 
 	/// CONSTANTS
 	/** Offset for the game over message on the screen */
