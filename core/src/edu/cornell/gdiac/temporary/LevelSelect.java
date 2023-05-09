@@ -107,6 +107,12 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     private int MEDIUM = 2;
     private  int HARD = 3;
 
+    /** the scale for the song in the middle in level select */
+    float centerScale = 0.65f*scale;
+
+    /** the scale for the songs on the sides in level select */
+    float cornerScale = 0.45f*scale;
+
     /** Selected song; index from 0. */
     public int selectedLevel;
 
@@ -161,7 +167,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     public void populate(AssetDirectory assetDirectory) {
         directory  = assetDirectory;
         background  = directory.getEntry("background",Texture.class); //menu background
-
         goBack = directory.getEntry("go-back", Texture.class);
         goBackCoords=new Vector2 (goBack.getWidth(), canvas.getHeight()-goBack.getWidth());
 
@@ -193,22 +198,23 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         easyButtonCoords = new Vector2(mediumButtonCoords.x-easyButton.getWidth(), canvas.getHeight()/4);
         hardButtonCoords = new Vector2(mediumButtonCoords.x+easyButton.getWidth(), canvas.getHeight()/4);
 
-//        temp implementation for temp assets
+//      album covers are called 1, 2, 3 and so on in assets.json; we can change that later
         for (int i = 0; i < numSongs; i++){
             albumCovers[i] = directory.getEntry(Integer.toString(i+1),Texture.class);
         }
 
-        albumCoverCoords[0]=new Vector2((canvas.getWidth()/4-8),(canvas.getHeight()*2/3)-25);
+        albumCoverCoords[0]=new Vector2((canvas.getWidth()/4-10),(canvas.getHeight()*2/3)-25);
         albumCoverCoords[1]=new Vector2((canvas.getWidth()/2 ),(canvas.getHeight()*2/3)-25);
-        albumCoverCoords[2]=new Vector2((canvas.getWidth()/2 )+ (canvas.getWidth()/4)+8,(canvas.getHeight()*2/3)-25);
+        albumCoverCoords[2]=new Vector2((canvas.getWidth()/2 )+ (canvas.getWidth()/4)+10,(canvas.getHeight()*2/3)-25);
 
+        // populate all the levels; 3 because we have 3 difficulties.
         for (int i = 0; i < numSongs *3; i++){
             allLevels[i]="levels/"+(i+1)+".json";
         }
     }
 
     /**
-     * Resets the LevelSelect
+     * Resets  LevelSelect
      */
     public void reset() {
         Gdx.input.setInputProcessor( this );
@@ -231,13 +237,10 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         canvas.begin();
 
         canvas.drawBackground(levelBackground.getTexture(),0,0);
-
         canvas.draw(goBack, Color.WHITE, goBack.getWidth()/2, goBack.getHeight()/2,
                 goBackCoords.x, goBackCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
-
         canvas.draw(goLeft, Color.WHITE, goLeft.getWidth()/2, goLeft.getHeight()/2,
                 goLeftCoords.x, goLeftCoords.y, 0, 0.9f*scale, 0.9f*scale);
-
         canvas.draw(goRight, Color.WHITE, goRight.getWidth()/2, goRight.getHeight()/2,
                 goRightCoords.x, goRightCoords.y, 0, 0.9f*scale, 0.9f*scale);
 
@@ -255,21 +258,18 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                 hardButtonCoords.x, hardButtonCoords.y, 0, 0.5f*scale, 0.5f*scale);
 
         // draw each song
-        float centerScale = 0.65f*scale;
-        float cornerScale = 0.45f*scale;
-
-        // selectedLevel starts from 1, while array are zero-indexed.
-        if (selectedLevel>=1){
+        if (selectedLevel>=1){ //check that if there are a song to the left; if so, draw.
             canvas.draw(albumCovers[selectedLevel-1], Color.WHITE, albumCovers[selectedLevel-1].getWidth()/2,
                     albumCovers[selectedLevel-1].getHeight()/2, albumCoverCoords[0].x,
                     albumCoverCoords[0].y, 0, cornerScale, cornerScale);
         }
 
+        // It an invariant that selectedLevel is a valid index, so we can simply draw.
         canvas.draw(albumCovers[selectedLevel],Color.WHITE,albumCovers[selectedLevel].getWidth()/2,
                 albumCovers[selectedLevel].getHeight()/2,albumCoverCoords[1].x,
                 albumCoverCoords[1].y,0, centerScale, centerScale);
 
-        if (selectedLevel+1< numSongs) {
+        if (selectedLevel+1< numSongs) {//check that if there are a song to the right; if so, draw.
             canvas.draw(albumCovers[selectedLevel+1],Color.WHITE,albumCovers[selectedLevel+1].getWidth()/2,
                     albumCovers[selectedLevel+1].getHeight()/2,albumCoverCoords[2].x,
                     albumCoverCoords[2].y,0, cornerScale, cornerScale);
@@ -360,47 +360,43 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             selectedDifficulty = 3;
         }
 
+        // if there are a previous level, we allow decrement.
         if (isButtonPressed(screenX, screenY, goLeft, goLeftCoords, 0.9f*scale)) {
             if (selectedLevel-1>=0){
                 selectedLevel--;
             }
         }
 
+        // if there are a next level, we allow increment.
         if (isButtonPressed(screenX, screenY, goRight, goRightCoords, 0.9f*scale)) {
             if (selectedLevel+1< numSongs){
                 selectedLevel++;
             }
-
         }
 
-        // check touched albums
+        // check if the albums on the sides are touched; if so, update selected level
         if (selectedLevel-1>=0){
-            if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel-1], albumCoverCoords[0], 0.5f*scale)) {
+            if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel-1], albumCoverCoords[0], cornerScale)) {
                 selectedLevel = selectedLevel - 1;
             }
-
         }
-
 
         if (selectedLevel+1< numSongs){
-            if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel+1], albumCoverCoords[2], 0.5f*scale)) {
+            if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel+1], albumCoverCoords[2], cornerScale)) {
                 selectedLevel = selectedLevel+1;
             }
-
         }
 
-        if (selectedDifficulty != -1){
+        if (selectedDifficulty != -1){ // because selectedSong is default to be 1, so it will never be null.
             hasSelectedLevel=true;
         }
 
         if (isButtonPressed(screenX, screenY, playButton, playButtonCoords,scale) && hasSelectedLevel) {
             playPressed=true;
-
         }
 
-        boolean didGoBack = (isButtonPressed(screenX, screenY, goBack, goBackCoords,WON_BUTTON_SCALE));
 
-        if (didGoBack){
+        if (isButtonPressed(screenX, screenY, goBack, goBackCoords,WON_BUTTON_SCALE)){
             listener.exitScreen(this,  ExitCode.TO_MENU);
         }
 
