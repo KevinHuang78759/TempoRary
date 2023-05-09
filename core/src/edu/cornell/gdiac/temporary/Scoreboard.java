@@ -61,7 +61,7 @@ public class Scoreboard {
 
         fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/TempoRaryFont.ttf"));
         fontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        fontParameter.size = 128;
+        fontParameter.size = 96;
         scoreFont = fontGenerator.generateFont(fontParameter);
         multiplierFont = fontGenerator.generateFont(fontParameter);
         comboFont = fontGenerator.generateFont(fontParameter);
