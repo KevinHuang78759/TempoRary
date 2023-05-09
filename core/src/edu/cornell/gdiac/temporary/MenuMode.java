@@ -163,6 +163,9 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private int prevHeight;
 
     private ObjectMap<String, Texture> keyImageMap = new ObjectMap<>();
+    private Texture settingsButtonHover;
+    private Texture exitButtonHover;
+    private Texture playButtonHover;
 
     // MenuState
     private enum MenuState {
@@ -185,10 +188,13 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         background.setFilter( Texture.TextureFilter.Linear, Texture.TextureFilter.Linear );
         settingsBackground = directory.getEntry("settings-background", Texture.class);
         playButton = directory.getEntry("play", Texture.class);
+        playButtonHover = directory.getEntry("play-button-hover", Texture.class);
         levelEditorButton = directory.getEntry("level-editor", Texture.class);
         calibrationButton = directory.getEntry("play-old", Texture.class);
-        settingsButton = directory.getEntry("play-old", Texture.class);
-        exitButton = directory.getEntry("quit-button", Texture.class);
+        settingsButton = directory.getEntry("settings", Texture.class);
+        settingsButtonHover = directory.getEntry("settings-hover", Texture.class);
+        exitButton = directory.getEntry("quit-button-menu", Texture.class);
+        exitButtonHover = directory.getEntry("quit-button-menu-hover", Texture.class);
         playButtonCoords = new Vector2(centerX + levelEditorButton.getWidth(), canvas.getHeight()/2 + 200);
         levelEditorButtonCoords = new Vector2(centerX + levelEditorButton.getWidth(), canvas.getHeight()/2);
         calibrationButtonCoords = new Vector2(centerX + calibrationButton.getWidth()*2 , centerY);
@@ -620,6 +626,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         canvas.begin();
         // TODO: make these methods instead
         canvas.draw(background, 0, 0, canvas.getWidth(), canvas.getHeight());
+
         Color playButtonTint = (pressState == PLAY_PRESSED ? Color.GRAY: Color.WHITE);
         canvas.draw(playButton, playButtonTint, playButton.getWidth()/2, playButton.getHeight()/2,
                     playButtonCoords.x, playButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
