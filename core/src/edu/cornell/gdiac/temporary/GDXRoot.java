@@ -155,6 +155,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		else if (exitCode == ExitCode.TO_LEVEL) {
 
 			screen.hide();
+			System.out.println("hello");
 			levelscreen.reset();
 			levelscreen.setScreenListener(this);
 			levelscreen.populate(directory);

@@ -1,6 +1,7 @@
 {
 	"textures": {
-        "loading-background": "images/backgrounds/loading_screen_background_2.png",
+        "loading-background": "images/backgrounds/main_menu_screen.png",
+        "menu-select-indicator": "images/ui/main_menu_selection_active_indicator.png",
         "settings-background": "images/backgrounds/settings_screen_bg.png",
         "settings-header": "images/ui/settings.png",
         "back-arrow": "images/ui/left_backarrow.png",
@@ -23,21 +24,25 @@
         "down-arrow-graphic": "images/ui/down_arrow.png",
         "right-arrow-graphic": "images/ui/right_arrow.png",
         "title": "images/title_v1.png",
-        "ghost-cat": "images/ghost_cat.jpg",
+        "play": "images/ui/play_button_inactive.png",
         "play-old": "images/play.png",
         "level-select-left": "images/level_select_left_arrow.png",
         "level-select-right": "images/level_select_right_arrow.png",
-        "play": "images/play_button_v1.png",
+        "play-button": "images/ui/play_button_inactive.png",
+        "play-button-active": "images/ui/play_button_black_active.png",
+        "settings": "images/ui/settings_button_inactive.png",
+        "settings-active": "images/ui/settings_button_black_active.png",
+        "quit-button-menu": "images/ui/quit_button_inactive.png",
+        "quit-button-active-menu": "images/ui/quit_button_black_active.png",
         "ghost-play": "images/ghost_and_play_button.png",
-        "calibration-background": "images/backgrounds/Calibration_Background.png",
-        "white-background": "images/backgrounds/white_background.png",
+        "calibration-background": "images/backgrounds/calibration_screen_bg.png",
         "win-background": "images/backgrounds/win_screen_bg.png",
         "lose-background": "images/backgrounds/lose_screen_bg.png",
-        "calibration-back-arrow": "images/ui/Calibration_left_arrow.png",
+        "calibration-header": "images/ui/calibration_text_1.png",
         "calibration-note": "images/ui/Calibration_note_normal.png",
         "calibration-note-hit": "images/ui/Calibration_note_glowing.png",
         "calibration-circle-filled": "images/ui/Calibration_Ellipse_1.png",
-        "calibration-circle": "images/ui/Ellipse_2.png",
+        "calibration-circle": "images/ui/calibration_ellipse_2.png",
         "intro-3": "images/ui/3.png",
         "intro-2": "images/ui/2.png",
         "intro-1": "images/ui/1.png",
@@ -72,7 +77,7 @@
         "pause-background": "images/ui/pause_background.png",
         "background": "images/background.png",
         "concert-background": "images/backgrounds/background_temp_concert_1.png",
-        "street-background": "images/backgrounds/background_temp_streets_1.png",
+        "street-background": "images/backgrounds/streets_2.png",
         "cafe-background": "images/backgrounds/background_temp_cafe_1.png",
         "white-background": "images/backgrounds/white_background.png",
         "switch":    "images/notes/switch.png",
@@ -109,11 +114,10 @@
         "good-hit": "images/Good.png",
         "perfect-hit": "images/Perfect.png",
         "miss-hit": "images/Miss.png"
-
     },
     "fonts": {
         "lucida": {
-            "file": "fonts/LucidaGrande.ttf",
+            "file": "fonts/Blinker-SemiBold.ttf",
             "size": 30
         },
         "times": {
@@ -129,8 +133,8 @@
             "size": 25
         },
         "calibration-font": {
-            "file": "fonts/TempoRaryFont.ttf",
-            "size": 35
+            "file": "fonts/Blinker-SemiBold.ttf",
+            "size": 40
         }
     },
     "samples": {
@@ -169,7 +173,7 @@
     "jsons": {
         "1": "levels/1.json",
         "2" : "levels/2.json",
-        "3" : "levels/3.json",
+        "3" : "levels/3.json"
     },
     "soundEffects": [
         ["tap", "sound/tap.ogg"],
