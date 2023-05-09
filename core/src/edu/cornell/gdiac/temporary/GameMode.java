@@ -546,6 +546,9 @@ public class GameMode implements Screen {
 						pressState = ExitCode.TO_MENU;
 					} else if (didResume) {
 						ticks = 60;
+						saidThree = false;
+						saidTwo = false;
+						saidOne = false;
 						justPaused = true;
 						gameState = GameState.INTRO;
 					} else if (didRestart) {
