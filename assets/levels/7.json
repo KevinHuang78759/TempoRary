@@ -6,6 +6,7 @@
   "bpm" : 160,
   "maxCompetency" : 100,
   "linesPerMember" : 4,
+  "a-threshold":40000,"b-threshold":30000,"c-threshold":20000,"s-threshold":50000,
   "bandMembers" : [
     {
       "instrument" : "piano",
