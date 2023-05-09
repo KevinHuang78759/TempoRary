@@ -8,6 +8,7 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
@@ -224,16 +225,45 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     }
 
 
+    /** Affine cache for current sprite to draw */
+    private Affine2 local;
+
+    /**
+     * Compute the affine transform (and store it in local) for this image.
+     *
+     * This helper is meant to simplify all of the math in the above draw method
+     * so that you do not need to worry about it when working on Exercise 4.
+     *
+     * @param ox 	The x-coordinate of texture origin (in pixels)
+     * @param oy 	The y-coordinate of texture origin (in pixels)
+     * @param x 	The x-coordinate of the texture origin
+     * @param y 	The y-coordinate of the texture origin
+     * @param angle The rotation angle (in degrees) about the origin.
+     * @param sx 	The x-axis scaling factor
+     * @param sy 	The y-axis scaling factor
+     */
+    private void computeTransform(float ox, float oy, float x, float y, float angle, float sx, float sy) {
+        local.setToTranslation(x,y);
+        local.rotate(angle);
+        local.scale(sx,sy);
+        local.translate(-ox,-oy);
+    }
+
     public void draw(){
         canvas.begin();
 
         canvas.drawBackground(levelBackground.getTexture(),0,0);
         canvas.draw(goBack, Color.WHITE, goBack.getWidth()/2, goBack.getHeight()/2,
                 goBackCoords.x, goBackCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
-        canvas.draw(goLeft, Color.WHITE, goLeft.getWidth()/2, goLeft.getHeight()/2,
-                goLeftCoords.x, goLeftCoords.y, 0, 0.9f*scale, 0.9f*scale);
-        canvas.draw(goRight, Color.WHITE, goRight.getWidth()/2, goRight.getHeight()/2,
-                goRightCoords.x, goRightCoords.y, 0, 0.9f*scale, 0.9f*scale);
+
+        if (selectedLevel-1>=0) {
+            canvas.draw(goLeft, Color.WHITE, goLeft.getWidth() / 2, goLeft.getHeight() / 2,
+                    goLeftCoords.x, goLeftCoords.y, 0, 0.9f * scale, 0.9f * scale);
+        }
+        if (selectedLevel+1< numSongs) {
+            canvas.draw(goRight, Color.WHITE, goRight.getWidth() / 2, goRight.getHeight() / 2,
+                    goRightCoords.x, goRightCoords.y, 0, 0.9f * scale, 0.9f * scale);
+        }
 
         // draw easy, medium, and hard buttons
         Color easyButtonTint = (selectedDifficulty == EASY ? Color.GRAY: Color.WHITE);
