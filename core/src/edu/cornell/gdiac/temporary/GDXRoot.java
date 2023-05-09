@@ -70,6 +70,8 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * the asynchronous loader for all other assets.
 	 */
 	public void create() {
+		// initialize to make life easier
+		InputController.getInstance();
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("assets.json", canvas,1);
 		menu = new MenuMode(canvas);

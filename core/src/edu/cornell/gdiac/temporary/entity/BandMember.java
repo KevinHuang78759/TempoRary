@@ -314,7 +314,8 @@ public class BandMember {
         canvas.draw(hit ? noteIndicatorHit : noteIndicator, Color.WHITE, noteIndicatorHit.getWidth() / 2, noteIndicatorHit.getHeight() / 2,
                 bottomLeftCorner.x + width/2, hitY,
                 0.0f,scale, scale);
-//        canvas.drawText(InputController.switchKeyBinds()[i], displayFont, ( bottomLeftCorner.x + bottomLeftCorner.x + width) / 2f, hitY - 80);
+//         TODO: fix these values
+//        canvas.drawText(InputController.switchKeyBinds(4)[i], displayFont, ( bottomLeftCorner.x + bottomLeftCorner.x + width) / 2f, hitY - 80);
     }
 
     /**
