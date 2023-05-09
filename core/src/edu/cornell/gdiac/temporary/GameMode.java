@@ -29,8 +29,6 @@ import edu.cornell.gdiac.temporary.entity.BandMember;
 
 import edu.cornell.gdiac.util.ScreenListener;
 
-
-
 /**
  * The primary controller class for the game.
  *
@@ -137,14 +135,6 @@ public class GameMode implements Screen {
 	/* PRESS STATES **/
 	/** Initial button state */
 	private static final int NO_BUTTON_PRESSED = 0;
-	/** Pressed down button state for the resume button */
-	private static final int RESUME_PRESSED = 101;
-	/** Pressed down button state for the restart button */
-	private static final int RESTART_PRESSED = 102;
-	/** Pressed down button state for the level select button */
-	private static final int LEVEL_PRESSED = 103;
-	/** Pressed down button state for the main menu button */
-	private static final int MENU_PRESSED = 104;
 
 	/** Reference to drawing context to display graphics (VIEW CLASS) */
 	private GameCanvas canvas;
@@ -167,6 +157,9 @@ public class GameMode implements Screen {
 
 	/** used for "counting down" before game starts */
 	private float waiting = 4f;
+
+	/** Play button x and y coordinates represented as a vector */
+	private Vector2 playButtonCoords;
 
 	/** the current level */
 	private int currLevel;
@@ -614,7 +607,8 @@ public class GameMode implements Screen {
 			// draw pause menu UI if paused
 			if (gameState == GameState.PAUSE) {
 				//Draw the buttons for the pause menu
-				//canvas.draw(whiteBackground, Color.LIGHT_GRAY, 0, 0, 0, 0, 0, 1f, 1f);
+				Color color = new Color(1f, 1f, 1f, 0.65f);
+				canvas.draw(whiteBackground, color, 0, 0, 0, 0, 0, 1f, 1f);
 				canvas.draw(pauseBackground, Color.WHITE, pauseBackground.getWidth() / 2, pauseBackground.getHeight() / 2,
 						pauseCoords.x, pauseCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
 				canvas.draw(resumeButton, Color.WHITE, resumeButton.getWidth() / 2, resumeButton.getHeight() / 2,
