@@ -86,6 +86,15 @@ public class GameplayController {
 
 	public Scoreboard sb;
 
+	/** number of notes missed */
+	private int numberMiss;
+	/** number of notes hit okay */
+	private int numberOk;
+	/** number of notes hit good */
+	private int numberGood;
+	/** number of notes hit perfect */
+	private int numberPerfect;
+
 	/**
 	 * Create gameplaycontroler
 	 * @param width
@@ -106,10 +115,30 @@ public class GameplayController {
 			JsonValue cur = allSounds.get(i);
 			sfx.addSound(cur.getString(0), cur.getString(1));
 		}
+		numberMiss =0;
+		numberOk =0;
+		numberGood =0;
+		numberPerfect =0;
 	}
 
 	float totalWidth;
 	float totalHeight;
+
+	public int getNMiss(){
+		return numberMiss;
+	}
+
+	public int getNOk(){
+		return numberOk;
+	}
+
+	public int getNGood(){
+		return numberGood;
+	}
+
+	public int getNPerfect(){
+		return numberPerfect;
+	}
 
 	public void setBounds(float width, float height){
 		//Ratio of play area width to play area height
@@ -187,6 +216,11 @@ public class GameplayController {
 		T_SwitchPhases = level.getSamplesPerBeat()/2;
 		activeBandMember = 0;
 		goalBandMember = 0;
+
+		numberMiss =0;
+		numberOk =0;
+		numberGood =0;
+		numberPerfect =0;
 	}
 
 	public void reloadLevel(){
@@ -214,6 +248,12 @@ public class GameplayController {
 		triggers = new boolean[lpl];
 		activeBandMember = 0;
 		goalBandMember = 0;
+
+
+		numberMiss =0;
+		numberOk =0;
+		numberGood =0;
+		numberPerfect =0;
 	}
 
 	/**
@@ -510,6 +550,17 @@ public class GameplayController {
 				//have registered a hit for this line for this click. This ensures that
 				//We do not have a single hit count for two notes that are close together
 				int compGain = dist < perfectHit ? perfectGain : (dist < goodHit ? goodGain : okGain);
+
+				if (dist < perfectHit){
+					numberPerfect++;
+				} else{
+					if (dist < goodHit){
+						numberGood++;
+					} else{
+						numberOk++;
+					}
+				}
+
 				note.setHolding(true);
 				note.setHitStatus(compGain);
 				spawnHitEffect(note.getHitStatus(), note.getX(), spawnEffectY);
@@ -538,6 +589,7 @@ public class GameplayController {
 			sb.resetCombo();
 			note.setHitStatus(offBeatLoss);
 		}
+		numberMiss++;
 	}
 
 

@@ -16,7 +16,7 @@ import edu.cornell.gdiac.util.ScreenListener;
 
 public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
-    private String selectedJson;
+    private static String selectedJson;
 
     /** Whether this player mode is still active */
     private boolean active;
@@ -109,6 +109,17 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         hasSelectedLevel = false;
     }
 
+    public int getSelectedLevel(){
+        return selectedLevel;
+    }
+
+    public int getSelectedDifficulty(){
+        return selectedDifficulty;
+    }
+    public Texture[] getAlbumCovers(){
+        return albumCovers;
+    }
+
     /**
      * Sets the ScreenListener for this mode
      *
@@ -118,7 +129,11 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         this.listener = listener;
     }
 
-    public String getSelectedJson(){
+    public static void setSelectedJson(String json){
+        selectedJson = json;
+    }
+
+    public static String getSelectedJson(){
         return selectedJson;
     }
 
