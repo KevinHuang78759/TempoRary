@@ -24,6 +24,14 @@ public class BandMember {
      */
     private Vector2 bottomLeftCorner;
 
+    /** Textures */
+    private Texture noteIndicator;
+    private Texture noteIndicatorHit;
+
+    private Texture perfectHitIndicator;
+    private Texture okHitIndicator;
+
+    private Texture missIndicator;
 
     private FilmStrip characterSprite;
 
@@ -438,6 +446,11 @@ public class BandMember {
         for(int i = 1; i < numLines; ++i){
             canvas.draw(lineSep, Color.WHITE, lineSep.getWidth()/2f, lineSep.getHeight()/2f, bottomLeftCorner.x + i * (width/numLines), yCoord, 0.0f, xScale, yScale);
         }
+    }
+
+    public void setIndicatorTextures(Texture texture, Texture textureHit) {
+        noteIndicator = texture;
+        noteIndicatorHit = textureHit;
     }
     private int characterFrames;
     public int getCharacterFrames(){

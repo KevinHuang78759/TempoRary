@@ -18,6 +18,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
@@ -127,8 +128,6 @@ public class GameMode implements Screen {
 	/** Offset for the game over message on the screen */
 	private static final float GAME_OVER_OFFSET = 40.0f;
 
-
-
 	/** The current state of each button */
 	private int pressState;
 
@@ -143,6 +142,8 @@ public class GameMode implements Screen {
 	private InputController inputController;
 	/** Constructs the game models and handle basic gameplay (CONTROLLER CLASS) */
 	private GameplayController gameplayController;
+	/** Asset directory for level loading */
+	private AssetDirectory assetDirectory;
 	/** Lets the intro phase know to just resume the gameplay and not to reset the level */
 	private boolean justPaused;
 
@@ -234,6 +235,7 @@ public class GameMode implements Screen {
 	public void reset(){
 		gameState = GameState.INTRO;
 		pressState = NO_BUTTON_PRESSED;
+		gameplayController.garbageCollectNoteIndicators();
 	}
 
 	/**
@@ -599,6 +601,10 @@ public class GameMode implements Screen {
 				//Draw the band member sprite and competency bar
 				bandMember.drawCharacterSprite(canvas);
 				bandMember.drawHPBar(canvas);
+			}
+
+			for (Particle o : gameplayController.getNoteIndicatorParticles()){
+				o.draw(canvas);
 			}
 
 			// draw the scoreboard

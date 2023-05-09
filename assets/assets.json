@@ -38,7 +38,7 @@
         "hard": "images/hard.png",
         "1": "images/album_covers/aliens_album.png",
         "2": "images/album_covers/challenger_album.png",
-        "3": "images/album_covers/locked_level_album.png",
+        "3": "images/album_covers/challenger_album.png",
         "level-select-button": "images/ui/level_select.png",
         "quit-button": "images/ui/quit.png",
         "restart-button": "images/ui/restart.png",
@@ -92,6 +92,11 @@
         "win-lose-restart": "images/win_lose/win_screen_retry.png",
         "win-lose-next": "images/win_lose/win_screen_next.png",
         "level-select-background": "images/level_select_background.png"
+        "ok-hit": "images/Ok.png",
+        "good-hit": "images/Good.png",
+        "perfect-hit": "images/Perfect.png",
+        "miss-hit": "images/Miss.png"
+
     },
     "fonts": {
         "lucida": {

@@ -45,9 +45,23 @@ public class GameplayController {
 	/** Number of band member lanes */
 	int NUM_LANES;
 
+	int HIT_IND_SIZE = 100;
+
+	private Texture perfectHitIndicator;
+	private Texture goodHitIndicator;
+
+	private Texture okIndicator;
+
+	private Texture missIndicator;
+
+
+
+
 	// List of objects with the garbage collection set.
 	/** The currently active object */
 	private Array<Particle> particles;
+
+	private Array<Particle> noteIndicatorParticles;
 	/** The backing set for garbage collection */
 	private Array<Particle> backing;
 
@@ -103,6 +117,8 @@ public class GameplayController {
 	public GameplayController(float width, float height){
 		particles = new Array<>();
 		backing = new Array<>();
+		noteIndicatorParticles =new Array<>();
+		garbageCollectNoteIndicators();
 		//Set margins so there is a comfortable amount of space between play area and screen boundaries
 		//Values decided by pure look
 		setBounds(width, height);
@@ -119,6 +135,7 @@ public class GameplayController {
 		numberOk =0;
 		numberGood =0;
 		numberPerfect =0;
+
 	}
 
 	float totalWidth;
@@ -248,12 +265,11 @@ public class GameplayController {
 		triggers = new boolean[lpl];
 		activeBandMember = 0;
 		goalBandMember = 0;
-
-
 		numberMiss =0;
 		numberOk =0;
 		numberGood =0;
 		numberPerfect =0;
+		garbageCollectNoteIndicators();
 	}
 
 	/**
@@ -295,11 +311,13 @@ public class GameplayController {
 				//a negative hit status
 				if(n.getY() < noteDieY && !n.isDestroyed()){
 					if (n.getNoteType() == Note.NoteType.HELD) {
-						System.out.println("hello + " + n.getY());
 					}
 					n.setDestroyed(true);
 					if(i == activeBandMember){
 						sb.resetCombo();
+						float hitStatusX = LEFTBOUND+((activeBandMember+1)*(HIT_IND_SIZE/3))+((activeBandMember+1) * smallwidth);
+						float hitStatusY = BOTTOMBOUND-(HIT_IND_SIZE/1.6f);
+						spawnHitIndicator(hitStatusX,hitStatusY,missIndicator,1);
 					}
 				}
 				if(n.isDestroyed()){
@@ -364,6 +382,12 @@ public class GameplayController {
 	public void populate(AssetDirectory directory) {
 		particleTexture = directory.getEntry("quaver", Texture.class);
 		enhancedParticle = directory.getEntry("doubleQ", Texture.class);
+
+		perfectHitIndicator = directory.getEntry("perfect-hit", Texture.class);
+		goodHitIndicator = directory.getEntry("good-hit", Texture.class);
+		okIndicator = directory.getEntry("ok-hit", Texture.class);
+		missIndicator = directory.getEntry("miss-hit", Texture.class);
+
 	}
 
 	/**
@@ -378,6 +402,8 @@ public class GameplayController {
 	public Array<Particle> getParticles() {
 		return particles;
 	}
+
+	public Array<Particle> getNoteIndicatorParticles(){return noteIndicatorParticles;}
 
 	/**
 	 * Starts level
@@ -398,6 +424,9 @@ public class GameplayController {
 		level.updateBandMemberNotes(noteSpawnY);
 		//Update the objects of this class (mostly stars)
 		for(Particle o : particles){
+			o.update(0f);
+		}
+		for (Particle o: noteIndicatorParticles){
 			o.update(0f);
 		}
 
@@ -426,12 +455,35 @@ public class GameplayController {
 	public void reset() {
 		particles.clear();
 		curP = PlayPhase.NOTES;
+		noteIndicatorParticles.clear();
 	}
 
 	/**
 	 * The maximum number of lines per lane
 	 */
 	public int lpl = 4;
+
+
+
+	/**
+	 * Garbage collect for note indicators.
+	 * The current implementation will only allow one indicator to appear at a time.
+	 * In the future, if we want to change that, we will need to create an additional
+	 * backings array.
+	 */
+	public void garbageCollectNoteIndicators() {
+//		Array<Particle> backing = new Array<>();
+//		for (Particle o : noteIndicatorParticles) {
+//			if (!o.isDestroyed()) {
+//				backing.add(o);
+//			}
+//		}
+//		Array<Particle> tmp = backing;
+//		backing = noteIndicatorParticles;
+//		noteIndicatorParticles = tmp;
+//		backing.clear();
+		noteIndicatorParticles.clear();
+	}
 
 	/**
 	 * Garbage collects all deleted objects.
@@ -487,6 +539,17 @@ public class GameplayController {
 			s.getVelocity().set(vx,vy);
 			particles.add(s);
 		}
+	}
+
+	public void spawnHitIndicator(float x, float y, Texture texture, float scale){
+		garbageCollectNoteIndicators();
+		Particle s = new Particle();
+		s.setTexture(texture);
+		s.getPosition().set(x, y);
+		s.setSizeConfine(HIT_IND_SIZE*scale);
+		s.getVelocity().set(0,-smallwidth/60f);
+		s.setAge(30);
+		noteIndicatorParticles.add(s);
 	}
 
 	/**
@@ -558,6 +621,19 @@ public class GameplayController {
 						numberGood++;
 					} else{
 						numberOk++;
+					}
+				}
+
+
+				float hitStatusX = LEFTBOUND+((activeBandMember+1)*(HIT_IND_SIZE/3))+((activeBandMember+1) * smallwidth);
+				float hitStatusY = BOTTOMBOUND-(HIT_IND_SIZE/1.6f);
+				if (dist < perfectHit){
+					spawnHitIndicator(hitStatusX,hitStatusY,perfectHitIndicator,1.3f);
+				} else{
+					if (dist < goodHit){
+						spawnHitIndicator(hitStatusX,hitStatusY,goodHitIndicator,1);
+					}else{
+						spawnHitIndicator(hitStatusX,hitStatusY,okIndicator,1);
 					}
 				}
 
@@ -643,6 +719,7 @@ public class GameplayController {
 		}
 		else {
 			// Transition phase
+			garbageCollectNoteIndicators();
 
 			// Increment progress
 			t_progress = level.getCurrentSample() - t_start;
@@ -707,5 +784,6 @@ public class GameplayController {
 		level = null;
 		sfx.dispose();
 		sb.dispose();
+		garbageCollectNoteIndicators();
 	}
 }
