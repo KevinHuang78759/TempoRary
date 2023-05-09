@@ -179,7 +179,7 @@ public class GameMode implements Screen {
 	/** Listener that will update the player mode when we are done */
 	private ScreenListener listener;
 
-	/** used for tracking frames during intro and then again during play */
+	/** used for tracking frames during intro and then again during play and game over */
 	private int ticks = 0;
 
 	/** time in special units for measuring how far we are in the intro sequence */
@@ -447,7 +447,7 @@ public class GameMode implements Screen {
 				// wait a few frames before starting
 				if (ticks == 0) {
 					gameplayController.start();
-					gameplayController.update();
+					gameplayController.update(false, 0);
 					saidThree = false;
 					saidTwo = false;
 					saidOne = false;
@@ -477,42 +477,48 @@ public class GameMode implements Screen {
 					introGoSFX.playSound("go", 0.3f);
 					introTime = 0;
 					ticks = 0;
+					justPaused = false;
 					gameState = GameState.PLAY;
 					gameplayController.level.startmusic();
 				}
 				break;
 			case OVER:
-				if (didInput) {
-					int screenX = (int) inputController.getMouseX();
-					int screenY = (int) inputController.getMouseY();
-					screenY = canvas.getHeight() - screenY;
-					boolean didGoBack = (isButtonPressed(screenX, screenY, goBack, goBackCoords,WON_BUTTON_SCALE));
-					boolean didRestartWon = (isButtonPressed(screenX, screenY, restartButtonWon, restartWonCoords,WON_BUTTON_SCALE));
-					boolean didLevel = (isButtonPressed(screenX, screenY, levelButtonWon, levelWonCoords,WON_BUTTON_SCALE));
-					boolean didNext = (isButtonPressed(screenX, screenY, nextButtonWon, nextWonCoords,WON_BUTTON_SCALE));
+				if (ticks >= 120) {
+					if (didInput) {
+						int screenX = (int) inputController.getMouseX();
+						int screenY = (int) inputController.getMouseY();
+						screenY = canvas.getHeight() - screenY;
+						boolean didGoBack = (isButtonPressed(screenX, screenY, goBack, goBackCoords, WON_BUTTON_SCALE));
+						boolean didRestartWon = (isButtonPressed(screenX, screenY, restartButtonWon, restartWonCoords, WON_BUTTON_SCALE));
+						boolean didLevel = (isButtonPressed(screenX, screenY, levelButtonWon, levelWonCoords, WON_BUTTON_SCALE));
+						boolean didNext = (isButtonPressed(screenX, screenY, nextButtonWon, nextWonCoords, WON_BUTTON_SCALE));
 
-					if (didGoBack){
-						System.out.println("pressed back");
-						pressState = ExitCode.TO_MENU;
+						if (didGoBack) {
+							System.out.println("pressed back");
+							pressState = ExitCode.TO_MENU;
+						}
+
+						if (didRestartWon) {
+							System.out.println("pressed restart");
+							resetLevel();
+						}
+
+						if (didLevel) {
+							System.out.println("pressed level");
+							pressState = ExitCode.TO_LEVEL;
+						}
+
+						if (didNext) {
+							goNextLevel();
+						}
+
 					}
-
-					if (didRestartWon){
-						System.out.println("pressed restart");
+					if (inputController.didReset()) {
 						resetLevel();
 					}
-
-					if (didLevel){
-						System.out.println("pressed level");
-						pressState = ExitCode.TO_LEVEL;
-					}
-
-					if (didNext){
-						goNextLevel();
-					}
-
-				}
-				if (inputController.didReset()) {
-					resetLevel();
+				} else {
+					play(delta);
+					ticks++;
 				}
 				break;
 			case PLAY:
@@ -539,7 +545,7 @@ public class GameMode implements Screen {
 					} else if (didMenu) {
 						pressState = ExitCode.TO_MENU;
 					} else if (didResume) {
-						ticks = 0;
+						ticks = 60;
 						justPaused = true;
 						gameState = GameState.INTRO;
 					} else if (didRestart) {
@@ -602,10 +608,12 @@ public class GameMode implements Screen {
 	protected void play(float delta) {
 		// Update objects.
 		gameplayController.handleActions(inputController);
-		gameplayController.update();
+
+		gameplayController.update(gameState == GameState.OVER, ticks);
 
 		// if we have a competency bar at 0
-		if (gameplayController.hasZeroCompetency()) {
+		if (gameplayController.hasZeroCompetency() && gameState != GameState.OVER) {
+			ticks = 0;
 			gameState = GameState.OVER;
 			gameplayController.level.stopMusic();
 		}
@@ -634,10 +642,14 @@ public class GameMode implements Screen {
 		// TODO: SWITCH BACKGROUND BASED ON LEVEL JSON (may need to move this to a different location)
 		canvas.drawBackground(streetLevelBackground.getTexture(),0,0);
 		if (gameState == GameState.OVER) {
-			drawLose();
-		} else if (gameState == GameState.WON) {
+			if (ticks >= 120) {
+				drawLose();
+			}
+		}
+		if (gameState == GameState.WON) {
 			drawWin();
-		} else{
+		}
+		if (gameState == GameState.PLAY || gameState == GameState.INTRO || gameState == GameState.PAUSE || (gameState == GameState.OVER && ticks < 120)){
 //			drawLose();
 //			gameState = GameState.OVER;
 //		}
@@ -693,14 +705,16 @@ public class GameMode implements Screen {
 					scl = 1f;
 				}
 				if (introTime < 0) {
-					mask.set(0.0f,0.0f,0.0f,1f);
-					if (ticks >= 30 && ticks <= 90) {
-						mask.set(0.0f, 0.0f, 0.0f, (1f - ((float) ticks-30) / 60f));
+					if (!justPaused) {
+						mask.set(0.0f, 0.0f, 0.0f, 1f);
+						if (ticks >= 30 && ticks <= 90) {
+							mask.set(0.0f, 0.0f, 0.0f, (1f - ((float) ticks - 30) / 60f));
+						}
+						if (ticks > 90) {
+							mask.set(0.0f, 0.0f, 0.0f, 0.0f);
+						}
+						canvas.draw(introMask, mask, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, 0, 0, 3, 3);
 					}
-					if (ticks > 90) {
-						mask.set(0.0f, 0.0f, 0.0f, 0.0f);
-					}
-					canvas.draw(introMask, mask, canvas.getWidth()/2, canvas.getHeight()/2, 0, 0, 0, 3, 3);
 				} else if (introTime < 100){
 					canvas.draw(introThree, Color.WHITE, introThree.getWidth()/2, introThree.getHeight()/2, canvas.getWidth()/2, canvas.getHeight()/2, 0, scl, scl);
 				} else if (introTime < 200){

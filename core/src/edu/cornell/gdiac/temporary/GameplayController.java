@@ -408,11 +408,11 @@ public class GameplayController {
 	 * Updates the state.
 	 *
 	 */
-	public void update(){
+	public void update(boolean over, int ticks){
 		//First, check for dead notes and remove them from active arrays
 		checkDeadNotes();
 		//Then, update the notes for each band member and spawn new notes
-		level.updateBandMemberNotes(noteSpawnY);
+		level.updateBandMemberNotes(noteSpawnY, over, ticks);
 		//Update the objects of this class (mostly stars)
 		for(Particle o : particles){
 			o.update(0f);

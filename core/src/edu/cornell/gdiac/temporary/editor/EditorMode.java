@@ -1036,7 +1036,7 @@ public class EditorMode implements Screen {
         Json json = new Json();
         try {
             file = new FileWriter("test_easy_level.json");
-            file.write(json.toJson(l));
+            file.write(json.prettyPrint(l) );
             file.close();
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -403,14 +403,23 @@ public class Level {
         return prog;
     }
 
+    private long sample = 0;
+    private int rate;
+
     /**
      * Spawns new notes according to what sample we are at. Also decrements bandmembers' competency
      * for some amount about once a second. It also updates the frame of the bandmember.
      */
-    public void updateBandMemberNotes(float spawnY){
+    public void updateBandMemberNotes(float spawnY, boolean over, int ticks){
         //First get the sample we at
-        long sample = getCurrentSample();
-        int rate = music.getSampleRate();
+        if (!over) {
+            rate = music.getSampleRate();
+            sample = getCurrentSample();
+        } else {
+            sample += (int) ((((float) rate)/60f)*(0.8f*(1f - (((float) ticks)/120f))));
+            System.out.println(ticks);
+        }
+        System.out.println(sample);
         float samplesPerBeat = rate * 60f/bpm;
         boolean decTog = false;
         for(BandMember bandMember : bandMembers){
