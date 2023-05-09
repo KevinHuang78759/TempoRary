@@ -389,10 +389,9 @@ public class GameMode implements Screen {
 				o.draw(canvas);
 			}
 
-
-			// draw the scoreboard
-			gameplayController.sb.displayScore(gameplayController.LEFTBOUND, gameplayController.TOPBOUND + gameplayController.inBetweenWidth/4f, canvas);
-
+			gameplayController.sb.displayCombo((gameplayController.LEFTBOUND + gameplayController.RIGHTBOUND)/2f,  (gameplayController.totalHeight + gameplayController.TOPBOUND)/2f, canvas);
+			gameplayController.sb.displayScore(gameplayController.LEFTBOUND,  (gameplayController.totalHeight - gameplayController.TOPBOUND)/4f + gameplayController.TOPBOUND, canvas);
+			gameplayController.sb.displayMultiplier(gameplayController.LEFTBOUND,  3*(gameplayController.totalHeight - gameplayController.TOPBOUND)/5f + gameplayController.TOPBOUND, canvas);
 			// draw pause menu UI if paused
 			if (gameState == GameState.PAUSE) {
 				//Draw the buttons for the pause menu

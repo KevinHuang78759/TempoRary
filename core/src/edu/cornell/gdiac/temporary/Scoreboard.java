@@ -8,13 +8,20 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 public class Scoreboard {
     private FreeTypeFontGenerator fontGenerator;
     private FreeTypeFontGenerator.FreeTypeFontParameter fontParameter;
-    private BitmapFont font;
 
-    private GlyphLayout layout;
+    //due to different sizes, we use one font for every score piece
+    private BitmapFont scoreFont;
+    private BitmapFont multiplierFont;
+    private BitmapFont comboFont;
+
+    //likewise three different glyphlayouts to track them all
+    private GlyphLayout scoreLayout;
+    private GlyphLayout multiplierLayout;
+    private GlyphLayout comboLayout;
     /**
      * SFX for hitting combos
      */
-    private SoundController<Integer> sfx;
+    //private SoundController<Integer> sfx;
     /**
      * Our current meter - starts at 0
      */
@@ -49,18 +56,18 @@ public class Scoreboard {
         meter = 0;
         levelMultipliers = multiplers;
         levelMeters = meters;
-        sfx = new SoundController<>();
-        sfx.addSound(0, "sound/comboLost.ogg");
-        sfx.addSound(1, "sound/combo1.ogg");
-        sfx.addSound(2, "sound/combo2.ogg");
-        sfx.addSound(3, "sound/combo3.ogg");
+
         this.maxLevel = maxLevel;
 
         fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/TempoRaryFont.ttf"));
         fontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         fontParameter.size = 128;
-        font = fontGenerator.generateFont(fontParameter);
-        layout = new GlyphLayout();
+        scoreFont = fontGenerator.generateFont(fontParameter);
+        multiplierFont = fontGenerator.generateFont(fontParameter);
+        comboFont = fontGenerator.generateFont(fontParameter);
+        scoreLayout = new GlyphLayout();
+        multiplierLayout = new GlyphLayout();
+        comboLayout = new GlyphLayout();
     }
 
     public void resetScoreboard() {
@@ -70,9 +77,7 @@ public class Scoreboard {
     }
 
     public void resetCombo(){
-        if(level > 0){
-            sfx.playSound(0, 0.75f);
-        }
+
         meter = 0;
         level = 0;
     }
@@ -81,54 +86,60 @@ public class Scoreboard {
         ++meter;
         if(level < maxLevel-1 && meter > levelMeters[level]){
             ++level;
-            if(level == maxLevel){
-                sfx.playSound(3, 1f);
-            }
-            else{
-                sfx.playSound(level,0.8f);
-            }
+
         }
         totalScore += (long) hitVal* (long)levelMultipliers[level];
-    }
-
-    public void setVolume(float volume) {
-        sfx.setVolumeAdjust(volume);
     }
 
     public long getScore(){
         return totalScore;
     }
     public void dispose(){
-        sfx.dispose();
-        fontGenerator.dispose();
-        font.dispose();
 
+        fontGenerator.dispose();
+        scoreFont.dispose();
+        comboFont.dispose();
+        multiplierFont.dispose();
     }
 
-    private float fontScale = 1f;
-    private float fontHeightOffset;
-    public void setFontScale(float heightConfine){
-        String disp = "S" +
-                "\n" +
-                "C" +
-                "\n" +
-                "M";
-        layout.setText(font, disp);
-        fontScale *= heightConfine/layout.height;
-        fontHeightOffset = heightConfine;
-        font.getData().setScale(fontScale);
+    private float scoreScale = 1f;
+    private float multiplierScale = 1f;
+    private float comboScale = 1f;
+
+
+
+    public void setScoreScale(float heightConfine){
+        String disp = "Score 0000000";
+        scoreLayout.setText(scoreFont, disp);
+        scoreScale *= heightConfine/scoreLayout.height;
+        scoreFont.getData().setScale(scoreScale);
+    }
+    public void setComboScale(float heightConfine){
+        String disp = "Combo " + meter;
+        comboLayout.setText(comboFont, disp);
+        comboScale *= heightConfine/comboLayout.height;
+        comboFont.getData().setScale(comboScale);
+    }
+
+    public void setMultiplierScale(float heightConfine){
+        String disp = "Multiplier x" + levelMultipliers[level];
+        multiplierLayout.setText(multiplierFont, disp);
+        multiplierScale *= heightConfine/multiplierLayout.height;
+        multiplierFont.getData().setScale(multiplierScale);
     }
 
     public void displayScore(float xPos, float yPos, GameCanvas canvas){
-        String disp = "Score " +
-                totalScore +
-                "\n" +
-                "Combo " +
-                meter +
-                "\n" +
-                "Multiplier x" +
-                levelMultipliers[level];
-        canvas.drawText(disp, font, xPos, yPos + fontHeightOffset);
+        String disp = "Score " + totalScore;
+        canvas.drawText(disp, scoreFont, xPos - scoreLayout.width/4f, yPos + scoreLayout.height/2f);
+    }
 
+    public void displayCombo(float xPos, float yPos, GameCanvas canvas){
+        String disp = "Combo " + meter;
+        canvas.drawText(disp, comboFont, xPos - comboLayout.width/4f, yPos + comboLayout.height/2f);
+    }
+
+    public void displayMultiplier(float xPos, float yPos, GameCanvas canvas){
+        String disp = "Multiplier x" + levelMultipliers[level];
+        canvas.drawText(disp, scoreFont, xPos - multiplierLayout.width/4f, yPos + multiplierLayout.height/2f);
     }
 }

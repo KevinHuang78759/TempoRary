@@ -154,14 +154,15 @@ public class GameplayController {
 
 	public void setFxVolume(float fxVolume) {
 		sfx.setVolumeAdjust(fxVolume);
-		sb.setVolume(fxVolume);
 	}
 	/**
 	 * Loads a level
 	 */
 	public void loadLevel(JsonValue levelData, AssetDirectory directory){
 		sb = new Scoreboard(4, new int[]{1, 2, 3, 5}, new long[]{10, 20, 30});
-		sb.setFontScale((totalHeight - TOPBOUND)/2f);
+		sb.setScoreScale((totalHeight - TOPBOUND)/5f);
+		sb.setComboScale((totalHeight - TOPBOUND)/3f);
+		sb.setMultiplierScale((totalHeight - TOPBOUND)/5f);
 		particles = new Array<>();
 		backing = new Array<>();
 		level = null;
@@ -191,7 +192,9 @@ public class GameplayController {
 
 	public void reloadLevel(){
 		sb.resetScoreboard();
-		sb.setFontScale((totalHeight - TOPBOUND)/2f);
+		sb.setScoreScale((totalHeight - TOPBOUND)/5f);
+		sb.setComboScale((totalHeight - TOPBOUND)/3f);
+		sb.setMultiplierScale((totalHeight - TOPBOUND)/5f);
 		particles = new Array<>();
 		backing = new Array<>();
 		level.resetLevel();
@@ -224,9 +227,12 @@ public class GameplayController {
 		setWidths();
 		setYVals();
 		updateBandMemberCoords();
-		sb.setFontScale((totalHeight - TOPBOUND)/2f);
-
+		sb.setScoreScale((totalHeight - TOPBOUND)/5f);
+		sb.setComboScale((totalHeight - TOPBOUND)/3f);
+		sb.setMultiplierScale((totalHeight - TOPBOUND)/5f);
 	}
+
+
 	/**
 	 * Sets the offset in determining beat calculation, converting it to samples
 	 * @param offset offset from CalibrationMode in milliseconds
