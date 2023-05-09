@@ -730,7 +730,7 @@ public class GameCanvas {
 		font.setColor(tint);
 		font.draw(spriteBatch, layout, x, y+offset);
 	}
-
+    
 
 	/**
 	 * Enumeration of supported BlendStates.

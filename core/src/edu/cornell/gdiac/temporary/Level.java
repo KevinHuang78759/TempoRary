@@ -35,6 +35,10 @@ public class Level {
         return switchNoteTexture;
     }
 
+    private Texture switchIndicator;
+
+    private Texture switchIndicatorHit;
+
     public Texture getHoldNoteTexture() {
         return holdNoteTexture;
     }
@@ -140,9 +144,6 @@ public class Level {
     private Texture hpbar;
     private Texture noteIndicator;
     private Texture noteIndicatorHit;
-
-    private Texture switchIndicator;
-    private Texture switchIndicatorHit;
     private FilmStrip violinSprite;
     private FilmStrip drummerSprite;
     private FilmStrip voiceSprite;
@@ -289,6 +290,7 @@ public class Level {
             // TODO: FIX THIS SO THAT IT FITS THE LEVEL JSON
             bandMembers[i].setLossRate(bandMemberData.getInt("competencyLossRate"));
             bandMembers[i].setHpBarFilmStrip(hpbar, 47);
+            bandMembers[i].setIndicatorTextures(noteIndicator, noteIndicatorHit);
             switch (bandMemberData.getString("instrument")) {
                 case "violin":
                     bandMembers[i].setCharacterFilmstrip(violinSprite);

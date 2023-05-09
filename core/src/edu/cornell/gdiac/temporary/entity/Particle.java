@@ -57,6 +57,10 @@ public class Particle {
 		age = RandomController.rollInt(PARTICLE_AGE - AGE_RANGE, PARTICLE_AGE + AGE_RANGE);
 	}
 
+	public void setAge(int dieAge){
+		age = dieAge;
+	}
+
 	// ACCESSORS
 	public void setTexture(Texture texture) {
 		animator = new FilmStrip(texture,1,1,1);
@@ -212,15 +216,25 @@ public class Particle {
 	}
 
 	/**
+	 * Returns the current age of this particle
+	 *
+	 * @return the current age of this particle
+	 */
+	public int getAge(){return age;}
+
+	/**
 	 * Updates the age and angle of this particle.
 	 *
 	 * @param delta Number of seconds since last animation frame
 	 */
 	public void update(float delta) {
 		position.add(velocity);
+//		System.out.println("age"+age);
+//
+//		System.out.println("is destroyed"+destroyed);
 		
 		// Decrease time until death; die if it's time
-		if (--age == 0) {
+		if (--age <= 0) {
 			destroyed = true;
 		}
 		
@@ -246,7 +260,11 @@ public class Particle {
 	 */
 	public void draw(GameCanvas canvas) {
 		float scale = Math.min(sizeConfine/animator.getRegionWidth(), sizeConfine/animator.getRegionHeight());
-		canvas.draw(animator, Color.WHITE, origin.x, origin.y, position.x, position.y, angle, scale, scale);
+		if (age>0){
+			canvas.draw(animator, Color.WHITE, origin.x, origin.y, position.x, position.y, angle, scale, scale);
+
+		}
+
 	}
 	
 }

@@ -18,6 +18,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
@@ -137,13 +138,12 @@ public class GameMode implements Screen {
 
 	private static float BUTTON_SCALE  = 1f;
 
-	private static float ALBUM_SCALE  = 0.15f;
+	private static float ALBUM_SCALE  = 0.75f;
+
 
 	/// CONSTANTS
 	/** Offset for the game over message on the screen */
 	private static final float GAME_OVER_OFFSET = 40.0f;
-
-
 
 	/** The current state of each button */
 	private int pressState;
@@ -151,14 +151,6 @@ public class GameMode implements Screen {
 	/* PRESS STATES **/
 	/** Initial button state */
 	private static final int NO_BUTTON_PRESSED = 0;
-	/** Pressed down button state for the resume button */
-	private static final int RESUME_PRESSED = 101;
-	/** Pressed down button state for the restart button */
-	private static final int RESTART_PRESSED = 102;
-	/** Pressed down button state for the level select button */
-	private static final int LEVEL_PRESSED = 103;
-	/** Pressed down button state for the main menu button */
-	private static final int MENU_PRESSED = 104;
 
 	/** Reference to drawing context to display graphics (VIEW CLASS) */
 	private GameCanvas canvas;
@@ -167,6 +159,8 @@ public class GameMode implements Screen {
 	private InputController inputController;
 	/** Constructs the game models and handle basic gameplay (CONTROLLER CLASS) */
 	private GameplayController gameplayController;
+	/** Asset directory for level loading */
+	private AssetDirectory assetDirectory;
 	/** Lets the intro phase know to just resume the gameplay and not to reset the level */
 	private boolean justPaused;
 
@@ -184,6 +178,9 @@ public class GameMode implements Screen {
 
 	/** time in special units for measuring how far we are in the intro sequence */
 	private int introTime;
+
+	/** Play button x and y coordinates represented as a vector */
+	private Vector2 playButtonCoords;
 
 	/** the current level */
 	private int currLevel;
@@ -265,6 +262,7 @@ public class GameMode implements Screen {
 	public void reset(){
 		gameState = GameState.INTRO;
 		pressState = NO_BUTTON_PRESSED;
+		gameplayController.garbageCollectNoteIndicators();
 	}
 
 	/**
@@ -673,13 +671,18 @@ public class GameMode implements Screen {
 				bandMember.drawHPBar(canvas);
 			}
 
+			for (Particle o : gameplayController.getNoteIndicatorParticles()){
+				o.draw(canvas);
+			}
+
 			// draw the scoreboard
 			gameplayController.sb.displayScore(gameplayController.LEFTBOUND, gameplayController.TOPBOUND + gameplayController.inBetweenWidth/4f, canvas);
 
 			// draw pause menu UI if paused
 			if (gameState == GameState.PAUSE) {
 				//Draw the buttons for the pause menu
-				//canvas.draw(whiteBackground, Color.LIGHT_GRAY, 0, 0, 0, 0, 0, 1f, 1f);
+				Color color = new Color(1f, 1f, 1f, 0.65f);
+				canvas.draw(whiteBackground, color, 0, 0, 0, 0, 0, 1f, 1f);
 				canvas.draw(pauseBackground, Color.WHITE, pauseBackground.getWidth() / 2, pauseBackground.getHeight() / 2,
 						pauseCoords.x, pauseCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
 				canvas.draw(resumeButton, Color.WHITE, resumeButton.getWidth() / 2, resumeButton.getHeight() / 2,
