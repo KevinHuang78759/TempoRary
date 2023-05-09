@@ -423,7 +423,7 @@ public class Level {
         }
         System.out.println(sample);
         float samplesPerBeat = rate * 60f/bpm;
-        boolean decTog = false;
+
         for(BandMember bandMember : bandMembers){
             //update the uh frame
             float frameprogress = (sample % samplesPerBeat)/(samplesPerBeat);
@@ -434,18 +434,16 @@ public class Level {
             bandMember.spawnNotes(sample);
             //update the note frames
             bandMember.updateNotes(spawnY, sample);
-            //check if enough samples have passed since the last decrement
-            if(sample - lastDec >= music.getSampleRate()){
-                //if so, decrement competency
-                if(!bandMember.getHitNotes().isEmpty()){
-                    bandMember.compUpdate(-bandMember.getLossRate());
-                    decTog = true;
-                }
+
+            if(!bandMember.getHitNotes().isEmpty()){
+                float loss = -1f*bandMember.getLossRate() * (sample - lastDec)/((float)music.getSampleRate());
+                System.out.println(loss);
+                bandMember.compUpdate(loss);
             }
+
         }
-        if (decTog){
-            lastDec = sample;
-        }
+        lastDec = sample;
+
     }
 
     /**

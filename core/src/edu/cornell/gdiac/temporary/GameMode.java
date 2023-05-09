@@ -27,7 +27,8 @@ import edu.cornell.gdiac.temporary.entity.Particle;
 
 
 import edu.cornell.gdiac.temporary.entity.BandMember;
-
+import edu.cornell.gdiac.temporary.entity.Particle;
+import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.ScreenListener;
 
 /**
@@ -421,8 +422,6 @@ public class GameMode implements Screen {
 		}
 	}
 
-
-
 	/**
 	 * Update the game state.
 	 *
@@ -665,18 +664,14 @@ public class GameMode implements Screen {
 				o.draw(canvas);
 			}
 
-			for(BandMember bandMember : gameplayController.level.getBandMembers()){
-				//Draw the band member sprite and competency bar
-				bandMember.drawCharacterSprite(canvas);
-				bandMember.drawHPBar(canvas);
-			}
-
 			for (Particle o : gameplayController.getNoteIndicatorParticles()){
 				o.draw(canvas);
 			}
 
 			// draw the scoreboard
-			gameplayController.sb.displayScore(gameplayController.LEFTBOUND, gameplayController.TOPBOUND + gameplayController.inBetweenWidth/4f, canvas);
+			gameplayController.sb.displayCombo((gameplayController.LEFTBOUND + gameplayController.RIGHTBOUND)/2f,  (gameplayController.totalHeight + gameplayController.TOPBOUND)/2f, canvas);
+			gameplayController.sb.displayScore(gameplayController.LEFTBOUND,  (gameplayController.totalHeight - gameplayController.TOPBOUND)/4f + gameplayController.TOPBOUND, canvas);
+			gameplayController.sb.displayMultiplier(gameplayController.LEFTBOUND,  3*(gameplayController.totalHeight - gameplayController.TOPBOUND)/5f + gameplayController.TOPBOUND, canvas);
 
 			// draw pause menu UI if paused
 			if (gameState == GameState.PAUSE) {

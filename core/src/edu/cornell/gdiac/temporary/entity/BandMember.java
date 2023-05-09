@@ -167,23 +167,23 @@ public class BandMember {
      * Maximum competency
      */
 
-    private int maxComp;
+    private float maxComp;
 
     public void setMaxComp(int p){
         maxComp = p;
     }
-    public int getMaxComp(){
+    public float getMaxComp(){
         return maxComp;
     }
 
     /**
      * Current competency
      */
-    private int curComp;
+    private float curComp;
     public void setCurComp(int p){
         curComp = p;
     }
-    public int getCurComp(){
+    public float getCurComp(){
         return curComp;
     }
 
@@ -284,9 +284,9 @@ public class BandMember {
     /**
      * Update competency by the specified amount but will not go below 0 or exceed the max
      */
-    public void compUpdate(int amount){
+    public void compUpdate(float amount){
         curComp = Math.min(Math.max(0, curComp + amount), maxComp);
-        hpbar.setFrame(Math.min((int)((1 - (float)curComp/maxComp)*(hpbarFrames)), hpbarFrames - 1));
+        hpbar.setFrame(Math.min((int)((1 - curComp/maxComp)*(hpbarFrames)), hpbarFrames - 1));
     }
 
     // DRAWING METHODS
