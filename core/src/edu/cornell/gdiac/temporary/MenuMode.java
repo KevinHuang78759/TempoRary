@@ -82,10 +82,16 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private static final int PLAY_PRESSED = 101;
     /** Pressed down button state for the level editor button */
     private static final int LEVEL_EDITOR_PRESSED = 102;
-    /** Pressed down button state for the calibration button */
-    private static final int CALIBRATION_PRESSED = 103;
     private static final int SETTINGS_PRESSED = 104;
     private static final int EXIT_PRESSED = 105;
+
+    private static final int NO_BUTTON_HOVERED = 106;
+    private static final int PLAY_HOVERED = 107;
+    /** Pressed down button state for the level editor button */
+    private static final int LEVEL_EDITOR_HOVERED = 108;
+    /** Pressed down button state for the calibration button */
+    private static final int SETTINGS_HOVERED = 110;
+    private static final int EXIT_HOVERED = 111;
 
     // START SETTINGS
 
@@ -626,7 +632,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 //        canvas.draw(logo, Color.WHITE, logo.getWidth()/2, logo.getHeight()/2,
 //                logo.getWidth()/2+50, centerY+300, 0,scale, scale);
 
-        if (pressState == PLAY_PRESSED) {
+        if (pressState == PLAY_PRESSED || pressState == PLAY_HOVERED) {
             canvas.draw(playButtonHover, Color.WHITE, playButtonHover.getWidth() / 2, playButton.getHeight() / 2,
                     canvas.getWidth() / 2, 0.75f * canvas.getHeight(), 0, BUTTON_SCALE, BUTTON_SCALE);
         } else {
@@ -634,7 +640,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
                     canvas.getWidth() / 2, 0.75f * canvas.getHeight(), 0, BUTTON_SCALE, BUTTON_SCALE);
         }
 
-        if (pressState == SETTINGS_PRESSED) {
+        if (pressState == SETTINGS_PRESSED || pressState == SETTINGS_HOVERED) {
             canvas.draw(settingsButtonHover, Color.WHITE, settingsButtonHover.getWidth() / 2, settingsButton.getHeight() / 2,
                     canvas.getWidth() / 2, 0.6f * canvas.getHeight(), 0, BUTTON_SCALE, BUTTON_SCALE);
         } else {
@@ -642,7 +648,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
                     canvas.getWidth() / 2, 0.6f * canvas.getHeight(), 0, BUTTON_SCALE, BUTTON_SCALE);
         }
 
-        if (pressState == EXIT_PRESSED) {
+        if (pressState == EXIT_PRESSED || pressState == EXIT_HOVERED) {
             canvas.draw(exitButtonHover, Color.WHITE, exitButtonHover.getWidth() / 2, exitButton.getHeight() / 2,
                     canvas.getWidth() / 2, 0.45f * canvas.getHeight(), 0, BUTTON_SCALE, BUTTON_SCALE);
         } else {
@@ -650,9 +656,9 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
                     canvas.getWidth() / 2, 0.45f * canvas.getHeight(), 0, BUTTON_SCALE, BUTTON_SCALE);
         }
 
-        //        Color levelEditorButtonTint = (pressState == LEVEL_EDITOR_PRESSED ? Color.GREEN: Color.WHITE);
-//        canvas.draw(levelEditorButton, levelEditorButtonTint, levelEditorButton.getWidth()/2, levelEditorButton.getHeight()/2,
-//                    levelEditorButtonCoords.x, levelEditorButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+        Color levelEditorButtonTint = (pressState == LEVEL_EDITOR_HOVERED || pressState == LEVEL_EDITOR_PRESSED ? Color.GREEN: Color.WHITE);
+        canvas.draw(levelEditorButton, levelEditorButtonTint, levelEditorButton.getWidth()/2, levelEditorButton.getHeight()/2,
+                canvas.getWidth() / 2, 0.25f * canvas.getHeight(), 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 
         canvas.end();
     }
@@ -763,20 +769,21 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
             return true;
         }
         // Flip to match graphics coordinates
-//        screenY = heightY - screenY;
-//        if (currentMenuState == MenuState.HOME) {// check if buttons get pressed appropriately
-//            if (isButtonPressed(screenX, screenY, playButton, canvas.getWidth()/2, canvas.getHeight()*0.75f, BUTTON_SCALE)) {
-//                pressState = ExitCode.TO_LEVEL;
-//            }
-//            if (isButtonPressed(screenX, screenY, settingsButton, canvas.getWidth()/2, canvas.getHeight()*0.6f, BUTTON_SCALE)) {
-//            }
-//            if (isButtonPressed(screenX, screenY, exitButton, canvas.getWidth()/2, canvas.getHeight()*0.45f, BUTTON_SCALE)) {
-//                pressState = ExitCode.TO_EXIT;
-//            }
-//            if (isButtonPressed(screenX, screenY, levelEditorButton, levelEditorButtonCoords)) {
-//                pressState = LEVEL_EDITOR_PRESSED;
-//            }
-//        }
+        screenY = heightY - screenY;
+        if (currentMenuState == MenuState.HOME) {// check if buttons get pressed appropriately
+            if (isButtonPressed(screenX, screenY, playButton, canvas.getWidth()/2, canvas.getHeight()*0.75f, BUTTON_SCALE)) {
+                pressState = PLAY_PRESSED;
+            }
+            if (isButtonPressed(screenX, screenY, settingsButton, canvas.getWidth()/2, canvas.getHeight()*0.6f, BUTTON_SCALE)) {
+                pressState = SETTINGS_PRESSED;
+            }
+            if (isButtonPressed(screenX, screenY, exitButton, canvas.getWidth()/2, canvas.getHeight()*0.45f, BUTTON_SCALE)) {
+                pressState = EXIT_PRESSED;
+            }
+            if (isButtonPressed(screenX, screenY, levelEditorButton, canvas.getWidth()/2, canvas.getHeight()*0.25f, BUTTON_SCALE * scale)) {
+                pressState = LEVEL_EDITOR_PRESSED;
+            }
+        }
         return false;
     }
 
@@ -798,9 +805,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
                 return true;
             case LEVEL_EDITOR_PRESSED:
                 pressState = ExitCode.TO_EDITOR;
-                return true;
-            case CALIBRATION_PRESSED:
-                pressState = ExitCode.TO_CALIBRATION;
                 return true;
             case SETTINGS_PRESSED:
                 currentMenuState = MenuState.SETTINGS;
@@ -907,13 +911,15 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     public boolean mouseMoved(int screenX, int screenY) {
         screenY = heightY - screenY;
         if (isButtonPressed(screenX, screenY, playButton, canvas.getWidth()/2, canvas.getHeight()*0.75f, BUTTON_SCALE)) {
-            pressState = PLAY_PRESSED;
+            pressState = PLAY_HOVERED;
         } else if (isButtonPressed(screenX, screenY, settingsButton, canvas.getWidth()/2, canvas.getHeight()*0.6f, BUTTON_SCALE)) {
-            pressState = SETTINGS_PRESSED;
+            pressState = SETTINGS_HOVERED;
         } else if (isButtonPressed(screenX, screenY, exitButton, canvas.getWidth()/2, canvas.getHeight()*0.45f, BUTTON_SCALE)) {
-            pressState = EXIT_PRESSED;
+            pressState = EXIT_HOVERED;
+        } else if (isButtonPressed(screenX, screenY, levelEditorButton, canvas.getWidth()/2, canvas.getHeight()*0.25f, BUTTON_SCALE * scale)) {
+            pressState = LEVEL_EDITOR_HOVERED;
         } else {
-            pressState = NO_BUTTON_PRESSED;
+            pressState = NO_BUTTON_HOVERED;
         }
         return true;
     }
