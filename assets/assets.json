@@ -1,47 +1,86 @@
 {
 	"textures": {
-        "loading-background": "images/backgrounds/loading_screen_background_2.png",
+        "loading-background": "images/backgrounds/main_menu_screen.png",
+        "menu-select-indicator": "images/ui/main_menu_selection_active_indicator.png",
+        "settings-background": "images/backgrounds/settings_screen_bg.png",
+        "settings-header": "images/ui/settings.png",
+        "back-arrow": "images/ui/left_backarrow.png",
+        "primary-box": "images/ui/box_1.png",
+        "secondary-box": "images/ui/box_2.png",
+        "header-line": "images/ui/header_line.png",
+        "fish-outline": "images/ui/fish_outline.png",
+        "cat-outline": "images/ui/cat_outline.png",
+        "slider-background": "images/ui/drag_2.png",
+        "slider-foreground": "images/ui/drag_1.png",
+        "slider-button": "images/ui/drag_button.png",
+        "checkbox": "images/ui/checkbox_empty.png",
+        "checkbox-checked": "images/ui/checkbox_checked.png",
+        "select-background": "images/ui/dropbar_fold_1.png",
+        "scroll-background": "images/ui/select_scrollpane.png",
+        "list-select-background": "images/ui/dropdown_blue.png",
+        "dialog-background": "images/ui/pop_up_dialog.png",
+        "left-arrow-graphic": "images/ui/left_arrow.png",
+        "up-arrow-graphic": "images/ui/up_arrow.png",
+        "down-arrow-graphic": "images/ui/down_arrow.png",
+        "right-arrow-graphic": "images/ui/right_arrow.png",
         "title": "images/title_v1.png",
-        "ghost-cat": "images/ghost_cat.jpg",
+        "play": "images/ui/play_button_inactive.png",
         "play-old": "images/play.png",
-        "play": "images/play_button_v1.png",
-        "calibration-background": "images/backgrounds/Calibration_Background.png",
-        "white-background": "images/backgrounds/white_background.png",
-        "calibration-back-arrow": "images/ui/Calibration_left_arrow.png",
+        "level-select-left": "images/level_select_left_arrow.png",
+        "level-select-right": "images/level_select_right_arrow.png",
+        "play-button": "images/ui/play_button_inactive.png",
+        "play-button-active": "images/ui/play_button_black_active.png",
+        "settings": "images/ui/settings_button_inactive.png",
+        "settings-active": "images/ui/settings_button_black_active.png",
+        "quit-button-menu": "images/ui/quit_button_inactive.png",
+        "quit-button-active-menu": "images/ui/quit_button_black_active.png",
+        "ghost-play": "images/ghost_and_play_button.png",
+        "calibration-background": "images/backgrounds/calibration_screen_bg.png",
+        "win-background": "images/backgrounds/win_screen_bg.png",
+        "lose-background": "images/backgrounds/lose_screen_bg.png",
+        "calibration-header": "images/ui/calibration_text_1.png",
         "calibration-note": "images/ui/Calibration_note_normal.png",
         "calibration-note-hit": "images/ui/Calibration_note_glowing.png",
         "calibration-circle-filled": "images/ui/Calibration_Ellipse_1.png",
-        "calibration-circle": "images/ui/Ellipse_2.png",
+        "calibration-circle": "images/ui/calibration_ellipse_2.png",
+        "intro-3": "images/ui/3.png",
+        "intro-2": "images/ui/2.png",
+        "intro-1": "images/ui/1.png",
+        "intro-go": "images/ui/GO!.png",
         "level-editor": "images/leveleditor_button_v1.png",
         "easy": "images/easy.png",
         "medium": "images/medium.png",
+        "x": "images/win_lose/X.png",
+        "ruin-show": "images/win_lose/ruin_show.png",
+        "go-back": "images/win_lose/back.png",
+        "result": "images/win_lose/results.png",
+        "combo": "images/win_lose/combo.png",
+        "perfect": "images/win_lose/perfect.png",
+        "good": "images/win_lose/good.png",
+        "ok": "images/win_lose/ok.png",
+        "miss": "images/win_lose/miss.png",
+        "score": "images/win_lose/score.png",
+        "line": "images/win_lose/Line.png",
+        "score-a": "images/win_lose/score_A.png",
+        "score-b": "images/win_lose/score_B.png",
+        "score-c": "images/win_lose/score_C.png",
+        "score-s": "images/win_lose/score_S.png",
         "hard": "images/hard.png",
         "1": "images/album_covers/aliens_album.png",
         "2": "images/album_covers/challenger_album.png",
         "3": "images/album_covers/challenger_album.png",
+        "4": "images/album_covers/challenger_album.png",
         "level-select-button": "images/ui/level_select.png",
         "quit-button": "images/ui/quit.png",
         "restart-button": "images/ui/restart.png",
         "resume-button": "images/ui/resume.png",
         "menu-button": "images/ui/menu.png",
         "pause-background": "images/ui/pause_background.png",
-        "slider": {
-          "file":      "images/loading_bar.png",
-          "minFilter": "linear",
-          "magFilter": "linear",
-          "atlas":     {
-            "background" : [43, 0, 340, 93],
-            "backleft"   : [0, 0, 42, 93],
-            "backright"  : [544, 0, 587, 93],
-            "foreground" : [48, 97,  538, 170],
-            "foreleft"   : [14, 97, 47, 170],
-            "foreright"  : [539, 97, 573, 170]
-          }
-        },
         "background": "images/background.png",
         "concert-background": "images/backgrounds/background_temp_concert_1.png",
-        "street-background": "images/backgrounds/background_temp_streets_1.png",
+        "street-background": "images/backgrounds/streets_2.png",
         "cafe-background": "images/backgrounds/background_temp_cafe_1.png",
+        "white-background": "images/backgrounds/white_background.png",
         "switch":    "images/notes/switch.png",
         "hit":      "images/notes/press.png",
         "hold-start":      "images/notes/hold_note_bottom.png",
@@ -67,12 +106,20 @@
         "inactiveLane" : "images/bandmember_lanes/inactive_lane.png",
         "separationLine" : "images/bandmember_lanes/lane-separation-line.png",
         "back-splash": "images/notes/hold_back.png",
-        "front-splash": "images/notes/hold_front.png"
+        "front-splash": "images/notes/hold_front.png",
+        "win-lose-select": "images/win_lose/win_screen_select.png",
+        "win-lose-restart": "images/win_lose/win_screen_retry.png",
+        "win-lose-next": "images/win_lose/win_screen_next.png",
+        "level-select-background": "images/level_select_background.png"
+        "ok-hit": "images/Ok.png",
+        "good-hit": "images/Good.png",
+        "perfect-hit": "images/Perfect.png",
+        "miss-hit": "images/Miss.png"
     },
     "fonts": {
         "lucida": {
-            "file": "fonts/LucidaGrande.ttf",
-            "size": 16
+            "file": "fonts/Blinker-SemiBold.ttf",
+            "size": 30
         },
         "times": {
             "file": "fonts/TimesRoman.ttf",
@@ -87,15 +134,16 @@
             "size": 25
         },
         "calibration-font": {
-            "file": "fonts/TempoRaryFont.ttf",
-            "size": 35
+            "file": "fonts/Blinker-SemiBold.ttf",
+            "size": 40
         }
     },
     "samples": {
       "challenger": "music/Challenger-Approaches.ogg",
       "aliens": "music/Aliens.ogg",
       "american": "music/American_Finale.ogg",
-      "calibration": "music/calibration.ogg"
+      "calibration": "music/calibration.ogg",
+      "Tutorial": "music/Tutorial.ogg"
     },
     "soundtrack": {
       "calibration": {
@@ -127,7 +175,8 @@
     "jsons": {
         "1": "levels/1.json",
         "2" : "levels/2.json",
-        "3" : "levels/3.json"
+        "3" : "levels/3.json",
+        "4": "levels/4.json"
     },
     "soundEffects": [
         ["tap", "sound/tap.ogg"],
@@ -136,6 +185,10 @@
         ["perfectHit","sound/perfecthit.ogg"],
         ["switch", "sound/switch.ogg"],
         ["switchHit", "sound/switchHit.ogg"],
-        ["meow", "sound/meow.mp3"]
+        ["meow", "sound/meow.mp3"],
+        ["one", "sound/1.mp3"],
+        ["two", "sound/2.mp3"],
+        ["three", "sound/3.mp3"],
+        ["go", "sound/go.mp3"]
     ]
 }

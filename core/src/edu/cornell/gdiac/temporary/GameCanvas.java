@@ -677,6 +677,27 @@ public class GameCanvas {
 		font.draw(spriteBatch, layout, x, y);
     }
 
+	/**
+	 * Draws text on the screen.
+	 *
+	 * @param text The string to draw
+	 * @param font The font to use
+	 * @param x The x-coordinate of the lower-left corner
+	 * @param y The y-coordinate of the lower-left corner
+	 * @param c The color
+	 */
+	public void drawText(String text, BitmapFont font, float x, float y, Color c) {
+		if (!active) {
+			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+			return;
+		}
+
+		GlyphLayout layout = new GlyphLayout(font,text);
+		font.setColor(c);
+
+		font.draw(spriteBatch, layout, x, y);
+	}
+
     /**
      * Draws text centered on the screen.
      *
@@ -709,7 +730,7 @@ public class GameCanvas {
 		font.setColor(tint);
 		font.draw(spriteBatch, layout, x, y+offset);
 	}
-
+    
 
 	/**
 	 * Enumeration of supported BlendStates.
