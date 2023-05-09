@@ -262,13 +262,46 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         local.translate(-ox,-oy);
     }
 
+    int prevLevel=selectedLevel;
+
     public void draw(){
         canvas.begin();
+
+        // draw animation if we changed a level
+//        if (prevLevel!= selectedLevel){
+//            float localScale = centerScale-cornerScale;
+//            if (prevLevel < selectedLevel){ // we need to go right
+//
+//                // we need to do two transforms at most
+//                float currLeftAlbumX = albumCoverCoords[0].x;
+//                float currLeftAlbumY = albumCoverCoords[0].x;
+//
+//                float currCenterAlbumX = albumCoverCoords[1].x;
+//                float currCenterAlbumY = albumCoverCoords[1].x;
+//
+//                // this is the number of
+//                float stepX = (currCenterAlbumX - currLeftAlbumX)/localScale;
+//                float stepY = (currCenterAlbumY - currLeftAlbumY)/localScale;
+//
+//                while (localScale>0){
+//                    canvas.draw(albumCovers[selectedLevel-1], Color.WHITE, albumCovers[selectedLevel-1].getWidth()/2,
+//                            albumCovers[selectedLevel-1].getHeight()/2, albumCoverCoords[0].x,
+//                            albumCoverCoords[0].y, 0, localScale, localScale);
+//                    localScale=localScale-0.1f;
+//                    currLeftAlbumX+=stepX;
+//                    currLeftAlbumY+=stepY;
+//
+//                }
+//            } else{ // we need to go left
+//
+//            }
+//        }
 
         canvas.drawBackground(levelBackground.getTexture(),0,0);
         canvas.draw(goBack, Color.WHITE, goBack.getWidth()/2, goBack.getHeight()/2,
                 goBackCoords.x, goBackCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
 
+        // draw the goleft and go right buttons
         if (selectedLevel-1>=0) {
             canvas.draw(goLeft, Color.WHITE, goLeft.getWidth() / 2, goLeft.getHeight() / 2,
                     goLeftCoords.x, goLeftCoords.y, 0, 0.9f * scale, 0.9f * scale);
@@ -315,6 +348,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         canvas.draw(playButton, playButtonTint, playButton.getWidth()/2, playButton.getHeight()/2,
                     playButtonCoords.x, playButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 
+        prevLevel = selectedLevel;
         canvas.end();
     }
 
@@ -466,13 +500,10 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             draw();
             if (playPressed && listener != null) {
                 // go to game
-//                System.out.println("loading level..");
 //                System.out.println("selected level:" + selectedLevel);
 //                System.out.println("selected difficulty:" + selectedDifficulty);
                 int gameIdx = selectedDifficulty+(selectedLevel*3);
-//                System.out.println("index of json is:" + gameIdx);
-//                System.out.println("file name:"+allLevels[gameIdx-1]);
-                System.out.println(gameIdx);
+                System.out.println("game index: "+gameIdx);
                 selectedJson=allLevels[gameIdx-1];
                 listener.exitScreen(this, ExitCode.TO_PLAYING);
             } else if (pressedEscape && listener != null) {
