@@ -15,7 +15,6 @@ import edu.cornell.gdiac.temporary.SoundController;
 import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.ScreenListener;
 import edu.cornell.gdiac.audio.*;
-import com.badlogic.gdx.audio.Sound;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -1381,7 +1380,7 @@ public class EditorMode implements Screen {
      * This method processes a single step in the game loop.
      */
     public void update(float delta){
-        inputController.readInput();
+        inputController.readKeyboardLevelEditor();
         resolveAction();
 
         if (playing){
@@ -2123,7 +2122,7 @@ public class EditorMode implements Screen {
                     typePrompt(true);
                 }
             }
-            if (inputController.FinishedTyping()){
+            if (inputController.finishedTyping()){
                 resolveTypePrompt();
             }
         } else {
