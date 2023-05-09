@@ -346,7 +346,6 @@ public class Note {
 			}
 			else if (lastSegmentYCenter + lastSegmentHeight/2 <= topbound && lastSegmentYCenter - lastSegmentHeight/2 >= lowbound) {
 				canvas.drawSubsection(trailAnimator, x, lastDrawY, trailScale, 0f, 1f, 0f, numSegments - (int)numSegments);
-
 			}
 			else if (lastSegmentYCenter + lastSegmentHeight/2 > lowbound && lastSegmentYCenter - lastSegmentHeight/2 < lowbound) {
 				float lastSegFracStart = (lowbound - (lastDrawY - trueHeight/2))/trueHeight;
@@ -394,9 +393,6 @@ public class Note {
 				float splashScale = Math.min(widthConfine/backSplash.getRegionWidth(), heightConfine/backSplash.getRegionHeight());
 				canvas.draw(backSplash, Color.WHITE, backSplash.getRegionWidth() / 2, backSplash.getRegionHeight() / 2,
 						x, bottomY, 0.0f, splashScale, splashScale);
-			}
-			if (holding){
-				float splashScale = Math.min(widthConfine/backSplash.getRegionWidth(), heightConfine/backSplash.getRegionHeight());
 				canvas.draw(frontSplash, Color.WHITE, frontSplash.getRegionWidth() / 2,frontSplash.getRegionHeight() / 2,
 						x, bottomY, 0.0f, splashScale, splashScale);
 			}
@@ -404,20 +400,20 @@ public class Note {
 		}
 		else {
 			animator.setFrame((int)animeframe);
-			if (y + headHeight/2 >topbound && y - headHeight/2 < topbound) {
+			if (y + headHeight/2f >topbound && y - headHeight/2f < topbound) {
 				canvas.draw(animator, Color.WHITE, origin.x, origin.y, 4000, 4000,
 						0.0f, scale, scale);
-				float drawFrac = (topbound - (y - headHeight/2))/headHeight;
+				float drawFrac = (topbound - (y - headHeight/2f))/headHeight;
 				canvas.drawSubsection(animator, x, y,scale, 0f, 1f, 0f, drawFrac);
 			}
-			else if (y + headHeight/2 <= topbound && y - headHeight/2 >= lowbound) {
+			else if (y + headHeight/2f <= topbound && y - headHeight/2f >= lowbound) {
 				canvas.draw(animator, Color.WHITE, origin.x, origin.y, x, y,
 						0.0f, scale, scale);
 			}
-			else if (y + headHeight/2 >lowbound && y - headHeight/2 < lowbound) {
+			else if (y + headHeight/2f >lowbound && y - headHeight/2f < lowbound) {
 				canvas.draw(animator, Color.WHITE, origin.x, origin.y, 4000, 4000,
 						0.0f, scale, scale);
-				float startFrac = (lowbound - (y - headHeight/2))/headHeight;
+				float startFrac = (lowbound - (y - headHeight/2f))/headHeight;
 				canvas.drawSubsection(animator, x, y, scale, 0f, 1f, startFrac, 1f);
 			}
 		}
