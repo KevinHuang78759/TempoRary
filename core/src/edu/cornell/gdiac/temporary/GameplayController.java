@@ -42,8 +42,6 @@ public class GameplayController {
 
 	private static final float GLOBAL_VOLUME_ADJ = 0.2f;
 
-	/** Maximum amount of health */
-	final int MAX_HEALTH = 30;
 	/** Number of band member lanes */
 	int NUM_LANES;
 
@@ -80,8 +78,6 @@ public class GameplayController {
 	public float noteDieY;
 	/** The calibration offset (int samples */
 	public int offset;
-	/** Base offset for leniency in samples */
-	private int baseLeniency;
 
 	/** The minimum x value margin */
 	public float LEFTBOUND;
@@ -104,6 +100,15 @@ public class GameplayController {
 
 	public Scoreboard sb;
 
+	/** number of notes missed */
+	private int numberMiss;
+	/** number of notes hit okay */
+	private int numberOk;
+	/** number of notes hit good */
+	private int numberGood;
+	/** number of notes hit perfect */
+	private int numberPerfect;
+
 	/**
 	 * Create gameplaycontroler
 	 * @param width
@@ -125,10 +130,30 @@ public class GameplayController {
 			JsonValue cur = allSounds.get(i);
 			sfx.addSound(cur.getString(0), cur.getString(1));
 		}
+		numberMiss =0;
+		numberOk =0;
+		numberGood =0;
+		numberPerfect =0;
 	}
 
 	float totalWidth;
 	float totalHeight;
+
+	public int getNMiss(){
+		return numberMiss;
+	}
+
+	public int getNOk(){
+		return numberOk;
+	}
+
+	public int getNGood(){
+		return numberGood;
+	}
+
+	public int getNPerfect(){
+		return numberPerfect;
+	}
 
 	public void setBounds(float width, float height){
 		//Ratio of play area width to play area height
@@ -206,6 +231,11 @@ public class GameplayController {
 		T_SwitchPhases = level.getSamplesPerBeat()/2;
 		activeBandMember = 0;
 		goalBandMember = 0;
+
+		numberMiss =0;
+		numberOk =0;
+		numberGood =0;
+		numberPerfect =0;
 	}
 
 	public void reloadLevel(){
@@ -233,6 +263,12 @@ public class GameplayController {
 		triggers = new boolean[lpl];
 		activeBandMember = 0;
 		goalBandMember = 0;
+
+
+		numberMiss =0;
+		numberOk =0;
+		numberGood =0;
+		numberPerfect =0;
 	}
 
 	/**
@@ -472,6 +508,7 @@ public class GameplayController {
 		}
 	}
 
+	// TODO: combine these
 	/**
 	 * Spawns hit particles at x, y, more hit particles with k
 	 */
@@ -576,6 +613,17 @@ public class GameplayController {
 				//We do not have a single hit count for two notes that are close together
 				int compGain = dist < perfectHit ? perfectGain : (dist < goodHit ? goodGain : okGain);
 
+				if (dist < perfectHit){
+					numberPerfect++;
+				} else{
+					if (dist < goodHit){
+						numberGood++;
+					} else{
+						numberOk++;
+					}
+				}
+
+
 				float hitStatusX = LEFTBOUND+((activeBandMember+1)*(HIT_IND_SIZE/3))+((activeBandMember+1) * smallwidth);
 				float hitStatusY = BOTTOMBOUND-(HIT_IND_SIZE/1.6f);
 				if (dist < perfectHit){
@@ -616,6 +664,7 @@ public class GameplayController {
 			sb.resetCombo();
 			note.setHitStatus(offBeatLoss);
 		}
+		numberMiss++;
 	}
 
 

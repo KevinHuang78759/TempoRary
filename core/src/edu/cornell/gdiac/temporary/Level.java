@@ -100,6 +100,38 @@ public class Level {
 
     public int getBpm() { return this.bpm; }
 
+    public long getaThreshold() {
+        return aThreshold;
+    }
+
+    public void setaThreshold(long aThreshold) {
+        this.aThreshold = aThreshold;
+    }
+
+    public long getbThreshold() {
+        return bThreshold;
+    }
+
+    public void setbThreshold(long bThreshold) {
+        this.bThreshold = bThreshold;
+    }
+
+    public long getcThreshold() {
+        return cThreshold;
+    }
+
+    public void setcThreshold(long cThreshold) {
+        this.cThreshold = cThreshold;
+    }
+
+    public long getsThreshold() {
+        return sThreshold;
+    }
+
+    public void setsThreshold(long sThreshold) {
+        this.sThreshold = sThreshold;
+    }
+
     private BandMember[] bandMembers;
 
     // TEXTURES
@@ -124,6 +156,10 @@ public class Level {
     private int maxCompetency;
     private int spawnOffset;
     private int bpm;
+    private long aThreshold;
+    private long bThreshold;
+    private long cThreshold;
+    private long sThreshold;
     private MusicQueue music;
 
     /**
@@ -190,6 +226,10 @@ public class Level {
         levelName = data.getString("levelName");
         levelNumber = data.getInt("levelNumber");
         maxCompetency = data.getInt("maxCompetency");
+        aThreshold = data.get("a-threshold").asLong();
+        bThreshold = data.get("b-threshold").asLong();
+        cThreshold = data.get("c-threshold").asLong();
+        sThreshold = data.get("s-threshold").asLong();
         bpm = data.getInt("bpm");
         String song = data.getString("song");
         music = ((AudioEngine) Gdx.audio).newMusic(Gdx.files.internal(assets.get("samples").getString(song)));
