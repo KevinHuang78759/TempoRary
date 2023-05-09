@@ -140,6 +140,6 @@ public class Scoreboard {
 
     public void displayMultiplier(float xPos, float yPos, GameCanvas canvas){
         String disp = "Multiplier x" + levelMultipliers[level];
-        canvas.drawText(disp, scoreFont, xPos - multiplierLayout.width/4f, yPos + multiplierLayout.height/2f);
+        canvas.drawText(disp, multiplierFont, xPos - multiplierLayout.width/4f, yPos + multiplierLayout.height/2f);
     }
 }
