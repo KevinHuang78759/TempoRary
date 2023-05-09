@@ -510,7 +510,7 @@ public class GameplayController {
 		s.getPosition().set(x, y);
 		s.setSizeConfine(HIT_IND_SIZE*scale);
 		s.getVelocity().set(0,-smallwidth/60f);
-		s.setAge(10);
+		s.setAge(20);
 		noteIndicatorParticles.add(s);
 	}
 
