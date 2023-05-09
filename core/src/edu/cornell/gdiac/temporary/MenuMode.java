@@ -45,14 +45,11 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private Texture levelEditorButton;
     private Texture settingsButton;
     private Texture exitButton;
+    private Texture settingsButtonHover;
+    private Texture exitButtonHover;
+    private Texture playButtonHover;
 
     /* BUTTON LOCATIONS */
-    /** Play button x and y coordinates represented as a vector */
-    private Vector2 playButtonCoords;
-    /** Level editor button x and y coordinates represented as a vector */
-    private Vector2 levelEditorButtonCoords;
-    /** Calibration button x and y coordinates represented as a vector */
-    private Vector2 calibrationButtonCoords;
     /** Scale at which to draw the buttons */
     private static float BUTTON_SCALE  = 0.75f;
     /** The y-coordinate of the center of the progress bar (artifact of LoadingMode) */
@@ -61,11 +58,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private int centerX;
     /** The height of the canvas window (necessary since sprite origin != screen origin) */
     private int heightY;
-
-    /** Height of the inner progress bar */
-    private static int INNER_PROGRESS_HEIGHT = 77;
-    /** Width of the rounded cap on the left or right for the inner bar */
-    private static int INNER_PROGRESS_CAP    = 33;
 
     /** Standard window size (for scaling) */
     private static int STANDARD_WIDTH  = 1200;
@@ -105,8 +97,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private float soundFXVolume;
 
     private MenuState currentMenuState;
-    private int innerWidth;
-    private boolean holdingBar;
 
     // SCENES FOR THE SETTINGS PAGE
     private Stage stage;
@@ -129,7 +119,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private TextButton.TextButtonStyle secondaryKeyStyle = new TextButton.TextButtonStyle();
 
     // Scene2D UI components
-
     // settings image assets
     private Texture settingsHeader;
     private Texture backButtonTexture;
@@ -163,9 +152,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private int prevHeight;
 
     private ObjectMap<String, Texture> keyImageMap = new ObjectMap<>();
-    private Texture settingsButtonHover;
-    private Texture exitButtonHover;
-    private Texture playButtonHover;
 
     // MenuState
     private enum MenuState {
@@ -187,17 +173,14 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         background = directory.getEntry( "loading-background", Texture.class );
         background.setFilter( Texture.TextureFilter.Linear, Texture.TextureFilter.Linear );
         settingsBackground = directory.getEntry("settings-background", Texture.class);
-        playButton = directory.getEntry("play", Texture.class);
-        playButtonHover = directory.getEntry("play-button-hover", Texture.class);
+        playButton = directory.getEntry("play-button", Texture.class);
+        playButtonHover = directory.getEntry("play-button-active", Texture.class);
         levelEditorButton = directory.getEntry("level-editor", Texture.class);
         calibrationButton = directory.getEntry("play-old", Texture.class);
         settingsButton = directory.getEntry("settings", Texture.class);
-        settingsButtonHover = directory.getEntry("settings-hover", Texture.class);
+        settingsButtonHover = directory.getEntry("settings-active", Texture.class);
         exitButton = directory.getEntry("quit-button-menu", Texture.class);
-        exitButtonHover = directory.getEntry("quit-button-menu-hover", Texture.class);
-        playButtonCoords = new Vector2(centerX + levelEditorButton.getWidth(), canvas.getHeight()/2 + 200);
-        levelEditorButtonCoords = new Vector2(centerX + levelEditorButton.getWidth(), canvas.getHeight()/2);
-        calibrationButtonCoords = new Vector2(centerX + calibrationButton.getWidth()*2 , centerY);
+        exitButtonHover = directory.getEntry("quit-button-active-menu", Texture.class);
 
         // UI assets for settings
         settingsHeader = directory.getEntry("settings-header", Texture.class);
@@ -221,7 +204,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         keyImageMap.put("Right", directory.getEntry("right-arrow-graphic", Texture.class));
         keyImageMap.put("Down", directory.getEntry("down-arrow-graphic", Texture.class));
         keyImageMap.put("Up", directory.getEntry("up-arrow-graphic", Texture.class));
-
 
         // add Scene2D
         defineStyles();
@@ -305,7 +287,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         final Slider fxVolumeSlider = new Slider(0f, 1f, 0.05f, false, sliderStyle);
         fxVolumeSlider.setValue(soundFXVolume);
 
-        mainTable.row().padLeft(10).padBottom(20).expandX().fill();
+        mainTable.row().padLeft(10).padBottom(10).expandX().fill();
 
         // back button
         headerTable.add(backButton).top().left();
@@ -325,11 +307,20 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
         mainTable.add(headerTable).expandX().colspan(3);
 
+        mainTable.row().padBottom(10);
+
+        TextButton.TextButtonStyle calibrationButtonStyle = new TextButton.TextButtonStyle();
+        calibrationButtonStyle.font = blinkerSemiBold;
+        calibrationButtonStyle.fontColor = fontColor;
+        Button calibButton = new TextButton("CALIBRATION", calibrationButtonStyle);
+        mainTable.add(calibButton).colspan(3);
+
         mainTable.row();
 
         mainTable.add(new Image(headerLine)).bottom().right().expandX().padBottom(12).padRight(20);
         mainTable.add(new Label("CLICK TO REBIND CONTROLS", header2Style));
         mainTable.add(new Image(headerLine)).bottom().left().expandX().padBottom(12).padLeft(20);
+
 
         mainTable.row().expand().fill();
 
@@ -394,6 +385,13 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         });
 
         // LISTENERS
+        calibButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                pressState = ExitCode.TO_CALIBRATION;
+            }
+        });
+
         backButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -568,7 +566,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         tableContainer.fill();
         tableContainer.setActor(mainTable);
         stage.addActor(tableContainer);
-//        stage.setDebugAll(true);
 
         // fonts
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Blinker-Bold.ttf"));
@@ -624,32 +621,39 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
      */
     private void draw() {
         canvas.begin();
-        // TODO: make these methods instead
         canvas.draw(background, 0, 0, canvas.getWidth(), canvas.getHeight());
 
-        Color playButtonTint = (pressState == PLAY_PRESSED ? Color.GRAY: Color.WHITE);
-        canvas.draw(playButton, playButtonTint, playButton.getWidth()/2, playButton.getHeight()/2,
-                    playButtonCoords.x, playButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+//        canvas.draw(logo, Color.WHITE, logo.getWidth()/2, logo.getHeight()/2,
+//                logo.getWidth()/2+50, centerY+300, 0,scale, scale);
 
-        Color levelEditorButtonTint = (pressState == LEVEL_EDITOR_PRESSED ? Color.GREEN: Color.WHITE);
-        canvas.draw(levelEditorButton, levelEditorButtonTint, levelEditorButton.getWidth()/2, levelEditorButton.getHeight()/2,
-                    levelEditorButtonCoords.x, levelEditorButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+        if (pressState == PLAY_PRESSED) {
+            canvas.draw(playButtonHover, Color.WHITE, playButtonHover.getWidth() / 2, playButton.getHeight() / 2,
+                    canvas.getWidth() / 2, 0.75f * canvas.getHeight(), 0, BUTTON_SCALE, BUTTON_SCALE);
+        } else {
+            canvas.draw(playButton, Color.WHITE, playButton.getWidth() / 2, playButton.getHeight() / 2,
+                    canvas.getWidth() / 2, 0.75f * canvas.getHeight(), 0, BUTTON_SCALE, BUTTON_SCALE);
+        }
 
-        canvas.draw(logo, Color.WHITE, logo.getWidth()/2, logo.getHeight()/2,
-                    logo.getWidth()/2+50, centerY+300, 0,scale, scale);
+        if (pressState == SETTINGS_PRESSED) {
+            canvas.draw(settingsButtonHover, Color.WHITE, settingsButtonHover.getWidth() / 2, settingsButton.getHeight() / 2,
+                    canvas.getWidth() / 2, 0.6f * canvas.getHeight(), 0, BUTTON_SCALE, BUTTON_SCALE);
+        } else {
+            canvas.draw(settingsButton, Color.WHITE, settingsButton.getWidth() / 2, settingsButton.getHeight() / 2,
+                    canvas.getWidth() / 2, 0.6f * canvas.getHeight(), 0, BUTTON_SCALE, BUTTON_SCALE);
+        }
 
-        //draw calibration button
-        Color tintCalibration = (pressState == CALIBRATION_PRESSED ? Color.GRAY: Color.RED);
-        canvas.draw(calibrationButton, tintCalibration, calibrationButton.getWidth()/2, calibrationButton.getHeight()/2,
-                    calibrationButtonCoords.x, calibrationButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+        if (pressState == EXIT_PRESSED) {
+            canvas.draw(exitButtonHover, Color.WHITE, exitButtonHover.getWidth() / 2, exitButton.getHeight() / 2,
+                    canvas.getWidth() / 2, 0.45f * canvas.getHeight(), 0, BUTTON_SCALE, BUTTON_SCALE);
+        } else {
+            canvas.draw(exitButton, Color.WHITE, exitButton.getWidth() / 2, exitButton.getHeight() / 2,
+                    canvas.getWidth() / 2, 0.45f * canvas.getHeight(), 0, BUTTON_SCALE, BUTTON_SCALE);
+        }
 
-        Color settingsButtonTint = (pressState == SETTINGS_PRESSED ? Color.GRAY: Color.WHITE);
-        canvas.draw(settingsButton, settingsButtonTint, settingsButton.getWidth()/2, settingsButton.getHeight()/2,
-                calibrationButtonCoords.x - settingsButton.getWidth(), calibrationButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+        //        Color levelEditorButtonTint = (pressState == LEVEL_EDITOR_PRESSED ? Color.GREEN: Color.WHITE);
+//        canvas.draw(levelEditorButton, levelEditorButtonTint, levelEditorButton.getWidth()/2, levelEditorButton.getHeight()/2,
+//                    levelEditorButtonCoords.x, levelEditorButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 
-        Color exitButtonTint = (pressState == EXIT_PRESSED ? Color.GRAY: Color.WHITE);
-        canvas.draw(exitButton, exitButtonTint, exitButton.getWidth()/2, exitButton.getHeight()/2,
-                calibrationButtonCoords.x - 2 * 0.25f * exitButton.getWidth(), calibrationButtonCoords.y, 0, 0.25f, 0.25f);
         canvas.end();
     }
 
@@ -681,7 +685,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         float sy = ((float)height)/STANDARD_HEIGHT;
         scale = (sx < sy ? sx : sy);
 
-        innerWidth = (int)(BAR_WIDTH_RATIO*0.97*width);
         centerY = (int)(BAR_HEIGHT_RATIO*height);
         centerX = width/2;
         heightY = height;
@@ -726,35 +729,17 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         this.listener = listener;
     }
 
-    // PROCESSING PLAYER INPUT
-    /**
-     * Checks to see if the location clicked at `screenX`, `screenY` are within the bounds of the given button
-     * `buttonTexture` and `buttonCoords` should refer to the appropriate button parameters
-     *
-     * @param screenX the x-coordinate of the mouse on the screen
-     * @param screenY the y-coordinate of the mouse on the screen
-     * @param buttonTexture the specified button texture
-     * @param buttonCoords the specified button coordinates as a Vector2 object
-     * @return whether the button specified was pressed
-     */
-    public boolean isButtonPressed(int screenX, int screenY, Texture buttonTexture, Vector2 buttonCoords) {
+    // TODO: DOCUMENT/MOVE
+    public boolean isButtonPressed(int screenX, int screenY, Texture buttonTexture, float x, float y, float scale) {
         // buttons are rectangles
         // buttonCoords hold the center of the rectangle, buttonTexture has the width and height
         // get half the x length of the button portrayed
-        float xRadius = BUTTON_SCALE * scale * buttonTexture.getWidth()/2.0f;
-        boolean xInBounds = buttonCoords.x - xRadius <= screenX && buttonCoords.x + xRadius >= screenX;
+        float xRadius = scale * buttonTexture.getWidth()/2.0f;
+        boolean xInBounds = x - xRadius <= screenX && x + xRadius >= screenX;
 
         // get half the y length of the button portrayed
-        float yRadius = BUTTON_SCALE * scale * buttonTexture.getHeight()/2.0f;
-        boolean yInBounds = buttonCoords.y - yRadius <= screenY && buttonCoords.y + yRadius >= screenY;
-        return xInBounds && yInBounds;
-    }
-
-    public boolean isButtonPressed(int screenX, int screenY, float width, float height, Vector2 buttonCoords) {
-        float xRadius = width/2.0f;
-        boolean xInBounds = buttonCoords.x - xRadius <= screenX && buttonCoords.x + xRadius >= screenX;
-        float yRadius = height/2.0f;
-        boolean yInBounds = buttonCoords.y - yRadius <= screenY && buttonCoords.y + yRadius >= screenY;
+        float yRadius = scale * buttonTexture.getHeight()/2.0f;
+        boolean yInBounds = y - yRadius <= screenY && y + yRadius >= screenY;
         return xInBounds && yInBounds;
     }
 
@@ -777,52 +762,21 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
                 || pressState == ExitCode.TO_EXIT) {
             return true;
         }
-        float radius = BUTTON_SCALE * scale * calibrationButton.getWidth() / 2.0f;
         // Flip to match graphics coordinates
-        screenY = heightY - screenY;
-        switch (currentMenuState) {
-            case HOME:
-                // check if buttons get pressed appropriately
-                if (isButtonPressed(screenX, screenY, playButton, playButtonCoords)) {
-                    pressState = PLAY_PRESSED;
-                }
-                if (isButtonPressed(screenX, screenY, levelEditorButton, levelEditorButtonCoords)) {
-                    pressState = LEVEL_EDITOR_PRESSED;
-                }
-
-                float dist = (screenX - calibrationButtonCoords.x) * (screenX - calibrationButtonCoords.x)
-                        + (screenY - calibrationButtonCoords.y) * (screenY - calibrationButtonCoords.y);
-                if (dist < radius * radius) {
-                    pressState = CALIBRATION_PRESSED;
-                }
-
-                float distSettings = (screenX - (calibrationButtonCoords.x - calibrationButton.getWidth())) * (screenX - (calibrationButtonCoords.x - calibrationButton.getWidth()))
-                        + (screenY - calibrationButtonCoords.y) * (screenY - calibrationButtonCoords.y);
-                if (distSettings < radius * radius) {
-                    pressState = SETTINGS_PRESSED;
-                }
-                v.x = calibrationButtonCoords.x - 2 * 0.25f * exitButton.getWidth();
-                v.y = calibrationButtonCoords.y;
-                if (isButtonPressed(screenX, screenY, 0.25f * exitButton.getWidth(), 0.25f * exitButton.getHeight(), v)) {
-                    pressState = EXIT_PRESSED;
-                }
-                break;
-            case SETTINGS:
-                float distBack = (screenX - (calibrationButton.getWidth())) * (screenX - (calibrationButton.getWidth()))
-                        + (screenY - calibrationButtonCoords.y) * (screenY - calibrationButtonCoords.y);
-                if (distBack < radius * radius) {
-                    currentMenuState = MenuState.HOME;
-                    Gdx.input.setInputProcessor(this);
-                }
-                float barWidth = (innerWidth-2*scale*INNER_PROGRESS_CAP);
-                v.x = centerX;
-                v.y = centerY;
-                if (isButtonPressed(screenX, screenY, barWidth, scale*INNER_PROGRESS_HEIGHT, v)) {
-                    holdingBar = true;
-                }
-                break;
-        }
-
+//        screenY = heightY - screenY;
+//        if (currentMenuState == MenuState.HOME) {// check if buttons get pressed appropriately
+//            if (isButtonPressed(screenX, screenY, playButton, canvas.getWidth()/2, canvas.getHeight()*0.75f, BUTTON_SCALE)) {
+//                pressState = ExitCode.TO_LEVEL;
+//            }
+//            if (isButtonPressed(screenX, screenY, settingsButton, canvas.getWidth()/2, canvas.getHeight()*0.6f, BUTTON_SCALE)) {
+//            }
+//            if (isButtonPressed(screenX, screenY, exitButton, canvas.getWidth()/2, canvas.getHeight()*0.45f, BUTTON_SCALE)) {
+//                pressState = ExitCode.TO_EXIT;
+//            }
+//            if (isButtonPressed(screenX, screenY, levelEditorButton, levelEditorButtonCoords)) {
+//                pressState = LEVEL_EDITOR_PRESSED;
+//            }
+//        }
         return false;
     }
 
@@ -841,13 +795,13 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         switch (pressState){
             case PLAY_PRESSED:
                 pressState = ExitCode.TO_LEVEL;
-                return false;
+                return true;
             case LEVEL_EDITOR_PRESSED:
                 pressState = ExitCode.TO_EDITOR;
-                return false;
+                return true;
             case CALIBRATION_PRESSED:
                 pressState = ExitCode.TO_CALIBRATION;
-                return false;
+                return true;
             case SETTINGS_PRESSED:
                 currentMenuState = MenuState.SETTINGS;
                 pressState = NO_BUTTON_PRESSED;
@@ -858,7 +812,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
             default:
                 break;
         }
-        holdingBar = false;
         return true;
     }
 
@@ -916,14 +869,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
      * @param pointer the button or touch finger number
      * @return whether to hand the event to other listeners.
      */
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        if (holdingBar) {
-            musicVolume = 1 - ((screenX - centerX - innerWidth / 2) * 1.0f / innerWidth * -1);
-            if (musicVolume > 1) musicVolume = 1;
-            if (musicVolume < 0) musicVolume = 0;
-        }
-        return true;
-    }
+    public boolean touchDragged(int screenX, int screenY, int pointer) {return true;}
 
     // UNSUPPORTED METHODS FROM InputProcessor
 
@@ -958,7 +904,19 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
      * @param screenY the y-coordinate of the mouse on the screen
      * @return whether to hand the event to other listeners.
      */
-    public boolean mouseMoved(int screenX, int screenY) {return true;}
+    public boolean mouseMoved(int screenX, int screenY) {
+        screenY = heightY - screenY;
+        if (isButtonPressed(screenX, screenY, playButton, canvas.getWidth()/2, canvas.getHeight()*0.75f, BUTTON_SCALE)) {
+            pressState = PLAY_PRESSED;
+        } else if (isButtonPressed(screenX, screenY, settingsButton, canvas.getWidth()/2, canvas.getHeight()*0.6f, BUTTON_SCALE)) {
+            pressState = SETTINGS_PRESSED;
+        } else if (isButtonPressed(screenX, screenY, exitButton, canvas.getWidth()/2, canvas.getHeight()*0.45f, BUTTON_SCALE)) {
+            pressState = EXIT_PRESSED;
+        } else {
+            pressState = NO_BUTTON_PRESSED;
+        }
+        return true;
+    }
 
     /**
      * Called when the mouse wheel was scrolled. (UNSUPPORTED)
