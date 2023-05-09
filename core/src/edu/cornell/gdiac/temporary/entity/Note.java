@@ -404,20 +404,20 @@ public class Note {
 		}
 		else {
 			animator.setFrame((int)animeframe);
-			if (y + headHeight/2 >topbound && y - headHeight/2 < topbound) {
+			if (y + headHeight/2f >topbound && y - headHeight/2f < topbound) {
 				canvas.draw(animator, Color.WHITE, origin.x, origin.y, 4000, 4000,
 						0.0f, scale, scale);
-				float drawFrac = (topbound - (y - headHeight/2))/headHeight;
+				float drawFrac = (topbound - (y - headHeight/2f))/headHeight;
 				canvas.drawSubsection(animator, x, y,scale, 0f, 1f, 0f, drawFrac);
 			}
-			else if (y + headHeight/2 <= topbound && y - headHeight/2 >= lowbound) {
+			else if (y + headHeight/2f <= topbound && y - headHeight/2f >= lowbound) {
 				canvas.draw(animator, Color.WHITE, origin.x, origin.y, x, y,
 						0.0f, scale, scale);
 			}
-			else if (y + headHeight/2 >lowbound && y - headHeight/2 < lowbound) {
+			else if (y + headHeight/2f >lowbound && y - headHeight/2f < lowbound) {
 				canvas.draw(animator, Color.WHITE, origin.x, origin.y, 4000, 4000,
 						0.0f, scale, scale);
-				float startFrac = (lowbound - (y - headHeight/2))/headHeight;
+				float startFrac = (lowbound - (y - headHeight/2f))/headHeight;
 				canvas.drawSubsection(animator, x, y, scale, 0f, 1f, startFrac, 1f);
 			}
 		}

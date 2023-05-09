@@ -113,6 +113,8 @@ public class EditorMode implements Screen {
     private Vector2 changeFallSpeedButtonLocation;
     private Vector2 changeMaxCompButtonLocation;
     private Vector2 changeInstrumentsButtonLocation;
+    private Vector2 changeThresholdsButtonLocation;
+
     private Vector2 closeSettingsButtonLocation;
     private float settingsButtonsSize;
 
@@ -125,6 +127,7 @@ public class EditorMode implements Screen {
     private Vector2 maxCompTextLocation;
     private Vector2 fallSpeedTextLocation;
     private Vector2 instrumentsTextLocation;
+    private Vector2 thresholdsTextLocation;
     private Vector2 laneTextLocation;
     private Vector2 lineTextLocation;
 
@@ -285,6 +288,9 @@ public class EditorMode implements Screen {
     /** True if the user is in the instruments setting */
     private boolean instrumentSetting;
 
+    /** True if the user is in the thresholds setting */
+    private boolean thresholdSetting;
+
     /** True if the user is typing in any text prompt */
     private boolean typing;
 
@@ -314,6 +320,18 @@ public class EditorMode implements Screen {
 
     /** True if the user is typing in the note competency reward text prompt */
     private boolean typingNoteGain;
+
+    /** True if the user is typing in the A Score Threshold text prompt */
+    private boolean typingThresholdA;
+
+    /** True if the user is typing in the B Score Threshold text prompt */
+    private boolean typingThresholdB;
+
+    /** True if the user is typing in the C Score Threshold text prompt */
+    private boolean typingThresholdC;
+
+    /** True if the user is typing in the S Score Threshold text prompt */
+    private boolean typingThresholdS;
 
     /** True if the user is typing in the hit probabilities text prompt */
     private boolean[] typingProbabilities;
@@ -383,6 +401,12 @@ public class EditorMode implements Screen {
 
     /** Instruments played by the band members in the level */
     private Instrument[] instruments;
+
+    /** Score Thresholds for letter grades */
+    private int AThreshold;
+    private int BThreshold;
+    private int CThreshold;
+    private int SThreshold;
 
     /** left edge of the first lane rectangle on the screen */
     private float leftBound;
@@ -562,27 +586,29 @@ public class EditorMode implements Screen {
         //Settings
         settingsScreenLocation.set(width*0.2f, height*0.1f);
         settingsScreenDimensions.set(width*0.6f, height*0.8f);
-        changeNameButtonLocation.set(width*0.25f, height*0.60f);
-        changeSongNameButtonLocation.set(width*0.55f, height*0.60f);
-        changeBPMButtonLocation.set(width*0.25f, height*0.50f);
-        changeFallSpeedButtonLocation.set(width*0.55f, height*0.50f);
-        changeLaneButtonLocation.set(width*0.25f, height*0.40f);
-        changeLineButtonLocation.set(width*0.55f, height*0.40f);
-        changeMaxCompButtonLocation.set(width*0.25f, height*0.30f);
-        changeInstrumentsButtonLocation.set(width*0.25f, height*0.20f);
+        changeNameButtonLocation.set(width*0.25f, height*0.65f);
+        changeSongNameButtonLocation.set(width*0.55f, height*0.65f);
+        changeBPMButtonLocation.set(width*0.25f, height*0.55f);
+        changeFallSpeedButtonLocation.set(width*0.55f, height*0.55f);
+        changeLaneButtonLocation.set(width*0.25f, height*0.45f);
+        changeLineButtonLocation.set(width*0.55f, height*0.45f);
+        changeMaxCompButtonLocation.set(width*0.25f, height*0.35f);
+        changeInstrumentsButtonLocation.set(width*0.25f, height*0.25f);
+        changeThresholdsButtonLocation.set(width*0.25f, height*0.15f);
         closeSettingsButtonLocation.set(width*0.21f, height*0.825f);
         settingsButtonsSize = width*0.04f;
 
         //Settings Text
         settingsTitleTextLocation.set(width*0.45f, height*0.85f);
-        nameTextLocation.set(width*0.3f, height*0.64f);
-        songNameTextLocation.set(width*0.6f, height*0.64f);
-        BPMTextLocation.set(width*0.3f, height*0.54f);
-        fallSpeedTextLocation.set(width*0.6f, height*0.54f);
-        laneTextLocation.set(width*0.3f, height*0.44f);
-        lineTextLocation.set(width*0.6f, height*0.44f);
-        maxCompTextLocation.set(width*0.3f, height*0.34f);
-        instrumentsTextLocation.set(width*0.3f, height*0.24f);
+        nameTextLocation.set(width*0.3f, height*0.69f);
+        songNameTextLocation.set(width*0.6f, height*0.69f);
+        BPMTextLocation.set(width*0.3f, height*0.59f);
+        fallSpeedTextLocation.set(width*0.6f, height*0.59f);
+        laneTextLocation.set(width*0.3f, height*0.49f);
+        lineTextLocation.set(width*0.6f, height*0.49f);
+        maxCompTextLocation.set(width*0.3f, height*0.39f);
+        instrumentsTextLocation.set(width*0.3f, height*0.29f);
+        thresholdsTextLocation.set(width*0.3f, height*0.19f);
 
         //Instruments Settings
         instrumentsSettingsScreenLocation.set(width*0.25f, height*0.30f);
@@ -628,6 +654,7 @@ public class EditorMode implements Screen {
         hitSetting = false;
         flagSetting = false;
         instrumentSetting = false;
+        thresholdSetting = false;
         typing = false;
         typingBPM = false;
         typingLaneNum = false;
@@ -691,6 +718,7 @@ public class EditorMode implements Screen {
         changeMaxCompButtonLocation = new Vector2();
         changeFallSpeedButtonLocation = new Vector2();
         changeInstrumentsButtonLocation = new Vector2();
+        changeThresholdsButtonLocation = new Vector2();
         changeLaneButtonLocation = new Vector2();
         changeLineButtonLocation = new Vector2();
         closeSettingsButtonLocation = new Vector2();
@@ -701,6 +729,7 @@ public class EditorMode implements Screen {
         maxCompTextLocation = new Vector2();
         fallSpeedTextLocation = new Vector2();
         instrumentsTextLocation = new Vector2();
+        thresholdsTextLocation = new Vector2();
         instrumentsSettingsScreenLocation = new Vector2();
         instrumentsSettingsScreenDimensions = new Vector2();
         instrumentsSettingsCloseButtonLocation = new Vector2();
@@ -727,6 +756,10 @@ public class EditorMode implements Screen {
         this.lineNumber = lineNumber;
         selectedProbabilities = new int[laneNumber];
         typingProbabilities = new boolean[laneNumber];
+        CThreshold = 2000;
+        BThreshold = 3000;
+        AThreshold = 4000;
+        SThreshold = 5000;
         probabilityButtonLocations = new Vector2[laneNumber];
         probabilityTextLocations = new Vector2[laneNumber];
         instruments = new Instrument[laneNumber];
@@ -780,6 +813,10 @@ public class EditorMode implements Screen {
         playPosition = startPosition;
         laneNumber = level.get("bandMembers").size;
         lineNumber = level.getInt("linesPerMember");
+        AThreshold = level.getInt("thresholdA");
+        BThreshold = level.getInt("thresholdB");
+        CThreshold = level.getInt("thresholdC");
+        SThreshold = level.getInt("thresholdS");
         selectedProbabilities = new int[laneNumber];
         typingProbabilities = new boolean[laneNumber];
         probabilityButtonLocations = new Vector2[laneNumber];
@@ -917,6 +954,10 @@ public class EditorMode implements Screen {
             public int fallSpeed;
             public int maxCompetency;
             public int linesPerMember;
+            public int thresholdA;
+            public int thresholdB;
+            public int thresholdC;
+            public int thresholdS;
             public ArrayList<BandMember> bandMembers;
             public ArrayList<Hit> randomHits;
         }
@@ -935,6 +976,10 @@ public class EditorMode implements Screen {
         l.fallSpeed = fallSpeed;
         l.maxCompetency = this.maxCompetency;
         l.linesPerMember = lineNumber;
+        l.thresholdA = AThreshold;
+        l.thresholdB = BThreshold;
+        l.thresholdC = CThreshold;
+        l.thresholdS = SThreshold;
         l.bandMembers = new ArrayList<BandMember>();
         for (int lane = 0; lane < laneNumber; lane++){
             BandMember b = new BandMember();
@@ -1586,7 +1631,7 @@ public class EditorMode implements Screen {
      * @param y the vertical screen location
      */
     private void buttonClick(float x, float y){
-        if (!setting && !hitSetting && !flagSetting && !instrumentSetting) {
+        if (!setting && !hitSetting && !flagSetting && !instrumentSetting && !thresholdSetting) {
             if (x >= quarterPrecision1ButtonLocation.x && x <= quarterPrecision1ButtonLocation.x + buttonSize) {
                 if (y >= quarterPrecision1ButtonLocation.y && y <= quarterPrecision1ButtonLocation.y + buttonSize) {
                     currentPlaceType = PlaceType.QUARTER;
@@ -1715,7 +1760,7 @@ public class EditorMode implements Screen {
                     this.setting = true;
                 }
             }
-        } else if (setting && !instrumentSetting){
+        } else if (setting && !instrumentSetting && !thresholdSetting){
             if (x >= closeSettingsButtonLocation.x && x <= closeSettingsButtonLocation.x + settingsButtonsSize) {
                 if (y >= closeSettingsButtonLocation.y && y <= closeSettingsButtonLocation.y + settingsButtonsSize) {
                     setting = false;
@@ -1749,6 +1794,11 @@ public class EditorMode implements Screen {
             if (x >= changeInstrumentsButtonLocation.x && x <= changeInstrumentsButtonLocation.x + settingsButtonsSize) {
                 if (y >= changeInstrumentsButtonLocation.y && y <= changeInstrumentsButtonLocation.y + settingsButtonsSize) {
                     instrumentSetting = true;
+                }
+            }
+            if (x >= changeThresholdsButtonLocation.x && x <= changeThresholdsButtonLocation.x + settingsButtonsSize) {
+                if (y >= changeThresholdsButtonLocation.y && y <= changeThresholdsButtonLocation.y + settingsButtonsSize) {
+                    thresholdSetting = true;
                 }
             }
             if (x >= changeLaneButtonLocation.x && x <= changeLaneButtonLocation.x + settingsButtonsSize) {
@@ -1790,7 +1840,7 @@ public class EditorMode implements Screen {
                     typingNoteGain = true;
                 }
             }
-        } else {
+        } else if (instrumentSetting){
             if (x >= instrumentsSettingsCloseButtonLocation.x && x <= instrumentsSettingsCloseButtonLocation.x + instrumentSettingsButtonSize) {
                 if (y >= instrumentsSettingsCloseButtonLocation.y && y <= instrumentsSettingsCloseButtonLocation.y + instrumentSettingsButtonSize) {
                     instrumentSetting = false;
@@ -1814,6 +1864,8 @@ public class EditorMode implements Screen {
                     }
                 }
             }
+        } else if (thresholdSetting){
+
         }
     }
 
@@ -2381,6 +2433,8 @@ public class EditorMode implements Screen {
             canvas.drawRect(changeMaxCompButtonLocation, settingsButtonsSize, settingsButtonsSize, Color.BLACK, false);
             canvas.drawRect(changeInstrumentsButtonLocation, settingsButtonsSize, settingsButtonsSize, Color.LIGHT_GRAY, true);
             canvas.drawRect(changeInstrumentsButtonLocation, settingsButtonsSize, settingsButtonsSize, Color.BLACK, false);
+            canvas.drawRect(changeThresholdsButtonLocation, settingsButtonsSize, settingsButtonsSize, Color.LIGHT_GRAY, true);
+            canvas.drawRect(changeThresholdsButtonLocation, settingsButtonsSize, settingsButtonsSize, Color.BLACK, false);
             canvas.drawRect(changeLaneButtonLocation, settingsButtonsSize, settingsButtonsSize, Color.LIGHT_GRAY, true);
             canvas.drawRect(changeLaneButtonLocation, settingsButtonsSize, settingsButtonsSize, Color.BLACK, false);
             canvas.drawRect(changeLineButtonLocation, settingsButtonsSize, settingsButtonsSize, Color.LIGHT_GRAY, true);
@@ -2397,6 +2451,7 @@ public class EditorMode implements Screen {
             String maxCompMsg = "Max Competency: " + String.valueOf(maxCompetency);
             String laneMsg = "Lane Number: " + String.valueOf(laneNumber);
             String lineMsg = "Line Number: " + String.valueOf(lineNumber);
+            String ThresholdsMsg = "Grades: S-" + SThreshold + ", A-" + AThreshold + ", B-" + BThreshold + ", C-" + CThreshold;
             String InstrumentsMsg = "Instruments: ";
             for (int i = 0; i < laneNumber; i++){
                 InstrumentsMsg += instrumentToString(instruments[i]) + ", ";
@@ -2407,6 +2462,7 @@ public class EditorMode implements Screen {
             canvas.drawText(fallSpeedMsg, displayFont, fallSpeedTextLocation.x, fallSpeedTextLocation.y);
             canvas.drawText(maxCompMsg, displayFont, maxCompTextLocation.x, maxCompTextLocation.y);
             canvas.drawText(InstrumentsMsg, displayFont, instrumentsTextLocation.x, instrumentsTextLocation.y);
+            canvas.drawText(ThresholdsMsg, displayFont, thresholdsTextLocation.x, thresholdsTextLocation.y);
             canvas.drawText(laneMsg, displayFont, laneTextLocation.x, laneTextLocation.y);
             canvas.drawText(lineMsg, displayFont, lineTextLocation.x, lineTextLocation.y);
         }

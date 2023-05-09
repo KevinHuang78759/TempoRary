@@ -231,7 +231,7 @@ public class Level {
                     n.setHoldTextures(holdTrailTexture,1,holdEndTexture,1, backSplash, frontSplash, getAnimationRateFromBPM(bpm));
                     n.setHoldSamples(thisNote.getLong("duration"));
                 }
-                n.setHitSample(thisNote.getInt("position"));
+                n.setHitSample(thisNote.getLong("position"));
                 notes.addLast(n);
             }
             bandMembers[i].setAllNotes(notes);
@@ -412,7 +412,7 @@ public class Level {
                     if(thisNote.getLong("position") > maxSample){
                         continue;
                     }
-                    n = new Note(thisNote.getInt("line"), Note.NoteType.SWITCH, thisNote.getLong("position") - spawnOffset, switchNoteTexture);
+                    n = new Note(thisNote.getInt("line"), Note.NoteType.SWITCH, thisNote.getLong("position") - 2*spawnOffset, switchNoteTexture);
                 }
                 else {
                     if(thisNote.getLong("position") + thisNote.getLong("duration")> maxSample){
@@ -422,7 +422,7 @@ public class Level {
                     n.setHoldTextures(holdTrailTexture,1,holdEndTexture,1, backSplash, frontSplash, getAnimationRateFromBPM(bpm));
                     n.setHoldSamples(thisNote.getLong("duration"));
                 }
-                n.setHitSample(thisNote.getInt("position"));
+                n.setHitSample(thisNote.getLong("position"));
                 notes.addLast(n);
             }
             bandMembers[i].setAllNotes(notes);
