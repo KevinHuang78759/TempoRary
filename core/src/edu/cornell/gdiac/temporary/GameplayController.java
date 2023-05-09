@@ -54,9 +54,6 @@ public class GameplayController {
 
 	private Texture missIndicator;
 
-
-
-
 	// List of objects with the garbage collection set.
 	/** The currently active object */
 	private Array<Particle> particles;
@@ -135,7 +132,6 @@ public class GameplayController {
 		numberOk =0;
 		numberGood =0;
 		numberPerfect =0;
-
 	}
 
 	float totalWidth;
@@ -414,14 +410,34 @@ public class GameplayController {
 	}
 
 	/**
+	 * Steps time within the intro sequence of the level
+	 *
+	 * @param frame amount of frame we have been in the intro sequence for
+	 * @return progress of the intro sequence (300 means done)
+	 */
+	public int updateIntro(int frame){
+		//start countdown after 2 seconds.
+		if (frame >= 120) {
+			float countTime = (1f / 1f) * level.getAnimationRateFromBPM(level.getBpm());
+			//if we notice bpm is too fast, half the speed so its one count every 2 beats
+			if (countTime >= 1f / 20f) {
+				countTime = countTime * (1f / 2f);
+			}
+			return (int) (100 * countTime * (frame - 120));
+		}
+		else return -1;
+
+	}
+
+	/**
 	 * Updates the state.
 	 *
 	 */
-	public void update(){
+	public void update(boolean over, int ticks){
 		//First, check for dead notes and remove them from active arrays
 		checkDeadNotes();
 		//Then, update the notes for each band member and spawn new notes
-		level.updateBandMemberNotes(noteSpawnY);
+		level.updateBandMemberNotes(noteSpawnY, over, ticks);
 		//Update the objects of this class (mostly stars)
 		for(Particle o : particles){
 			o.update(0f);
@@ -429,7 +445,6 @@ public class GameplayController {
 		for (Particle o: noteIndicatorParticles){
 			o.update(0f);
 		}
-
 	}
 
 	/**
@@ -623,7 +638,6 @@ public class GameplayController {
 						numberOk++;
 					}
 				}
-
 
 				float hitStatusX = LEFTBOUND+((activeBandMember+1)*(HIT_IND_SIZE/3))+((activeBandMember+1) * smallwidth);
 				float hitStatusY = BOTTOMBOUND-(HIT_IND_SIZE/1.6f);
