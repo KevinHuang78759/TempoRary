@@ -118,6 +118,7 @@ public class GameplayController {
 		particles = new Array<>();
 		backing = new Array<>();
 		noteIndicatorParticles =new Array<>();
+		garbageCollectNoteIndicators();
 		//Set margins so there is a comfortable amount of space between play area and screen boundaries
 		//Values decided by pure look
 		setBounds(width, height);
@@ -134,6 +135,7 @@ public class GameplayController {
 		numberOk =0;
 		numberGood =0;
 		numberPerfect =0;
+
 	}
 
 	float totalWidth;
@@ -263,12 +265,11 @@ public class GameplayController {
 		triggers = new boolean[lpl];
 		activeBandMember = 0;
 		goalBandMember = 0;
-
-
 		numberMiss =0;
 		numberOk =0;
 		numberGood =0;
 		numberPerfect =0;
+		garbageCollectNoteIndicators();
 	}
 
 	/**
@@ -547,7 +548,7 @@ public class GameplayController {
 		s.getPosition().set(x, y);
 		s.setSizeConfine(HIT_IND_SIZE*scale);
 		s.getVelocity().set(0,-smallwidth/60f);
-		s.setAge(20);
+		s.setAge(30);
 		noteIndicatorParticles.add(s);
 	}
 
@@ -783,5 +784,6 @@ public class GameplayController {
 		level = null;
 		sfx.dispose();
 		sb.dispose();
+		garbageCollectNoteIndicators();
 	}
 }

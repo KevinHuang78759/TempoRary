@@ -235,6 +235,7 @@ public class GameMode implements Screen {
 	public void reset(){
 		gameState = GameState.INTRO;
 		pressState = NO_BUTTON_PRESSED;
+		gameplayController.garbageCollectNoteIndicators();
 	}
 
 	/**
@@ -595,14 +596,15 @@ public class GameMode implements Screen {
 			for (Particle o : gameplayController.getParticles()) {
 				o.draw(canvas);
 			}
-			for (Particle o : gameplayController.getNoteIndicatorParticles()){
-				o.draw(canvas);
-			}
 
 			for(BandMember bandMember : gameplayController.level.getBandMembers()){
 				//Draw the band member sprite and competency bar
 				bandMember.drawCharacterSprite(canvas);
 				bandMember.drawHPBar(canvas);
+			}
+
+			for (Particle o : gameplayController.getNoteIndicatorParticles()){
+				o.draw(canvas);
 			}
 
 			// draw the scoreboard
