@@ -91,6 +91,9 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     /** Reference to GameCanvas created by the root */
     private GameCanvas canvas;
 
+    /** A string array of levels in order;
+     * invariant 1: in order; allLevels[0] is song 1 easy level.
+     * invariant 2: size is a multiple of 3, because we have 3 difficulties */
     private String[] allLevels;
 
     private Texture goLeft;
@@ -119,6 +122,14 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     /** Selected song; 1 is easy, 2 is medium, 3 is hard. */
     public int selectedDifficulty;
     private boolean pressedEscape;
+
+    /**
+     * Enum to determine whether or not we have selected a song, or we are transitioning between songs
+     */
+    public enum transitionPhase {
+        SELECTED,
+        TRANSITION
+    }
 
     public LevelSelect(GameCanvas canvas) {
         this.canvas  = canvas;
@@ -170,8 +181,10 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
         JsonReader jr = new JsonReader();
         JsonValue levelData = jr.parse(Gdx.files.internal("assets.json"));
-        numSongs = levelData.get("jsons").size;
-        allLevels= new String[numSongs *3];
+        allLevels = levelData.get("levels").asStringArray();
+        numSongs = allLevels.length/3;
+        assert allLevels.length%3 == 0;
+//        allLevels= new String[numSongs *3];
         albumCoverCoords = new Vector2[3];
 //        System.out.println("num levels "+numLevels);
         gameplayController = new GameplayController(canvas.getWidth(),canvas.getHeight());
@@ -205,10 +218,10 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         albumCoverCoords[1]=new Vector2((canvas.getWidth()/2 ),(canvas.getHeight()*2/3)-25);
         albumCoverCoords[2]=new Vector2((canvas.getWidth()/2 )+ (canvas.getWidth()/4)+10,(canvas.getHeight()*2/3)-25);
 
-        // populate all the levels; 3 because we have 3 difficulties.
-        for (int i = 0; i < numSongs *3; i++){
-            allLevels[i]="levels/"+(i+1)+".json";
-        }
+//        // populate all the levels; 3 because we have 3 difficulties.
+//        for (int i = 0; i < numSongs *3; i++){
+//            allLevels[i]="levels/"+(i+1)+".json";
+//        }
     }
 
     /**

@@ -731,7 +731,7 @@ public class GameplayController {
 					//change phase
 					curP = PlayPhase.TRANSITION;
 					//reset progress
-					t_progress = 0;
+					t_progress = 0; //transition progress
 					t_start = level.getCurrentSample();
 					return;
 				}

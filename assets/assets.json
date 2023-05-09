@@ -172,12 +172,20 @@
         ]
       }
     },
-    "jsons": {
-        "1": "levels/1.json",
-        "2" : "levels/2.json",
-        "3" : "levels/3.json",
-        "4": "levels/4.json"
-    },
+    "levels": [
+      "levels/one.json",
+      "levels/2.json",
+      "levels/3.json",
+      "levels/4.json",
+      "levels/5.json",
+      "levels/6.json",
+      "levels/7.json",
+      "levels/8.json",
+      "levels/9.json",
+      "levels/10.json",
+      "levels/11.json",
+      "levels/12.json"
+    ],
     "soundEffects": [
         ["tap", "sound/tap.ogg"],
         ["goodHit","sound/goodhit.ogg"],

@@ -286,7 +286,8 @@ public class GameMode implements Screen {
 		int end = level.indexOf(".");
 
 		JsonReader jr = new JsonReader();
-		nextIdx = Integer.parseInt(level.substring(start + 1, end))+3;
+//		nextIdx = Integer.parseInt(level.substring(start + 1, end))+3;
+		nextIdx = currLevel++;
 
 		JsonValue levelData = jr.parse(Gdx.files.internal(level));
 
