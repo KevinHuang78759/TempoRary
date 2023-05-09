@@ -219,7 +219,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     public void reset() {
         Gdx.input.setInputProcessor( this );
         selectedDifficulty= -1;
-        selectedLevel = 0;
         playButton = null;
         easyButton=null;
         mediumButton=null;
