@@ -86,7 +86,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     /** hardButton x and y coordinates represented as a vector */
     private Vector2 hardButtonCoords;
 
-    private boolean hasSelectedLevel;
 
     /** Reference to GameCanvas created by the root */
     private GameCanvas canvas;
@@ -122,14 +121,12 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
     public LevelSelect(GameCanvas canvas) {
         this.canvas  = canvas;
-        selectedDifficulty= -1;
+        selectedDifficulty= 2;
         selectedLevel = 0;
         playButton = null;
         easyButton=null;
         mediumButton=null;
         hardButton=null;
-
-        hasSelectedLevel = false;
     }
 
     public int getSelectedLevel(){
@@ -218,19 +215,14 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
      */
     public void reset() {
         Gdx.input.setInputProcessor( this );
-        selectedDifficulty= -1;
         playButton = null;
         easyButton=null;
         mediumButton=null;
         hardButton=null;
         playPressed=false;
-        hasSelectedLevel = false;
         pressedEscape = false;
     }
 
-    public boolean getHasSelectedLevel(){
-        return hasSelectedLevel;
-    }
 
     public void draw(){
         canvas.begin();
@@ -386,11 +378,9 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             }
         }
 
-        if (selectedDifficulty != -1){ // because selectedSong is default to be 1, so it will never be null.
-            hasSelectedLevel=true;
-        }
 
-        if (isButtonPressed(screenX, screenY, playButton, playButtonCoords,scale) && hasSelectedLevel) {
+
+        if (isButtonPressed(screenX, screenY, playButton, playButtonCoords,scale)) {
             playPressed=true;
         }
 
@@ -431,7 +421,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     public void render(float delta) {
         if (active) {
             draw();
-            if (getHasSelectedLevel() && playPressed && listener != null) {
+            if (playPressed && listener != null) {
                 // go to game
 //                System.out.println("loading level..");
 //                System.out.println("selected level:" + selectedLevel);
