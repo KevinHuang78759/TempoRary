@@ -24,6 +24,14 @@ public class BandMember {
      */
     private Vector2 bottomLeftCorner;
 
+    /** Textures */
+    private Texture noteIndicator;
+    private Texture noteIndicatorHit;
+
+    private Texture perfectHitIndicator;
+    private Texture okHitIndicator;
+
+    private Texture missIndicator;
 
     private FilmStrip characterSprite;
 
@@ -159,23 +167,23 @@ public class BandMember {
      * Maximum competency
      */
 
-    private int maxComp;
+    private float maxComp;
 
     public void setMaxComp(int p){
         maxComp = p;
     }
-    public int getMaxComp(){
+    public float getMaxComp(){
         return maxComp;
     }
 
     /**
      * Current competency
      */
-    private int curComp;
+    private float curComp;
     public void setCurComp(int p){
         curComp = p;
     }
-    public int getCurComp(){
+    public float getCurComp(){
         return curComp;
     }
 
@@ -276,9 +284,9 @@ public class BandMember {
     /**
      * Update competency by the specified amount but will not go below 0 or exceed the max
      */
-    public void compUpdate(int amount){
+    public void compUpdate(float amount){
         curComp = Math.min(Math.max(0, curComp + amount), maxComp);
-        hpbar.setFrame(Math.min((int)((1 - (float)curComp/maxComp)*(hpbarFrames)), hpbarFrames - 1));
+        hpbar.setFrame(Math.min((int)((1 - curComp/maxComp)*(hpbarFrames)), hpbarFrames - 1));
     }
 
     // DRAWING METHODS
@@ -306,7 +314,8 @@ public class BandMember {
         canvas.draw(hit ? noteIndicatorHit : noteIndicator, Color.WHITE, noteIndicatorHit.getWidth() / 2, noteIndicatorHit.getHeight() / 2,
                 bottomLeftCorner.x + width/2, hitY,
                 0.0f,scale, scale);
-//        canvas.drawText(InputController.switchKeyBinds()[i], displayFont, ( bottomLeftCorner.x + bottomLeftCorner.x + width) / 2f, hitY - 80);
+//         TODO: fix these values
+//        canvas.drawText(InputController.switchKeyBinds(4)[i], displayFont, ( bottomLeftCorner.x + bottomLeftCorner.x + width) / 2f, hitY - 80);
     }
 
     /**
@@ -438,6 +447,11 @@ public class BandMember {
         for(int i = 1; i < numLines; ++i){
             canvas.draw(lineSep, Color.WHITE, lineSep.getWidth()/2f, lineSep.getHeight()/2f, bottomLeftCorner.x + i * (width/numLines), yCoord, 0.0f, xScale, yScale);
         }
+    }
+
+    public void setIndicatorTextures(Texture texture, Texture textureHit) {
+        noteIndicator = texture;
+        noteIndicatorHit = textureHit;
     }
     private int characterFrames;
     public int getCharacterFrames(){

@@ -1,11 +1,12 @@
 package edu.cornell.gdiac.temporary;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
@@ -23,18 +24,23 @@ public class CalibrationMode implements Screen {
     private boolean active;
 
     // ASSETS
-    /** The font for giving messages to the player */
-    private BitmapFont displayFont;
+    /** The font for giving instructions to the player */
+    private BitmapFont instructionsFont;
+    /** The smaller font for giving instructions to the player */
+    private BitmapFont smallerFont;
+    private GlyphLayout layout;
     /** The song */
     private MusicQueue music;
     /** Song source */
     private AudioSource songSource;
     /** The background texture */
     private Texture background;
-    /** White background */
-    private Texture whiteBackground;
     /** The back arrow */
     private Texture backArrow;
+    /** The header for this screen */
+    private Texture calibrationHeader;
+    /** Lines surrounding the header */
+    private Texture headerLine;
     /** The calibration display when not hit */
     private Texture calibrationNote;
     /** The calibration display when input hit */
@@ -85,6 +91,7 @@ public class CalibrationMode implements Screen {
         userHitBeats = new LinkedList<>();
         offset = 0;
         isCalibrated = false;
+        layout = new GlyphLayout();
     }
 
     /** Resets the calibration mode by clearing beats, calibration is false, and resetting music */
@@ -113,16 +120,15 @@ public class CalibrationMode implements Screen {
         boolean backButtonPressed = false;
 
         if (inputController.didMouseLift()) {
-//            0, backArrow.getHeight(), 25, canvas.getHeight() - 40, 0, 0.1f, 0.1f
             int screenX = (int) inputController.getMouseX();
             int screenY = (int) inputController.getMouseY();
             screenY = canvas.getHeight() - screenY;
 
-            float xRadius = backArrow.getWidth()*0.1f/2.0f;
-            float xCoord = 25f + xRadius;
+            float xRadius = backArrow.getWidth()/2.0f;
+            float xCoord = 50 + xRadius;
             boolean xInBounds = xCoord - xRadius <= screenX && xCoord + xRadius >= screenX;
-            float yRadius = backArrow.getHeight()*0.1f/2.0f;
-            float yCoord = canvas.getHeight() - 40 - yRadius;
+            float yRadius = backArrow.getHeight()/2.0f;
+            float yCoord = canvas.getHeight() - 50 - yRadius;
             boolean yInBounds = yCoord - yRadius <= screenY && yCoord + yRadius >= screenY;
             backButtonPressed = xInBounds && yInBounds;
         }
@@ -143,12 +149,23 @@ public class CalibrationMode implements Screen {
         JsonReader jr = new JsonReader();
         JsonValue assets = jr.parse(Gdx.files.internal("assets.json"));
 
-        displayFont = directory.getEntry("calibration-font", BitmapFont.class);
+        // fonts
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Blinker-Bold.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 50;
+        parameter.color = textColor;
+        instructionsFont = generator.generateFont(parameter);
+
+        generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Blinker-SemiBold.ttf"));
+        parameter.size = 30;
+        smallerFont = generator.generateFont(parameter);
+
         music = ((AudioEngine) Gdx.audio).newMusic(Gdx.files.internal(assets.get("samples").getString("calibration")));
         songSource = music.getSource(0);
         background = directory.getEntry("calibration-background", Texture.class);
-        whiteBackground = directory.getEntry("white-background", Texture.class);
-        backArrow = directory.getEntry("calibration-back-arrow", Texture.class);
+        calibrationHeader = directory.getEntry("calibration-header", Texture.class);
+        headerLine = directory.getEntry("header-line", Texture.class);
+        backArrow = directory.getEntry("back-arrow", Texture.class);
         calibrationNote = directory.getEntry("calibration-note", Texture.class);
         calibrationNoteHit = directory.getEntry("calibration-note-hit", Texture.class);
         circleIndicator = directory.getEntry("calibration-circle", Texture.class);
@@ -171,10 +188,11 @@ public class CalibrationMode implements Screen {
     /** Draws elements to the screen */
     private void draw() {
         canvas.begin();
-        canvas.drawBackground(whiteBackground,0,0);
         canvas.drawBackground(background,0,0);
 
-        float noteScale = 0.25f;
+        canvas.draw(calibrationHeader, Color.WHITE, calibrationHeader.getWidth()/2, calibrationHeader.getHeight()/2, canvas.getWidth()/2, canvas.getHeight() - 80, 0, 1, 1);
+
+        float noteScale = 0.3f;
         // draw hit indicator
         if (inputController.didCalibrationPress()) {
             canvas.draw(calibrationNoteHit, Color.WHITE, calibrationNoteHit.getWidth() / 2, calibrationNoteHit.getHeight() / 2, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, noteScale, noteScale);
@@ -182,21 +200,20 @@ public class CalibrationMode implements Screen {
             canvas.draw(calibrationNote, Color.WHITE, calibrationNote.getWidth() / 2, calibrationNote.getHeight() / 2, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, noteScale, noteScale);
         }
 
-        canvas.drawTextCentered("Press the space bar to the beat", displayFont,200, textColor);
-        canvas.drawTextCentered("Make sure not to click out of the window", displayFont,-250, textColor);
-        canvas.drawTextCentered("while calibrating", displayFont,-300, textColor);
-
-//        if (isCalibrated) {
-//            canvas.drawTextCentered("" + onBeat, displayFont, 150, textColor);
-//            canvas.drawText("You have been calibrated!\nYou can exit this screen\nwith the esc key", displayFont, 100, canvas.getWidth() / 2);
-//        }
+        String instruction = "PRESS THE SPACEBAR TO THE BEAT";
+        canvas.drawTextCentered(instruction, instructionsFont,200);
+        layout.setText(instructionsFont, instruction);
+        canvas.draw(headerLine, Color.WHITE, headerLine.getWidth(), 0, canvas.getWidth()/2 - layout.width/2 - 20, 200 + canvas.getHeight()/2 - layout.height + 15, 0, 0.75f, 1);
+        canvas.draw(headerLine, Color.WHITE, 0, 0, canvas.getWidth()/2 + layout.width/2 + 20, 200 + canvas.getHeight()/2 - layout.height + 15, 0, 0.75f, 1);
+        canvas.drawTextCentered("Make sure not to click out of the window while calibrating!", smallerFont,-280);
+//        canvas.drawTextCentered("while calibrating!", smallerFont,-320);
 
         int totalHits = NUM_BEATS_TO_HIT + NUM_BEATS_REMOVED;
         int spaceApart = 10;
         float circleIndicatorScale = 0.75f;
         float circleIndicatorTrueWidth = 0.75f * circleIndicator.getWidth();
         float startingX = canvas.getWidth()/2f - (spaceApart * (totalHits / 2f - 1) + circleIndicatorTrueWidth * (totalHits / 2f));
-        float circleDrawY = canvas.getHeight()/2 - noteScale * calibrationNote.getHeight() + 25;
+        float circleDrawY = canvas.getHeight()/2 - noteScale * calibrationNote.getHeight()/2 - 80;
 
         // draw the beat needed:
         int i = 0;
@@ -213,7 +230,7 @@ public class CalibrationMode implements Screen {
             i++;
         }
 
-        canvas.draw(backArrow, Color.WHITE, 0, backArrow.getHeight(), 25, canvas.getHeight() - 40, 0, 0.1f, 0.1f);
+        canvas.draw(backArrow, Color.WHITE, 0, backArrow.getHeight(), 50, canvas.getHeight() - 50, 0, 1f, 1f);
 
         canvas.end();
     }

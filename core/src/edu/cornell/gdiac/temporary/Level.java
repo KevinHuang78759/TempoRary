@@ -22,6 +22,7 @@ import javax.swing.plaf.TextUI;
 import java.nio.ByteBuffer;
 
 public class Level {
+
     public BandMember[] getBandMembers() {
         return bandMembers;
     }
@@ -33,6 +34,10 @@ public class Level {
     public Texture getSwitchNoteTexture() {
         return switchNoteTexture;
     }
+
+    private Texture switchIndicator;
+
+    private Texture switchIndicatorHit;
 
     public Texture getHoldNoteTexture() {
         return holdNoteTexture;
@@ -139,9 +144,6 @@ public class Level {
     private Texture hpbar;
     private Texture noteIndicator;
     private Texture noteIndicatorHit;
-
-    private Texture switchIndicator;
-    private Texture switchIndicatorHit;
     private FilmStrip violinSprite;
     private FilmStrip drummerSprite;
     private FilmStrip voiceSprite;
@@ -154,6 +156,7 @@ public class Level {
     private int levelNumber;
     private int maxCompetency;
     private int spawnOffset;
+    private long spawnOffsetSwitch;
     private int bpm;
     private long aThreshold;
     private long bThreshold;
@@ -196,6 +199,7 @@ public class Level {
     private Texture inactiveLane;
     AudioSource songSource;
     JsonValue data;
+
     float maxSample;
     public Level(JsonValue data, AssetDirectory directory) {
         JsonReader jr = new JsonReader();
@@ -245,6 +249,8 @@ public class Level {
         // preallocate band members
         bandMembers = new BandMember[data.get("bandMembers").size];
         spawnOffset = music.getSampleRate();
+        // switch note is twice as slow
+        spawnOffsetSwitch = 2L * spawnOffset;
         System.out.println(spawnOffset);
         for(int i = 0; i < bandMembers.length; i++){
             bandMembers[i] = new BandMember();
@@ -265,7 +271,7 @@ public class Level {
                     if(thisNote.getLong("position") > maxSample){
                         continue;
                     }
-                    n = new Note(thisNote.getInt("line"), Note.NoteType.SWITCH, thisNote.getLong("position") - spawnOffset, switchNoteTexture);
+                    n = new Note(thisNote.getInt("line"), Note.NoteType.SWITCH, thisNote.getLong("position") - spawnOffsetSwitch, switchNoteTexture);
                 }
                 else {
                     if(thisNote.getLong("position") + thisNote.getLong("duration")> maxSample){
@@ -275,14 +281,16 @@ public class Level {
                     n.setHoldTextures(holdTrailTexture,1,holdEndTexture,1, backSplash, frontSplash, getAnimationRateFromBPM(bpm));
                     n.setHoldSamples(thisNote.getLong("duration"));
                 }
-                n.setHitSample(thisNote.getInt("position"));
+                n.setHitSample(thisNote.getLong("position"));
                 notes.addLast(n);
             }
             bandMembers[i].setAllNotes(notes);
             bandMembers[i].setCurComp(maxCompetency);
             bandMembers[i].setMaxComp(maxCompetency);
+            // TODO: FIX THIS SO THAT IT FITS THE LEVEL JSON
             bandMembers[i].setLossRate(bandMemberData.getInt("competencyLossRate"));
             bandMembers[i].setHpBarFilmStrip(hpbar, 47);
+            bandMembers[i].setIndicatorTextures(noteIndicator, noteIndicatorHit);
             switch (bandMemberData.getString("instrument")) {
                 case "violin":
                     bandMembers[i].setCharacterFilmstrip(violinSprite);
@@ -397,16 +405,23 @@ public class Level {
         return prog;
     }
 
+    private long sample = 0;
+    private int rate;
+
     /**
      * Spawns new notes according to what sample we are at. Also decrements bandmembers' competency
      * for some amount about once a second. It also updates the frame of the bandmember.
      */
-    public void updateBandMemberNotes(float spawnY){
+    public void updateBandMemberNotes(float spawnY, boolean over, int ticks){
         //First get the sample we at
-        long sample = getCurrentSample();
-        int rate = music.getSampleRate();
+        if (!over) {
+            rate = music.getSampleRate();
+            sample = getCurrentSample();
+        } else {
+            sample += (int) ((((float) rate)/60f)*(0.8f*(1f - (((float) ticks)/120f))));
+        }
         float samplesPerBeat = rate * 60f/bpm;
-        boolean decTog = false;
+
         for(BandMember bandMember : bandMembers){
             //update the uh frame
             float frameprogress = (sample % samplesPerBeat)/(samplesPerBeat);
@@ -417,18 +432,16 @@ public class Level {
             bandMember.spawnNotes(sample);
             //update the note frames
             bandMember.updateNotes(spawnY, sample);
-            //check if enough samples have passed since the last decrement
-            if(sample - lastDec >= music.getSampleRate()){
-                //if so, decrement competency
-                if(!bandMember.getHitNotes().isEmpty()){
-                    bandMember.compUpdate(-bandMember.getLossRate());
-                    decTog = true;
-                }
+
+            if(!bandMember.getHitNotes().isEmpty()){
+                float loss = -1f*bandMember.getLossRate() * (sample - lastDec)/((float)music.getSampleRate());
+                // TODO: ONLY UPDATE IF YOU ARE NOT HOLDING
+                bandMember.compUpdate(loss);
             }
+
         }
-        if (decTog){
-            lastDec = sample;
-        }
+        lastDec = sample;
+
     }
 
     /**
@@ -459,6 +472,7 @@ public class Level {
         music.setVolume(oldVolume);
         bandMembers = new BandMember[data.get("bandMembers").size];
         spawnOffset = music.getSampleRate();
+        spawnOffsetSwitch = spawnOffset * 2L;
         for(int i = 0; i < bandMembers.length; i++){
             bandMembers[i] = new BandMember();
             JsonValue bandMemberData = data.get("bandMembers").get(i);
@@ -477,7 +491,7 @@ public class Level {
                     if(thisNote.getLong("position") > maxSample){
                         continue;
                     }
-                    n = new Note(thisNote.getInt("line"), Note.NoteType.SWITCH, thisNote.getLong("position") - spawnOffset, switchNoteTexture);
+                    n = new Note(thisNote.getInt("line"), Note.NoteType.SWITCH, thisNote.getLong("position") - spawnOffsetSwitch, switchNoteTexture);
                 }
                 else {
                     if(thisNote.getLong("position") + thisNote.getLong("duration")> maxSample){
@@ -487,7 +501,7 @@ public class Level {
                     n.setHoldTextures(holdTrailTexture,1,holdEndTexture,1, backSplash, frontSplash, getAnimationRateFromBPM(bpm));
                     n.setHoldSamples(thisNote.getLong("duration"));
                 }
-                n.setHitSample(thisNote.getInt("position"));
+                n.setHitSample(thisNote.getLong("position"));
                 notes.addLast(n);
             }
             bandMembers[i].setAllNotes(notes);

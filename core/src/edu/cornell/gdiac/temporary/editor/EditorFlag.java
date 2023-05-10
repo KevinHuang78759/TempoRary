@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.temporary.GameCanvas;
 import edu.cornell.gdiac.util.FilmStrip;
 
-/** Flag for a change in a band member's competency loss rate*/
+/** Flag for a change in a band member's competency loss rate and gain*/
 public class EditorFlag implements Comparable<EditorFlag>{
     /** lane the flag corresponds to */
     private int lane;
@@ -18,6 +18,9 @@ public class EditorFlag implements Comparable<EditorFlag>{
     /** Rate at which the competency drains */
     private int lossRate;
 
+    /** Competency reward of hitting a normal note */
+    private int noteGain;
+
     /** horizontal location of flag on screen */
     private float x;
 
@@ -27,10 +30,11 @@ public class EditorFlag implements Comparable<EditorFlag>{
     /** True if the flag should be visible on screen*/
     private boolean onScreen;
 
-    public EditorFlag(int lane, int songPos, int lossRate){
+    public EditorFlag(int lane, int songPos, int lossRate, int noteGain){
         this.lane = lane;
         this.songPos = songPos;
         this.lossRate = lossRate;
+        this.noteGain = noteGain;
     }
 
     public void setLane(int lane){
@@ -53,6 +57,14 @@ public class EditorFlag implements Comparable<EditorFlag>{
 
     public int getLossRate(){
         return lossRate;
+    }
+
+    public void setNoteGain(int noteGain){
+        this.noteGain = noteGain;
+    }
+
+    public int getNoteGain(){
+        return noteGain;
     }
 
     /**
@@ -112,7 +124,8 @@ public class EditorFlag implements Comparable<EditorFlag>{
             sizeMultiple = 3 * (zoom + 1 / 2);
         }
         canvas.drawLine(laneEdge, y, laneEdge + laneWidth, y, 8*((int) sizeMultiple), Color.FOREST);
-        canvas.drawText(String.valueOf(lossRate), font, laneEdge + laneWidth/2, y+4*((int) sizeMultiple));
+        canvas.drawText("R: " +String.valueOf(lossRate), font, laneEdge + laneWidth/6f, y+4*((int) sizeMultiple));
+        canvas.drawText("G: " + String.valueOf(noteGain), font, laneEdge + 3f*laneWidth/5f, y+4*((int) sizeMultiple));
     }
 
 }
