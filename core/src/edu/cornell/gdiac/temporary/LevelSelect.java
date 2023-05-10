@@ -91,6 +91,8 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     /** Reference to GameCanvas created by the root */
     private GameCanvas canvas;
 
+    int prevLevel;
+
     /** A string array of levels in order;
      * invariant 1: in order; allLevels[0] is song 1 easy level.
      * invariant 2: size is a multiple of 3, because we have 3 difficulties */
@@ -134,7 +136,8 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     public LevelSelect(GameCanvas canvas) {
         this.canvas  = canvas;
         selectedDifficulty= 2;
-        selectedLevel = 0;
+        selectedLevel = 2;
+        prevLevel=2;
         playButton = null;
         easyButton=null;
         mediumButton=null;
@@ -238,31 +241,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     }
 
 
-    /** Affine cache for current sprite to draw */
-    private Affine2 local;
-
-    /**
-     * Compute the affine transform (and store it in local) for this image.
-     *
-     * This helper is meant to simplify all of the math in the above draw method
-     * so that you do not need to worry about it when working on Exercise 4.
-     *
-     * @param ox 	The x-coordinate of texture origin (in pixels)
-     * @param oy 	The y-coordinate of texture origin (in pixels)
-     * @param x 	The x-coordinate of the texture origin
-     * @param y 	The y-coordinate of the texture origin
-     * @param angle The rotation angle (in degrees) about the origin.
-     * @param sx 	The x-axis scaling factor
-     * @param sy 	The y-axis scaling factor
-     */
-    private void computeTransform(float ox, float oy, float x, float y, float angle, float sx, float sy) {
-        local.setToTranslation(x,y);
-        local.rotate(angle);
-        local.scale(sx,sy);
-        local.translate(-ox,-oy);
-    }
-
-    int prevLevel=selectedLevel;
 
     public void draw(){
         canvas.begin();
@@ -296,36 +274,30 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         if (prevLevel!= selectedLevel){ // switch animation if we changed a level
             // need to shrink or increase the scale by localScale
             float localScale1 = centerScale-cornerScale;
-            float localScale2 = centerScale-cornerScale;
-            if (prevLevel < selectedLevel){ // we need to go right
 
-                // we need to do two transforms at most
-
-                // current left album is destination for the center album
-                float currLeftAlbumX = albumCoverCoords[0].x;
-                float currLeftAlbumY = albumCoverCoords[0].x;
-
-                // central coordinates is the destination for the right album
+            if (prevLevel < selectedLevel){ // we need to transition to right
+                // variables for the center image to go right; y is the same
+                float rightLenX =  albumCoverCoords[2].x - albumCoverCoords[1].x;
                 float currCenterAlbumX = albumCoverCoords[1].x;
-                float currCenterAlbumY = albumCoverCoords[1].x;
 
-                // this is the number of
-                float stepX = (currCenterAlbumX - currLeftAlbumX)/localScale1;
-                float stepY = (currCenterAlbumY - currLeftAlbumY)/localScale1;
+                // this is the number of steps to finish transform
+                float rightStep = rightLenX/0.001f;
 
-                while (localScale1>0){
+                while (currCenterAlbumX!=albumCoverCoords[2].x){
+
                     canvas.draw(albumCovers[selectedLevel],Color.WHITE,albumCovers[selectedLevel].getWidth()/2,
-                            albumCovers[selectedLevel].getHeight()/2,albumCoverCoords[1].x,
+                            albumCovers[selectedLevel].getHeight()/2,currCenterAlbumX,
                             albumCoverCoords[1].y,0, localScale1, localScale1);
 
-                    canvas.draw(albumCovers[selectedLevel-1], Color.WHITE, albumCovers[selectedLevel-1].getWidth()/2,
-                            albumCovers[selectedLevel-1].getHeight()/2, albumCoverCoords[0].x,
-                            albumCoverCoords[0].y, 0, localScale2, localScale2);
-                    localScale1=localScale1-0.1f;
-                    localScale2=localScale2+0.1f;
+                    currCenterAlbumX+=rightStep;
+                    localScale1-=0.001f;
 
-                    currLeftAlbumX+=stepX;
-                    currLeftAlbumY+=stepY;
+                    try {
+                        Thread.sleep(100000);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+
 
                 }
             } else{ // we need to go left
@@ -351,7 +323,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             }
 
         }
-        prevLevel = selectedLevel;
+//        prevLevel = selectedLevel;
 
 
         // draw play button
@@ -449,7 +421,10 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         // if there are a next level, we allow increment.
         if (isButtonPressed(screenX, screenY, goRight, goRightCoords, 0.9f*scale)) {
             if (selectedLevel+1< numSongs){
+                prevLevel=selectedLevel;
                 selectedLevel++;
+                System.out.println("prev"+prevLevel);
+                System.out.println("this"+selectedLevel);
             }
         }
 
