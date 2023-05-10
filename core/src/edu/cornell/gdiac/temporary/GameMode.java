@@ -179,6 +179,8 @@ public class GameMode implements Screen {
 
 	/** time in special units for measuring how far we are in the intro sequence */
 	private int introTime;
+	/** time in special units for measuring how far we are in the intro sequence */
+	private int endTime = 0;
 
 	/** Play button x and y coordinates represented as a vector */
 	private Vector2 playButtonCoords;
@@ -554,31 +556,31 @@ public class GameMode implements Screen {
 				}
 				break;
 			case WON:
-				if (didInput) {
-					int screenX = (int) inputController.getMouseX();
-					int screenY = (int) inputController.getMouseY();
-					screenY = canvas.getHeight() - screenY;
-					boolean didGoBack = (isButtonPressed(screenX, screenY, goBack, goBackCoords,WON_BUTTON_SCALE));
-					boolean didRestartWon = (isButtonPressed(screenX, screenY, restartButtonWon, restartWonCoords,WON_BUTTON_SCALE));
-					boolean didLevel = (isButtonPressed(screenX, screenY, levelButtonWon, levelWonCoords,WON_BUTTON_SCALE));
-					boolean didNext = (isButtonPressed(screenX, screenY, nextButtonWon, nextWonCoords,WON_BUTTON_SCALE));
-					if (didGoBack){
-						pressState = ExitCode.TO_MENU;
+					if (didInput) {
+						int screenX = (int) inputController.getMouseX();
+						int screenY = (int) inputController.getMouseY();
+						screenY = canvas.getHeight() - screenY;
+						boolean didGoBack = (isButtonPressed(screenX, screenY, goBack, goBackCoords, WON_BUTTON_SCALE));
+						boolean didRestartWon = (isButtonPressed(screenX, screenY, restartButtonWon, restartWonCoords, WON_BUTTON_SCALE));
+						boolean didLevel = (isButtonPressed(screenX, screenY, levelButtonWon, levelWonCoords, WON_BUTTON_SCALE));
+						boolean didNext = (isButtonPressed(screenX, screenY, nextButtonWon, nextWonCoords, WON_BUTTON_SCALE));
+						if (didGoBack) {
+							pressState = ExitCode.TO_MENU;
+						}
+						if (didRestartWon) {
+							System.out.println("pressed restart");
+							pressState = ExitCode.TO_PLAYING;
+							resetLevel();
+						}
+						if (didLevel) {
+							System.out.println("pressed level");
+							pressState = ExitCode.TO_LEVEL;
+						}
+						if (didNext) {
+							goNextLevel();
+						}
 					}
-					if (didRestartWon){
-						System.out.println("pressed restart");
-						pressState = ExitCode.TO_PLAYING;
-						resetLevel();
-					}
-					if (didLevel){
-						System.out.println("pressed level");
-						pressState = ExitCode.TO_LEVEL;
-					}
-					if (didNext){
-						goNextLevel();
-					}
-				}
-				break;
+					break;
 			default:
 				break;
 		}
@@ -621,8 +623,13 @@ public class GameMode implements Screen {
 		// in the future, we should prob move this else where.
 		// so that it is checked near the end of the game.
 		if (gameplayController.checkWinCon()){
-			gameState = GameState.WON;
-			gameplayController.level.stopMusic();
+			endTime++;
+			if (endTime >= 180) {
+				gameplayController.level.stopMusic();
+			}
+			if (endTime >= 240) {
+				gameState = GameState.WON;
+			}
 		}
 
 		// Clean up destroyed objects
@@ -731,6 +738,15 @@ public class GameMode implements Screen {
 						mask.set(1.0f, 1.0f, 1.0f, 1f - ((float) ticks - 15) / 60f);
 					}
 					canvas.draw(introGo, mask, introGo.getWidth() / 2, introGo.getHeight() / 2, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, 1.25f, 1.25f);
+				}
+			}
+			if (gameState == GameState.PLAY && endTime > 0) {
+				if (endTime <= 180) {
+					mask.set(0f, 0f, 0f, (((float)(endTime))/180f));
+					canvas.draw(introMask, mask, introMask.getWidth()/2, introMask.getHeight()/2, canvas.getWidth()/2, canvas.getHeight()/2, 0, 3, 3);
+				}
+				else {
+					canvas.draw(introMask, Color.BLACK, introMask.getWidth()/2, introMask.getHeight()/2, canvas.getWidth()/2, canvas.getHeight()/2, 0, 3, 3);
 				}
 			}
 		}
