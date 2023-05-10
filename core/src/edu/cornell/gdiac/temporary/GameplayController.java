@@ -784,7 +784,7 @@ public class GameplayController {
 					// approximation of how many samples held
 					long heldSamples = level.getCurrentSample() - n.getHitSample();
 					if (heldSamples / samplesPerBeat > n.getHeldFor()) {
-						level.getBandMembers()[activeBandMember].compUpdate(2);
+						level.getBandMembers()[activeBandMember].compUpdate(3);
 						n.setHeldFor(n.getHeldFor() + 1);
 					}
 				}

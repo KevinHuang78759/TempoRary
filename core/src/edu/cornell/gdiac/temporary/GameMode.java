@@ -277,7 +277,7 @@ public class GameMode implements Screen {
 	public void readLevel(String level, AssetDirectory assetDirectory, int selectedLevel, int difficulty) {
 		levelString = level;
 
-		currLevel = selectedLevel+1;
+		currLevel = selectedLevel;
 		currDifficulty = difficulty;
 
 		directory = assetDirectory;

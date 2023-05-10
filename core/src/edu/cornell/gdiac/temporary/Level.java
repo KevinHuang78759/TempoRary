@@ -435,6 +435,7 @@ public class Level {
 
             if(!bandMember.getHitNotes().isEmpty()){
                 float loss = -1f*bandMember.getLossRate() * (sample - lastDec)/((float)music.getSampleRate());
+                // TODO: ONLY UPDATE IF YOU ARE NOT HOLDING
                 bandMember.compUpdate(loss);
             }
 
