@@ -554,6 +554,10 @@ public class Level {
         return (long)(music.getPosition()*music.getSampleRate());
     }
 
+    public long getLevelSample(){
+        return sample;
+    }
+
     /**
      * Returns true if the player has unlocked this level
      * @return

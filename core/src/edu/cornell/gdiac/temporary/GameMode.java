@@ -453,11 +453,7 @@ public class GameMode implements Screen {
 					gameplayController.update(0, ticks);
 				}
 				if (introTime >= 0) {
-					for (boolean k : inputController.didTrigger()){
-						if (k) {
-							gameplayController.sfx.playSound("tap", 0.2f);
-						}
-					}
+					gameplayController.handleActions(inputController);
 				}
 				if (introTime >= 0 && !saidThree){
 					introThreeSFX.playSound("three", 0.3f);
@@ -470,6 +466,7 @@ public class GameMode implements Screen {
 				if (introTime >= 200 && !saidOne){
 					introOneSFX.playSound("one", 0.3f);
 					saidOne = true;
+					gameplayController.handleActions(inputController);
 				}
 				if (introTime >= 300) {
 					introGoSFX.playSound("go", 0.3f);
