@@ -401,7 +401,12 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         backButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
-                SaveManager.getInstance().saveSettings(InputController.triggerBindingsMain, InputController.switchesBindingsMain, musicVolume, soundFXVolume);
+                SaveManager.getInstance().saveSettings(InputController.triggerBindingsMain,
+                        InputController.triggerBindingsAlt,
+                        InputController.switchesBindingsMain,
+                        InputController.switchesBindingsAlt,
+                        musicVolume,
+                        soundFXVolume);
                 switchToHome();
             }
         });

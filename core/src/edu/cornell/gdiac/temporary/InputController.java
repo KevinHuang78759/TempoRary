@@ -60,10 +60,10 @@ public class InputController {
 	// TODO SWITCH THIS TO ARRAYS
 	// TODO REMOVE STATIC FIELDS
 	public static IntMap<int[]> switchesBindingsMain;
-	private static IntMap<int[]> switchesBindingsAlt;
+	public static IntMap<int[]> switchesBindingsAlt;
 
 	public static int[] triggerBindingsMain;
-	private static int[] triggerBindingsAlt;
+	public static int[] triggerBindingsAlt;
 
 	//Arrays to registering switch and trigger presses
 	//We need to track their previous values so that we dont register a hold as repeated clicks
@@ -181,13 +181,13 @@ public class InputController {
 				Input.Keys.F,
 				Input.Keys.J,
 				Input.Keys.K
-		});
-		triggerBindingsAlt = new int[]{
+		}, true);
+		triggerBindingsAlt = SaveManager.getInstance().getHitKeybindingSettings(new int[]{
 				Input.Keys.LEFT,
 				Input.Keys.DOWN,
 				Input.Keys.UP,
 				Input.Keys.RIGHT
-		};
+		}, false);
 		// DEFAULT PRESETS!
 		int[] switchesBindingsMainAll = new int[]{
 				Input.Keys.E,
@@ -207,7 +207,8 @@ public class InputController {
 			switchesBindingsMain.put(i, Arrays.copyOfRange(switchesBindingsMainAll, 0, i + 1));
 			switchesBindingsAlt.put(i, Arrays.copyOfRange(switchesBindingsAltAll, 0, i + 1));
 		}
-		switchesBindingsMain = SaveManager.getInstance().getSwitchKeybindingSettings(switchesBindingsMain);
+		switchesBindingsMain = SaveManager.getInstance().getSwitchKeybindingSettings(switchesBindingsMain, true);
+		switchesBindingsAlt = SaveManager.getInstance().getSwitchKeybindingSettings(switchesBindingsAlt, false);
 		masterKeybindingMap = new IntMap<>();
 		// fill up keybinding map
 		for (int val : triggerBindingsMain) {
