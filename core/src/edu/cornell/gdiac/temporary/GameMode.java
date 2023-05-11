@@ -137,7 +137,7 @@ public class GameMode implements Screen {
 	private Texture goBack;
 	private Vector2 goBackCoords;
 
-	private static float BUTTON_SCALE  = 1f;
+	private static float BUTTON_SCALE = 1f;
 
 	private static float ALBUM_SCALE  = 0.75f;
 
@@ -625,11 +625,12 @@ public class GameMode implements Screen {
 		// so that it is checked near the end of the game.
 		if (gameplayController.checkWinCon()){
 			endTime++;
-			if (endTime >= 180) {
+			if (endTime >= 60) {
 				gameplayController.level.stopMusic();
 			}
-			if (endTime >= 240) {
+			if (endTime >= 120) {
 				gameState = GameState.WON;
+				endTime = 0;
 			}
 		}
 
@@ -742,8 +743,8 @@ public class GameMode implements Screen {
 				}
 			}
 			if (gameState == GameState.PLAY && endTime > 0) {
-				if (endTime <= 180) {
-					mask.set(0f, 0f, 0f, (((float)(endTime))/180f));
+				if (endTime <= 60) {
+					mask.set(0f, 0f, 0f, (((float)(endTime))/60f));
 					canvas.draw(introMask, mask, introMask.getWidth()/2, introMask.getHeight()/2, canvas.getWidth()/2, canvas.getHeight()/2, 0, 3, 3);
 				}
 				else {
