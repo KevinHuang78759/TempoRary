@@ -188,7 +188,7 @@ public class GameplayController {
 
 	public void setYVals(){
 		//instantiate other variables
-		noteSpawnY = TOPBOUND + smallwidth/2;
+		noteSpawnY = TOPBOUND + smallwidth/2 + smallwidth;
 		noteDieY = BOTTOMBOUND - smallwidth/2;
 		hitY = BOTTOMBOUND + smallwidth/2f;
 		level.setBandMemberHitY(hitY);
@@ -432,18 +432,28 @@ public class GameplayController {
 			return (int) (100 * countTime * (frame - 120));
 		}
 		else return -1;
-
+	}
+	/** returns the length in frames of the intro sequence
+	 *
+	 * @return length (in frames) of the intro sequence
+	 */
+	public int getIntroLength(){
+		float countTime = (1f / 1f) * level.getAnimationRateFromBPM(level.getBpm());
+		if (countTime >= 1f / 20f) {
+			countTime = countTime * (1f / 2f);
+		}
+		return ((int)(3f/countTime)) + 120;
 	}
 
 	/**
 	 * Updates the state.
 	 *
 	 */
-	public void update(boolean over, int ticks){
+	public void update(int mode, int ticks){
 		//First, check for dead notes and remove them from active arrays
 		checkDeadNotes();
 		//Then, update the notes for each band member and spawn new notes
-		level.updateBandMemberNotes(noteSpawnY, over, ticks);
+		level.updateBandMemberNotes(noteSpawnY, mode, ticks, getIntroLength());
 		//Update the objects of this class (mostly stars)
 		for(Particle o : particles){
 			o.update(0f);

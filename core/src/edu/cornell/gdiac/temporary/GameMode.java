@@ -444,13 +444,16 @@ public class GameMode implements Screen {
 				// wait a few frames before starting
 				if (ticks == 0) {
 					gameplayController.start();
-					gameplayController.update(false, 0);
+					gameplayController.update(0, 0);
 					saidThree = false;
 					saidTwo = false;
 					saidOne = false;
 				}
 				introTime = gameplayController.updateIntro(ticks);
 				ticks++;
+				if (!justPaused) {
+					gameplayController.update(0, ticks);
+				}
 				if (introTime >= 0) {
 					for (boolean k : inputController.didTrigger()){
 						if (k) {
@@ -609,7 +612,11 @@ public class GameMode implements Screen {
 		// Update objects.
 		gameplayController.handleActions(inputController);
 
-		gameplayController.update(gameState == GameState.OVER, ticks);
+		if (gameState == GameState.PLAY) {
+			gameplayController.update(1, ticks);
+		} else {
+			gameplayController.update(2, ticks);
+		}
 
 		// if we have a competency bar at 0
 		if (gameplayController.hasZeroCompetency() && gameState != GameState.OVER) {
