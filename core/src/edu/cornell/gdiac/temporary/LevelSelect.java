@@ -28,9 +28,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     private boolean playPressed;
     private int numSongs;
 
-    /** Pressed down button state for the play button */
-    private static final int PLAY_PRESSED = 1;
-
     private Texture goBack;
     private Vector2 goBackCoords;
 
@@ -130,7 +127,37 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
      */
     public enum transitionPhase {
         SELECTED,
-        TRANSITION
+        TRANSITION_TO_RIGHT,
+        TRANSITION_TO_LEFT
+    }
+
+    private int animationProgress;
+
+    private int maxProgress;
+    private transitionPhase curPhase;
+
+
+
+    private void update(){
+
+        // go to transition if pressed
+       if (curPhase == transitionPhase.TRANSITION_TO_RIGHT){
+           animationProgress++;
+           if (animationProgress == maxProgress){
+               curPhase = transitionPhase.SELECTED;
+           } else{
+               // calculate coordinates
+
+               // move central image to left
+
+               //move right image to center
+
+           }
+
+
+        } else if (curPhase == transitionPhase.TRANSITION_TO_LEFT) {
+           
+       }
     }
 
     public LevelSelect(GameCanvas canvas) {
@@ -142,6 +169,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         easyButton=null;
         mediumButton=null;
         hardButton=null;
+        maxProgress = 100;
     }
 
     public int getSelectedLevel(){
@@ -221,14 +249,10 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         albumCoverCoords[1]=new Vector2((canvas.getWidth()/2 ),(canvas.getHeight()*2/3)-25);
         albumCoverCoords[2]=new Vector2((canvas.getWidth()/2 )+ (canvas.getWidth()/4)+10,(canvas.getHeight()*2/3)-25);
 
-//        // populate all the levels; 3 because we have 3 difficulties.
-//        for (int i = 0; i < numSongs *3; i++){
-//            allLevels[i]="levels/"+(i+1)+".json";
-//        }
     }
 
     /**
-     * Resets  LevelSelect
+     * Resets LevelSelect
      */
     public void reset() {
         Gdx.input.setInputProcessor( this );
@@ -272,34 +296,37 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                 hardButtonCoords.x, hardButtonCoords.y, 0, 0.5f*scale, 0.5f*scale);
 
         if (prevLevel!= selectedLevel){ // switch animation if we changed a level
-            // need to shrink or increase the scale by localScale
-            float localScale1 = centerScale-cornerScale;
+            // this is the number of steps to finish transform
+            float steps = 1000f;
+            float scaleChange = centerScale-cornerScale;
 
             if (prevLevel < selectedLevel){ // we need to transition to right
+                System.out.println("transition to right");
                 // variables for the center image to go right; y is the same
-                float rightLenX =  albumCoverCoords[2].x - albumCoverCoords[1].x;
+                float rightLenX = Math.abs (albumCoverCoords[1].x - albumCoverCoords[0].x);
                 float currCenterAlbumX = albumCoverCoords[1].x;
+                float localScale1 =centerScale;
 
-                // this is the number of steps to finish transform
-                float rightStep = rightLenX/0.001f;
+                float rightStep = rightLenX/steps;
+                float scaleStep = scaleChange/steps;
 
-                while (currCenterAlbumX!=albumCoverCoords[2].x){
-
+                while (currCenterAlbumX>albumCoverCoords[0].x){
+                    System.out.println("in while");
                     canvas.draw(albumCovers[selectedLevel],Color.WHITE,albumCovers[selectedLevel].getWidth()/2,
                             albumCovers[selectedLevel].getHeight()/2,currCenterAlbumX,
                             albumCoverCoords[1].y,0, localScale1, localScale1);
 
-                    currCenterAlbumX+=0.001;
-                    localScale1-=0.001f;
+                    currCenterAlbumX-=rightStep;
+                    localScale1-=scaleStep;
 
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                    }
-
-
+//                    try {
+//                        Thread.sleep(100);
+//                    } catch (InterruptedException e) {
+//                        Thread.currentThread().interrupt();
+//                    }
                 }
+                System.out.println("out of while");
+                prevLevel = selectedLevel;
             } else{ // we need to go left
 
             }
@@ -392,6 +419,10 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
      */
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        // block inputs when we are in transition
+        if (curPhase ==transitionPhase.TRANSITION_TO_LEFT || curPhase == transitionPhase.TRANSITION_TO_RIGHT){
+            return false;
+        }
 
         screenY = canvas.getHeight()-screenY;
 
@@ -413,14 +444,22 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
         // if there are a previous level, we allow decrement.
         if (isButtonPressed(screenX, screenY, goLeft, goLeftCoords, 0.9f*scale)) {
+            System.out.println("pressed left");
             if (selectedLevel-1>=0){
+                animationProgress = 0;
+                curPhase =transitionPhase.TRANSITION_TO_LEFT;
+
                 selectedLevel--;
             }
         }
 
         // if there are a next level, we allow increment.
         if (isButtonPressed(screenX, screenY, goRight, goRightCoords, 0.9f*scale)) {
+            System.out.println("pressed right");
             if (selectedLevel+1< numSongs){
+                animationProgress = 0;
+                curPhase =transitionPhase.TRANSITION_TO_RIGHT;
+
                 prevLevel=selectedLevel;
                 selectedLevel++;
                 System.out.println("prev"+prevLevel);
@@ -483,6 +522,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     @Override
     public void render(float delta) {
         if (active) {
+            update();
             draw();
             if (playPressed && listener != null) {
                 // go to game
