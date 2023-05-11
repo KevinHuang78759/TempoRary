@@ -5,7 +5,7 @@
   "song" : "YR",
   "startPosition" : 0,
   "bpm" : 150,
-  "maxCompetency" : 100,
+  "maxCompetency" : 30,
   "linesPerMember" : 4,
   "a-threshold":650000,"b-threshold":450000,"c-threshold":300000,"s-threshold":700000,
   "bandMembers" : [
