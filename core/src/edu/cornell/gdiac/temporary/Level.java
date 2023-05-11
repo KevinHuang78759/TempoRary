@@ -39,6 +39,8 @@ public class Level {
 
     private Texture switchIndicatorHit;
 
+    private Texture bkgTexture;
+
     public Texture getHoldNoteTexture() {
         return holdNoteTexture;
     }
@@ -204,7 +206,7 @@ public class Level {
     public Level(JsonValue data, AssetDirectory directory) {
         JsonReader jr = new JsonReader();
         JsonValue assets = jr.parse(Gdx.files.internal("assets.json"));
-
+        bkgTexture = directory.getEntry(data.getString("background"), Texture.class);
         // load all related level textures
         hitNoteTexture = directory.getEntry("hit", Texture.class);
         switchNoteTexture = directory.getEntry("switch", Texture.class);
@@ -418,14 +420,11 @@ public class Level {
             sample = getCurrentSample();
         } else if (mode == 2){
             sample += (int) ((((float) rate)/60f)*(0.8f*(1f - (((float) ticks)/120f))));
-            System.out.println("over");
         } else if (mode == 0){
             int startSample = -(int) (((float) rate/60f)*introLength);
             sample = startSample + (int) (((float) rate/60f)*ticks);
         }
-        System.out.println(sample);
         float samplesPerBeat = rate * 60f/bpm;
-
 
         for (BandMember bandMember : bandMembers) {
             //update the uh frame
@@ -442,7 +441,7 @@ public class Level {
 
             if (!bandMember.getHitNotes().isEmpty() && mode == 1) {
                 float loss = -1f * bandMember.getLossRate() * (sample - lastDec) / ((float) music.getSampleRate());
-                System.out.println(loss);
+                // TODO: ONLY UPDATE IF YOU ARE NOT HOLDING
                 bandMember.compUpdate(loss);
             }
         }
@@ -570,6 +569,7 @@ public class Level {
      * @param switches - which switches are pressed?
      */
     public void drawEverything(GameCanvas canvas, int active, int goal, boolean[] triggers, boolean[] switches, float borderThickness){
+        canvas.drawBackground(bkgTexture,0,0);
         for(int i = 0; i < bandMembers.length; ++i){
             //Draw the border of each band member
             bandMembers[i].drawBackground(canvas, activeLane, inactiveLane);

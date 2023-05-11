@@ -1,5 +1,6 @@
 {
   "levelname" : "American",
+  "background" : "cafe-background",
   "levelNumber" : 9,
   "song" : "American",
   "startPosition" : 0,
@@ -10,7 +11,7 @@
   "bandMembers" : [
     {
       "instrument" : "piano",
-      "competencyLossRate" : 1,
+      "competencyLossRate" : 2,
       "notes" : [
         {
           "type" : "held",
@@ -462,7 +463,7 @@
   ,
     {
       "instrument" : "piano",
-      "competencyLossRate" : 1,
+      "competencyLossRate" : 2,
       "notes" : [
         {
           "type" : "switch",
@@ -1262,7 +1263,7 @@
   ,
     {
       "instrument" : "piano",
-      "competencyLossRate" : 1,
+      "competencyLossRate" : 2,
       "notes" : [
         {
           "type" : "switch",
@@ -1912,7 +1913,7 @@
   ,
     {
       "instrument" : "piano",
-      "competencyLossRate" : 1,
+      "competencyLossRate" : 2,
       "notes" : [
         {
           "type" : "switch",

@@ -277,7 +277,7 @@ public class GameMode implements Screen {
 	public void readLevel(String level, AssetDirectory assetDirectory, int selectedLevel, int difficulty) {
 		levelString = level;
 
-		currLevel = selectedLevel+1;
+		currLevel = selectedLevel;
 		currDifficulty = difficulty;
 
 		directory = assetDirectory;
@@ -286,7 +286,8 @@ public class GameMode implements Screen {
 		int end = level.indexOf(".");
 
 		JsonReader jr = new JsonReader();
-		nextIdx = Integer.parseInt(level.substring(start + 1, end))+3;
+//		nextIdx = Integer.parseInt(level.substring(start + 1, end))+3;
+		nextIdx = currLevel++;
 
 		JsonValue levelData = jr.parse(Gdx.files.internal(level));
 
@@ -647,7 +648,6 @@ public class GameMode implements Screen {
 		canvas.begin();
 		// First draw the background
 		// TODO: SWITCH BACKGROUND BASED ON LEVEL JSON (may need to move this to a different location)
-		canvas.drawBackground(streetLevelBackground.getTexture(),0,0);
 		if (gameState == GameState.OVER) {
 			if (ticks >= 120) {
 				drawLose();

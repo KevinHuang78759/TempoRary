@@ -24,6 +24,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 
 import java.util.Arrays;
+import java.util.Map;
 
 /**
  * Class for reading player input. 
@@ -58,10 +59,10 @@ public class InputController {
 	// Controls for the game
 	// TODO SWITCH THIS TO ARRAYS
 	// TODO REMOVE STATIC FIELDS
-	private static IntMap<int[]> switchesBindingsMain;
+	public static IntMap<int[]> switchesBindingsMain;
 	private static IntMap<int[]> switchesBindingsAlt;
 
-	private static int[] triggerBindingsMain;
+	public static int[] triggerBindingsMain;
 	private static int[] triggerBindingsAlt;
 
 	//Arrays to registering switch and trigger presses
@@ -175,12 +176,12 @@ public class InputController {
 		triggers = new boolean[4];
 		switches = new boolean[4];
 		triggerLifted = new boolean[4];
-		triggerBindingsMain = new int[]{
+		triggerBindingsMain = SaveManager.getInstance().getHitKeybindingSettings(new int[]{
 				Input.Keys.D,
 				Input.Keys.F,
 				Input.Keys.J,
 				Input.Keys.K
-		};
+		});
 		triggerBindingsAlt = new int[]{
 				Input.Keys.LEFT,
 				Input.Keys.DOWN,
@@ -206,6 +207,7 @@ public class InputController {
 			switchesBindingsMain.put(i, Arrays.copyOfRange(switchesBindingsMainAll, 0, i + 1));
 			switchesBindingsAlt.put(i, Arrays.copyOfRange(switchesBindingsAltAll, 0, i + 1));
 		}
+		switchesBindingsMain = SaveManager.getInstance().getSwitchKeybindingSettings(switchesBindingsMain);
 		masterKeybindingMap = new IntMap<>();
 		// fill up keybinding map
 		for (int val : triggerBindingsMain) {
