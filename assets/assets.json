@@ -80,6 +80,7 @@
         "concert-background": "images/backgrounds/background_temp_concert_1.png",
         "street-background": "images/backgrounds/streets_2.png",
         "cafe-background": "images/backgrounds/background_temp_cafe_1.png",
+        "mountain-background": "images/backgrounds/RiverMountain.jpg",
         "white-background": "images/backgrounds/white_background.png",
         "switch":    "images/notes/switch.png",
         "hit":      "images/notes/press.png",
@@ -110,7 +111,7 @@
         "win-lose-select": "images/win_lose/win_screen_select.png",
         "win-lose-restart": "images/win_lose/win_screen_retry.png",
         "win-lose-next": "images/win_lose/win_screen_next.png",
-        "level-select-background": "images/level_select_background.png"
+        "level-select-background": "images/level_select_background.png",
         "ok-hit": "images/Ok.png",
         "good-hit": "images/Good.png",
         "perfect-hit": "images/Perfect.png",
@@ -143,7 +144,8 @@
       "aliens": "music/Aliens.ogg",
       "american": "music/American_Finale.ogg",
       "calibration": "music/calibration.ogg",
-      "Tutorial": "music/Tutorial.ogg"
+      "Tutorial": "music/Tutorial.ogg",
+      "YR": "music/Yellow_River.ogg"
     },
     "soundtrack": {
       "calibration": {
@@ -154,6 +156,11 @@
       "american": {
         "sources": [
           "music/American_Finale.ogg"
+        ]
+      },
+      "YR": {
+        "sources": [
+          "music/Yellow_River.ogg"
         ]
       },
       "challenger": {

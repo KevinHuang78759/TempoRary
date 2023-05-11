@@ -39,6 +39,8 @@ public class Level {
 
     private Texture switchIndicatorHit;
 
+    private Texture bkgTexture;
+
     public Texture getHoldNoteTexture() {
         return holdNoteTexture;
     }
@@ -204,7 +206,7 @@ public class Level {
     public Level(JsonValue data, AssetDirectory directory) {
         JsonReader jr = new JsonReader();
         JsonValue assets = jr.parse(Gdx.files.internal("assets.json"));
-
+        bkgTexture = directory.getEntry(data.getString("background"), Texture.class);
         // load all related level textures
         hitNoteTexture = directory.getEntry("hit", Texture.class);
         switchNoteTexture = directory.getEntry("switch", Texture.class);
@@ -567,6 +569,7 @@ public class Level {
      * @param switches - which switches are pressed?
      */
     public void drawEverything(GameCanvas canvas, int active, int goal, boolean[] triggers, boolean[] switches, float borderThickness){
+        canvas.drawBackground(bkgTexture,0,0);
         for(int i = 0; i < bandMembers.length; ++i){
             //Draw the border of each band member
             bandMembers[i].drawBackground(canvas, activeLane, inactiveLane);

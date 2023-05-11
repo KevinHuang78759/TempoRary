@@ -227,7 +227,7 @@ public class GameplayController {
 		setYVals();
 		switches = new boolean[NUM_LANES];
 		triggers = new boolean[lpl];
-		T_SwitchPhases = level.getSamplesPerBeat()/2;
+		T_SwitchPhases = level.getSamplesPerBeat()/4;
 		activeBandMember = 0;
 		goalBandMember = 0;
 
