@@ -810,10 +810,17 @@ public class GameplayController {
 	}
 
 	public void dispose(){
-		level.dispose();
-		level = null;
-		sfx.dispose();
-		sb.dispose();
+		if(level!=null){
+			level.dispose();
+			level = null;
+		}
+		if(sfx!=null){
+			sfx.dispose();
+		}
+		if(sb !=null){
+			sb.dispose();
+		}
+
 		garbageCollectNoteIndicators();
 	}
 }
