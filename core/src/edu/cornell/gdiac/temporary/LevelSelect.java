@@ -289,11 +289,11 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                             albumCovers[selectedLevel].getHeight()/2,currCenterAlbumX,
                             albumCoverCoords[1].y,0, localScale1, localScale1);
 
-                    currCenterAlbumX+=rightStep;
+                    currCenterAlbumX+=0.001;
                     localScale1-=0.001f;
 
                     try {
-                        Thread.sleep(100000);
+                        Thread.sleep(100);
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                     }
