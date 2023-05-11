@@ -123,7 +123,18 @@ public class SaveManager {
 
     // TODO: CLEAR SAVED DATA
     public void clearSavedData() {
+        levels.clear();
+        levels.flush();
+    }
 
+    public void resetSettings() {
+        volumeSettings.clear();
+        hitBindingSettings.clear();
+        for (Preferences s:
+             switchBindingSettings) {
+            s.clear();
+            s.flush();
+        }
     }
 
 }
