@@ -421,9 +421,7 @@ public class Level {
             sample = getCurrentSample();
         } else {
             sample += (int) ((((float) rate)/60f)*(0.8f*(1f - (((float) ticks)/120f))));
-            System.out.println(ticks);
         }
-        System.out.println(sample);
         float samplesPerBeat = rate * 60f/bpm;
 
         for(BandMember bandMember : bandMembers){
@@ -439,7 +437,7 @@ public class Level {
 
             if(!bandMember.getHitNotes().isEmpty()){
                 float loss = -1f*bandMember.getLossRate() * (sample - lastDec)/((float)music.getSampleRate());
-                System.out.println(loss);
+                // TODO: ONLY UPDATE IF YOU ARE NOT HOLDING
                 bandMember.compUpdate(loss);
             }
 

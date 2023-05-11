@@ -8,6 +8,7 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
@@ -90,6 +91,9 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     /** Reference to GameCanvas created by the root */
     private GameCanvas canvas;
 
+    /** A string array of levels in order;
+     * invariant 1: in order; allLevels[0] is song 1 easy level.
+     * invariant 2: size is a multiple of 3, because we have 3 difficulties */
     private String[] allLevels;
 
     private Texture goLeft;
@@ -118,6 +122,14 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     /** Selected song; 1 is easy, 2 is medium, 3 is hard. */
     public int selectedDifficulty;
     private boolean pressedEscape;
+
+    /**
+     * Enum to determine whether or not we have selected a song, or we are transitioning between songs
+     */
+    public enum transitionPhase {
+        SELECTED,
+        TRANSITION
+    }
 
     public LevelSelect(GameCanvas canvas) {
         this.canvas  = canvas;
@@ -169,8 +181,10 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
         JsonReader jr = new JsonReader();
         JsonValue levelData = jr.parse(Gdx.files.internal("assets.json"));
-        numSongs = levelData.get("jsons").size;
-        allLevels= new String[numSongs *3];
+        allLevels = levelData.get("levels").asStringArray();
+        numSongs = allLevels.length/3;
+        assert allLevels.length%3 == 0;
+//        allLevels= new String[numSongs *3];
         albumCoverCoords = new Vector2[3];
 //        System.out.println("num levels "+numLevels);
         gameplayController = new GameplayController(canvas.getWidth(),canvas.getHeight());
@@ -204,10 +218,10 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         albumCoverCoords[1]=new Vector2((canvas.getWidth()/2 ),(canvas.getHeight()*2/3)-25);
         albumCoverCoords[2]=new Vector2((canvas.getWidth()/2 )+ (canvas.getWidth()/4)+10,(canvas.getHeight()*2/3)-25);
 
-        // populate all the levels; 3 because we have 3 difficulties.
-        for (int i = 0; i < numSongs *3; i++){
-            allLevels[i]="levels/"+(i+1)+".json";
-        }
+//        // populate all the levels; 3 because we have 3 difficulties.
+//        for (int i = 0; i < numSongs *3; i++){
+//            allLevels[i]="levels/"+(i+1)+".json";
+//        }
     }
 
     /**
@@ -224,16 +238,78 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     }
 
 
+    /** Affine cache for current sprite to draw */
+    private Affine2 local;
+
+    /**
+     * Compute the affine transform (and store it in local) for this image.
+     *
+     * This helper is meant to simplify all of the math in the above draw method
+     * so that you do not need to worry about it when working on Exercise 4.
+     *
+     * @param ox 	The x-coordinate of texture origin (in pixels)
+     * @param oy 	The y-coordinate of texture origin (in pixels)
+     * @param x 	The x-coordinate of the texture origin
+     * @param y 	The y-coordinate of the texture origin
+     * @param angle The rotation angle (in degrees) about the origin.
+     * @param sx 	The x-axis scaling factor
+     * @param sy 	The y-axis scaling factor
+     */
+    private void computeTransform(float ox, float oy, float x, float y, float angle, float sx, float sy) {
+        local.setToTranslation(x,y);
+        local.rotate(angle);
+        local.scale(sx,sy);
+        local.translate(-ox,-oy);
+    }
+
+    int prevLevel=selectedLevel;
+
     public void draw(){
         canvas.begin();
+
+        // draw animation if we changed a level
+//        if (prevLevel!= selectedLevel){
+//            float localScale = centerScale-cornerScale;
+//            if (prevLevel < selectedLevel){ // we need to go right
+//
+//                // we need to do two transforms at most
+//                float currLeftAlbumX = albumCoverCoords[0].x;
+//                float currLeftAlbumY = albumCoverCoords[0].x;
+//
+//                float currCenterAlbumX = albumCoverCoords[1].x;
+//                float currCenterAlbumY = albumCoverCoords[1].x;
+//
+//                // this is the number of
+//                float stepX = (currCenterAlbumX - currLeftAlbumX)/localScale;
+//                float stepY = (currCenterAlbumY - currLeftAlbumY)/localScale;
+//
+//                while (localScale>0){
+//                    canvas.draw(albumCovers[selectedLevel-1], Color.WHITE, albumCovers[selectedLevel-1].getWidth()/2,
+//                            albumCovers[selectedLevel-1].getHeight()/2, albumCoverCoords[0].x,
+//                            albumCoverCoords[0].y, 0, localScale, localScale);
+//                    localScale=localScale-0.1f;
+//                    currLeftAlbumX+=stepX;
+//                    currLeftAlbumY+=stepY;
+//
+//                }
+//            } else{ // we need to go left
+//
+//            }
+//        }
 
         canvas.drawBackground(levelBackground.getTexture(),0,0);
         canvas.draw(goBack, Color.WHITE, goBack.getWidth()/2, goBack.getHeight()/2,
                 goBackCoords.x, goBackCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
-        canvas.draw(goLeft, Color.WHITE, goLeft.getWidth()/2, goLeft.getHeight()/2,
-                goLeftCoords.x, goLeftCoords.y, 0, 0.9f*scale, 0.9f*scale);
-        canvas.draw(goRight, Color.WHITE, goRight.getWidth()/2, goRight.getHeight()/2,
-                goRightCoords.x, goRightCoords.y, 0, 0.9f*scale, 0.9f*scale);
+
+        // draw the goleft and go right buttons
+        if (selectedLevel-1>=0) {
+            canvas.draw(goLeft, Color.WHITE, goLeft.getWidth() / 2, goLeft.getHeight() / 2,
+                    goLeftCoords.x, goLeftCoords.y, 0, 0.9f * scale, 0.9f * scale);
+        }
+        if (selectedLevel+1< numSongs) {
+            canvas.draw(goRight, Color.WHITE, goRight.getWidth() / 2, goRight.getHeight() / 2,
+                    goRightCoords.x, goRightCoords.y, 0, 0.9f * scale, 0.9f * scale);
+        }
 
         // draw easy, medium, and hard buttons
         Color easyButtonTint = (selectedDifficulty == EASY ? Color.GRAY: Color.WHITE);
@@ -272,6 +348,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         canvas.draw(playButton, playButtonTint, playButton.getWidth()/2, playButton.getHeight()/2,
                     playButtonCoords.x, playButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 
+        prevLevel = selectedLevel;
         canvas.end();
     }
 
@@ -423,13 +500,10 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             draw();
             if (playPressed && listener != null) {
                 // go to game
-//                System.out.println("loading level..");
 //                System.out.println("selected level:" + selectedLevel);
 //                System.out.println("selected difficulty:" + selectedDifficulty);
                 int gameIdx = selectedDifficulty+(selectedLevel*3);
-//                System.out.println("index of json is:" + gameIdx);
-//                System.out.println("file name:"+allLevels[gameIdx-1]);
-                System.out.println(gameIdx);
+                System.out.println("game index: "+gameIdx);
                 selectedJson=allLevels[gameIdx-1];
                 listener.exitScreen(this, ExitCode.TO_PLAYING);
             } else if (pressedEscape && listener != null) {
