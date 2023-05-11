@@ -7,7 +7,7 @@ import edu.cornell.gdiac.backend.GDXAppSettings;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		GDXAppSettings config = new GDXAppSettings();
-		config.title = "TempoRary";
+		config.title = "Meowzart";
 		config.width  = 1200;
 		config.height = 800;
 		config.fullscreen = false;
