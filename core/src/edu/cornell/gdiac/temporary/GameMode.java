@@ -599,6 +599,7 @@ public class GameMode implements Screen {
 		gameplayController.reset();
 		gameplayController.reloadLevel();
 		ticks = 0;
+		endTime = 0;
 		gameState = GameState.INTRO;
 	}
 
