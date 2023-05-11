@@ -328,7 +328,10 @@ public class GameCanvas {
 		float scale = ratio >= 1 ? getWidth()/(float)image.getWidth() : getHeight()/(float)image.getHeight();
 		float trueW = image.getWidth()*scale;
 		float trueH = image.getHeight()*scale;
-        spriteBatch.draw(image, x,   y, trueW, trueH);
+		float tlx = x - (trueW - getWidth())/2f;
+		float tly = y - (trueH - getHeight())/2f;
+
+        spriteBatch.draw(image, tlx,   tly, trueW, trueH);
 
     }
 
