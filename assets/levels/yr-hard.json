@@ -5,13 +5,13 @@
   "song" : "YR",
   "startPosition" : 0,
   "bpm" : 150,
-  "maxCompetency" : 30,
+  "maxCompetency" : 175,
   "linesPerMember" : 4,
-  "a-threshold":650000,"b-threshold":450000,"c-threshold":300000,"s-threshold":700000,
+  "a-threshold":640000,"b-threshold":530000,"c-threshold":320000,"s-threshold":750000,
   "bandMembers" : [
     {
       "instrument" : "piano",
-      "competencyLossRate" : 1,
+      "competencyLossRate" : 15,
       "notes" : [
         {
           "type" : "beat",
@@ -633,21 +633,9 @@
         },
         {
           "type" : "switch",
-          "position" : 2491200,
+          "position" : 2496000,
           "duration" : 0,
           "line" : -1
-        },
-        {
-          "type" : "beat",
-          "position" : 2502400,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 2508800,
-          "duration" : 0,
-          "line" : 2
         },
         {
           "type" : "beat",
@@ -828,12 +816,6 @@
           "position" : 2688000,
           "duration" : 38400,
           "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 2688000,
-          "duration" : 0,
-          "line" : 1
         },
         {
           "type" : "beat",
@@ -1159,7 +1141,7 @@
   ,
     {
       "instrument" : "piano",
-      "competencyLossRate" : 1,
+      "competencyLossRate" : 15,
       "notes" : [
         {
           "type" : "switch",
@@ -1277,12 +1259,6 @@
         },
         {
           "type" : "beat",
-          "position" : 2931200,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
           "position" : 2937600,
           "duration" : 0,
           "line" : 3
@@ -1337,12 +1313,6 @@
         },
         {
           "type" : "beat",
-          "position" : 3084800,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
           "position" : 3091200,
           "duration" : 0,
           "line" : 0
@@ -1364,12 +1334,6 @@
           "position" : 3148800,
           "duration" : 0,
           "line" : -1
-        },
-        {
-          "type" : "beat",
-          "position" : 3161600,
-          "duration" : 0,
-          "line" : 3
         },
         {
           "type" : "beat",
@@ -1484,18 +1448,6 @@
           "position" : 3353600,
           "duration" : 0,
           "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 3360000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 3360000,
-          "duration" : 0,
-          "line" : 0
         },
         {
           "type" : "switch",
@@ -1833,7 +1785,7 @@
   ,
     {
       "instrument" : "piano",
-      "competencyLossRate" : 1,
+      "competencyLossRate" : 15,
       "notes" : [
         {
           "type" : "switch",
@@ -2263,7 +2215,7 @@
         },
         {
           "type" : "switch",
-          "position" : 3372800,
+          "position" : 3360000,
           "duration" : 0,
           "line" : -1
         },
@@ -2482,12 +2434,6 @@
           "position" : 3686400,
           "duration" : 38400,
           "line" : 1
-        },
-        {
-          "type" : "held",
-          "position" : 3724800,
-          "duration" : 28800,
-          "line" : 3
         },
         {
           "type" : "held",
@@ -2819,7 +2765,7 @@
   ,
     {
       "instrument" : "piano",
-      "competencyLossRate" : 1,
+      "competencyLossRate" : 15,
       "notes" : [
         {
           "type" : "switch",
@@ -3435,12 +3381,6 @@
         },
         {
           "type" : "beat",
-          "position" : 2304000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
           "position" : 2318400,
           "duration" : 0,
           "line" : 2
@@ -3633,21 +3573,9 @@
         },
         {
           "type" : "switch",
-          "position" : 2835200,
+          "position" : 2841600,
           "duration" : 0,
           "line" : -1
-        },
-        {
-          "type" : "beat",
-          "position" : 2848000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 2854400,
-          "duration" : 0,
-          "line" : 1
         },
         {
           "type" : "beat",
@@ -3771,12 +3699,6 @@
         },
         {
           "type" : "beat",
-          "position" : 3123200,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
           "position" : 3129600,
           "duration" : 0,
           "line" : 3
@@ -3798,12 +3720,6 @@
           "position" : 3187200,
           "duration" : 0,
           "line" : -1
-        },
-        {
-          "type" : "beat",
-          "position" : 3200000,
-          "duration" : 0,
-          "line" : 1
         },
         {
           "type" : "beat",

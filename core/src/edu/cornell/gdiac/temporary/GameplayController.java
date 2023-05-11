@@ -424,7 +424,7 @@ public class GameplayController {
 	public int updateIntro(int frame){
 		//start countdown after 2 seconds.
 		if (frame >= 120) {
-			float countTime = (1f / 1f) * level.getAnimationRateFromBPM(level.getBpm());
+			float countTime = level.getAnimationRateFromBPM(level.getBpm());
 			//if we notice bpm is too fast, half the speed so its one count every 2 beats
 			if (countTime >= 1f / 20f) {
 				countTime = countTime * (1f / 2f);
@@ -438,7 +438,7 @@ public class GameplayController {
 	 * @return length (in frames) of the intro sequence
 	 */
 	public int getIntroLength(){
-		float countTime = (1f / 1f) * level.getAnimationRateFromBPM(level.getBpm());
+		float countTime = level.getAnimationRateFromBPM(level.getBpm());
 		if (countTime >= 1f / 20f) {
 			countTime = countTime * (1f / 2f);
 		}
@@ -716,7 +716,7 @@ public class GameplayController {
 		}
 
 		boolean[] lifted = input.triggerLifted;
-		long currentSample = level.getCurrentSample();
+		long currentSample = level.getLevelSample();
 
 		//This array tells us if a hit has already been registered in this frame for the ith bm.
 		//We do not want one hit to count for two notes that are close together.
@@ -810,10 +810,17 @@ public class GameplayController {
 	}
 
 	public void dispose(){
-		level.dispose();
-		level = null;
-		sfx.dispose();
-		sb.dispose();
+		if(level!=null){
+			level.dispose();
+			level = null;
+		}
+		if(sfx!=null){
+			sfx.dispose();
+		}
+		if(sb !=null){
+			sb.dispose();
+		}
+
 		garbageCollectNoteIndicators();
 	}
 }
