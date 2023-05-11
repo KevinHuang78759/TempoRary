@@ -641,7 +641,6 @@ public class GameMode implements Screen {
 		canvas.begin();
 		// First draw the background
 		// TODO: SWITCH BACKGROUND BASED ON LEVEL JSON (may need to move this to a different location)
-		canvas.drawBackground(streetLevelBackground.getTexture(),0,0);
 		if (gameState == GameState.OVER) {
 			if (ticks >= 120) {
 				drawLose();

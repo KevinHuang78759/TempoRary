@@ -70,6 +70,7 @@
         "2": "images/album_covers/aliens_album.png",
         "3": "images/album_covers/challenger_album.png",
         "4": "images/album_covers/american_album.png",
+        "5": "images/album_covers/Yellow_river.png",
         "level-select-button": "images/ui/level_select.png",
         "quit-button": "images/ui/quit.png",
         "restart-button": "images/ui/restart.png",
@@ -77,9 +78,10 @@
         "menu-button": "images/ui/menu.png",
         "pause-background": "images/ui/pause_background.png",
         "background": "images/background.png",
-        "concert-background": "images/backgrounds/background_temp_concert_1.png",
+        "concert-background": "images/backgrounds/concert_v2.png",
         "street-background": "images/backgrounds/streets_2.png",
-        "cafe-background": "images/backgrounds/background_temp_cafe_1.png",
+        "cafe-background": "images/backgrounds/cafe_v2.png",
+        "mountain-background": "images/backgrounds/RiverMountain.jpg",
         "white-background": "images/backgrounds/white_background.png",
         "switch":    "images/notes/switch.png",
         "hit":      "images/notes/press.png",
@@ -110,7 +112,7 @@
         "win-lose-select": "images/win_lose/win_screen_select.png",
         "win-lose-restart": "images/win_lose/win_screen_retry.png",
         "win-lose-next": "images/win_lose/win_screen_next.png",
-        "level-select-background": "images/level_select_background.png"
+        "level-select-background": "images/level_select_background.png",
         "ok-hit": "images/Ok.png",
         "good-hit": "images/Good.png",
         "perfect-hit": "images/Perfect.png",
@@ -143,7 +145,8 @@
       "aliens": "music/Aliens.ogg",
       "american": "music/American_Finale.ogg",
       "calibration": "music/calibration.ogg",
-      "Tutorial": "music/Tutorial.ogg"
+      "Tutorial": "music/Tutorial.ogg",
+      "YR": "music/Yellow_River.ogg"
     },
     "soundtrack": {
       "calibration": {
@@ -154,6 +157,11 @@
       "american": {
         "sources": [
           "music/American_Finale.ogg"
+        ]
+      },
+      "YR": {
+        "sources": [
+          "music/Yellow_River.ogg"
         ]
       },
       "challenger": {
@@ -184,7 +192,10 @@
       "levels/challenger-hard.json",
       "levels/american-easy.json",
       "levels/american-medium.json",
-      "levels/american-hard.json"
+      "levels/american-hard.json",
+      "levels/yr-easy.json",
+      "levels/yr-medium.json",
+      "levels/yr-hard.json"
     ],
     "soundEffects": [
         ["tap", "sound/tap.ogg"],
