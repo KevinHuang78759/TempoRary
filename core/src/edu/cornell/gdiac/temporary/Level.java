@@ -408,42 +408,44 @@ public class Level {
     }
 
     private long sample = 0;
-    private int rate;
 
     /**
      * Spawns new notes according to what sample we are at. Also decrements bandmembers' competency
      * for some amount about once a second. It also updates the frame of the bandmember.
      */
-    public void updateBandMemberNotes(float spawnY, boolean over, int ticks){
+    public void updateBandMemberNotes(float spawnY, int mode, int ticks, int introLength){
         //First get the sample we at
-        if (!over) {
-            rate = music.getSampleRate();
+        int rate = music.getSampleRate();
+        if (mode == 1)       {
             sample = getCurrentSample();
-        } else {
+        } else if (mode == 2){
             sample += (int) ((((float) rate)/60f)*(0.8f*(1f - (((float) ticks)/120f))));
+        } else if (mode == 0){
+            int startSample = -(int) (((float) rate/60f)*introLength);
+            sample = startSample + (int) (((float) rate/60f)*ticks);
         }
         float samplesPerBeat = rate * 60f/bpm;
 
-        for(BandMember bandMember : bandMembers){
+        for (BandMember bandMember : bandMembers) {
             //update the uh frame
-            float frameprogress = (sample % samplesPerBeat)/(samplesPerBeat);
+            float frameprogress = (sample % samplesPerBeat) / (samplesPerBeat);
             int totalframes = bandMember.getCharacterFrames();
-            bandMember.setFrame((int)(totalframes*frameprogress));
+            if (mode==1) {
+                bandMember.setFrame((int) (totalframes * frameprogress));
+            }
 
             //spawn new notes accordingly
             bandMember.spawnNotes(sample);
             //update the note frames
             bandMember.updateNotes(spawnY, sample);
 
-            if(!bandMember.getHitNotes().isEmpty()){
-                float loss = -1f*bandMember.getLossRate() * (sample - lastDec)/((float)music.getSampleRate());
+            if (!bandMember.getHitNotes().isEmpty() && mode == 1) {
+                float loss = -1f * bandMember.getLossRate() * (sample - lastDec) / ((float) music.getSampleRate());
                 // TODO: ONLY UPDATE IF YOU ARE NOT HOLDING
                 bandMember.compUpdate(loss);
             }
-
         }
         lastDec = sample;
-
     }
 
     /**

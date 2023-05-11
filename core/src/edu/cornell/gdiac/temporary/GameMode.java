@@ -141,11 +141,6 @@ public class GameMode implements Screen {
 
 	private static float ALBUM_SCALE  = 0.75f;
 
-
-	/// CONSTANTS
-	/** Offset for the game over message on the screen */
-	private static final float GAME_OVER_OFFSET = 40.0f;
-
 	/** The current state of each button */
 	private int pressState;
 
@@ -445,13 +440,16 @@ public class GameMode implements Screen {
 				// wait a few frames before starting
 				if (ticks == 0) {
 					gameplayController.start();
-					gameplayController.update(false, 0);
+					gameplayController.update(0, 0);
 					saidThree = false;
 					saidTwo = false;
 					saidOne = false;
 				}
 				introTime = gameplayController.updateIntro(ticks);
 				ticks++;
+				if (!justPaused) {
+					gameplayController.update(0, ticks);
+				}
 				if (introTime >= 0) {
 					for (boolean k : inputController.didTrigger()){
 						if (k) {
@@ -585,6 +583,7 @@ public class GameMode implements Screen {
 		}
 	}
 
+	// TODO: FIX THIS
 	private void goNextLevel(){
 		System.out.println("next pressed:" + nextIdx);
 		LevelSelect.setSelectedJson("levels/"+nextIdx+".json");
@@ -610,7 +609,11 @@ public class GameMode implements Screen {
 		// Update objects.
 		gameplayController.handleActions(inputController);
 
-		gameplayController.update(gameState == GameState.OVER, ticks);
+		if (gameState == GameState.PLAY) {
+			gameplayController.update(1, ticks);
+		} else {
+			gameplayController.update(2, ticks);
+		}
 
 		// if we have a competency bar at 0
 		if (gameplayController.hasZeroCompetency() && gameState != GameState.OVER) {
@@ -838,10 +841,11 @@ public class GameMode implements Screen {
 		canvas.draw(goBack, Color.WHITE, goBack.getWidth()/2, goBack.getHeight()/2,
 				goBackCoords.x, goBackCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
 
-		if (nextIdx<=9 && drawNextLevel){
-			canvas.draw(nextButtonWon, Color.WHITE, nextButtonWon.getWidth()/2, nextButtonWon.getHeight()/2,
-					nextWonCoords.x, nextWonCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
-		}
+		// TODO: FIX THIS
+//		if (nextIdx<=9 && drawNextLevel){
+//			canvas.draw(nextButtonWon, Color.WHITE, nextButtonWon.getWidth()/2, nextButtonWon.getHeight()/2,
+//					nextWonCoords.x, nextWonCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+//		}
 
 		canvas.draw(restartButtonWon, Color.WHITE, restartButtonWon.getWidth()/2, restartButtonWon.getHeight()/2,
 				restartWonCoords.x, restartWonCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
