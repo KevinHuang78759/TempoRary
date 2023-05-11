@@ -2,13 +2,18 @@ package edu.cornell.gdiac.temporary;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.utils.IntMap;
+
+import java.util.Arrays;
 
 /** This class utilizes LibGDX Preferences to store saved games */
+// TODO: ADD CALIBRATION VALUE
 public class SaveManager {
     /** Singleton save manager */
     private static SaveManager saveManager;
     /** LibGDX Preferences for all the game's levels */
-    private Preferences[] levels;
+    // TODO: UPDATE THIS TYPE WITH A COLLECTION
+    private Preferences levels;
     /** LibGDX Preferences for user volume settings */
     private Preferences volumeSettings;
     /** LibGDX preferences for hit bindings */
@@ -16,15 +21,14 @@ public class SaveManager {
     /** LibGDX preferences for switch bindings */
     private Preferences[] switchBindingSettings;
 
-
     private SaveManager() {
         // TODO: UPDATE THIS WITH A LOOP OF ALL OF OUR LEVELS
-        levels = new Preferences[]{Gdx.app.getPreferences("edu.cornell.gdiac.temporary.levels")};
+        levels = Gdx.app.getPreferences("edu.cornell.gdiac.temporary.settings.levels");
         volumeSettings = Gdx.app.getPreferences("edu.cornell.gdiac.temporary.settings.volume");
         hitBindingSettings = Gdx.app.getPreferences("edu.cornell.gdiac.temporary.settings.hitBindingSettings");
-        switchBindingSettings = new Preferences[3];
-        for (int i = 2; i <= 4; i++) {
-            switchBindingSettings[i-2] = Gdx.app.getPreferences("edu.cornell.gdiac.temporary.settings.switchBindingSettings." + i);
+        switchBindingSettings = new Preferences[InputController.MAX_BAND_MEMBERS];
+        for (int i = 0; i < InputController.MAX_BAND_MEMBERS; i++) {
+            switchBindingSettings[i] = Gdx.app.getPreferences("edu.cornell.gdiac.temporary.settings.switchBindingSettings." + i);
         }
     }
 
@@ -40,7 +44,7 @@ public class SaveManager {
     }
 
     // TODO: SAVE LEVEL AFTER BEATING IT
-    public void saveGame() {
+    public void saveGame(String levelName, int score) {
 
     }
 
@@ -50,16 +54,45 @@ public class SaveManager {
     }
 
     // TODO: SAVE SETTINGS UPON EXIT
-    public void saveSettings(float musicVol, float fxVol) {
+    public void saveSettings(int[] hitBindings, IntMap<int[]> switchBindings, float musicVol, float fxVol) {
+        for (int i = 0; i < hitBindings.length; i++) {
+            hitBindingSettings.putInteger("" + i, hitBindings[i]);
+        }
+        for (int i = 0; i < InputController.MAX_BAND_MEMBERS; i++) {
+            for (int j = 0; j < i + 1; j++) {
+                switchBindingSettings[i].putInteger("" + j, switchBindings.get(i)[j]);
+            }
+            switchBindingSettings[i].flush();
+        }
         volumeSettings.putFloat("music", musicVol);
         volumeSettings.putFloat("fx", fxVol);
+        hitBindingSettings.flush();
+        volumeSettings.flush();
     }
 
-    // TODO: RETRIEVE THE KEYBINDINGS THAT USER SAVED
-    public int[] getHitKeybindingSettings() {
-        int[] temp = new int[4];
+    // MEANT TO BE CALLED ONCE WHEN INITIALIZING SETTINGS
+    public int[] getHitKeybindingSettings(int[] def) {
+        int[] temp = new int[InputController.MAX_LINES_PER_LANE];
         for (int i = 0; i < temp.length; i++) {
-            temp[i] = hitBindingSettings.getInteger("i");
+            temp[i] = hitBindingSettings.getInteger("" + i, -2);
+            if (temp[i] == -2) {
+                return def;
+            }
+        }
+        return temp;
+    }
+
+    public IntMap<int[]> getSwitchKeybindingSettings(IntMap<int[]> def) {
+        IntMap<int[]> temp = new IntMap<>();
+        for (int i = 0; i < InputController.MAX_BAND_MEMBERS; i++) {
+            int[] curr = new int[i + 1];
+            for (int j = 0; j < curr.length; j++) {
+                curr[j] = switchBindingSettings[i].getInteger("" + j, -2);
+                if (curr[j] == -2) {
+                    return def;
+                }
+            }
+            temp.put(i, curr);
         }
         return temp;
     }
@@ -68,14 +101,14 @@ public class SaveManager {
      * Retrieves save data for music volume
      */
     public float getMusicVolume() {
-        return volumeSettings.getFloat("music");
+        return volumeSettings.getFloat("music", 1);
     }
 
     /**
      * Retrieves save data for soundFX volume
      */
     public float getFXVolume() {
-        return volumeSettings.getFloat("fx");
+        return volumeSettings.getFloat("fx", 1);
     }
 
     // TODO: CLEAR SAVED DATA

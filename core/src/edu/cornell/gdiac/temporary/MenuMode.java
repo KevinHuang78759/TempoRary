@@ -401,6 +401,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         backButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
+                SaveManager.getInstance().saveSettings(InputController.triggerBindingsMain, InputController.switchesBindingsMain, musicVolume, soundFXVolume);
                 switchToHome();
             }
         });
@@ -593,8 +594,8 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         // Compute the dimensions from the canvas
         resize(canvas.getWidth(),canvas.getHeight());
         currBandMemberCount = 4;
-        musicVolume = 1f;
-        soundFXVolume = 1f;
+        musicVolume = SaveManager.getInstance().getMusicVolume();
+        soundFXVolume = SaveManager.getInstance().getFXVolume();
         active = false;
         v = new Vector2();
         reset();
