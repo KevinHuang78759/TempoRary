@@ -5,9 +5,9 @@
   "song" : "YR",
   "startPosition" : 0,
   "bpm" : 150,
-  "maxCompetency" : 30,
+  "maxCompetency" : 100,
   "linesPerMember" : 4,
-  "a-threshold":650000,"b-threshold":450000,"c-threshold":300000,"s-threshold":700000,
+  "a-threshold":700000,"b-threshold":600000,"c-threshold":400000,"s-threshold":750000,
   "bandMembers" : [
     {
       "instrument" : "piano",
@@ -828,12 +828,6 @@
           "position" : 2688000,
           "duration" : 38400,
           "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 2688000,
-          "duration" : 0,
-          "line" : 1
         },
         {
           "type" : "beat",
@@ -2487,12 +2481,6 @@
           "type" : "held",
           "position" : 3724800,
           "duration" : 28800,
-          "line" : 3
-        },
-        {
-          "type" : "held",
-          "position" : 3724800,
-          "duration" : 28800,
           "line" : 2
         },
         {
@@ -3432,12 +3420,6 @@
           "position" : 2304000,
           "duration" : 0,
           "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 2304000,
-          "duration" : 0,
-          "line" : 0
         },
         {
           "type" : "beat",
