@@ -274,15 +274,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         canvas.draw(goBack, Color.WHITE, goBack.getWidth()/2, goBack.getHeight()/2,
                 goBackCoords.x, goBackCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
 
-        // draw the goleft and go right buttons
-        if (selectedLevel-1>=0) {
-            canvas.draw(goLeft, Color.WHITE, goLeft.getWidth() / 2, goLeft.getHeight() / 2,
-                    goLeftCoords.x, goLeftCoords.y, 0, 0.9f * scale, 0.9f * scale);
-        }
-        if (selectedLevel+1< numSongs) {
-            canvas.draw(goRight, Color.WHITE, goRight.getWidth() / 2, goRight.getHeight() / 2,
-                    goRightCoords.x, goRightCoords.y, 0, 0.9f * scale, 0.9f * scale);
-        }
+
 
         // draw easy, medium, and hard buttons
         Color easyButtonTint = (selectedDifficulty == EASY ? Color.GRAY: Color.WHITE);
@@ -298,7 +290,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                 hardButtonCoords.x, hardButtonCoords.y, 0, 0.5f*scale, 0.5f*scale);
 
         // draw each song
-        if (selectedLevel>=1 || drawLeft){ //check that if there are a song to the left; if so, draw.
+        if (selectedLevel>=1){ //check that if there are a song to the left; if so, draw.
             canvas.draw(albumCovers[selectedLevel-1], Color.WHITE, albumCovers[selectedLevel-1].getWidth()/2,
                     albumCovers[selectedLevel-1].getHeight()/2, albumCoverCoords[selectedLevel-1].x,
                     albumCoverCoords[selectedLevel-1].y, 0, albumScales[selectedLevel-1], albumScales[selectedLevel-1]);
@@ -313,6 +305,16 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             canvas.draw(albumCovers[selectedLevel+1],Color.WHITE,albumCovers[selectedLevel+1].getWidth()/2,
                     albumCovers[selectedLevel+1].getHeight()/2,albumCoverCoords[selectedLevel+1].x,
                     albumCoverCoords[selectedLevel+1].y,0, albumScales[selectedLevel+1], albumScales[selectedLevel+1]);
+        }
+
+        // draw the goleft and go right buttons
+        if (selectedLevel-1>=0) {
+            canvas.draw(goLeft, Color.WHITE, goLeft.getWidth() / 2, goLeft.getHeight() / 2,
+                    goLeftCoords.x, goLeftCoords.y, 0, 0.9f * scale, 0.9f * scale);
+        }
+        if (selectedLevel+1< numSongs) {
+            canvas.draw(goRight, Color.WHITE, goRight.getWidth() / 2, goRight.getHeight() / 2,
+                    goRightCoords.x, goRightCoords.y, 0, 0.9f * scale, 0.9f * scale);
         }
 
 
@@ -447,6 +449,8 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         return false;
     }
 
+
+    boolean set1 = false;
     /**
      * Update coordinates; called per frame
      *
@@ -460,11 +464,14 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         float rightStep = rightLenX / steps;
         float scaleStep = scaleChange / steps;
 
+
+
         if (prevLevel!=selectedLevel){ // need to do transition animation
             if (prevLevel < selectedLevel){// we need to transition to right
-                if (selectedLevel+1< numSongs && albumCoverCoords[selectedLevel + 1] == null) {
+                if (selectedLevel+1< numSongs && !set1 ) {
                     albumCoverCoords[selectedLevel + 1] = new Vector2(canvas.getWidth(), albumCoverY);
                     albumScales[selectedLevel + 1]=cornerScale;
+                    set1=true;
                 }
                 System.out.println("prev level coords"+albumCoverCoords[prevLevel].x);
                 if (albumCoverCoords[prevLevel].x > albumCoverLeftX) { // move previous level from center to left
@@ -486,16 +493,16 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                     albumScales[prevLevel]=cornerScale;
                     albumScales[selectedLevel] = centerScale;
                     prevLevel = selectedLevel;
+                    set1=false;
                 }
 
             } else{// we need to transition to left (move to the right)
-                if (selectedLevel>=1 && albumCoverCoords[selectedLevel - 1] == null) {
-                    drawLeft=true;
+                if (selectedLevel>=1 && !set1) {
                     albumCoverCoords[selectedLevel - 1] = new Vector2(0, albumCoverY);
                     albumScales[selectedLevel - 1]=cornerScale;
+                    set1=true;
                 }
                 if (albumCoverCoords[prevLevel].x < albumCoverRightX) { // move previous level from center to left
-                    System.out.println("here");
                     albumCoverCoords[prevLevel].x += rightStep;
                     albumCoverCoords[selectedLevel].x+=rightStep;
                     if (selectedLevel>=1){
@@ -513,13 +520,12 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                     albumScales[prevLevel]=cornerScale;
                     albumScales[selectedLevel] = centerScale;
                     prevLevel = selectedLevel;
+                    set1=false;
                 }
 
             }
 
         }
-
-
 
 
 
