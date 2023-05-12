@@ -79,6 +79,9 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     /** Constructs the game models and handle basic gameplay (CONTROLLER CLASS) */
     private GameplayController gameplayController;
 
+    /** true if we want to draw the left album */
+    private boolean drawLeft;
+
     private static float BUTTON_SCALE  = 0.75f;
 
     /** Play button x and y coordinates represented as a vector */
@@ -134,9 +137,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
     float albumScales[];
 
-    float scaleLeftCurr;
-    float scaleMiddleCurr;
-    float scaleRightCurr;
 
     /**
      * Enum to determine whether or not we have selected a song, or we are transitioning between songs
@@ -224,6 +224,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         mediumButtonCoords = new Vector2(canvas.getWidth()/2 , canvas.getHeight()/4);
         easyButtonCoords = new Vector2(mediumButtonCoords.x-easyButton.getWidth(), canvas.getHeight()/4);
         hardButtonCoords = new Vector2(mediumButtonCoords.x+easyButton.getWidth(), canvas.getHeight()/4);
+        drawLeft=false;
 
 //      album covers are called 1, 2, 3 and so on in assets.json
         for (int i = 0; i < numSongs; i++){
@@ -297,7 +298,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                 hardButtonCoords.x, hardButtonCoords.y, 0, 0.5f*scale, 0.5f*scale);
 
         // draw each song
-        if (selectedLevel>=1){ //check that if there are a song to the left; if so, draw.
+        if (selectedLevel>=1 || drawLeft){ //check that if there are a song to the left; if so, draw.
             canvas.draw(albumCovers[selectedLevel-1], Color.WHITE, albumCovers[selectedLevel-1].getWidth()/2,
                     albumCovers[selectedLevel-1].getHeight()/2, albumCoverCoords[selectedLevel-1].x,
                     albumCoverCoords[selectedLevel-1].y, 0, albumScales[selectedLevel-1], albumScales[selectedLevel-1]);
@@ -459,41 +460,66 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         float rightStep = rightLenX / steps;
         float scaleStep = scaleChange / steps;
 
-        if (prevLevel < selectedLevel){// we need to transition to right
-            if (selectedLevel+1< numSongs && albumCoverCoords[selectedLevel + 1] == null) {
-                albumCoverCoords[selectedLevel + 1] = new Vector2(canvas.getWidth(), albumCoverY);
-                albumScales[selectedLevel + 1]=cornerScale;
-            }
-            System.out.println("prev level coords"+albumCoverCoords[prevLevel].x);
-            if (albumCoverCoords[prevLevel].x > albumCoverLeftX) { // move previous level from center to left
-                System.out.println("here");
-                albumCoverCoords[prevLevel].x -= rightStep;
-                albumCoverCoords[selectedLevel].x-=rightStep;
-                if (selectedLevel+1< numSongs){
-                    albumCoverCoords[selectedLevel+1].x -=rightStep;
+        if (prevLevel!=selectedLevel){ // need to do transition animation
+            if (prevLevel < selectedLevel){// we need to transition to right
+                if (selectedLevel+1< numSongs && albumCoverCoords[selectedLevel + 1] == null) {
+                    albumCoverCoords[selectedLevel + 1] = new Vector2(canvas.getWidth(), albumCoverY);
+                    albumScales[selectedLevel + 1]=cornerScale;
+                }
+                System.out.println("prev level coords"+albumCoverCoords[prevLevel].x);
+                if (albumCoverCoords[prevLevel].x > albumCoverLeftX) { // move previous level from center to left
+                    System.out.println("here");
+                    albumCoverCoords[prevLevel].x -= rightStep;
+                    albumCoverCoords[selectedLevel].x-=rightStep;
+                    if (selectedLevel+1< numSongs){
+                        albumCoverCoords[selectedLevel+1].x -=rightStep;
+                    }
+                    albumScales[prevLevel] -=scaleStep;
+                    albumScales[selectedLevel] +=scaleStep;
+                } else{ // reset
+                    albumCoverCoords[prevLevel]= new Vector2(albumCoverLeftX,albumCoverY);
+                    albumCoverCoords[selectedLevel] = new Vector2(albumCoverMiddleX,albumCoverY);
+                    if (selectedLevel+1< numSongs) {
+                        albumCoverCoords[selectedLevel + 1] = new Vector2(albumCoverRightX, albumCoverY);
+                        albumScales[selectedLevel+1] =cornerScale;
+                    }
+                    albumScales[prevLevel]=cornerScale;
+                    albumScales[selectedLevel] = centerScale;
+                    prevLevel = selectedLevel;
                 }
 
-                albumScales[prevLevel] -=scaleStep;
-                albumScales[selectedLevel] +=scaleStep;
-
-                // do scale later
-            } else{
-                System.out.println("in else");
-                albumCoverCoords[prevLevel]= new Vector2(albumCoverLeftX,albumCoverY);
-                albumCoverCoords[selectedLevel] = new Vector2(albumCoverMiddleX,albumCoverY);
-                if (selectedLevel+1< numSongs) {
-                    albumCoverCoords[selectedLevel + 1] = new Vector2(albumCoverRightX, albumCoverY);
-                    albumScales[selectedLevel+1] =cornerScale;
+            } else{// we need to transition to left (move to the right)
+                if (selectedLevel>=1 && albumCoverCoords[selectedLevel - 1] == null) {
+                    drawLeft=true;
+                    albumCoverCoords[selectedLevel - 1] = new Vector2(0, albumCoverY);
+                    albumScales[selectedLevel - 1]=cornerScale;
                 }
-                albumScales[prevLevel]=cornerScale;
-                albumScales[selectedLevel] = centerScale;
-
-                prevLevel = selectedLevel;
-
+                if (albumCoverCoords[prevLevel].x < albumCoverRightX) { // move previous level from center to left
+                    System.out.println("here");
+                    albumCoverCoords[prevLevel].x += rightStep;
+                    albumCoverCoords[selectedLevel].x+=rightStep;
+                    if (selectedLevel>=1){
+                        albumCoverCoords[selectedLevel-1].x +=rightStep;
+                    }
+                    albumScales[prevLevel] -=scaleStep;
+                    albumScales[selectedLevel] +=scaleStep;
+                } else{ // reset
+                    albumCoverCoords[prevLevel]= new Vector2(albumCoverRightX,albumCoverY);
+                    albumCoverCoords[selectedLevel] = new Vector2(albumCoverMiddleX,albumCoverY);
+                    if (selectedLevel>=1) {
+                        albumCoverCoords[selectedLevel - 1] = new Vector2(albumCoverLeftX, albumCoverY);
+                        albumScales[selectedLevel-1] =cornerScale;
+                    }
+                    albumScales[prevLevel]=cornerScale;
+                    albumScales[selectedLevel] = centerScale;
+                    prevLevel = selectedLevel;
+                }
 
             }
 
         }
+
+
 
 
 
