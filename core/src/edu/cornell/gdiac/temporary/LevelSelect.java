@@ -424,22 +424,21 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         }
 
 //         check if the albums on the sides are touched; if so, update selected level
-
-        if (selectedLevel-1>=0){
-            if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel-1], albumCoverCoords[selectedLevel-1], cornerScale)) {
-                prevLevel = selectedLevel;
-                selectedLevel--;
-            }
-        }
-
-
-        if (selectedLevel+1< numSongs){
-            if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel+1], albumCoverCoords[selectedLevel+1], cornerScale)) {
-                prevLevel = selectedLevel;
-                selectedLevel++;
-            }
-        }
-
+//        if (selectedLevel-1>=0){
+//            if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel-1], albumCoverCoords[selectedLevel-1], cornerScale)) {
+//                prevLevel = selectedLevel;
+//                selectedLevel--;
+//                return true;
+//            }
+//        }
+//
+//        if (selectedLevel+1< numSongs){
+//            Vector2 n = new Vector2(albumCoverLeftX,albumCoverY);
+//            if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel], n, cornerScale)) {
+//                prevLevel = selectedLevel;
+//                selectedLevel++;
+//            }
+//        }
 
 
         if (isButtonPressed(screenX, screenY, playButton, playButtonCoords,scale)) {
