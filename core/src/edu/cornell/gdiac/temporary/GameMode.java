@@ -222,6 +222,8 @@ public class GameMode implements Screen {
 	private Vector2 scoreBCoords;
 
 	private Texture scoreC;
+
+	private Texture scoreD;
 	private Vector2 scoreCCoords;
 
 	private Texture scoreS;
@@ -392,6 +394,7 @@ public class GameMode implements Screen {
 		scoreA = directory.getEntry("score-a", Texture.class);
 		scoreB = directory.getEntry("score-b", Texture.class);
 		scoreC = directory.getEntry("score-c", Texture.class);
+		scoreD = directory.getEntry("score-d", Texture.class);
 		scoreS = directory.getEntry("score-s", Texture.class);
 
 		scoreACoords=new Vector2(levelAlbumCoverCoords.x-scoreA.getWidth()+10, levelAlbumCoverCoords.y+(scoreA.getHeight()));
@@ -828,6 +831,10 @@ public class GameMode implements Screen {
 		} else if (score>=cThreshold) {
 			canvas.draw(scoreC, Color.WHITE, scoreC.getWidth()/2, scoreC.getHeight()/2,
 					scoreCCoords.x, scoreCCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+		} else{
+			canvas.draw(scoreD, Color.WHITE, scoreC.getWidth()/2, scoreC.getHeight()/2,
+					scoreCCoords.x, scoreCCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+
 		}
 
 	}
