@@ -553,6 +553,8 @@ public class GameMode implements Screen {
 				}
 				break;
 			case WON:
+				// save game here
+				SaveManager.getInstance().saveGame(gameplayController.level.getLevelName(), gameplayController.sb.getScore());
 				if (didInput) {
 					int screenX = (int) inputController.getMouseX();
 					int screenY = (int) inputController.getMouseY();

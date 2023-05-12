@@ -44,14 +44,14 @@ public class SaveManager {
     }
 
     // TODO: SAVE LEVEL AFTER BEATING IT
-    public void saveGame(String levelName, int score) {
-        levels.putInteger(levelName, score);
+    public void saveGame(String levelName, long score) {
+        levels.putLong(levelName, score);
     }
 
     // TODO: RETRIEVE LEVEL DATA AND GET SIGNATURE
     // currently just returns the high score for now
-    public int getLevelData(String levelName) {
-        return levels.getInteger(levelName, 0);
+    public long getLevelData(String levelName) {
+        return levels.getLong(levelName, 0);
     }
 
     public void saveSettings(int[] hitBindings, int[] hitBindingsAlt, IntMap<int[]> switchBindings, IntMap<int[]> switchBindingsAlt, float musicVol, float fxVol) {
