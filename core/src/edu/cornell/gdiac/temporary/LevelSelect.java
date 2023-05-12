@@ -59,6 +59,13 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
     private Vector2[] albumCoverCoords;
 
+    private float albumCoverLeftX;
+    private float albumCoverMiddleX;
+    private float albumCoverRightX;
+
+    private float albumCoverY;
+
+
     /** The background texture */
     private Texture background;
     private float scale=1;
@@ -123,6 +130,14 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     public int selectedDifficulty;
     private boolean pressedEscape;
 
+    int prevLevel=selectedLevel;
+
+    float albumScales[];
+
+    float scaleLeftCurr;
+    float scaleMiddleCurr;
+    float scaleRightCurr;
+
     /**
      * Enum to determine whether or not we have selected a song, or we are transitioning between songs
      */
@@ -185,7 +200,8 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         numSongs = allLevels.length/3;
         assert allLevels.length%3 == 0;
 //        allLevels= new String[numSongs *3];
-        albumCoverCoords = new Vector2[3];
+        albumCoverCoords = new Vector2[allLevels.length];
+        albumScales = new float[allLevels.length];
 //        System.out.println("num levels "+numLevels);
         gameplayController = new GameplayController(canvas.getWidth(),canvas.getHeight());
         albumCovers = new Texture[numSongs];
@@ -214,14 +230,24 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             albumCovers[i] = directory.getEntry(Integer.toString(i+1),Texture.class);
         }
 
-        albumCoverCoords[0]=new Vector2((canvas.getWidth()/4-10),(canvas.getHeight()*2/3)-25);
-        albumCoverCoords[1]=new Vector2((canvas.getWidth()/2 ),(canvas.getHeight()*2/3)-25);
-        albumCoverCoords[2]=new Vector2((canvas.getWidth()/2 )+ (canvas.getWidth()/4)+10,(canvas.getHeight()*2/3)-25);
+        albumCoverLeftX = canvas.getWidth()/4-10;
+        albumCoverMiddleX = canvas.getWidth()/2;
+        albumCoverRightX = (canvas.getWidth()/2 )+ (canvas.getWidth()/4)+10;
+        albumCoverY = (canvas.getHeight()*2/3)-25;
 
-//        // populate all the levels; 3 because we have 3 difficulties.
-//        for (int i = 0; i < numSongs *3; i++){
-//            allLevels[i]="levels/"+(i+1)+".json";
-//        }
+        if (selectedLevel>=1){
+            albumCoverCoords[selectedLevel-1] = new Vector2(albumCoverLeftX,albumCoverY);
+            albumScales[selectedLevel-1] = cornerScale;
+        }
+        albumCoverCoords[selectedLevel] =new Vector2 (albumCoverMiddleX,albumCoverY);// the first song is at the middle at first
+        albumScales[selectedLevel] = centerScale;
+
+        if (selectedLevel+1< numSongs){
+            albumCoverCoords[selectedLevel+1] = new Vector2(albumCoverRightX,albumCoverY);
+            albumScales[selectedLevel+1] = cornerScale;
+        }
+
+
     }
 
     /**
@@ -238,64 +264,10 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     }
 
 
-    /** Affine cache for current sprite to draw */
-    private Affine2 local;
 
-    /**
-     * Compute the affine transform (and store it in local) for this image.
-     *
-     * This helper is meant to simplify all of the math in the above draw method
-     * so that you do not need to worry about it when working on Exercise 4.
-     *
-     * @param ox 	The x-coordinate of texture origin (in pixels)
-     * @param oy 	The y-coordinate of texture origin (in pixels)
-     * @param x 	The x-coordinate of the texture origin
-     * @param y 	The y-coordinate of the texture origin
-     * @param angle The rotation angle (in degrees) about the origin.
-     * @param sx 	The x-axis scaling factor
-     * @param sy 	The y-axis scaling factor
-     */
-    private void computeTransform(float ox, float oy, float x, float y, float angle, float sx, float sy) {
-        local.setToTranslation(x,y);
-        local.rotate(angle);
-        local.scale(sx,sy);
-        local.translate(-ox,-oy);
-    }
-
-    int prevLevel=selectedLevel;
 
     public void draw(){
         canvas.begin();
-
-        // draw animation if we changed a level
-//        if (prevLevel!= selectedLevel){
-//            float localScale = centerScale-cornerScale;
-//            if (prevLevel < selectedLevel){ // we need to go right
-//
-//                // we need to do two transforms at most
-//                float currLeftAlbumX = albumCoverCoords[0].x;
-//                float currLeftAlbumY = albumCoverCoords[0].x;
-//
-//                float currCenterAlbumX = albumCoverCoords[1].x;
-//                float currCenterAlbumY = albumCoverCoords[1].x;
-//
-//                // this is the number of
-//                float stepX = (currCenterAlbumX - currLeftAlbumX)/localScale;
-//                float stepY = (currCenterAlbumY - currLeftAlbumY)/localScale;
-//
-//                while (localScale>0){
-//                    canvas.draw(albumCovers[selectedLevel-1], Color.WHITE, albumCovers[selectedLevel-1].getWidth()/2,
-//                            albumCovers[selectedLevel-1].getHeight()/2, albumCoverCoords[0].x,
-//                            albumCoverCoords[0].y, 0, localScale, localScale);
-//                    localScale=localScale-0.1f;
-//                    currLeftAlbumX+=stepX;
-//                    currLeftAlbumY+=stepY;
-//
-//                }
-//            } else{ // we need to go left
-//
-//            }
-//        }
 
         canvas.drawBackground(levelBackground.getTexture(),0,0);
         canvas.draw(goBack, Color.WHITE, goBack.getWidth()/2, goBack.getHeight()/2,
@@ -327,19 +299,19 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         // draw each song
         if (selectedLevel>=1){ //check that if there are a song to the left; if so, draw.
             canvas.draw(albumCovers[selectedLevel-1], Color.WHITE, albumCovers[selectedLevel-1].getWidth()/2,
-                    albumCovers[selectedLevel-1].getHeight()/2, albumCoverCoords[0].x,
-                    albumCoverCoords[0].y, 0, cornerScale, cornerScale);
+                    albumCovers[selectedLevel-1].getHeight()/2, albumCoverCoords[selectedLevel-1].x,
+                    albumCoverCoords[selectedLevel-1].y, 0, albumScales[selectedLevel-1], albumScales[selectedLevel-1]);
         }
 
         // It an invariant that selectedLevel is a valid index, so we can simply draw.
         canvas.draw(albumCovers[selectedLevel],Color.WHITE,albumCovers[selectedLevel].getWidth()/2,
-                albumCovers[selectedLevel].getHeight()/2,albumCoverCoords[1].x,
-                albumCoverCoords[1].y,0, centerScale, centerScale);
+                albumCovers[selectedLevel].getHeight()/2,albumCoverCoords[selectedLevel].x,
+                albumCoverCoords[selectedLevel].y,0, albumScales[selectedLevel], albumScales[selectedLevel]);
 
         if (selectedLevel+1< numSongs) {//check that if there are a song to the right; if so, draw.
             canvas.draw(albumCovers[selectedLevel+1],Color.WHITE,albumCovers[selectedLevel+1].getWidth()/2,
-                    albumCovers[selectedLevel+1].getHeight()/2,albumCoverCoords[2].x,
-                    albumCoverCoords[2].y,0, cornerScale, cornerScale);
+                    albumCovers[selectedLevel+1].getHeight()/2,albumCoverCoords[selectedLevel+1].x,
+                    albumCoverCoords[selectedLevel+1].y,0, albumScales[selectedLevel+1], albumScales[selectedLevel+1]);
         }
 
 
@@ -348,8 +320,11 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         canvas.draw(playButton, playButtonTint, playButton.getWidth()/2, playButton.getHeight()/2,
                     playButtonCoords.x, playButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 
-        prevLevel = selectedLevel;
         canvas.end();
+    }
+
+    private void drawSongs(){
+
     }
 
     /**
@@ -431,30 +406,32 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         // if there are a previous level, we allow decrement.
         if (isButtonPressed(screenX, screenY, goLeft, goLeftCoords, 0.9f*scale)) {
             if (selectedLevel-1>=0){
+                prevLevel = selectedLevel;
                 selectedLevel--;
             }
         }
 
         // if there are a next level, we allow increment.
         if (isButtonPressed(screenX, screenY, goRight, goRightCoords, 0.9f*scale)) {
+            System.out.println("go right pressed");
             if (selectedLevel+1< numSongs){
+                prevLevel = selectedLevel;
                 selectedLevel++;
             }
         }
 
         // check if the albums on the sides are touched; if so, update selected level
-        if (selectedLevel-1>=0){
-            if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel-1], albumCoverCoords[0], cornerScale)) {
-                selectedLevel--;
-            }
-        }
-
-        if (selectedLevel+1< numSongs){
-            if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel+1], albumCoverCoords[2], cornerScale)) {
-                selectedLevel++;
-            }
-        }
-
+//        if (selectedLevel-1>=0){
+//            if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel-1], albumCoverCoords[0], cornerScale)) {
+//                selectedLevel--;
+//            }
+//        }
+//
+//        if (selectedLevel+1< numSongs){
+//            if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel+1], albumCoverCoords[2], cornerScale)) {
+//                selectedLevel++;
+//            }
+//        }
 
 
         if (isButtonPressed(screenX, screenY, playButton, playButtonCoords,scale)) {
@@ -467,6 +444,59 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         }
 
         return false;
+    }
+
+    /**
+     * Update coordinates; called per frame
+     *
+     */
+    private void update(){
+        System.out.println("prev level:"+prevLevel);
+        System.out.println("curr level"+selectedLevel);
+        float steps = 100f;
+        float scaleChange = centerScale - cornerScale;
+        float rightLenX = Math.abs(albumCoverMiddleX - albumCoverLeftX);
+        float rightStep = rightLenX / steps;
+        float scaleStep = scaleChange / steps;
+
+        if (prevLevel < selectedLevel){// we need to transition to right
+            if (selectedLevel+1< numSongs && albumCoverCoords[selectedLevel + 1] == null) {
+                albumCoverCoords[selectedLevel + 1] = new Vector2(canvas.getWidth(), albumCoverY);
+                albumScales[selectedLevel + 1]=cornerScale;
+            }
+            System.out.println("prev level coords"+albumCoverCoords[prevLevel].x);
+            if (albumCoverCoords[prevLevel].x > albumCoverLeftX) { // move previous level from center to left
+                System.out.println("here");
+                albumCoverCoords[prevLevel].x -= rightStep;
+                albumCoverCoords[selectedLevel].x-=rightStep;
+                if (selectedLevel+1< numSongs){
+                    albumCoverCoords[selectedLevel+1].x -=rightStep;
+                }
+
+                albumScales[prevLevel] -=scaleStep;
+                albumScales[selectedLevel] +=scaleStep;
+
+                // do scale later
+            } else{
+                System.out.println("in else");
+                albumCoverCoords[prevLevel]= new Vector2(albumCoverLeftX,albumCoverY);
+                albumCoverCoords[selectedLevel] = new Vector2(albumCoverMiddleX,albumCoverY);
+                if (selectedLevel+1< numSongs) {
+                    albumCoverCoords[selectedLevel + 1] = new Vector2(albumCoverRightX, albumCoverY);
+                    albumScales[selectedLevel+1] =cornerScale;
+                }
+                albumScales[prevLevel]=cornerScale;
+                albumScales[selectedLevel] = centerScale;
+
+                prevLevel = selectedLevel;
+
+
+            }
+
+        }
+
+
+
     }
 
     @Override
@@ -497,6 +527,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     @Override
     public void render(float delta) {
         if (active) {
+            update();
             draw();
             if (playPressed && listener != null) {
                 // go to game
