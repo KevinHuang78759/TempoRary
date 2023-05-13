@@ -103,6 +103,8 @@ public class Level {
 
     public int getBpm() { return this.bpm; }
 
+    public int getFallSpeed() { return this.fallSpeed; }
+
     public long getaThreshold() {
         return aThreshold;
     }
@@ -160,6 +162,7 @@ public class Level {
     private int spawnOffset;
     private long spawnOffsetSwitch;
     private int bpm;
+    private int fallSpeed;
     private long aThreshold;
     private long bThreshold;
     private long cThreshold;
@@ -237,6 +240,7 @@ public class Level {
         sThreshold = data.get("s-threshold").asLong();
         bpm = data.getInt("bpm");
         String song = data.getString("song");
+        fallSpeed = data.getInt("fallSpeed");
         music = ((AudioEngine) Gdx.audio).newMusic(Gdx.files.internal(assets.get("samples").getString(song)));
         songSource = music.getSource(0);
         music.setVolume(0.8f);
