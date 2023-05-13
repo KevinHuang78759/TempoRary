@@ -70,9 +70,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     private Texture background;
     private float scale=1;
 
-    /** temp scale b/c album cover too big */
-    private float scale2=0.15f;
-
     /** Listener that will update the player mode when we are done */
     private ScreenListener listener;
 
@@ -148,7 +145,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
     public LevelSelect(GameCanvas canvas) {
         this.canvas  = canvas;
-        selectedDifficulty= 2;
+        selectedDifficulty= 2; // default medium difficulty
         selectedLevel = 0;
         playButton = null;
         easyButton=null;
@@ -199,10 +196,8 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         allLevels = levelData.get("levels").asStringArray();
         numSongs = allLevels.length/3;
         assert allLevels.length%3 == 0;
-//        allLevels= new String[numSongs *3];
         albumCoverCoords = new Vector2[allLevels.length];
         albumScales = new float[allLevels.length];
-//        System.out.println("num levels "+numLevels);
         gameplayController = new GameplayController(canvas.getWidth(),canvas.getHeight());
         albumCovers = new Texture[numSongs];
 
@@ -231,10 +226,10 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             albumCovers[i] = directory.getEntry(Integer.toString(i+1),Texture.class);
         }
 
-        albumCoverLeftX = canvas.getWidth()/4-10;
+        albumCoverLeftX = canvas.getWidth()/4;
         albumCoverMiddleX = canvas.getWidth()/2;
-        albumCoverRightX = (canvas.getWidth()/2 )+ (canvas.getWidth()/4)+10;
-        albumCoverY = (canvas.getHeight()*2/3)-25;
+        albumCoverRightX = (canvas.getWidth()/2 )+ (canvas.getWidth()/4);
+        albumCoverY = (canvas.getHeight()*7/12);
 
         if (selectedLevel>=1){
             albumCoverCoords[selectedLevel-1] = new Vector2(albumCoverLeftX,albumCoverY);
@@ -424,21 +419,22 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         }
 
 //         check if the albums on the sides are touched; if so, update selected level
-//        if (selectedLevel-1>=0){
-//            if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel-1], albumCoverCoords[selectedLevel-1], cornerScale)) {
-//                prevLevel = selectedLevel;
-//                selectedLevel--;
-//                return true;
-//            }
-//        }
-//
-//        if (selectedLevel+1< numSongs){
-//            Vector2 n = new Vector2(albumCoverLeftX,albumCoverY);
-//            if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel], n, cornerScale)) {
-//                prevLevel = selectedLevel;
-//                selectedLevel++;
-//            }
-//        }
+        if (selectedLevel-1>=0){
+            Vector2 temp = new Vector2(albumCoverLeftX,albumCoverY);
+            if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel-1], temp, cornerScale)) {
+                prevLevel = selectedLevel;
+                selectedLevel--;
+                return true;
+            }
+        }
+
+        if (selectedLevel+1< numSongs){
+            Vector2 temp = new Vector2(albumCoverRightX,albumCoverY);
+            if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel], temp, cornerScale)) {
+                prevLevel = selectedLevel;
+                selectedLevel++;
+            }
+        }
 
 
         if (isButtonPressed(screenX, screenY, playButton, playButtonCoords,scale)) {
