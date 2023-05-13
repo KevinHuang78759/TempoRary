@@ -445,7 +445,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     private void update(){
 //        System.out.println("prev level:"+prevLevel);
 //        System.out.println("curr level"+selectedLevel);
-        float steps = 80f;
+        float steps = 60f;
         float scaleChange = centerScale - cornerScale;
         float rightLenX = Math.abs(albumCoverMiddleX - albumCoverLeftX);
         float rightStep = rightLenX / steps;
