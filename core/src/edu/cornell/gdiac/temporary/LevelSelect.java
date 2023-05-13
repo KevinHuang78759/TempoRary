@@ -28,14 +28,8 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     private boolean playPressed;
     private int numSongs;
 
-    /** Pressed down button state for the play button */
-    private static final int PLAY_PRESSED = 1;
-
     private Texture goBack;
     private Vector2 goBackCoords;
-
-    /** Player mode for the game proper (CONTROLLER CLASS) */
-    private GameMode playing;
 
     /** Play button to display when done */
     private Texture playButton;
@@ -118,10 +112,10 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     private  int HARD = 3;
 
     /** the scale for the song in the middle in level select */
-    float centerScale = 0.65f*scale;
+    float centerScale = 0.65f;
 
     /** the scale for the songs on the sides in level select */
-    float cornerScale = 0.45f*scale;
+    float cornerScale = 0.45f;
 
     /** Selected song; index from 0. */
     public int selectedLevel;
@@ -134,14 +128,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
     float albumScales[];
 
-
-    /**
-     * Enum to determine whether or not we have selected a song, or we are transitioning between songs
-     */
-    public enum transitionPhase {
-        SELECTED,
-        TRANSITION
-    }
 
     public LevelSelect(GameCanvas canvas) {
         this.canvas  = canvas;
@@ -228,7 +214,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
         albumCoverLeftX = canvas.getWidth()/4;
         albumCoverMiddleX = canvas.getWidth()/2;
-        albumCoverRightX = (canvas.getWidth()/2 )+ (canvas.getWidth()/4);
+        albumCoverRightX = canvas.getWidth()*3/4;
         albumCoverY = (canvas.getHeight()*7/12);
 
         if (selectedLevel>=1){
@@ -242,7 +228,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             albumCoverCoords[selectedLevel+1] = new Vector2(albumCoverRightX,albumCoverY);
             albumScales[selectedLevel+1] = cornerScale;
         }
-
 
     }
 
@@ -260,16 +245,12 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     }
 
 
-
-
     public void draw(){
         canvas.begin();
 
         canvas.drawBackground(levelBackground.getTexture(),0,0);
         canvas.draw(goBack, Color.WHITE, goBack.getWidth()/2, goBack.getHeight()/2,
                 goBackCoords.x, goBackCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
-
-
 
         // draw easy, medium, and hard buttons
         Color easyButtonTint = (selectedDifficulty == EASY ? Color.GRAY: Color.WHITE);
@@ -319,10 +300,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                     playButtonCoords.x, playButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 
         canvas.end();
-    }
-
-    private void drawSongs(){
-
     }
 
     /**
@@ -411,7 +388,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
         // if there are a next level, we allow increment.
         if (isButtonPressed(screenX, screenY, goRight, goRightCoords, 0.9f*scale)) {
-            System.out.println("go right pressed");
             if (selectedLevel+1< numSongs){
                 prevLevel = selectedLevel;
                 selectedLevel++;
@@ -456,15 +432,13 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
      *
      */
     private void update(){
-        System.out.println("prev level:"+prevLevel);
-        System.out.println("curr level"+selectedLevel);
+//        System.out.println("prev level:"+prevLevel);
+//        System.out.println("curr level"+selectedLevel);
         float steps = 100f;
         float scaleChange = centerScale - cornerScale;
         float rightLenX = Math.abs(albumCoverMiddleX - albumCoverLeftX);
         float rightStep = rightLenX / steps;
         float scaleStep = scaleChange / steps;
-
-
 
         if (prevLevel!=selectedLevel){ // need to do transition animation
             if (prevLevel < selectedLevel){// we need to transition to right
@@ -473,9 +447,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                     albumScales[selectedLevel + 1]=cornerScale;
                     set1=true;
                 }
-                System.out.println("prev level coords"+albumCoverCoords[prevLevel].x);
                 if (albumCoverCoords[prevLevel].x > albumCoverLeftX) { // move previous level from center to left
-                    System.out.println("here");
                     albumCoverCoords[prevLevel].x -= rightStep;
                     albumCoverCoords[selectedLevel].x-=rightStep;
                     if (selectedLevel+1< numSongs){
