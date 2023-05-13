@@ -157,32 +157,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
     private void update() {
 
-        // go to transition if pressed
-//       if (curPhase == transitionPhase.TRANSITION_TO_RIGHT){
-//           animationProgress++;
-//           if (animationProgress == maxProgress){
-//               curPhase = transitionPhase.SELECTED;
-//           } else{
-//               // calculate coordinates
-//               float scaleChange = centerScale-cornerScale;
-//
-//               float rightLenX = Math.abs (albumCoverCoords[1].x - albumCoverCoords[0].x);
-//               float currCenterAlbumX = albumCoverCoords[1].x;
-//               float localScale1 =centerScale;
-//
-//               float rightStep = rightLenX/maxProgress;
-//               float scaleStep = scaleChange/maxProgress;
-//               // move central image to left
-//
-//               mediumAlbumXCoord -= rightStep;
-//
-//               //move right image to center
-//           }
-//
-//        } else if (curPhase == transitionPhase.TRANSITION_TO_LEFT) {
-//
-//       }
-
         if (prevLevel != selectedLevel) { // switch animation if we changed a level
             // this is the number of steps to finish transform
             float steps = 100f;
@@ -206,9 +180,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             }
 
                 if (prevLevel < selectedLevel) { // we need to transition to right
-//                System.out.println("transition to right");
-                // variables for the center image to go right; y is the same
-
                 float rightStep = rightLenX / steps;
                 float scaleStep = scaleChange / steps;
 
@@ -508,9 +479,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         if (isButtonPressed(screenX, screenY, goLeft, goLeftCoords, 0.9f*scale)) {
             System.out.println("pressed left");
             if (selectedLevel-1>=0){
-//                animationProgress = 0;
-//                curPhase =transitionPhase.TRANSITION_TO_LEFT;
-
                 prevLevel=selectedLevel;
                 selectedLevel--;
             }
@@ -520,9 +488,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         if (isButtonPressed(screenX, screenY, goRight, goRightCoords, 0.9f*scale)) {
             System.out.println("pressed right");
             if (selectedLevel+1< numSongs){
-//                animationProgress = 0;
-//                curPhase =transitionPhase.TRANSITION_TO_RIGHT;
-
                 prevLevel=selectedLevel;
                 selectedLevel++;
                 System.out.println("prev"+prevLevel);
