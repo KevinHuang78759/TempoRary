@@ -137,6 +137,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         easyButton=null;
         mediumButton=null;
         hardButton=null;
+        isInTransition = false;
     }
 
     public int getSelectedLevel(){
@@ -242,6 +243,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         hardButton=null;
         playPressed=false;
         pressedEscape = false;
+        isInTransition = false;
     }
 
 
@@ -346,6 +348,11 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     }
 
     /**
+     * isInTouchDown is true when we are in transition
+     */
+    private boolean isInTransition;
+
+    /**
      * Called when the screen was touched or a mouse button was pressed.
      *
      * This method checks to see if the play button is available and if the click
@@ -360,66 +367,70 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 
-        screenY = canvas.getHeight()-screenY;
+        if (!isInTransition){
+            screenY = canvas.getHeight()-screenY;
 
-        if (playButton == null ) {
-            return true;
-        }
-
-        if (isButtonPressed(screenX, screenY, easyButton, easyButtonCoords, scale)) {
-            selectedDifficulty = 1;
-        }
-
-        if (isButtonPressed(screenX, screenY, mediumButton, mediumButtonCoords, scale)) {
-            selectedDifficulty = 2;
-        }
-
-        if (isButtonPressed(screenX, screenY, hardButton, hardButtonCoords, scale)) {
-            selectedDifficulty = 3;
-        }
-
-        // if there are a previous level, we allow decrement.
-        if (isButtonPressed(screenX, screenY, goLeft, goLeftCoords, 0.9f*scale)) {
-            if (selectedLevel-1>=0){
-                prevLevel = selectedLevel;
-                selectedLevel--;
-            }
-        }
-
-        // if there are a next level, we allow increment.
-        if (isButtonPressed(screenX, screenY, goRight, goRightCoords, 0.9f*scale)) {
-            if (selectedLevel+1< numSongs){
-                prevLevel = selectedLevel;
-                selectedLevel++;
-            }
-        }
-
-//         check if the albums on the sides are touched; if so, update selected level
-        if (selectedLevel-1>=0){
-            Vector2 temp = new Vector2(albumCoverLeftX,albumCoverY);
-            if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel-1], temp, cornerScale)) {
-                prevLevel = selectedLevel;
-                selectedLevel--;
+            if (playButton == null ) {
                 return true;
             }
-        }
 
-        if (selectedLevel+1< numSongs){
-            Vector2 temp = new Vector2(albumCoverRightX,albumCoverY);
-            if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel], temp, cornerScale)) {
-                prevLevel = selectedLevel;
-                selectedLevel++;
+            if (isButtonPressed(screenX, screenY, easyButton, easyButtonCoords, scale)) {
+                selectedDifficulty = 1;
             }
-        }
+
+            if (isButtonPressed(screenX, screenY, mediumButton, mediumButtonCoords, scale)) {
+                selectedDifficulty = 2;
+            }
+
+            if (isButtonPressed(screenX, screenY, hardButton, hardButtonCoords, scale)) {
+                selectedDifficulty = 3;
+            }
+
+            // if there are a previous level, we allow decrement.
+            if (isButtonPressed(screenX, screenY, goLeft, goLeftCoords, 0.9f*scale)) {
+                if (selectedLevel-1>=0){
+                    prevLevel = selectedLevel;
+                    selectedLevel--;
+                }
+            }
+
+            // if there are a next level, we allow increment.
+            if (isButtonPressed(screenX, screenY, goRight, goRightCoords, 0.9f*scale)) {
+                if (selectedLevel+1< numSongs){
+                    prevLevel = selectedLevel;
+                    selectedLevel++;
+                }
+            }
+
+//         check if the albums on the sides are touched; if so, update selected level
+            if (selectedLevel-1>=0){
+                Vector2 temp = new Vector2(albumCoverLeftX,albumCoverY);
+                if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel-1], temp, cornerScale)) {
+                    prevLevel = selectedLevel;
+                    selectedLevel--;
+                    return true;
+                }
+            }
+
+            if (selectedLevel+1< numSongs){
+                Vector2 temp = new Vector2(albumCoverRightX,albumCoverY);
+                if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel], temp, cornerScale)) {
+                    prevLevel = selectedLevel;
+                    selectedLevel++;
+                }
+            }
 
 
-        if (isButtonPressed(screenX, screenY, playButton, playButtonCoords,scale)) {
-            playPressed=true;
-        }
+            if (isButtonPressed(screenX, screenY, playButton, playButtonCoords,scale)) {
+                playPressed=true;
+            }
 
 
-        if (isButtonPressed(screenX, screenY, goBack, goBackCoords,WON_BUTTON_SCALE)){
-            listener.exitScreen(this,  ExitCode.TO_MENU);
+            if (isButtonPressed(screenX, screenY, goBack, goBackCoords,WON_BUTTON_SCALE)){
+                listener.exitScreen(this,  ExitCode.TO_MENU);
+            }
+
+
         }
 
         return false;
@@ -434,13 +445,14 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     private void update(){
 //        System.out.println("prev level:"+prevLevel);
 //        System.out.println("curr level"+selectedLevel);
-        float steps = 100f;
+        float steps = 80f;
         float scaleChange = centerScale - cornerScale;
         float rightLenX = Math.abs(albumCoverMiddleX - albumCoverLeftX);
         float rightStep = rightLenX / steps;
         float scaleStep = scaleChange / steps;
 
         if (prevLevel!=selectedLevel){ // need to do transition animation
+            isInTransition=true;
             if (prevLevel < selectedLevel){// we need to transition to right
                 if (selectedLevel+1< numSongs && !set1 ) {
                     albumCoverCoords[selectedLevel + 1] = new Vector2(canvas.getWidth(), albumCoverY);
@@ -466,6 +478,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                     albumScales[selectedLevel] = centerScale;
                     prevLevel = selectedLevel;
                     set1=false;
+                    isInTransition=false;
                 }
 
             } else{// we need to transition to left (move to the right)
@@ -493,6 +506,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                     albumScales[selectedLevel] = centerScale;
                     prevLevel = selectedLevel;
                     set1=false;
+                    isInTransition=false;
                 }
 
             }
