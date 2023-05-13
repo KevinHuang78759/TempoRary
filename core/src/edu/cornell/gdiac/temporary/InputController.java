@@ -35,7 +35,6 @@ import java.util.Map;
  */
 public class InputController {
 
-	// TODO: USE/STANDARDIZE THESE (OR GET RID OF THEM)
 	public static final int MAX_LINES_PER_LANE = 4;
 	public static final int MAX_BAND_MEMBERS = 4;
 

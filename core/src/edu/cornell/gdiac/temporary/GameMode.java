@@ -554,7 +554,6 @@ public class GameMode implements Screen {
 				break;
 			case WON:
 				// save game here
-				SaveManager.getInstance().saveGame(gameplayController.level.getLevelName(), gameplayController.sb.getScore());
 				if (didInput) {
 					int screenX = (int) inputController.getMouseX();
 					int screenY = (int) inputController.getMouseY();
@@ -628,6 +627,7 @@ public class GameMode implements Screen {
 		// so that it is checked near the end of the game.
 		if (gameplayController.checkWinCon()){
 			gameState = GameState.WON;
+			SaveManager.getInstance().saveGame(gameplayController.level.getLevelName(), gameplayController.sb.getScore());
 			gameplayController.level.stopMusic();
 		}
 

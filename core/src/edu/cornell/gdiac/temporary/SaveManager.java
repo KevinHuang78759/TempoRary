@@ -46,6 +46,7 @@ public class SaveManager {
     // TODO: SAVE LEVEL AFTER BEATING IT
     public void saveGame(String levelName, long score) {
         levels.putLong(levelName, score);
+        levels.flush();
     }
 
     // TODO: RETRIEVE LEVEL DATA AND GET SIGNATURE
