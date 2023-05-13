@@ -251,7 +251,7 @@ public class LoadingMode implements Screen {
 	 */
 	private void draw() {
 		canvas.begin();
-		canvas.draw(background, 0, 0, canvas.getWidth(), canvas.getHeight());
+		canvas.drawBackground(background, 0, 0);
 		canvas.draw(loadingText, Color.WHITE, loadingText.getWidth()/2, loadingText.getHeight()/2, canvas.getWidth()/2, canvas.getHeight()/2 - 220, 0, 1, 1);
 		drawProgress(canvas);
 		canvas.end();

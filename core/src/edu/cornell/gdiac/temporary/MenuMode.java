@@ -628,7 +628,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
      */
     private void draw() {
         canvas.begin();
-        canvas.draw(background, 0, 0, canvas.getWidth(), canvas.getHeight());
+        canvas.drawBackground(background, 0, 0);
 
 //        canvas.draw(logo, Color.WHITE, logo.getWidth()/2, logo.getHeight()/2,
 //                logo.getWidth()/2+50, centerY+300, 0,scale, scale);
