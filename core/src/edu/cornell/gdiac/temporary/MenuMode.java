@@ -175,7 +175,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
      * @param directory 	Reference to the asset directory.
      */
     public void populate(AssetDirectory directory) {
-        logo = directory.getEntry("title", Texture.class);
+        logo = directory.getEntry("meowzart-title", Texture.class);
         background = directory.getEntry( "loading-background", Texture.class );
         background.setFilter( Texture.TextureFilter.Linear, Texture.TextureFilter.Linear );
         settingsBackground = directory.getEntry("settings-background", Texture.class);
@@ -631,30 +631,30 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         canvas.draw(background, 0, 0, canvas.getWidth(), canvas.getHeight());
 
 //        canvas.draw(logo, Color.WHITE, logo.getWidth()/2, logo.getHeight()/2,
-//                logo.getWidth()/2+50, centerY+300, 0,scale, scale);
+//                canvas.getWidth()/2, 0.7f * canvas.getHeight(), 0, 0.5f * scale, 0.5f * scale);
 
         if (pressState == PLAY_PRESSED || pressState == PLAY_HOVERED) {
             canvas.draw(playButtonHover, Color.WHITE, playButtonHover.getWidth() / 2, playButton.getHeight() / 2,
-                    canvas.getWidth() / 2, 0.75f * canvas.getHeight(), 0, BUTTON_SCALE, BUTTON_SCALE);
+                    canvas.getWidth() / 2, 0.75f * canvas.getHeight(), 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
         } else {
             canvas.draw(playButton, Color.WHITE, playButton.getWidth() / 2, playButton.getHeight() / 2,
-                    canvas.getWidth() / 2, 0.75f * canvas.getHeight(), 0, BUTTON_SCALE, BUTTON_SCALE);
+                    canvas.getWidth() / 2, 0.75f * canvas.getHeight(), 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
         }
 
         if (pressState == SETTINGS_PRESSED || pressState == SETTINGS_HOVERED) {
             canvas.draw(settingsButtonHover, Color.WHITE, settingsButtonHover.getWidth() / 2, settingsButton.getHeight() / 2,
-                    canvas.getWidth() / 2, 0.6f * canvas.getHeight(), 0, BUTTON_SCALE, BUTTON_SCALE);
+                    canvas.getWidth() / 2, 0.6f * canvas.getHeight(), 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
         } else {
             canvas.draw(settingsButton, Color.WHITE, settingsButton.getWidth() / 2, settingsButton.getHeight() / 2,
-                    canvas.getWidth() / 2, 0.6f * canvas.getHeight(), 0, BUTTON_SCALE, BUTTON_SCALE);
+                    canvas.getWidth() / 2, 0.6f * canvas.getHeight(), 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
         }
 
         if (pressState == EXIT_PRESSED || pressState == EXIT_HOVERED) {
             canvas.draw(exitButtonHover, Color.WHITE, exitButtonHover.getWidth() / 2, exitButton.getHeight() / 2,
-                    canvas.getWidth() / 2, 0.45f * canvas.getHeight(), 0, BUTTON_SCALE, BUTTON_SCALE);
+                    canvas.getWidth() / 2, 0.45f * canvas.getHeight(), 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
         } else {
             canvas.draw(exitButton, Color.WHITE, exitButton.getWidth() / 2, exitButton.getHeight() / 2,
-                    canvas.getWidth() / 2, 0.45f * canvas.getHeight(), 0, BUTTON_SCALE, BUTTON_SCALE);
+                    canvas.getWidth() / 2, 0.45f * canvas.getHeight(), 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
         }
 
         Color levelEditorButtonTint = (pressState == LEVEL_EDITOR_HOVERED || pressState == LEVEL_EDITOR_PRESSED ? Color.GREEN: Color.WHITE);
@@ -690,7 +690,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         // Compute the drawing scale
         float sx = ((float)width)/STANDARD_WIDTH;
         float sy = ((float)height)/STANDARD_HEIGHT;
-        scale = (sx < sy ? sx : sy);
+        scale = (Math.min(sx, sy));
 
         centerY = (int)(BAR_HEIGHT_RATIO*height);
         centerX = width/2;
