@@ -305,7 +305,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                     goRightCoords.x, goRightCoords.y, 0, 0.9f * scale, 0.9f * scale);
         }
 
-
         // draw play button
         Color playButtonTint = (playPressed ? Color.GRAY: Color.WHITE);
         canvas.draw(playButton, playButtonTint, playButton.getWidth()/2, playButton.getHeight()/2,
@@ -577,11 +576,12 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     public void resize(int width, int height) {
         setCoords(width,height);
 
+        // recompute scales
         float sx = ((float)width)/STANDARD_WIDTH;
         float sy = ((float)height)/STANDARD_HEIGHT;
         scale = (sx < sy ? sx : sy);
 
-        // recompute scales
+
 
     }
 
