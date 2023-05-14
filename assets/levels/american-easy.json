@@ -1,8 +1,8 @@
 {
-  "levelname" : "American",
+  "levelname" : "American easy",
   "background" : "cafe-background",
   "levelNumber" : 9,
-  "song" : "American easy",
+  "song" : "American",
   "startPosition" : 0,
   "bpm" : 160,
   "maxCompetency" :20,

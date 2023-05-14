@@ -337,8 +337,6 @@ public class InputController {
 	 * @param secondary true if the keyboard should give priority to a gamepad
 	 */
 	private void readKeyboard(boolean secondary, int numBandMembers) {
-		System.out.println(Arrays.toString(switchesBindingsMain.get(numBandMembers - 1)));
-
 		// Give priority to gamepad results, get input from keyboard
 		resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.ENTER));
 		exitPressed = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
@@ -353,7 +351,6 @@ public class InputController {
 		for (int i = 0; i < triggerBindingsMain.length; i++) {
 			triggerPress[i] = Gdx.input.isKeyPressed(triggerBindingsMain[i]) || Gdx.input.isKeyPressed(triggerBindingsAlt[i]);
 			if (i < numBandMembers) {
-				System.out.println(Gdx.input.isKeyPressed(switchesBindingsMain.get(numBandMembers - 1)[i]));
 				switchesPress[i] = Gdx.input.isKeyPressed(switchesBindingsMain.get(numBandMembers - 1)[i])
 						|| Gdx.input.isKeyPressed(switchesBindingsAlt.get(numBandMembers - 1)[i]);
 			}
