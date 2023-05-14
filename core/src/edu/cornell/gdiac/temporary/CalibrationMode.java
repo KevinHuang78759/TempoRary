@@ -49,6 +49,8 @@ public class CalibrationMode implements Screen {
     private Texture circleIndicator;
     /** The indicator to show how many you have hit */
     private Texture circleIndicatorHit;
+    /** Drawing scale for reszing */
+    private float scale;
 
     /** Color of the text for interface */
     private Color textColor = new Color(27f / 255, 1f / 255, 103f / 255, 1);
@@ -190,24 +192,25 @@ public class CalibrationMode implements Screen {
         canvas.begin();
         canvas.drawBackground(background,0,0);
 
-        canvas.draw(calibrationHeader, Color.WHITE, calibrationHeader.getWidth()/2, calibrationHeader.getHeight()/2, canvas.getWidth()/2, canvas.getHeight() - 80, 0, 1, 1);
+        canvas.draw(calibrationHeader, Color.WHITE, calibrationHeader.getWidth()/2, calibrationHeader.getHeight()/2, canvas.getWidth()/2, canvas.getHeight() - 80, 0, scale, scale);
 
         float noteScale = 0.3f;
         // draw hit indicator
         if (inputController.didCalibrationPress()) {
-            canvas.draw(calibrationNoteHit, Color.WHITE, calibrationNoteHit.getWidth() / 2, calibrationNoteHit.getHeight() / 2, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, noteScale, noteScale);
+            canvas.draw(calibrationNoteHit, Color.WHITE, calibrationNoteHit.getWidth() / 2, calibrationNoteHit.getHeight() / 2, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, noteScale * scale, noteScale * scale);
         } else {
-            canvas.draw(calibrationNote, Color.WHITE, calibrationNote.getWidth() / 2, calibrationNote.getHeight() / 2, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, noteScale, noteScale);
+            canvas.draw(calibrationNote, Color.WHITE, calibrationNote.getWidth() / 2, calibrationNote.getHeight() / 2, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, noteScale * scale, noteScale * scale);
         }
 
+        // TODO: FIX FONT RESIZING
         String instruction = "PRESS THE SPACEBAR TO THE BEAT";
         canvas.drawTextCentered(instruction, instructionsFont,200);
         layout.setText(instructionsFont, instruction);
-        canvas.draw(headerLine, Color.WHITE, headerLine.getWidth(), 0, canvas.getWidth()/2 - layout.width/2 - 20, 200 + canvas.getHeight()/2 - layout.height + 15, 0, 0.75f, 1);
-        canvas.draw(headerLine, Color.WHITE, 0, 0, canvas.getWidth()/2 + layout.width/2 + 20, 200 + canvas.getHeight()/2 - layout.height + 15, 0, 0.75f, 1);
+        canvas.draw(headerLine, Color.WHITE, headerLine.getWidth(), 0, canvas.getWidth()/2 - layout.width/2 - 20, 200 + canvas.getHeight()/2 - layout.height + 15, 0, 0.75f * scale, scale);
+        canvas.draw(headerLine, Color.WHITE, 0, 0, canvas.getWidth()/2 + layout.width/2 + 20, 200 + canvas.getHeight()/2 - layout.height + 15, 0, 0.75f * scale, scale);
         canvas.drawTextCentered("Make sure not to click out of the window while calibrating!", smallerFont,-280);
-//        canvas.drawTextCentered("while calibrating!", smallerFont,-320);
 
+        // TODO: FIX THIS PART
         int totalHits = NUM_BEATS_TO_HIT + NUM_BEATS_REMOVED;
         int spaceApart = 10;
         float circleIndicatorScale = 0.75f;
@@ -220,17 +223,17 @@ public class CalibrationMode implements Screen {
         while (i < userHitBeats.size()) {
             canvas.draw(circleIndicatorHit, Color.WHITE, circleIndicator.getWidth()/2, circleIndicator.getHeight()/2,
                     startingX + i * (circleIndicatorTrueWidth + spaceApart), circleDrawY, 0,
-                    circleIndicatorScale, circleIndicatorScale);
+                    circleIndicatorScale * scale, circleIndicatorScale * scale);
             i++;
         }
         while (i < totalHits) {
             canvas.draw(circleIndicator, Color.WHITE, circleIndicator.getWidth()/2, circleIndicator.getHeight()/2,
                     startingX + i * (circleIndicatorTrueWidth + spaceApart), circleDrawY, 0,
-                    circleIndicatorScale, circleIndicatorScale);
+                    circleIndicatorScale * scale, circleIndicatorScale * scale);
             i++;
         }
 
-        canvas.draw(backArrow, Color.WHITE, 0, backArrow.getHeight(), 50, canvas.getHeight() - 50, 0, 1f, 1f);
+        canvas.draw(backArrow, Color.WHITE, 0, backArrow.getHeight(), 50, canvas.getHeight() - 50, 0, scale, scale);
 
         canvas.end();
     }
@@ -319,7 +322,10 @@ public class CalibrationMode implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        // TODO: Auto-generated method stub
+        // Compute the drawing scale
+        float sx = ((float)width)/1200;
+        float sy = ((float)height)/800;
+        scale = (Math.min(sx, sy));
     }
 
     @Override
