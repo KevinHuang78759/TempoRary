@@ -8,7 +8,6 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
@@ -62,7 +61,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
     /** The background texture */
     private Texture background;
-    private float scale=1;
+    private float scale;
 
     /** Listener that will update the player mode when we are done */
     private ScreenListener listener;
@@ -83,6 +82,11 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
     /** mediumButton x and y coordinates represented as a vector */
     private Vector2 mediumButtonCoords;
+
+    /** Standard window size (for scaling) */
+    private static int STANDARD_WIDTH  = 1200;
+    /** Standard window height (for scaling) */
+    private static int STANDARD_HEIGHT = 800;
 
 
     /** hardButton x and y coordinates represented as a vector */
@@ -176,8 +180,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         directory  = assetDirectory;
         background  = directory.getEntry("background",Texture.class); //menu background
         goBack = directory.getEntry("go-back", Texture.class);
-        goBackCoords=new Vector2 (goBack.getWidth(), canvas.getHeight()-goBack.getWidth());
-
         JsonReader jr = new JsonReader();
         JsonValue levelData = jr.parse(Gdx.files.internal("assets.json"));
         allLevels = levelData.get("levels").asStringArray();
@@ -206,6 +208,11 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
      * loadCoords set the coordinates of all assets
      */
     public void setCoords(int width, int height) {
+        float sx = ((float)width)/STANDARD_WIDTH;
+        float sy = ((float)height)/STANDARD_HEIGHT;
+
+        scale = (sx < sy ? sx : sy);
+        goBackCoords=new Vector2 (width/12f, height*9f/10f);
         goLeftCoords = new Vector2(width/10f,height/2f);
         goRightCoords = new Vector2(width-(width/10f),height/2f);
         playButtonCoords = new Vector2(width/2f, height/8f);
@@ -225,9 +232,8 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             albumCoverCoords[selectedLevel-1] = new Vector2(albumCoverLeftX,albumCoverY);
             albumScales[selectedLevel-1] = cornerScale;
         }
-        albumCoverCoords[selectedLevel] =new Vector2 (albumCoverMiddleX,albumCoverY);// the first song is at the middle at first
+        albumCoverCoords[selectedLevel] =new Vector2 (albumCoverMiddleX,albumCoverY);
         albumScales[selectedLevel] = centerScale;
-
 
     }
 
@@ -251,7 +257,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
         canvas.drawBackground(levelBackground.getTexture(),0,0);
         canvas.draw(goBack, Color.WHITE, goBack.getWidth()/2, goBack.getHeight()/2,
-                goBackCoords.x, goBackCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+                goBackCoords.x, goBackCoords.y, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 
         // draw easy, medium, and hard buttons
         Color easyButtonTint = (selectedDifficulty == EASY ? Color.GRAY: Color.WHITE);
@@ -270,18 +276,21 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         if (selectedLevel>=1){ //check that if there are a song to the left; if so, draw.
             canvas.draw(albumCovers[selectedLevel-1], Color.WHITE, albumCovers[selectedLevel-1].getWidth()/2,
                     albumCovers[selectedLevel-1].getHeight()/2, albumCoverCoords[selectedLevel-1].x,
-                    albumCoverCoords[selectedLevel-1].y, 0, albumScales[selectedLevel-1], albumScales[selectedLevel-1]);
+                    albumCoverCoords[selectedLevel-1].y, 0, albumScales[selectedLevel-1]*scale,
+                    albumScales[selectedLevel-1]*scale);
         }
 
         // It an invariant that selectedLevel is a valid index, so we can simply draw.
         canvas.draw(albumCovers[selectedLevel],Color.WHITE,albumCovers[selectedLevel].getWidth()/2,
                 albumCovers[selectedLevel].getHeight()/2,albumCoverCoords[selectedLevel].x,
-                albumCoverCoords[selectedLevel].y,0, albumScales[selectedLevel], albumScales[selectedLevel]);
+                albumCoverCoords[selectedLevel].y,0, albumScales[selectedLevel]*scale,
+                albumScales[selectedLevel]*scale);
 
         if (selectedLevel+1< numSongs) {//check that if there are a song to the right; if so, draw.
             canvas.draw(albumCovers[selectedLevel+1],Color.WHITE,albumCovers[selectedLevel+1].getWidth()/2,
                     albumCovers[selectedLevel+1].getHeight()/2,albumCoverCoords[selectedLevel+1].x,
-                    albumCoverCoords[selectedLevel+1].y,0, albumScales[selectedLevel+1], albumScales[selectedLevel+1]);
+                    albumCoverCoords[selectedLevel+1].y,0, albumScales[selectedLevel+1]*scale,
+                    albumScales[selectedLevel+1]*scale);
         }
 
         // draw the goleft and go right buttons
@@ -347,7 +356,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     }
 
     /**
-     * isInTouchDown is true when we are in transition
+     *  True when we are in transition
      */
     private boolean isInTransition;
 
@@ -444,7 +453,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     private void update(){
 //        System.out.println("prev level:"+prevLevel);
 //        System.out.println("curr level"+selectedLevel);
-        float steps = 60f;
+        float steps = 30f;
         float scaleChange = centerScale - cornerScale;
         float rightLenX = Math.abs(albumCoverMiddleX - albumCoverLeftX);
         float rightStep = rightLenX / steps;
@@ -565,6 +574,13 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     @Override
     public void resize(int width, int height) {
         setCoords(width,height);
+
+        float sx = ((float)width)/STANDARD_WIDTH;
+        float sy = ((float)height)/STANDARD_HEIGHT;
+        scale = (sx < sy ? sx : sy);
+
+        // recompute scales
+
     }
 
     @Override
