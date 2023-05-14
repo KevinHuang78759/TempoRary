@@ -28,6 +28,8 @@ import com.badlogic.gdx.graphics.Texture;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.temporary.entity.*;
 
+import java.util.Arrays;
+
 /**
  * Controller to handle gameplay interactions.
  * This controller also acts as the root class for all the models.
