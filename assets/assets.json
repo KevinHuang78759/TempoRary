@@ -4,6 +4,8 @@
         "menu-select-indicator": "images/ui/main_menu_selection_active_indicator.png",
         "settings-background": "images/backgrounds/settings_screen_bg.png",
         "settings-header": "images/ui/settings.png",
+        "calibration-button": "images/ui/calibration_button.png",
+        "calibration-button-pressed": "images/ui/calibration_button_pressed.png",
         "back-arrow": "images/ui/left_backarrow.png",
         "primary-box": "images/ui/box_1.png",
         "secondary-box": "images/ui/box_2.png",

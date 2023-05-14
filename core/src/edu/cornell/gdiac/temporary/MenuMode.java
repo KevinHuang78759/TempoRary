@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -42,6 +41,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     /** Buttons */
     private Texture playButton;
     private Texture calibrationButton;
+    private Texture calibrationButtonPressed;
     private Texture levelEditorButton;
     private Texture settingsButton;
     private Texture exitButton;
@@ -52,10 +52,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     /* BUTTON LOCATIONS */
     /** Scale at which to draw the buttons */
     private static float BUTTON_SCALE  = 0.75f;
-    /** The y-coordinate of the center of the progress bar (artifact of LoadingMode) */
-    private int centerY;
-    /** The x-coordinate of the center of the progress bar (artifact of LoadingMode) */
-    private int centerX;
     /** The height of the canvas window (necessary since sprite origin != screen origin) */
     private int heightY;
 
@@ -63,17 +59,11 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private static int STANDARD_WIDTH  = 1200;
     /** Standard window height (for scaling) */
     private static int STANDARD_HEIGHT = 800;
-    /** Ratio of the bar width to the screen (artifact of LoadingMode) */
-    private static float BAR_WIDTH_RATIO  = 0.5f;
-    /** Ration of the bar height to the screen (artifact of LoadingMode) */
-    private static float BAR_HEIGHT_RATIO = 0.25f;
     /** Scaling factor for when the student changes the resolution. */
     private float scale;
 
     /** The current state of each button */
     private int pressState;
-
-    private Vector2 v;
 
     /* PRESS STATES **/
     /** Initial button state */
@@ -182,7 +172,8 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         playButton = directory.getEntry("play-button", Texture.class);
         playButtonHover = directory.getEntry("play-button-active", Texture.class);
         levelEditorButton = directory.getEntry("level-editor", Texture.class);
-        calibrationButton = directory.getEntry("play-old", Texture.class);
+        calibrationButton = directory.getEntry("calibration-button", Texture.class);
+        calibrationButtonPressed = directory.getEntry("calibration-button-pressed", Texture.class);
         settingsButton = directory.getEntry("settings", Texture.class);
         settingsButtonHover = directory.getEntry("settings-active", Texture.class);
         exitButton = directory.getEntry("quit-button-menu", Texture.class);
@@ -293,17 +284,24 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         final Slider fxVolumeSlider = new Slider(0f, 1f, 0.05f, false, sliderStyle);
         fxVolumeSlider.setValue(soundFXVolume);
 
-        mainTable.row().padLeft(10).padBottom(10).expandX().fill();
+        mainTable.row().padRight(10).padBottom(10).expandX().fill();
 
         // back button
         headerTable.add(backButton).top().left();
         // SETTINGS header
         headerTable.add(new Image(settingsHeader)).expand();
 
-        switchTable.add(new Label("Full Screen", labelStyle)).left().padRight(30).padBottom(5);
+        ImageButton.ImageButtonStyle calibrationButtonStyle = new ImageButton.ImageButtonStyle();
+        calibrationButtonStyle.up = new TextureRegionDrawable(calibrationButton);
+        calibrationButtonStyle.down = new TextureRegionDrawable(calibrationButtonPressed);
+        Button calibButton = new ImageButton(calibrationButtonStyle);
+        headerTable.add(calibButton);
 
-        final CheckBox fullscreenCheckbox = new CheckBox("", checkBoxStyle);
-        switchTable.add(fullscreenCheckbox).padBottom(5);
+//        switchTable.add(new Label("Full Screen", labelStyle)).left().padRight(30).padBottom(5);
+
+        // TODO: FULL GET RID OF THIS
+//        final CheckBox fullscreenCheckbox = new CheckBox("", checkBoxStyle);
+//        switchTable.add(fullscreenCheckbox).padBottom(5);
         // TODO: ADD BACK SPACEBAR MODE WHEN IT'S IMPLEMENTED
 //        switchTable.row();
 //        switchTable.add(new Label("Spacebar Mode", labelStyle)).left().padRight(30);
@@ -313,13 +311,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
         mainTable.add(headerTable).expandX().colspan(3);
 
-        mainTable.row().padBottom(10);
-
-        TextButton.TextButtonStyle calibrationButtonStyle = new TextButton.TextButtonStyle();
-        calibrationButtonStyle.font = blinkerSemiBold;
-        calibrationButtonStyle.fontColor = fontColor;
-        Button calibButton = new TextButton("CALIBRATION", calibrationButtonStyle);
-        mainTable.add(calibButton).colspan(3);
+//        mainTable.row().padBottom(10);
 
         mainTable.row();
 
@@ -406,20 +398,20 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
             }
         });
 
-        fullscreenCheckbox.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent changeEvent, Actor actor) {
-                Graphics.DisplayMode currentMode = Gdx.graphics.getDisplayMode();
-                // TODO: cache previous size before windowed mode
-                if (!fullscreenCheckbox.isChecked()) {
-                    Gdx.graphics.setWindowedMode(prevWidth, prevHeight);
-                } else {
-                    prevWidth = canvas.getWidth();
-                    prevHeight = canvas.getHeight();
-                    Gdx.graphics.setFullscreenMode(currentMode);
-                }
-            }
-        });
+//        fullscreenCheckbox.addListener(new ChangeListener() {
+//            @Override
+//            public void changed(ChangeEvent changeEvent, Actor actor) {
+//                Graphics.DisplayMode currentMode = Gdx.graphics.getDisplayMode();
+//                // TODO: cache previous size before windowed mode
+//                if (!fullscreenCheckbox.isChecked()) {
+//                    Gdx.graphics.setWindowedMode(prevWidth, prevHeight);
+//                } else {
+//                    prevWidth = canvas.getWidth();
+//                    prevHeight = canvas.getHeight();
+//                    Gdx.graphics.setFullscreenMode(currentMode);
+//                }
+//            }
+//        });
 
         musicVolumeSlider.addListener(new ChangeListener() {
             @Override
@@ -559,6 +551,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         this.canvas = canvas;
         stage = new Stage(new ExtendViewport(1200, 800));
         mainTable = new Table();
+        stage.setDebugAll(true);
         tableContainer = new Container<>();
 
         float sw = canvas.getWidth();
@@ -597,7 +590,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         musicVolume = SaveManager.getInstance().getMusicVolume();
         soundFXVolume = SaveManager.getInstance().getFXVolume();
         active = false;
-        v = new Vector2();
         reset();
     }
 
@@ -692,8 +684,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         float sy = ((float)height)/STANDARD_HEIGHT;
         scale = (Math.min(sx, sy));
 
-        centerY = (int)(BAR_HEIGHT_RATIO*height);
-        centerX = width/2;
         heightY = height;
 
         stage.getViewport().update(width, height, true);
