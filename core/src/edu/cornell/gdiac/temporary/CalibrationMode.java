@@ -337,7 +337,10 @@ public class CalibrationMode implements Screen {
         inputController = null;
         canvas = null;
         // TODO: dispose all assets
-        music.dispose();
+        if (music != null){
+            music.dispose();
+        }
+
     }
 
     /**

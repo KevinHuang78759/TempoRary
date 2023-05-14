@@ -321,10 +321,17 @@ public class GameCanvas {
 			return;
 		}
 
+		//When drawing we must maintain aspect ratio.
+		//To do this effectively we determine which variable to scale by.
 
+		float ratio = (image.getHeight()/(float)image.getWidth())/(getHeight()/(float)getWidth());
+		float scale = ratio >= 1 ? getWidth()/(float)image.getWidth() : getHeight()/(float)image.getHeight();
+		float trueW = image.getWidth()*scale;
+		float trueH = image.getHeight()*scale;
+		float tlx = x - (trueW - getWidth())/2f;
+		float tly = y - (trueH - getHeight())/2f;
 
-        // Have to draw the background twice for continuous scrolling.
-        spriteBatch.draw(image, x,   y, getWidth(), getHeight());
+        spriteBatch.draw(image, tlx,   tly, trueW, trueH);
 
     }
 
