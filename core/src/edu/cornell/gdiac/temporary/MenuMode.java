@@ -284,7 +284,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         final Slider fxVolumeSlider = new Slider(0f, 1f, 0.05f, false, sliderStyle);
         fxVolumeSlider.setValue(soundFXVolume);
 
-        mainTable.row().padRight(10).padBottom(10).expandX().fill();
+        mainTable.row().padBottom(10).expandX().fill();
 
         // back button
         headerTable.add(backButton).top().left();
@@ -318,7 +318,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         mainTable.add(new Image(headerLine)).bottom().right().expandX().padBottom(12).padRight(20);
         mainTable.add(new Label("CLICK TO REBIND CONTROLS", header2Style));
         mainTable.add(new Image(headerLine)).bottom().left().expandX().padBottom(12).padLeft(20);
-
 
         mainTable.row().expand().fill();
 
@@ -554,6 +553,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         stage.setDebugAll(true);
         tableContainer = new Container<>();
 
+        // TODO: FIX THIS PART (MAYBE FILL IT FULLY OR SOMETHING)
         float sw = canvas.getWidth();
         float sh = canvas.getHeight();
 

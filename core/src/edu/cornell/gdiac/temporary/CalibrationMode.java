@@ -18,6 +18,7 @@ import edu.cornell.gdiac.util.ScreenListener;
 import java.util.LinkedList;
 import java.util.List;
 
+// TODO: REMOVE ALL REMNANTS OF UNUSED TESTING VARIABLES
 public class CalibrationMode implements Screen {
 
     /** Whether this player mode is still active */
@@ -192,7 +193,7 @@ public class CalibrationMode implements Screen {
         canvas.begin();
         canvas.drawBackground(background,0,0);
 
-        canvas.draw(calibrationHeader, Color.WHITE, calibrationHeader.getWidth()/2, calibrationHeader.getHeight()/2, canvas.getWidth()/2, canvas.getHeight() - 80, 0, scale, scale);
+        canvas.draw(calibrationHeader, Color.WHITE, calibrationHeader.getWidth()/2, calibrationHeader.getHeight()/2, canvas.getWidth()/2, canvas.getHeight() * 0.9f, 0, scale, scale);
 
         float noteScale = 0.3f;
         // draw hit indicator
@@ -204,19 +205,18 @@ public class CalibrationMode implements Screen {
 
         // TODO: FIX FONT RESIZING
         String instruction = "PRESS THE SPACEBAR TO THE BEAT";
-        canvas.drawTextCentered(instruction, instructionsFont,200);
+        canvas.drawTextCentered(instruction, instructionsFont,canvas.getHeight()/2 * 0.5f);
         layout.setText(instructionsFont, instruction);
-        canvas.draw(headerLine, Color.WHITE, headerLine.getWidth(), 0, canvas.getWidth()/2 - layout.width/2 - 20, 200 + canvas.getHeight()/2 - layout.height + 15, 0, 0.75f * scale, scale);
-        canvas.draw(headerLine, Color.WHITE, 0, 0, canvas.getWidth()/2 + layout.width/2 + 20, 200 + canvas.getHeight()/2 - layout.height + 15, 0, 0.75f * scale, scale);
-        canvas.drawTextCentered("Make sure not to click out of the window while calibrating!", smallerFont,-280);
+        canvas.draw(headerLine, Color.WHITE, headerLine.getWidth(), 0, canvas.getWidth()/2 - layout.width/2 - 20, canvas.getHeight()/2 * 0.5f + canvas.getHeight()/2 - layout.height + 15, 0, 0.75f * scale, scale);
+        canvas.draw(headerLine, Color.WHITE, 0, 0, canvas.getWidth()/2 + layout.width/2 + 20, canvas.getHeight()/2 * 0.5f + canvas.getHeight()/2 - layout.height + 15, 0, 0.75f * scale, scale);
+        canvas.drawTextCentered("Make sure not to click out of the window while calibrating!", smallerFont,-canvas.getHeight()/2 * 0.7f);
 
-        // TODO: FIX THIS PART
         int totalHits = NUM_BEATS_TO_HIT + NUM_BEATS_REMOVED;
-        int spaceApart = 10;
+        float spaceApart = 0.01f * canvas.getWidth();
         float circleIndicatorScale = 0.75f;
-        float circleIndicatorTrueWidth = 0.75f * circleIndicator.getWidth();
+        float circleIndicatorTrueWidth = 0.75f * circleIndicator.getWidth() * scale;
         float startingX = canvas.getWidth()/2f - (spaceApart * (totalHits / 2f - 1) + circleIndicatorTrueWidth * (totalHits / 2f));
-        float circleDrawY = canvas.getHeight()/2 - noteScale * calibrationNote.getHeight()/2 - 80;
+        float circleDrawY = canvas.getHeight() * 0.28f;
 
         // draw the beat needed:
         int i = 0;
@@ -233,6 +233,7 @@ public class CalibrationMode implements Screen {
             i++;
         }
 
+        // TODO: FIX BACK BUTTON
         canvas.draw(backArrow, Color.WHITE, 0, backArrow.getHeight(), 50, canvas.getHeight() - 50, 0, scale, scale);
 
         canvas.end();
