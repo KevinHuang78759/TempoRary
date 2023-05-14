@@ -42,7 +42,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     /** Play button to display hard level */
     private Texture hardButton;
 
-    private FilmStrip levelBackground;
+    private Texture levelBackground;
 
     /** button for a level */
     private Texture[] albumCovers;
@@ -116,10 +116,10 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     private  int HARD = 3;
 
     /** the scale for the song in the middle in level select */
-    float centerScale = 0.65f;
+    float centerScale;
 
     /** the scale for the songs on the sides in level select */
-    float cornerScale = 0.45f;
+    float cornerScale;
 
     /** Selected song; index from 0. */
     public int selectedLevel;
@@ -195,7 +195,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         hardButton = directory.getEntry("hard",Texture.class);
         goLeft = directory.getEntry("level-select-left",Texture.class);
         goRight = directory.getEntry("level-select-right",Texture.class);
-        levelBackground = new FilmStrip(directory.getEntry("level-select-background", Texture.class), 1, 1);
+        levelBackground = directory.getEntry("level-select-background", Texture.class);
 //      album covers are called 1, 2, 3 and so on in assets.json
         for (int i = 0; i < numSongs; i++){
             albumCovers[i] = directory.getEntry(Integer.toString(i+1),Texture.class);
@@ -212,6 +212,8 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         float sy = ((float)height)/STANDARD_HEIGHT;
 
         scale = (sx < sy ? sx : sy);
+        centerScale = 0.65f*scale;
+        cornerScale = 0.45f*scale;
         goBackCoords=new Vector2 (width/12f, height*9f/10f);
         goLeftCoords = new Vector2(width/10f,height/2f);
         goRightCoords = new Vector2(width-(width/10f),height/2f);
@@ -255,7 +257,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     public void draw(){
         canvas.begin();
 
-        canvas.drawBackground(levelBackground.getTexture(),0,0);
+        canvas.draw(levelBackground, 0, 0, canvas.getWidth(), canvas.getHeight());
         canvas.draw(goBack, Color.WHITE, goBack.getWidth()/2, goBack.getHeight()/2,
                 goBackCoords.x, goBackCoords.y, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 
