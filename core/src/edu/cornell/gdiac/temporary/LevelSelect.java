@@ -187,37 +187,40 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         albumScales = new float[allLevels.length];
         gameplayController = new GameplayController(canvas.getWidth(),canvas.getHeight());
         albumCovers = new Texture[numSongs];
-
         playButton = directory.getEntry("ghost-play",Texture.class);
         easyButton = directory.getEntry("easy",Texture.class);
         mediumButton = directory.getEntry("medium",Texture.class);
         hardButton = directory.getEntry("hard",Texture.class);
-
         goLeft = directory.getEntry("level-select-left",Texture.class);
         goRight = directory.getEntry("level-select-right",Texture.class);
-
-        goLeftCoords = new Vector2(goLeft.getWidth(),canvas.getHeight()/2);
-        goRightCoords = new Vector2(canvas.getWidth()-goLeft.getWidth(),canvas.getHeight()/2);
-
-
         levelBackground = new FilmStrip(directory.getEntry("level-select-background", Texture.class), 1, 1);
-
-        playButtonCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/8);
-        mediumButtonCoords = new Vector2(canvas.getWidth()/2 , canvas.getHeight()/4);
-        easyButtonCoords = new Vector2(mediumButtonCoords.x-easyButton.getWidth(), canvas.getHeight()/4);
-        hardButtonCoords = new Vector2(mediumButtonCoords.x+easyButton.getWidth(), canvas.getHeight()/4);
-        drawLeft=false;
-
 //      album covers are called 1, 2, 3 and so on in assets.json
         for (int i = 0; i < numSongs; i++){
             albumCovers[i] = directory.getEntry(Integer.toString(i+1),Texture.class);
         }
 
-        albumCoverLeftX = canvas.getWidth()/4;
-        albumCoverMiddleX = canvas.getWidth()/2;
-        albumCoverRightX = canvas.getWidth()*3/4;
-        albumCoverY = (canvas.getHeight()*7/12);
+        setCoords(canvas.getWidth(),canvas.getHeight());
+    }
 
+    /**
+     * loadCoords set the coordinates of all assets
+     */
+    public void setCoords(int width, int height) {
+        goLeftCoords = new Vector2(width/10f,height/2f);
+        goRightCoords = new Vector2(width-(width/10f),height/2f);
+        playButtonCoords = new Vector2(width/2f, height/8f);
+        mediumButtonCoords = new Vector2(width/2f , height/4f);
+        easyButtonCoords = new Vector2((width/2f)-(width/10f), height/4f);
+        hardButtonCoords = new Vector2((width/2f)+(width/10f), height/4f);
+        drawLeft=false;
+        albumCoverLeftX = width/4f;
+        albumCoverMiddleX = width/2f;
+        albumCoverRightX = width*3f/4f;
+        albumCoverY = height*7/12;
+        if (selectedLevel+1< numSongs){
+            albumCoverCoords[selectedLevel+1] = new Vector2(albumCoverRightX,albumCoverY);
+            albumScales[selectedLevel+1] = cornerScale;
+        }
         if (selectedLevel>=1){
             albumCoverCoords[selectedLevel-1] = new Vector2(albumCoverLeftX,albumCoverY);
             albumScales[selectedLevel-1] = cornerScale;
@@ -225,10 +228,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         albumCoverCoords[selectedLevel] =new Vector2 (albumCoverMiddleX,albumCoverY);// the first song is at the middle at first
         albumScales[selectedLevel] = centerScale;
 
-        if (selectedLevel+1< numSongs){
-            albumCoverCoords[selectedLevel+1] = new Vector2(albumCoverRightX,albumCoverY);
-            albumScales[selectedLevel+1] = cornerScale;
-        }
 
     }
 
@@ -565,7 +564,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
     @Override
     public void resize(int width, int height) {
-
+        setCoords(width,height);
     }
 
     @Override
