@@ -231,7 +231,7 @@ public class CalibrationMode implements Screen {
             i++;
         }
 
-        canvas.draw(backArrow, Color.WHITE, backArrow.getWidth()/2, backArrow.getHeight()/2, 0.08f * canvas.getWidth(), canvas.getHeight() * 0.9f, 0, scale, scale);
+        canvas.draw(backArrow, Color.WHITE, backArrow.getWidth()/2, backArrow.getHeight()/2, 0.06f * canvas.getWidth(), canvas.getHeight() * 0.9f, 0, scale, scale);
 
         canvas.end();
     }

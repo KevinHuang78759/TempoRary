@@ -274,8 +274,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         final Table controlTable = new Table();
         Table volumeTable = new Table();
 
-        // TODO: add calibration button
-
         final Button backButton = new Button(backButtonStyle);
 
         final Slider musicVolumeSlider = new Slider(0f, 1f, 0.05f, false, sliderStyle);
@@ -550,22 +548,15 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         this.canvas = canvas;
         stage = new Stage(new ExtendViewport(1200, 800));
         mainTable = new Table();
-        stage.setDebugAll(true);
         tableContainer = new Container<>();
 
-        // TODO: FIX THIS PART (MAYBE FILL IT FULLY OR SOMETHING)
-        float sw = canvas.getWidth();
-        float sh = canvas.getHeight();
-
-        float cw = sw * 0.90f;
-        float ch = sh * 0.90f;
-
         // scene 2D UI
-        tableContainer.setSize(cw, ch);
-        tableContainer.setPosition((sw - cw) / 2.0f, (sh - ch) / 2.0f);
+        tableContainer.setFillParent(true);
         tableContainer.fill();
         tableContainer.setActor(mainTable);
         stage.addActor(tableContainer);
+
+        tableContainer.pad(50);
 
         // fonts
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Blinker-Bold.ttf"));
@@ -685,11 +676,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         scale = (Math.min(sx, sy));
 
         heightY = height;
-
         stage.getViewport().update(width, height, true);
-        float cw = (float) width * 0.90f;
-        float ch = (float) height * 0.90f;
-        tableContainer.setPosition(((float) width - cw) / 2.0f, ((float) height - ch) / 2.0f);
     }
 
     @Override
