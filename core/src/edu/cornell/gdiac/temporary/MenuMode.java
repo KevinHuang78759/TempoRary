@@ -35,6 +35,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
     /** Background texture */
     private Texture background;
+    private Texture catOrnament;
     private Texture settingsBackground;
     /** Tempo-Rary logo */
     private Texture logo;
@@ -168,6 +169,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         logo = directory.getEntry("meowzart-title", Texture.class);
         background = directory.getEntry( "menu-background", Texture.class );
         background.setFilter( Texture.TextureFilter.Linear, Texture.TextureFilter.Linear );
+        catOrnament = directory.getEntry("menu-background-cat", Texture.class);
         settingsBackground = directory.getEntry("settings-background", Texture.class);
         playButton = directory.getEntry("play-button", Texture.class);
         playButtonHover = directory.getEntry("play-button-active", Texture.class);
@@ -427,7 +429,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
         // controls for switching
         VerticalGroup membersLabel = new VerticalGroup();
-        membersLabel.addActor(new Label("Members", labelStyle));
+        membersLabel.addActor(new Label("Members Switches", labelStyle));
 
         final SelectBox<Integer> dropdown = new SelectBox<>(dropdownStyle);
         dropdown.setItems(2, 3, 4);
@@ -605,6 +607,8 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         canvas.draw(logo, Color.WHITE, logo.getWidth()/2, logo.getHeight()/2,
                 canvas.getWidth()/2, 0.65f * canvas.getHeight(), 0, 0.52f * scale, 0.52f * scale);
 
+        canvas.draw(catOrnament, 0, 0, canvas.getWidth(), canvas.getHeight());
+
         if (pressState == PLAY_PRESSED || pressState == PLAY_HOVERED) {
             canvas.draw(playButtonHover, Color.WHITE, playButtonHover.getWidth() / 2, playButton.getHeight() / 2,
                     canvas.getWidth() / 2, 0.35f * canvas.getHeight(), 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
@@ -738,7 +742,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
             if (isButtonPressed(screenX, screenY, exitButton, 0.08f * canvas.getWidth(), 0.9f * canvas.getHeight(), BUTTON_SCALE)) {
                 pressState = EXIT_PRESSED;
             }
-            if (isButtonPressed(screenX, screenY, levelEditorButton, canvas.getWidth()/2, canvas.getHeight()*0.2f, BUTTON_SCALE)) {
+            if (isButtonPressed(screenX, screenY, levelEditorButton, canvas.getWidth()/2, canvas.getHeight()*0.2f, BUTTON_SCALE * scale)) {
                 pressState = LEVEL_EDITOR_PRESSED;
             }
         }
@@ -873,7 +877,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
             pressState = PLAY_HOVERED;
         } else if (isButtonPressed(screenX, screenY, settingsButton, 0.92f * canvas.getWidth(), 0.9f * canvas.getHeight(), BUTTON_SCALE)) {
             pressState = SETTINGS_HOVERED;
-        } else if (isButtonPressed(screenX, screenY, exitButton, 0.08f * canvas.getWidth(), 0.9f * canvas.getHeight(), BUTTON_SCALE * scale)) {
+        } else if (isButtonPressed(screenX, screenY, exitButton, 0.08f * canvas.getWidth(), 0.9f * canvas.getHeight(), BUTTON_SCALE)) {
             pressState = EXIT_HOVERED;
         } else if (isButtonPressed(screenX, screenY, levelEditorButton, canvas.getWidth()/2, canvas.getHeight()*0.2f, BUTTON_SCALE * scale)) {
             pressState = LEVEL_EDITOR_HOVERED;

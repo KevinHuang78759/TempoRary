@@ -1,6 +1,7 @@
 {
 	"textures": {
-        "menu-background": "images/backgrounds/main_menu_background.png",
+        "menu-background": "images/backgrounds/main_menu_background_back.png",
+        "menu-background-cat": "images/backgrounds/main_menu_background_front.png",
         "menu-select-indicator": "images/ui/main_menu_selection_active_indicator.png",
         "settings-background": "images/backgrounds/settings_screen_bg.png",
         "settings-header": "images/ui/settings.png",
