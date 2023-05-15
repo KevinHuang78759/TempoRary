@@ -20,6 +20,8 @@ import edu.cornell.gdiac.util.FilmStrip;
 
 import javax.swing.plaf.TextUI;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Level {
 
@@ -261,6 +263,15 @@ public class Level {
         for(int i = 0; i < bandMembers.length; i++){
             bandMembers[i] = new BandMember();
             JsonValue bandMemberData = data.get("bandMembers").get(i);
+            JsonValue compFlags = bandMemberData.get("compFlags");
+            Map<Long, Integer[]> compData = new HashMap<>();
+            for(int j = 0; j < compFlags.size; ++j){
+                JsonValue thisCompFlag = compFlags.get(j);
+                Integer[] arr = new Integer[2];
+                arr[0] = thisCompFlag.getInt("rate");
+                arr[1] = thisCompFlag.getInt("gain");
+                compData.put(thisCompFlag.getLong("position"), arr);
+            }
             Queue<Note> notes = new Queue<>();
             JsonValue noteData = bandMemberData.get("notes");
             for(int j = 0; j < noteData.size; ++j){
