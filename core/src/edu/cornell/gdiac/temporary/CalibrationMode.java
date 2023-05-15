@@ -18,7 +18,6 @@ import edu.cornell.gdiac.util.ScreenListener;
 import java.util.LinkedList;
 import java.util.List;
 
-// TODO: REMOVE ALL REMNANTS OF UNUSED TESTING VARIABLES
 public class CalibrationMode implements Screen {
 
     /** Whether this player mode is still active */
@@ -29,7 +28,11 @@ public class CalibrationMode implements Screen {
     private BitmapFont instructionsFont;
     /** The smaller font for giving instructions to the player */
     private BitmapFont smallerFont;
-    private GlyphLayout layout;
+    private GlyphLayout instructionsLayout;
+    private GlyphLayout smallerFontLayout;
+    private String instruction = "PRESS THE SPACEBAR TO THE BEAT";
+    private String smallerInstruction = "Make sure not to click out of the window while calibrating!";
+
     /** The song */
     private MusicQueue music;
     /** Song source */
@@ -63,9 +66,6 @@ public class CalibrationMode implements Screen {
     /** Listener that will update the player mode when we are done */
     private ScreenListener listener;
 
-    // new system (based on milliseconds)
-    /** Represents the amount of leeway for hitting on the beat (in milliseconds) */
-    public final int BASE_OFFSET = 70;
     /** List of beats that user has hit */
     private List<Integer> userHitBeats;
     /** offset after calibration  */
@@ -76,8 +76,6 @@ public class CalibrationMode implements Screen {
     private final int BPM = 100;
     /** Distance between beats in milliseconds */
     private final int DIST_BETWEEN_BEAT = 60000 / BPM;
-    /** temp variable to draw whether the hit was on beat or not */
-    private boolean onBeat;
 
     /** Specified number of beats to hit */
     private final int NUM_BEATS_TO_HIT = 12;
@@ -94,7 +92,8 @@ public class CalibrationMode implements Screen {
         userHitBeats = new LinkedList<>();
         offset = 0;
         isCalibrated = false;
-        layout = new GlyphLayout();
+        instructionsLayout = new GlyphLayout();
+        smallerFontLayout = new GlyphLayout();
     }
 
     /** Resets the calibration mode by clearing beats, calibration is false, and resetting music */
@@ -126,12 +125,11 @@ public class CalibrationMode implements Screen {
             int screenX = (int) inputController.getMouseX();
             int screenY = (int) inputController.getMouseY();
             screenY = canvas.getHeight() - screenY;
-
-            float xRadius = backArrow.getWidth()/2.0f;
-            float xCoord = 50 + xRadius;
+            float xRadius = scale * backArrow.getWidth()/2.0f;
+            float xCoord = 0.08f * canvas.getWidth();
             boolean xInBounds = xCoord - xRadius <= screenX && xCoord + xRadius >= screenX;
-            float yRadius = backArrow.getHeight()/2.0f;
-            float yCoord = canvas.getHeight() - 50 - yRadius;
+            float yRadius = scale * backArrow.getHeight()/2.0f;
+            float yCoord = 0.9f * canvas.getHeight();
             boolean yInBounds = yCoord - yRadius <= screenY && yCoord + yRadius >= screenY;
             backButtonPressed = xInBounds && yInBounds;
         }
@@ -203,13 +201,13 @@ public class CalibrationMode implements Screen {
             canvas.draw(calibrationNote, Color.WHITE, calibrationNote.getWidth() / 2, calibrationNote.getHeight() / 2, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, noteScale * scale, noteScale * scale);
         }
 
-        // TODO: FIX FONT RESIZING
-        String instruction = "PRESS THE SPACEBAR TO THE BEAT";
         canvas.drawTextCentered(instruction, instructionsFont,canvas.getHeight()/2 * 0.5f);
-        layout.setText(instructionsFont, instruction);
-        canvas.draw(headerLine, Color.WHITE, headerLine.getWidth(), 0, canvas.getWidth()/2 - layout.width/2 - 20, canvas.getHeight()/2 * 0.5f + canvas.getHeight()/2 - layout.height + 15, 0, 0.75f * scale, scale);
-        canvas.draw(headerLine, Color.WHITE, 0, 0, canvas.getWidth()/2 + layout.width/2 + 20, canvas.getHeight()/2 * 0.5f + canvas.getHeight()/2 - layout.height + 15, 0, 0.75f * scale, scale);
-        canvas.drawTextCentered("Make sure not to click out of the window while calibrating!", smallerFont,-canvas.getHeight()/2 * 0.7f);
+        instructionsLayout.setText(instructionsFont, instruction);
+        canvas.draw(headerLine, Color.WHITE, headerLine.getWidth(), 0, canvas.getWidth()/2 - instructionsLayout.width/2 - 20, canvas.getHeight()/2 * 0.5f + canvas.getHeight()/2 - instructionsLayout.height + 15, 0, 0.8f * scale, scale);
+        canvas.draw(headerLine, Color.WHITE, 0, 0, canvas.getWidth()/2 + instructionsLayout.width/2 + 20, canvas.getHeight()/2 * 0.5f + canvas.getHeight()/2 - instructionsLayout.height + 15, 0, 0.8f * scale, scale);
+
+        canvas.drawTextCentered(smallerInstruction, smallerFont,-canvas.getHeight()/2 * 0.7f);
+        smallerFontLayout.setText(smallerFont, smallerInstruction);
 
         int totalHits = NUM_BEATS_TO_HIT + NUM_BEATS_REMOVED;
         float spaceApart = 0.01f * canvas.getWidth();
@@ -233,8 +231,7 @@ public class CalibrationMode implements Screen {
             i++;
         }
 
-        // TODO: FIX BACK BUTTON
-        canvas.draw(backArrow, Color.WHITE, 0, backArrow.getHeight(), 50, canvas.getHeight() - 50, 0, scale, scale);
+        canvas.draw(backArrow, Color.WHITE, backArrow.getWidth()/2, backArrow.getHeight()/2, 0.08f * canvas.getWidth(), canvas.getHeight() * 0.9f, 0, scale, scale);
 
         canvas.end();
     }
@@ -257,10 +254,6 @@ public class CalibrationMode implements Screen {
      * computes values of userHitBeats to set the offset after calibration
      */
     private void setCalibration() {
-        // average
-        // desync between video and audio (there will always be maybe a little bit of a desync) - can use data to move it
-        //     make beat simple, figure out where the "note" is
-        // desync between user input and when it's processed
         int sum = 0;
         // skip first two because of potential initial noisy data
         for (int i = NUM_BEATS_REMOVED; i < userHitBeats.size(); i++) {
@@ -268,7 +261,6 @@ public class CalibrationMode implements Screen {
         }
         this.offset = userHitBeats.size() > 0 ? sum / userHitBeats.size() : 0;
         isCalibrated = true;
-        //System.out.println("offset: " + offset);
     }
 
     /** Resolves inputs from the input controller */
@@ -279,7 +271,6 @@ public class CalibrationMode implements Screen {
         // essentially, resolve the current position at which you hit the space bar
         // assign the beat it's at, and then determine how far off you are
         if (hitSpace) {
-            // TODO: rename all of these variables
             int currPosInMs = Math.round(music.getPosition() * 1000);
             // your beat that you hit the space bar at
             int hitBeat = Math.round((float) (currPosInMs) / DIST_BETWEEN_BEAT);
@@ -287,26 +278,10 @@ public class CalibrationMode implements Screen {
             int actualBeat = hitBeat * DIST_BETWEEN_BEAT;
             int diff = currPosInMs - actualBeat;
 
-            if (isCalibrated) {
-                onBeat = isOnBeat(actualBeat, currPosInMs);
-            }
-            else {
+            if (!isCalibrated) {
                 userHitBeats.add(diff);
-                //System.out.println("hit at pos: " + currPosInMs + " attempted beat hit: " + actualBeat + " diff: " + diff);
             }
         }
-    }
-
-    /**
-     * checks whether use is on beat or not
-     * currentHitPosition should be the song position at which you hit the "beat"
-     */
-    public boolean isOnBeat(int actualBeatPosition, int currentHitPosition) {
-        int adjustedPosition = currentHitPosition - this.offset;
-        int lowerRange = actualBeatPosition - BASE_OFFSET;
-        int higherRange = actualBeatPosition + BASE_OFFSET;
-        //System.out.println(lowerRange + ", " + higherRange + "; " + adjustedPosition +  " " + actualBeatPosition + " " + (adjustedPosition >= lowerRange && adjustedPosition <= higherRange));
-        return adjustedPosition >= lowerRange && adjustedPosition <= higherRange;
     }
 
     @Override
@@ -327,6 +302,9 @@ public class CalibrationMode implements Screen {
         float sx = ((float)width)/1200;
         float sy = ((float)height)/800;
         scale = (Math.min(sx, sy));
+
+        instructionsFont.getData().setScale(scale);
+        smallerFont.getData().setScale(scale);
     }
 
     @Override
@@ -347,7 +325,6 @@ public class CalibrationMode implements Screen {
         if (music != null){
             music.dispose();
         }
-
     }
 
     /**
