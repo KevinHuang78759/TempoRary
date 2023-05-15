@@ -126,7 +126,7 @@ public class CalibrationMode implements Screen {
             int screenY = (int) inputController.getMouseY();
             screenY = canvas.getHeight() - screenY;
             float xRadius = scale * backArrow.getWidth()/2.0f;
-            float xCoord = 0.08f * canvas.getWidth();
+            float xCoord = 0.06f * canvas.getWidth();
             boolean xInBounds = xCoord - xRadius <= screenX && xCoord + xRadius >= screenX;
             float yRadius = scale * backArrow.getHeight()/2.0f;
             float yCoord = 0.9f * canvas.getHeight();
