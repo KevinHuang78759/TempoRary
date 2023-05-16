@@ -461,6 +461,10 @@ public class Level {
         }
     }
 
+    public int gainRate(int activeBandMember) {
+        bandMembers[activeBandMember].getGainRate();
+    }
+
     /**
      * Spawns new notes according to what sample we are at. Also decrements bandmembers' competency
      * for some amount about once a second. It also updates the frame of the bandmember.
