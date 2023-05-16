@@ -33,14 +33,21 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     /** Play button to display when done */
     private Texture playButton;
 
+
     /** Play button to display easy level*/
     private Texture easyButton;
+
+    private Texture easyButtonInactive;
 
     /** Play button to display medium level */
     private Texture mediumButton;
 
+    private Texture mediumButtonInactive;
+
     /** Play button to display hard level */
     private Texture hardButton;
+
+    private Texture hardButtonInactive;
 
     private Texture levelBackground;
 
@@ -189,10 +196,15 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         albumScales = new float[allLevels.length];
         gameplayController = new GameplayController(canvas.getWidth(),canvas.getHeight());
         albumCovers = new Texture[numSongs];
-        playButton = directory.getEntry("ghost-play",Texture.class);
+        playButton = directory.getEntry("play-active",Texture.class);
         easyButton = directory.getEntry("easy",Texture.class);
         mediumButton = directory.getEntry("medium",Texture.class);
         hardButton = directory.getEntry("hard",Texture.class);
+
+        easyButtonInactive = directory.getEntry("easy-inactive",Texture.class);
+        mediumButtonInactive= directory.getEntry("medium-inactive",Texture.class);
+        hardButtonInactive = directory.getEntry("hard-inactive",Texture.class);
+
         goLeft = directory.getEntry("level-select-left",Texture.class);
         goRight = directory.getEntry("level-select-right",Texture.class);
         levelBackground = directory.getEntry("level-select-background", Texture.class);
@@ -212,8 +224,8 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         float sy = ((float)height)/STANDARD_HEIGHT;
 
         scale = (sx < sy ? sx : sy);
-        centerScale = 0.65f*scale;
-        cornerScale = 0.45f*scale;
+        centerScale = 0.6f*scale;
+        cornerScale = 0.4f*scale;
         goBackCoords=new Vector2 (width/12f, height*9f/10f);
         goLeftCoords = new Vector2(width/10f,height/2f);
         goRightCoords = new Vector2(width-(width/10f),height/2f);
@@ -262,16 +274,16 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                 goBackCoords.x, goBackCoords.y, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 
         // draw easy, medium, and hard buttons
-        Color easyButtonTint = (selectedDifficulty == EASY ? Color.GRAY: Color.WHITE);
-        canvas.draw(easyButton, easyButtonTint, easyButton.getWidth()/2, easyButton.getHeight()/2,
+        Texture easyButtonTemp = (selectedDifficulty == EASY ? easyButton: easyButtonInactive);
+        canvas.draw(easyButtonTemp, Color.WHITE, easyButtonTemp.getWidth()/2, easyButtonTemp.getHeight()/2,
                 easyButtonCoords.x, easyButtonCoords.y, 0, 0.5f*scale, 0.5f*scale);
 
-        Color medButtonTint = (selectedDifficulty == MEDIUM ? Color.GRAY: Color.WHITE);
-        canvas.draw(mediumButton, medButtonTint, mediumButton.getWidth()/2, mediumButton.getHeight()/2,
+        Texture medButtonTemp = (selectedDifficulty == MEDIUM ? mediumButton: mediumButtonInactive);
+        canvas.draw(medButtonTemp, Color.WHITE, mediumButton.getWidth()/2, mediumButton.getHeight()/2,
                 mediumButtonCoords.x, mediumButtonCoords.y, 0, 0.5f*scale, 0.5f*scale);
 
-        Color hardButtonTint = (selectedDifficulty == HARD ? Color.GRAY: Color.WHITE);
-        canvas.draw(hardButton, hardButtonTint, hardButton.getWidth()/2, hardButton.getHeight()/2,
+        Texture hardButtonTemp = (selectedDifficulty == HARD ? hardButton: hardButtonInactive);
+        canvas.draw(hardButtonTemp, Color.WHITE, hardButton.getWidth()/2, hardButton.getHeight()/2,
                 hardButtonCoords.x, hardButtonCoords.y, 0, 0.5f*scale, 0.5f*scale);
 
         // draw each song
@@ -308,7 +320,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         // draw play button
         Color playButtonTint = (playPressed ? Color.GRAY: Color.WHITE);
         canvas.draw(playButton, playButtonTint, playButton.getWidth()/2, playButton.getHeight()/2,
-                    playButtonCoords.x, playButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+                    playButtonCoords.x, playButtonCoords.y, 0, BUTTON_SCALE*scale*0.5f, BUTTON_SCALE*scale*0.5f);
 
         canvas.end();
     }
