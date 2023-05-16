@@ -462,7 +462,7 @@ public class Level {
     }
 
     public int gainRate(int activeBandMember) {
-        bandMembers[activeBandMember].getGainRate();
+        return bandMembers[activeBandMember].getGainRate();
     }
 
     /**
