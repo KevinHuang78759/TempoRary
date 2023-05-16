@@ -607,6 +607,8 @@ public class GameplayController {
 	/** Trigger inputs */
 	public boolean[] triggers;
 
+	public boolean[] lifted;
+
 	public int perfectHit;
 	public int goodHit;
 	public int okHit;
@@ -699,23 +701,27 @@ public class GameplayController {
 	}
 
 
-	/**
-	 * Handle transitions and inputs
-	 * @param input
-	 */
-	public void handleActions(InputController input){
-		//Read in inputs
+	public void recieveInput(InputController input){
 		switches = input.didSwitch();
 		triggers = input.didTrigger();
-
+		lifted = input.triggerLifted;
 		for (boolean trigger : triggers) {
 			if (trigger) {
 				sfx.playSound("tap", GLOBAL_VOLUME_ADJ);
 				break;
 			}
 		}
-
-		boolean[] lifted = input.triggerLifted;
+		for (boolean trigger : switches) {
+			if (trigger) {
+				sfx.playSound("switch", GLOBAL_VOLUME_ADJ);
+				break;
+			}
+		}
+	}
+	/**
+	 * Handle reaction to input
+	 */
+	public void reactToAction(){
 		long currentSample = level.getLevelSample();
 
 		//This array tells us if a hit has already been registered in this frame for the ith bm.
@@ -724,12 +730,7 @@ public class GameplayController {
 
 		// SWITCH NOTE HIT HANDLING
 		if (curP == PlayPhase.NOTES){
-			for (boolean trigger : switches) {
-				if (trigger) {
-					sfx.playSound("switch", GLOBAL_VOLUME_ADJ);
-					break;
-				}
-			}
+
 			for (int i = 0; i < switches.length; ++i){
 				if (switches[i] && i != activeBandMember){
 					//Check only the lanes that are not the current active lane

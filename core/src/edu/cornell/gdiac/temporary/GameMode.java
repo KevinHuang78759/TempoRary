@@ -439,6 +439,7 @@ public class GameMode implements Screen {
 		// Test whether to reset the game.
 		switch (gameState) {
 			case INTRO:
+				gameplayController.recieveInput(inputController);
 				// wait a few frames before starting
 				if (ticks == 0) {
 					gameplayController.start();
@@ -451,9 +452,7 @@ public class GameMode implements Screen {
 				ticks++;
 				if (!justPaused) {
 					gameplayController.update(0, ticks);
-				}
-				if (introTime >= 0) {
-					gameplayController.handleActions(inputController);
+					gameplayController.reactToAction();
 				}
 				if (introTime >= 0 && !saidThree){
 					introThreeSFX.playSound("three", 0.3f);
@@ -466,7 +465,6 @@ public class GameMode implements Screen {
 				if (introTime >= 200 && !saidOne){
 					introOneSFX.playSound("one", 0.3f);
 					saidOne = true;
-					gameplayController.handleActions(inputController);
 				}
 				if (introTime >= 300) {
 					introGoSFX.playSound("go", 0.3f);
@@ -517,6 +515,7 @@ public class GameMode implements Screen {
 				}
 				break;
 			case PLAY:
+				gameplayController.recieveInput(inputController);
 				if (inputController.didExit()) {
 					gameplayController.level.pauseMusic();
 					activeBM = gameplayController.activeBandMember;
@@ -606,10 +605,12 @@ public class GameMode implements Screen {
 	 */
 	protected void play(float delta) {
 		// Update objects.
-		gameplayController.handleActions(inputController);
+
 
 		if (gameState == GameState.PLAY) {
+			gameplayController.reactToAction();
 			gameplayController.update(1, ticks);
+
 		} else {
 			gameplayController.update(2, ticks);
 		}
