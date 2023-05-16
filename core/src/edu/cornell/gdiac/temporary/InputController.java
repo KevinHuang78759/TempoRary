@@ -24,7 +24,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 
 import java.util.Arrays;
-import java.util.Map;
 
 /**
  * Class for reading player input. 
@@ -229,40 +228,50 @@ public class InputController {
 	/**
 	 * Sets bindings to -1 if there are multiple bindings
 	 * @param binding Input.Key integer binding
+	 * @param lane
 	 */
-	private void updateKeybindingMap(int binding, String newPossessor) {
+	private void updateKeybindingMap(int binding, String newPossessor, int numBandMembers) {
 		String bindingObj = masterKeybindingMap.get(binding);
 		if (bindingObj != null) {
-			if (bindingObj.equals("switchesMain") && !bindingObj.equals(newPossessor)) {
-				for (IntMap.Entry<int[]> kv : switchesBindingsMain) {
-					int[] arr = switchesBindingsMain.get(kv.key);
-					for (int i = 0; i < arr.length; i++) {
-						if (arr[i] == binding) {
-							arr[i] = -99;
+			switch (bindingObj) {
+				case "switchesMain":
+					for (IntMap.Entry<int[]> kv : switchesBindingsMain) {
+						if (!bindingObj.equals(newPossessor) || kv.key == numBandMembers) {
+							int[] arr = switchesBindingsMain.get(kv.key);
+							for (int i = 0; i < arr.length; i++) {
+								if (arr[i] == binding) {
+									arr[i] = -99;
+								}
+							}
 						}
 					}
-				}
-			} else if (bindingObj.equals("switchesAlt") && !bindingObj.equals(newPossessor)) {
-				for (IntMap.Entry<int[]> kv : switchesBindingsAlt) {
-					int[] arr = switchesBindingsAlt.get(kv.key);
-					for (int i = 0; i < arr.length; i++) {
-						if (arr[i] == binding) {
-							arr[i] = -99;
+					break;
+				case "switchesAlt":
+					for (IntMap.Entry<int[]> kv : switchesBindingsAlt) {
+						if (!bindingObj.equals(newPossessor) || kv.key == numBandMembers) {
+							int[] arr = switchesBindingsAlt.get(kv.key);
+							for (int i = 0; i < arr.length; i++) {
+								if (arr[i] == binding) {
+									arr[i] = -99;
+								}
+							}
 						}
 					}
-				}
-			} else if (bindingObj.equals("triggerMain") && !bindingObj.equals(newPossessor)) {
-				for (int i = 0; i < triggerBindingsMain.length; i++) {
-					if (triggerBindingsMain[i] == binding) {
-						triggerBindingsMain[i] = -99;
+					break;
+				case "triggerMain":
+					for (int i = 0; i < triggerBindingsMain.length; i++) {
+						if (triggerBindingsMain[i] == binding) {
+							triggerBindingsMain[i] = -99;
+						}
 					}
-				}
-			} else if (bindingObj.equals("triggerAlt") && !bindingObj.equals(newPossessor)) {
-				for (int i = 0; i < triggerBindingsAlt.length; i++) {
-					if (triggerBindingsAlt[i] == binding) {
-						triggerBindingsAlt[i] = -99;
+					break;
+				case "triggerAlt":
+					for (int i = 0; i < triggerBindingsAlt.length; i++) {
+						if (triggerBindingsAlt[i] == binding) {
+							triggerBindingsAlt[i] = -99;
+						}
 					}
-				}
+					break;
 			}
 		}
 		// add new binding
@@ -278,7 +287,7 @@ public class InputController {
 	 */
 	public void setKeybinding(int numBandMembers, int lane, int newKeybind, boolean main) {
 		assert lane < numBandMembers && lane >= 0;
-		updateKeybindingMap(newKeybind, main ? "switchesMain" : "switchesAlt");
+		updateKeybindingMap(newKeybind, main ? "switchesMain" : "switchesAlt", numBandMembers);
 		if (main)
 			switchesBindingsMain.get(numBandMembers)[lane] = newKeybind;
 		else
@@ -287,7 +296,7 @@ public class InputController {
 
 	// keybindings for hitting the notes (triggers)
 	public void setKeybinding(int line, int newKeybind, boolean main) {
-		updateKeybindingMap(newKeybind, main ? "triggerMain" : "triggerAlt");
+		updateKeybindingMap(newKeybind, main ? "triggerMain" : "triggerAlt", -1);
 		if (main)
 			triggerBindingsMain[line] = newKeybind;
 		else
