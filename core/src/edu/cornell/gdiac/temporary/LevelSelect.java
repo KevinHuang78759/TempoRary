@@ -276,15 +276,15 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         // draw easy, medium, and hard buttons
         Texture easyButtonTemp = (selectedDifficulty == EASY ? easyButton: easyButtonInactive);
         canvas.draw(easyButtonTemp, Color.WHITE, easyButtonTemp.getWidth()/2, easyButtonTemp.getHeight()/2,
-                easyButtonCoords.x, easyButtonCoords.y, 0, 0.5f*scale, 0.5f*scale);
+                easyButtonCoords.x, easyButtonCoords.y, 0, 0.6f*scale, 0.6f*scale);
 
         Texture medButtonTemp = (selectedDifficulty == MEDIUM ? mediumButton: mediumButtonInactive);
         canvas.draw(medButtonTemp, Color.WHITE, mediumButton.getWidth()/2, mediumButton.getHeight()/2,
-                mediumButtonCoords.x, mediumButtonCoords.y, 0, 0.5f*scale, 0.5f*scale);
+                mediumButtonCoords.x, mediumButtonCoords.y, 0, 0.6f*scale, 0.6f*scale);
 
         Texture hardButtonTemp = (selectedDifficulty == HARD ? hardButton: hardButtonInactive);
         canvas.draw(hardButtonTemp, Color.WHITE, hardButton.getWidth()/2, hardButton.getHeight()/2,
-                hardButtonCoords.x, hardButtonCoords.y, 0, 0.5f*scale, 0.5f*scale);
+                hardButtonCoords.x, hardButtonCoords.y, 0, 0.6f*scale, 0.6f*scale);
 
         // draw each song
         if (selectedLevel>=1){ //check that if there are a song to the left; if so, draw.
@@ -310,11 +310,11 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         // draw the goleft and go right buttons
         if (selectedLevel-1>=0) {
             canvas.draw(goLeft, Color.WHITE, goLeft.getWidth() / 2, goLeft.getHeight() / 2,
-                    goLeftCoords.x, goLeftCoords.y, 0, 0.9f * scale, 0.9f * scale);
+                    goLeftCoords.x, goLeftCoords.y, 0, scale,  scale);
         }
         if (selectedLevel+1< numSongs) {
             canvas.draw(goRight, Color.WHITE, goRight.getWidth() / 2, goRight.getHeight() / 2,
-                    goRightCoords.x, goRightCoords.y, 0, 0.9f * scale, 0.9f * scale);
+                    goRightCoords.x, goRightCoords.y, 0,  scale, scale);
         }
 
         // draw play button
@@ -395,20 +395,20 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                 return true;
             }
 
-            if (isButtonPressed(screenX, screenY, easyButton, easyButtonCoords, scale)) {
+            if (isButtonPressed(screenX, screenY, easyButton, easyButtonCoords, 0.6f*scale)) {
                 selectedDifficulty = 1;
             }
 
-            if (isButtonPressed(screenX, screenY, mediumButton, mediumButtonCoords, scale)) {
+            if (isButtonPressed(screenX, screenY, mediumButton, mediumButtonCoords, 0.6f*scale)) {
                 selectedDifficulty = 2;
             }
 
-            if (isButtonPressed(screenX, screenY, hardButton, hardButtonCoords, scale)) {
+            if (isButtonPressed(screenX, screenY, hardButton, hardButtonCoords, 0.6f*scale)) {
                 selectedDifficulty = 3;
             }
 
             // if there are a previous level, we allow decrement.
-            if (isButtonPressed(screenX, screenY, goLeft, goLeftCoords, 0.9f*scale)) {
+            if (isButtonPressed(screenX, screenY, goLeft, goLeftCoords, scale)) {
                 if (selectedLevel-1>=0){
                     prevLevel = selectedLevel;
                     selectedLevel--;
@@ -416,7 +416,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             }
 
             // if there are a next level, we allow increment.
-            if (isButtonPressed(screenX, screenY, goRight, goRightCoords, 0.9f*scale)) {
+            if (isButtonPressed(screenX, screenY, goRight, goRightCoords, scale)) {
                 if (selectedLevel+1< numSongs){
                     prevLevel = selectedLevel;
                     selectedLevel++;
@@ -442,7 +442,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             }
 
 
-            if (isButtonPressed(screenX, screenY, playButton, playButtonCoords,scale)) {
+            if (isButtonPressed(screenX, screenY, playButton, playButtonCoords,BUTTON_SCALE*scale*0.5f)) {
                 playPressed=true;
             }
 
@@ -466,7 +466,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     private void update(){
 //        System.out.println("prev level:"+prevLevel);
 //        System.out.println("curr level"+selectedLevel);
-        float steps = 30f;
+        float steps = 20f;
         float scaleChange = centerScale - cornerScale;
         float rightLenX = Math.abs(albumCoverMiddleX - albumCoverLeftX);
         float rightStep = rightLenX / steps;
