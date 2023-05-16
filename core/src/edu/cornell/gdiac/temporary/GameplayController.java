@@ -461,6 +461,7 @@ public class GameplayController {
 		for (Particle o: noteIndicatorParticles){
 			o.update(0f);
 		}
+		level.updateCompRates();
 	}
 
 	/**

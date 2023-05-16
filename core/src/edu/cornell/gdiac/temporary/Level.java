@@ -20,8 +20,10 @@ import edu.cornell.gdiac.util.FilmStrip;
 
 import javax.swing.plaf.TextUI;
 import java.nio.ByteBuffer;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.PriorityQueue;
 
 public class Level {
 
@@ -208,6 +210,16 @@ public class Level {
     JsonValue data;
 
     float maxSample;
+
+    // this comparator is used for comparing comp flag data later on
+    private static class CustomComparator implements Comparator<Long[]> {
+        @Override
+        public int compare(Long[] o1, Long[] o2) {
+            if (o1[0].equals(o2[0])) return 0;
+            return o1[0] > o2[0] ? 1 : -1;
+        }
+    }
+
     public Level(JsonValue data, AssetDirectory directory) {
         JsonReader jr = new JsonReader();
         JsonValue assets = jr.parse(Gdx.files.internal("assets.json"));
@@ -263,15 +275,21 @@ public class Level {
         for(int i = 0; i < bandMembers.length; i++){
             bandMembers[i] = new BandMember();
             JsonValue bandMemberData = data.get("bandMembers").get(i);
+
+            // we store comp flags as arrays of size 3: song position, lossRate, gainRate
+            // we sort these comp flags in a PriorityQueue for each band member based on song position
             JsonValue compFlags = bandMemberData.get("compFlags");
-            Map<Long, Integer[]> compData = new HashMap<>();
+            PriorityQueue<Long[]> compData = new PriorityQueue<>(10, new CustomComparator());
             for(int j = 0; j < compFlags.size; ++j){
                 JsonValue thisCompFlag = compFlags.get(j);
-                Integer[] arr = new Integer[2];
-                arr[0] = thisCompFlag.getInt("rate");
-                arr[1] = thisCompFlag.getInt("gain");
-                compData.put(thisCompFlag.getLong("position"), arr);
+                Long[] arr = new Long[3];
+                arr[0] = thisCompFlag.getLong("position");
+                arr[1] = (long) thisCompFlag.getInt("rate");
+                arr[2] = (long) thisCompFlag.getInt("gain");
+                compData.add(arr);
             }
+            bandMembers[i].setCompData(compData);
+
             Queue<Note> notes = new Queue<>();
             JsonValue noteData = bandMemberData.get("notes");
             for(int j = 0; j < noteData.size; ++j){
@@ -305,7 +323,11 @@ public class Level {
             bandMembers[i].setCurComp(maxCompetency);
             bandMembers[i].setMaxComp(maxCompetency);
             // TODO: FIX THIS SO THAT IT FITS THE LEVEL JSON
-            bandMembers[i].setLossRate(bandMemberData.getInt("competencyLossRate"));
+            Long[] firstCompData = bandMembers[i].getCompData().poll();
+            if (firstCompData != null) {
+                bandMembers[i].setLossRate(firstCompData[1].intValue());
+                bandMembers[i].setGainRate(firstCompData[2].intValue());
+            }
             bandMembers[i].setHpBarFilmStrip(hpbar, 47);
             bandMembers[i].setIndicatorTextures(noteIndicator, noteIndicatorHit);
             switch (bandMemberData.getString("instrument")) {
@@ -425,6 +447,21 @@ public class Level {
     private long sample = 0;
 
     /**
+     * We check to see if we have reached the song position of the next comp rate change, and change if we have
+     * */
+    public void updateCompRates() {
+        for (int i=0; i < bandMembers.length; i++) {
+            Long[] top = bandMembers[i].getCompData().peek();
+            if (top == null) return;
+            if (getCurrentSample() >= top[0]) {
+                top = bandMembers[i].getCompData().poll();
+                bandMembers[i].setLossRate((top[1]).intValue());
+                bandMembers[i].setGainRate((top[2]).intValue());
+            }
+        }
+    }
+
+    /**
      * Spawns new notes according to what sample we are at. Also decrements bandmembers' competency
      * for some amount about once a second. It also updates the frame of the bandmember.
      */
@@ -526,7 +563,17 @@ public class Level {
             bandMembers[i].setAllNotes(notes);
             bandMembers[i].setCurComp(maxCompetency);
             bandMembers[i].setMaxComp(maxCompetency);
-            bandMembers[i].setLossRate(bandMemberData.getInt("competencyLossRate"));
+            JsonValue compFlags = bandMemberData.get("compFlags");
+            PriorityQueue<Long[]> compData = new PriorityQueue<>(10, new CustomComparator());
+            for(int j = 0; j < compFlags.size; ++j){
+                JsonValue thisCompFlag = compFlags.get(j);
+                Long[] arr = new Long[3];
+                arr[0] = thisCompFlag.getLong("position");
+                arr[1] = (long) thisCompFlag.getInt("rate");
+                arr[2] = (long) thisCompFlag.getInt("gain");
+                compData.add(arr);
+            }
+            bandMembers[i].setCompData(compData);
             bandMembers[i].setHpBarFilmStrip(hpbar, 47);
             switch (bandMemberData.getString("instrument")) {
                 case "violin":
