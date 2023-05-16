@@ -403,8 +403,7 @@ public class Level {
     }
 
     private float findTintColorProgress(float t_progress, SingleOperator op){
-        float prog = op.op(t_progress);
-        return prog;
+        return op.op(t_progress);
     }
 
     private long sample = 0;
