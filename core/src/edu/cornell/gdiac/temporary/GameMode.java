@@ -451,8 +451,8 @@ public class GameMode implements Screen {
 				introTime = gameplayController.updateIntro(ticks);
 				ticks++;
 				if (!justPaused) {
-					gameplayController.update(0, ticks);
 					gameplayController.reactToAction();
+					gameplayController.update(0, ticks);
 				}
 				if (introTime >= 0 && !saidThree){
 					introThreeSFX.playSound("three", 0.3f);

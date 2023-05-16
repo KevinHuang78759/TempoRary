@@ -743,7 +743,7 @@ public class GameplayController {
 					curP = PlayPhase.TRANSITION;
 					//reset progress
 					t_progress = 0; //transition progress
-					t_start = level.getCurrentSample();
+					t_start = level.getLevelSample();
 					return;
 				}
 			}
@@ -753,7 +753,7 @@ public class GameplayController {
 			garbageCollectNoteIndicators();
 
 			// Increment progress
-			t_progress = level.getCurrentSample() - t_start;
+			t_progress = level.getLevelSample() - t_start;
 
 			// Check if we are done, if so set active BM and change phase
 			if(t_progress >= T_SwitchPhases){
