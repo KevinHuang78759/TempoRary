@@ -121,8 +121,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private CheckBox.CheckBoxStyle checkBoxStyle = new CheckBox.CheckBoxStyle();
     private SelectBox.SelectBoxStyle dropdownStyle = new SelectBox.SelectBoxStyle();
     private Window.WindowStyle windowStyle = new Window.WindowStyle();
-    private TextButton.TextButtonStyle primaryKeyStyle = new TextButton.TextButtonStyle();
-    private TextButton.TextButtonStyle secondaryKeyStyle = new TextButton.TextButtonStyle();
 
     // Scene2D UI components
     // settings image assets
@@ -131,6 +129,10 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private Texture headerLine;
     private Texture primaryBox;
     private Texture secondaryBox;
+    private Texture primaryBoxActive;
+    private Texture primaryBoxUnbound;
+    private Texture secondaryBoxActive;
+    private Texture secondaryBoxUnbound;
     private Texture fishOutline;
     private Texture catOutline;
     private Texture sliderBackground;
@@ -193,7 +195,11 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         backButtonTexture = directory.getEntry("back-arrow", Texture.class);
         headerLine = directory.getEntry("header-line", Texture.class);
         primaryBox = directory.getEntry("primary-box", Texture.class);
+        primaryBoxActive = directory.getEntry("primary-box-active", Texture.class);
+        primaryBoxUnbound = directory.getEntry("primary-box-unbound", Texture.class);
         secondaryBox = directory.getEntry("secondary-box", Texture.class);
+        secondaryBoxActive = directory.getEntry("secondary-box-active", Texture.class);
+        secondaryBoxUnbound = directory.getEntry("secondary-box-unbound", Texture.class);
         fishOutline = directory.getEntry("fish-outline", Texture.class);
         catOutline = directory.getEntry("cat-outline", Texture.class);
         sliderBackground = directory.getEntry("slider-background", Texture.class);
@@ -263,15 +269,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         windowStyle.background = new TextureRegionDrawable(dialogBackground);
         windowStyle.titleFont = blinkerRegular;
 
-        primaryKeyStyle.up = new TextureRegionDrawable(primaryBox);
-        primaryKeyStyle.down = new TextureRegionDrawable(primaryBox);
-        primaryKeyStyle.font = blinkerRegular;
-        primaryKeyStyle.fontColor = fontColor;
-
-        secondaryKeyStyle.up = new TextureRegionDrawable(secondaryBox);
-        secondaryKeyStyle.down = new TextureRegionDrawable(secondaryBox);
-        secondaryKeyStyle.font = blinkerRegular;
-        secondaryKeyStyle.fontColor = fontColor;
     }
 
     // TODO: ADD A WAY TO RESET ALL SETTINGS AND CLEAR SAVE DATA
@@ -378,10 +375,11 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
                     } else {
                         InputController.getInstance().setKeybinding(currBandMemberCount - 1, laneChange, keycode, changeMain);
                     }
-                    controlTable.clear();
-                    regenerateControlTable(controlTable);
                     dialog.hide(null);
                 }
+                // TODO: GET RID OF THIS!!!!!!!!!
+                controlTable.clear();
+                regenerateControlTable(controlTable);
                 return true;
             }
 
@@ -486,7 +484,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         });
     }
 
-    private Table getControlWidget(final int nth, final String primaryKeybind, String secondaryKeybind, final Texture outlineImage) {
+    private Table getControlWidget(final int nth, String primaryKeybind, String secondaryKeybind, final Texture outlineImage) {
         Table tempTable = new Table();
         tempTable.add(new Label("" + nth + "", boldLabelStyle));
 
@@ -498,15 +496,46 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         VerticalGroup stack = new VerticalGroup();
         stack.space(10);
 
+        TextButton.TextButtonStyle primaryKeyStyle = new TextButton.TextButtonStyle();
+        TextButton.TextButtonStyle secondaryKeyStyle = new TextButton.TextButtonStyle();
+
+        primaryKeyStyle.up = new TextureRegionDrawable(primaryBox);
+        primaryKeyStyle.down = new TextureRegionDrawable(primaryBoxActive);
+        primaryKeyStyle.font = blinkerRegular;
+        primaryKeyStyle.fontColor = fontColor;
+
+        secondaryKeyStyle.up = new TextureRegionDrawable(secondaryBox);
+        secondaryKeyStyle.down = new TextureRegionDrawable(secondaryBoxActive);
+        secondaryKeyStyle.font = blinkerRegular;
+        secondaryKeyStyle.fontColor = fontColor;
+
         final Button primaryKeyButton = keyImageMap.get(primaryKeybind) != null ?
                 new ImageButton(new TextureRegionDrawable(keyImageMap.get(primaryKeybind))) : new TextButton(primaryKeybind, primaryKeyStyle);
-        primaryKeyButton.getStyle().up = new TextureRegionDrawable(primaryBox);
-        primaryKeyButton.getStyle().down = new TextureRegionDrawable(primaryBox);
+        if (primaryKeybind.equals("")) {
+            primaryKeyButton.getStyle().up = new TextureRegionDrawable(primaryBoxUnbound);
+        } else {
+            primaryKeyButton.getStyle().up = new TextureRegionDrawable(primaryBox);
+        }
+        primaryKeyButton.getStyle().down = new TextureRegionDrawable(primaryBoxActive);
+        primaryKeyButton.getStyle().checked = new TextureRegionDrawable(primaryBoxActive);
+        if (primaryKeyButton instanceof TextButton) {
+            ((TextButton) primaryKeyButton).getStyle().checkedFontColor = Color.WHITE;
+            ((TextButton) primaryKeyButton).getStyle().downFontColor = Color.WHITE;
+        }
 
         final Button secondaryKeyButton = keyImageMap.get(secondaryKeybind) != null ?
                 new ImageButton(new TextureRegionDrawable(keyImageMap.get(secondaryKeybind))) : new TextButton(secondaryKeybind, secondaryKeyStyle);
-        secondaryKeyButton.getStyle().up = new TextureRegionDrawable(secondaryBox);
-        secondaryKeyButton.getStyle().down = new TextureRegionDrawable(secondaryBox);
+        if (secondaryKeybind.equals("")) {
+            secondaryKeyButton.getStyle().up = new TextureRegionDrawable(secondaryBoxUnbound);
+        } else {
+            secondaryKeyButton.getStyle().up = new TextureRegionDrawable(secondaryBox);
+        }
+        secondaryKeyButton.getStyle().down = new TextureRegionDrawable(secondaryBoxActive);
+        secondaryKeyButton.getStyle().checked = new TextureRegionDrawable(secondaryBoxActive);
+        if (secondaryKeyButton instanceof TextButton) {
+            ((TextButton) secondaryKeyButton).getStyle().checkedFontColor = Color.WHITE;
+            ((TextButton) secondaryKeyButton).getStyle().downFontColor = Color.WHITE;
+        }
 
         ChangeListener buttonChangeListener = new ChangeListener() {
             @Override
@@ -516,6 +545,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
                 changeMain = actor == primaryKeyButton;
                 dialog.show(stage,null);
                 dialog.setPosition((float)Math.round((stage.getWidth() - dialog.getWidth()) / 2.0f), (float)Math.round((stage.getHeight() - dialog.getHeight()) / 2.0f));
+                ((Button) actor).setChecked(true);
             }
         };
 

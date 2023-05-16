@@ -224,11 +224,9 @@ public class InputController {
 		}
 	}
 
-	// TODO: FIX THIS
 	/**
 	 * Sets bindings to -1 if there are multiple bindings
 	 * @param binding Input.Key integer binding
-	 * @param lane
 	 */
 	private void updateKeybindingMap(int binding, String newPossessor, int numBandMembers) {
 		String bindingObj = masterKeybindingMap.get(binding);
