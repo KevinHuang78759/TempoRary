@@ -27,6 +27,8 @@ import edu.cornell.gdiac.util.ScreenListener;
  */
 public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
+    SoundController<Integer> s;
+
     /** Reference to GameCanvas created by the root */
     private GameCanvas canvas;
     /** Listener that will update the player mode when we are done */
@@ -175,6 +177,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
      * @param directory 	Reference to the asset directory.
      */
     public void populate(AssetDirectory directory) {
+
         logo = directory.getEntry("title", Texture.class);
         background = directory.getEntry( "loading-background", Texture.class );
         background.setFilter( Texture.TextureFilter.Linear, Texture.TextureFilter.Linear );
@@ -370,6 +373,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 //            }
 
             public boolean keyDown(InputEvent event, int keycode) {
+                s.playSound(0, 0.3f*soundFXVolume);
                 if (keycode == Input.Keys.ESCAPE) {
                     dialog.hide(null);
                 } else {
@@ -394,13 +398,16 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         calibButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
+                s.playSound(0, 0.3f*soundFXVolume);
                 pressState = ExitCode.TO_CALIBRATION;
+
             }
         });
 
         backButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
+                s.playSound(0, 0.3f*soundFXVolume);
                 SaveManager.getInstance().saveSettings(InputController.triggerBindingsMain, InputController.switchesBindingsMain, musicVolume, soundFXVolume);
                 switchToHome();
             }
@@ -409,6 +416,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         fullscreenCheckbox.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
+                s.playSound(0, 0.3f*soundFXVolume);
                 Graphics.DisplayMode currentMode = Gdx.graphics.getDisplayMode();
                 // TODO: cache previous size before windowed mode
                 if (!fullscreenCheckbox.isChecked()) {
@@ -474,6 +482,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         dropdown.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
+                s.playSound(0, 0.3f*soundFXVolume);
                 currBandMemberCount = dropdown.getSelected();
                 table.clear();
                 regenerateControlTable(table);
@@ -506,6 +515,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         ChangeListener buttonChangeListener = new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
+                s.playSound(0, 0.3f*soundFXVolume);
                 laneChange = nth - 1;
                 switchChanged = outlineImage == catOutline;
                 changeMain = actor == primaryKeyButton;
@@ -556,6 +566,8 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
      * @param canvas 	The game canvas to draw to
      */
     public MenuMode(GameCanvas canvas) {
+        s = new SoundController<>();
+        s.addSound(0, "sound/click.ogg");
         this.canvas = canvas;
         stage = new Stage(new ExtendViewport(1200, 800));
         mainTable = new Table();
@@ -741,11 +753,11 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         // buttons are rectangles
         // buttonCoords hold the center of the rectangle, buttonTexture has the width and height
         // get half the x length of the button portrayed
-        float xRadius = scale * buttonTexture.getWidth()/2.0f;
+        float xRadius = scale * buttonTexture.getWidth() / 2.0f;
         boolean xInBounds = x - xRadius <= screenX && x + xRadius >= screenX;
 
         // get half the y length of the button portrayed
-        float yRadius = scale * buttonTexture.getHeight()/2.0f;
+        float yRadius = scale * buttonTexture.getHeight() / 2.0f;
         boolean yInBounds = y - yRadius <= screenY && y + yRadius >= screenY;
         return xInBounds && yInBounds;
     }
@@ -767,6 +779,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
                 || pressState == ExitCode.TO_EDITOR
                 || pressState == ExitCode.TO_CALIBRATION
                 || pressState == ExitCode.TO_EXIT) {
+
             return true;
         }
         // Flip to match graphics coordinates
@@ -784,6 +797,8 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
             if (isButtonPressed(screenX, screenY, levelEditorButton, canvas.getWidth()/2, canvas.getHeight()*0.25f, BUTTON_SCALE * scale)) {
                 pressState = LEVEL_EDITOR_PRESSED;
             }
+            s.playSound(0, 0.3f*soundFXVolume);
+
         }
         return false;
     }

@@ -41,6 +41,8 @@ import edu.cornell.gdiac.util.ScreenListener;
  */
 public class GameMode implements Screen {
 
+	SoundController<Integer> s;
+
 	/**
 	 * Track the current state of the game for the update loop.
 	 */
@@ -68,10 +70,7 @@ public class GameMode implements Screen {
 	private Texture introOne;
 	private Texture introGo;
 
-	private SoundController<String> introOneSFX;
-	private SoundController<String> introTwoSFX;
-	private SoundController<String> introThreeSFX;
-	private SoundController<String> introGoSFX;
+	private SoundController<String> introSFX;
 
 	private boolean saidThree;
 	private boolean saidTwo;
@@ -248,10 +247,8 @@ public class GameMode implements Screen {
 
 		// Create the controllers.
 		gameplayController = new GameplayController(canvas.getWidth(),canvas.getHeight());
-		introOneSFX = new SoundController<>();
-		introTwoSFX = new SoundController<>();
-		introThreeSFX = new SoundController<>();
-		introGoSFX = new SoundController<>();
+		introSFX = new SoundController<>();
+		s = new SoundController<>();
 	}
 
 	/**
@@ -403,10 +400,11 @@ public class GameMode implements Screen {
 		introTwo = directory.getEntry("intro-2", Texture.class);
 		introOne = directory.getEntry("intro-1", Texture.class);
 		introGo = directory.getEntry("intro-go", Texture.class);
-		introOneSFX.addSound("one", "sound/1.mp3");
-		introTwoSFX.addSound("two", "sound/2.mp3");
-		introThreeSFX.addSound("three", "sound/3.mp3");
-		introGoSFX.addSound("go", "sound/go.mp3");
+		introSFX.addSound("one", "sound/1.mp3");
+		introSFX.addSound("two", "sound/2.mp3");
+		introSFX.addSound("three", "sound/3.mp3");
+		introSFX.addSound("go", "sound/go.mp3");
+		s.addSound(0, "sound/click.ogg");
 	}
 
 	private String matchDifficulty(int diff) {
@@ -457,19 +455,19 @@ public class GameMode implements Screen {
 					gameplayController.update(0, ticks);
 				}
 				if (introTime >= 0 && !saidThree){
-					introThreeSFX.playSound("three", 0.3f);
+					introSFX.playSound("three", 0.3f);
 					saidThree = true;
 				}
 				if (introTime >= 100 && !saidTwo){
-					introTwoSFX.playSound("two", 0.3f);
+					introSFX.playSound("two", 0.3f);
 					saidTwo = true;
 				}
 				if (introTime >= 200 && !saidOne){
-					introOneSFX.playSound("one", 0.3f);
+					introSFX.playSound("one", 0.3f);
 					saidOne = true;
 				}
 				if (introTime >= 300) {
-					introGoSFX.playSound("go", 0.3f);
+					introSFX.playSound("go", 0.3f);
 					introTime = 0;
 					ticks = 0;
 					justPaused = false;
@@ -489,26 +487,31 @@ public class GameMode implements Screen {
 						boolean didNext = (isButtonPressed(screenX, screenY, nextButtonWon, nextWonCoords, WON_BUTTON_SCALE));
 
 						if (didGoBack) {
+							s.playSound(0, 0.3f);
 							System.out.println("pressed back");
 							pressState = ExitCode.TO_MENU;
 						}
 
 						if (didRestartWon) {
+							s.playSound(0, 0.3f);
 							System.out.println("pressed restart");
 							resetLevel();
 						}
 
 						if (didLevel) {
+							s.playSound(0, 0.3f);
 							System.out.println("pressed level");
 							pressState = ExitCode.TO_LEVEL;
 						}
 
 						if (didNext) {
+							s.playSound(0, 0.3f);
 							goNextLevel();
 						}
 
 					}
 					if (inputController.didReset()) {
+						s.playSound(0, 0.3f);
 						resetLevel();
 					}
 				} else {
@@ -537,10 +540,13 @@ public class GameMode implements Screen {
 					boolean didMenu = (isButtonPressed(screenX, screenY, menuButton, menuCoords));
 					boolean didRestart = (isButtonPressed(screenX, screenY, restartButton, restartCoords));
 					if (didLevel) {
+						s.playSound(0, 0.3f);
 						pressState = ExitCode.TO_LEVEL;
 					} else if (didMenu) {
+						s.playSound(0, 0.3f);
 						pressState = ExitCode.TO_MENU;
 					} else if (didResume) {
+						s.playSound(0, 0.3f);
 						ticks = 60;
 						saidThree = false;
 						saidTwo = false;
@@ -548,6 +554,7 @@ public class GameMode implements Screen {
 						justPaused = true;
 						gameState = GameState.INTRO;
 					} else if (didRestart) {
+						s.playSound(0, 0.3f);
 						resetLevel();
 					}
 				}
@@ -562,18 +569,22 @@ public class GameMode implements Screen {
 						boolean didLevel = (isButtonPressed(screenX, screenY, levelButtonWon, levelWonCoords, WON_BUTTON_SCALE));
 						boolean didNext = (isButtonPressed(screenX, screenY, nextButtonWon, nextWonCoords, WON_BUTTON_SCALE));
 						if (didGoBack) {
+							s.playSound(0, 0.3f);
 							pressState = ExitCode.TO_MENU;
 						}
 						if (didRestartWon) {
+							s.playSound(0, 0.3f);
 							System.out.println("pressed restart");
 							pressState = ExitCode.TO_PLAYING;
 							resetLevel();
 						}
 						if (didLevel) {
+							s.playSound(0, 0.3f);
 							System.out.println("pressed level");
 							pressState = ExitCode.TO_LEVEL;
 						}
 						if (didNext) {
+							s.playSound(0, 0.3f);
 							goNextLevel();
 						}
 					}
