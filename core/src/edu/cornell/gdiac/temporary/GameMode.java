@@ -88,7 +88,7 @@ public class GameMode implements Screen {
 	/** Values used for resizing */
 	private static int STANDARD_WIDTH = 1200;
 	private static int STANDARD_HEIGHT = 800;
-	private float scale;
+	private float scale = 1.0f;
 	private int centerX = STANDARD_WIDTH/2;
 	private int centerY = STANDARD_HEIGHT/2;
 
@@ -237,9 +237,6 @@ public class GameMode implements Screen {
 
 		// Null out all pointers, 0 out all ints, etc.
 		gameState = GameState.INTRO;
-
-		//Resize based on canvas dimensions
-		resize(canvas.getWidth(), canvas.getHeight());
 
 		// Create the controllers.
 		gameplayController = new GameplayController(canvas.getWidth(),canvas.getHeight());
@@ -948,7 +945,7 @@ public class GameMode implements Screen {
 	 */
 	@Override
 	public void resize(int width, int height) {
-		//gameplayController.resize(Math.max(250,width), Math.max(200,height));
+		gameplayController.resize(Math.max(250,width), Math.max(200,height));
 		// Compute the drawing scale
 		float sx = ((float)width)/STANDARD_WIDTH;
 		float sy = ((float)height)/STANDARD_HEIGHT;
