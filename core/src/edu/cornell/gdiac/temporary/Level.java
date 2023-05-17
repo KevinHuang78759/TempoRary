@@ -215,8 +215,7 @@ public class Level {
     private static class CustomComparator implements Comparator<Long[]> {
         @Override
         public int compare(Long[] o1, Long[] o2) {
-            if (o1[0].equals(o2[0])) return 0;
-            return o1[0] > o2[0] ? 1 : -1;
+            return Long.compare(o1[0], o2[1]);
         }
     }
 
@@ -248,10 +247,10 @@ public class Level {
         levelName = data.getString("levelName");
         levelNumber = data.getInt("levelNumber");
         maxCompetency = data.getInt("maxCompetency");
-        aThreshold = data.get("a-threshold").asLong();
-        bThreshold = data.get("b-threshold").asLong();
-        cThreshold = data.get("c-threshold").asLong();
-        sThreshold = data.get("s-threshold").asLong();
+        aThreshold = data.get("thresholdA").asLong();
+        bThreshold = data.get("thresholdB").asLong();
+        cThreshold = data.get("thresholdC").asLong();
+        sThreshold = data.get("thresholdS").asLong();
         bpm = data.getInt("bpm");
         String song = data.getString("song");
         fallSpeed = data.getInt("fallSpeed");
@@ -268,7 +267,7 @@ public class Level {
 
         // preallocate band members
         bandMembers = new BandMember[data.get("bandMembers").size];
-        spawnOffset = music.getSampleRate();
+        spawnOffset = 10*music.getSampleRate()/fallSpeed;
         // switch note is twice as slow
         spawnOffsetSwitch = 2L * spawnOffset;
         System.out.println(spawnOffset);
