@@ -16,6 +16,7 @@ import edu.cornell.gdiac.audio.AudioStream;
 import edu.cornell.gdiac.audio.MusicQueue;
 import edu.cornell.gdiac.temporary.entity.BandMember;
 import edu.cornell.gdiac.temporary.entity.Note;
+import edu.cornell.gdiac.temporary.entity.CompFlag;
 import edu.cornell.gdiac.util.FilmStrip;
 
 import javax.swing.plaf.TextUI;
@@ -229,12 +230,13 @@ public class Level {
         //Read in Json  Value and populate asset textures
         lastDec = 0;
         levelName = data.getString("levelName");
+        System.out.println(levelName);
         levelNumber = data.getInt("levelNumber");
         maxCompetency = data.getInt("maxCompetency");
-        aThreshold = data.get("a-threshold").asLong();
-        bThreshold = data.get("b-threshold").asLong();
-        cThreshold = data.get("c-threshold").asLong();
-        sThreshold = data.get("s-threshold").asLong();
+        aThreshold = data.get("thresholdA").asLong();
+        bThreshold = data.get("thresholdB").asLong();
+        cThreshold = data.get("thresholdC").asLong();
+        sThreshold = data.get("thresholdS").asLong();
         bpm = data.getInt("bpm");
         String song = data.getString("song");
         music = ((AudioEngine) Gdx.audio).newMusic(Gdx.files.internal(assets.get("samples").getString(song)));
@@ -258,6 +260,7 @@ public class Level {
             bandMembers[i] = new BandMember();
             JsonValue bandMemberData = data.get("bandMembers").get(i);
             Queue<Note> notes = new Queue<>();
+            Queue<CompFlag> comps = new Queue<>();
             JsonValue noteData = bandMemberData.get("notes");
             for(int j = 0; j < noteData.size; ++j){
                 JsonValue thisNote = noteData.get(j);
@@ -286,11 +289,22 @@ public class Level {
                 n.setHitSample(thisNote.getLong("position"));
                 notes.addLast(n);
             }
+            JsonValue compData = bandMemberData.get("compFlags");
+            for (int j = 0; j < compData.size; ++j){
+                JsonValue thisFlag = compData.get(j);
+                CompFlag f;
+                f = new CompFlag(thisFlag.getLong("position") - spawnOffset);
+                f.setLossRate(thisFlag.getInt("rate"));
+                f.setNoteGain(thisFlag.getInt("gain"));
+                f.setHitSample(thisFlag.getLong("position"));
+                comps.addLast(f);
+            }
             bandMembers[i].setAllNotes(notes);
+            bandMembers[i].setAllFlags(comps);
             bandMembers[i].setCurComp(maxCompetency);
             bandMembers[i].setMaxComp(maxCompetency);
             // TODO: FIX THIS SO THAT IT FITS THE LEVEL JSON
-            bandMembers[i].setLossRate(bandMemberData.getInt("competencyLossRate"));
+            bandMembers[i].setLossRate(1);
             bandMembers[i].setHpBarFilmStrip(hpbar, 47);
             bandMembers[i].setIndicatorTextures(noteIndicator, noteIndicatorHit);
             switch (bandMemberData.getString("instrument")) {
@@ -436,6 +450,8 @@ public class Level {
 
             //spawn new notes accordingly
             bandMember.spawnNotes(sample);
+            //spawn new notes accordingly
+            bandMember.spawnFlags(sample);
             //update the note frames
             bandMember.updateNotes(spawnY, sample);
 
@@ -481,6 +497,7 @@ public class Level {
             bandMembers[i] = new BandMember();
             JsonValue bandMemberData = data.get("bandMembers").get(i);
             Queue<Note> notes = new Queue<>();
+            Queue<CompFlag> comps = new Queue<>();
             JsonValue noteData = bandMemberData.get("notes");
             for(int j = 0; j < noteData.size; ++j){
                 JsonValue thisNote = noteData.get(j);
@@ -508,10 +525,21 @@ public class Level {
                 n.setHitSample(thisNote.getLong("position"));
                 notes.addLast(n);
             }
+            JsonValue compData = bandMemberData.get("compFlags");
+            for (int j = 0; j < compData.size; ++j){
+                JsonValue thisFlag = compData.get(j);
+                CompFlag f;
+                f = new CompFlag(thisFlag.getLong("position") - spawnOffset);
+                f.setLossRate(thisFlag.getInt("rate"));
+                f.setNoteGain(thisFlag.getInt("gain"));
+                f.setHitSample(thisFlag.getLong("position"));
+                comps.addLast(f);
+            }
             bandMembers[i].setAllNotes(notes);
+            bandMembers[i].setAllFlags(comps);
             bandMembers[i].setCurComp(maxCompetency);
             bandMembers[i].setMaxComp(maxCompetency);
-            bandMembers[i].setLossRate(bandMemberData.getInt("competencyLossRate"));
+            bandMembers[i].setLossRate(1);
             bandMembers[i].setHpBarFilmStrip(hpbar, 47);
             switch (bandMemberData.getString("instrument")) {
                 case "violin":

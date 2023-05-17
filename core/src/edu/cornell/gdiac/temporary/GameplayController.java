@@ -442,7 +442,7 @@ public class GameplayController {
 		if (countTime >= 1f / 20f) {
 			countTime = countTime * (1f / 2f);
 		}
-		return ((int)(3f/countTime)) + 120;
+		return ((int)(3f/countTime)) + 121;
 	}
 
 	/**

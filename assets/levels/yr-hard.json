@@ -1,17 +1,19 @@
 {
   "levelname" : "YR",
   "background" : "mountain-background",
+  "levelImage" : "cafe",
   "levelNumber" : 12,
   "song" : "YR",
   "startPosition" : 0,
   "bpm" : 150,
+  "fallSpeed": 10,
   "maxCompetency" : 175,
   "linesPerMember" : 4,
-  "a-threshold":640000,"b-threshold":530000,"c-threshold":320000,"s-threshold":750000,
+  "thresholdA":640000,"thresholdB":530000,"thresholdC":320000,"thresholdS":750000,
   "bandMembers" : [
     {
       "instrument" : "piano",
-      "competencyLossRate" : 15,
+      "compFlags" : [],
       "notes" : [
         {
           "type" : "beat",
@@ -1135,13 +1137,12 @@
           "duration" : 0,
           "line" : 2
         }
-      ],
-      "lossRates" : []
+      ]
     }
   ,
     {
       "instrument" : "piano",
-      "competencyLossRate" : 15,
+      "compFlags" : [],
       "notes" : [
         {
           "type" : "switch",
@@ -1779,13 +1780,12 @@
           "duration" : 0,
           "line" : 1
         }
-      ],
-      "lossRates" : []
+      ]
     }
   ,
     {
       "instrument" : "piano",
-      "competencyLossRate" : 15,
+      "compFlags" : [],
       "notes" : [
         {
           "type" : "switch",
@@ -2759,13 +2759,12 @@
           "duration" : 0,
           "line" : 1
         }
-      ],
-      "lossRates" : []
+      ]
     }
   ,
     {
       "instrument" : "piano",
-      "competencyLossRate" : 15,
+      "compFlags" : [],
       "notes" : [
         {
           "type" : "switch",
@@ -3937,8 +3936,7 @@
           "duration" : 0,
           "line" : 3
         }
-      ],
-      "lossRates" : []
+      ]
     }
 
   ],
