@@ -530,7 +530,7 @@ public class Level {
         // reset volume
         music.setVolume(oldVolume);
         bandMembers = new BandMember[data.get("bandMembers").size];
-        spawnOffset = music.getSampleRate();
+        spawnOffset = 10*music.getSampleRate()/fallSpeed;
         spawnOffsetSwitch = spawnOffset * 2L;
         for(int i = 0; i < bandMembers.length; i++){
             bandMembers[i] = new BandMember();

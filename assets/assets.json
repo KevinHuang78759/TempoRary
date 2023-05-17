@@ -158,6 +158,11 @@
           "music/American_Finale.ogg"
         ]
       },
+      "tutorial": {
+        "sources": [
+          "music/Tutorial.ogg"
+        ]
+      },
       "YR": {
         "sources": [
           "music/Yellow_River.ogg"
