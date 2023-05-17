@@ -15,7 +15,7 @@ public class SoundController<T>{
 
     private HashMap<T, Sound> effectList;
 
-    private float volumeAdjust;
+    private static float volumeAdjust;
 
     private Sound curSound;
 
@@ -48,7 +48,7 @@ public class SoundController<T>{
      * Adjusts the volume for all sounds effects in SoundController
      * @param vol volume
      */
-    public void setVolumeAdjust(float vol) {
+    public static void setVolumeAdjust(float vol) {
         volumeAdjust = vol;
     }
 }

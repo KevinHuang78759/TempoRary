@@ -111,8 +111,6 @@ public class LoadingMode implements Screen {
 
 	private int innerWidth;
 
-//	private int
-
 	/**
 	 * Returns the budget for the asset loader.
 	 *
@@ -251,7 +249,7 @@ public class LoadingMode implements Screen {
 	 */
 	private void draw() {
 		canvas.begin();
-		canvas.draw(background, 0, 0, canvas.getWidth(), canvas.getHeight());
+		canvas.drawBackground(background, 0, 0);
 		canvas.draw(loadingText, Color.WHITE, loadingText.getWidth()/2, loadingText.getHeight()/2, canvas.getWidth()/2, 0.23f * canvas.getHeight(), 0, 1.5f * scale, 1.5f * scale);
 		drawProgress(canvas);
 		canvas.end();
