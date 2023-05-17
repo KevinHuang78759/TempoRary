@@ -11,7 +11,7 @@
   "bandMembers" : [
     {
       "instrument" : "piano",
-      "competencyLossRate" :2,
+      "competencyLossRate" : 2,
       "notes" : [
         {
           "type" : "held",
