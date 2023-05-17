@@ -1,8 +1,6 @@
 {
   "levelname" : "American",
-
-  "background" : "midway-background",
-
+  "background" : "cafe-background",
   "levelNumber" : 9,
   "song" : "American",
   "startPosition" : 0,

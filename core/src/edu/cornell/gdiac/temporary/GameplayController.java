@@ -194,9 +194,6 @@ public class GameplayController {
 		level.setBandMemberHitY(hitY);
 	}
 
-	public void setFxVolume(float fxVolume) {
-		sfx.setVolumeAdjust(fxVolume);
-	}
 	/**
 	 * Loads a level
 	 */

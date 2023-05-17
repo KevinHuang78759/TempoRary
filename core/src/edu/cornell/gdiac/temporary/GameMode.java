@@ -291,10 +291,8 @@ public class GameMode implements Screen {
 	}
 
 	public void setSoundVolume(float fxVolume, float musicVolume) {
-		gameplayController.setFxVolume(fxVolume);
 		gameplayController.level.setMusicVolume(musicVolume);
 	}
-
 
 	/**
 	 * Dispose of all (non-static) resources allocated to this mode.
