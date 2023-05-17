@@ -813,10 +813,10 @@ public class EditorMode implements Screen {
         playPosition = startPosition;
         laneNumber = level.get("bandMembers").size;
         lineNumber = level.getInt("linesPerMember");
-        AThreshold = level.getInt("a-threshold");
-        BThreshold = level.getInt("b-threshold");
-        CThreshold = level.getInt("c-threshold");
-        SThreshold = level.getInt("s-threshold");
+        AThreshold = level.getInt("thresholdA");
+        BThreshold = level.getInt("thresholdB");
+        CThreshold = level.getInt("thresholdC");
+        SThreshold = level.getInt("thresholdS");
         selectedProbabilities = new int[laneNumber];
         typingProbabilities = new boolean[laneNumber];
         probabilityButtonLocations = new Vector2[laneNumber];

@@ -21,8 +21,6 @@ import edu.cornell.gdiac.util.FilmStrip;
 import javax.swing.plaf.TextUI;
 import java.nio.ByteBuffer;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.PriorityQueue;
 
 public class Level {
@@ -107,8 +105,6 @@ public class Level {
 
     public int getBpm() { return this.bpm; }
 
-    public int getFallSpeed() { return this.fallSpeed; }
-
     public long getaThreshold() {
         return aThreshold;
     }
@@ -166,7 +162,6 @@ public class Level {
     private int spawnOffset;
     private long spawnOffsetSwitch;
     private int bpm;
-    private int fallSpeed;
     private long aThreshold;
     private long bThreshold;
     private long cThreshold;
@@ -253,7 +248,7 @@ public class Level {
         sThreshold = data.get("thresholdS").asLong();
         bpm = data.getInt("bpm");
         String song = data.getString("song");
-        fallSpeed = data.getInt("fallSpeed");
+        int fallSpeed = data.getInt("fallSpeed");
         music = ((AudioEngine) Gdx.audio).newMusic(Gdx.files.internal(assets.get("samples").getString(song)));
         songSource = music.getSource(0);
         music.setVolume(0.8f);
@@ -530,6 +525,7 @@ public class Level {
         // reset volume
         music.setVolume(oldVolume);
         bandMembers = new BandMember[data.get("bandMembers").size];
+        int fallSpeed = data.getInt("fallSpeed");
         spawnOffset = 10*music.getSampleRate()/fallSpeed;
         spawnOffsetSwitch = spawnOffset * 2L;
         for(int i = 0; i < bandMembers.length; i++){

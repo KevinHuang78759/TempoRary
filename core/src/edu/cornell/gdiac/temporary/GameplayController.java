@@ -106,6 +106,11 @@ public class GameplayController {
 	/** number of notes hit perfect */
 	private int numberPerfect;
 
+	/** the multiplier for a perfect hit */
+	private static float PERFECT_HIT = 1.5f;
+	/** the multiplier for a good hit */
+	private static float GOOD_HIT = 1.25f;
+
 	/**
 	 * Create gameplaycontroler
 	 * @param width
@@ -644,7 +649,7 @@ public class GameplayController {
 				//If so, destroy the note and set a positive hit status. Also set that we
 				//have registered a hit for this line for this click. This ensures that
 				//We do not have a single hit count for two notes that are close together
-				int compGain = dist < perfectHit ? (int)(1.5*gainRate) : (dist < goodHit ? (int)(1.25*gainRate) : gainRate);
+				int compGain = dist < perfectHit ? (int)(PERFECT_HIT*gainRate) : (dist < goodHit ? (int)(GOOD_HIT*gainRate) : gainRate);
 
 				if (dist < perfectHit){
 					numberPerfect++;
@@ -797,7 +802,7 @@ public class GameplayController {
 					// approximation of how many samples held
 					long heldSamples = level.getCurrentSample() - n.getHitSample();
 					if (heldSamples / samplesPerBeat > n.getHeldFor()) {
-						level.getBandMembers()[activeBandMember].compUpdate(3);
+						level.getBandMembers()[activeBandMember].compUpdate(level.gainRate(activeBandMember));
 						n.setHeldFor(n.getHeldFor() + 1);
 					}
 				}
