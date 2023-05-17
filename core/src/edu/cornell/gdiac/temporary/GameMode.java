@@ -84,6 +84,15 @@ public class GameMode implements Screen {
 	private BitmapFont displayFont;
 
 	private BitmapFont lucidaFont;
+
+	/** Values used for resizing */
+	private static int STANDARD_WIDTH = 1200;
+	private static int STANDARD_HEIGHT = 800;
+	private float scale = 1.0f;
+	private int centerX = STANDARD_WIDTH/2;
+	private int centerY = STANDARD_HEIGHT/2;
+
+
 	/** Button textures */
 	private Texture resumeButton;
 	private Texture restartButton;
@@ -112,16 +121,6 @@ public class GameMode implements Screen {
 	private Texture levelButtonWon;
 
 	/* BUTTON LOCATIONS */
-	/** Resume button x and y coordinates represented as a vector */
-	private Vector2 resumeCoords;
-	/** Restart button x and y coordinates represented as a vector */
-	private Vector2 restartCoords;
-	/** Level select button x and y coordinates represented as a vector */
-	private Vector2 levelCoords;
-	/** Main menu button x and y coordinates represented as a vector */
-	private Vector2 menuCoords;
-	/** Pause background x and y coordinates represented as a vector*/
-	private Vector2 pauseCoords;
 
 	/** Resume button for win/lose screen x and y coordinates represented as a vector */
 	private Vector2 nextWonCoords;
@@ -136,7 +135,7 @@ public class GameMode implements Screen {
 	private Texture goBack;
 	private Vector2 goBackCoords;
 
-	private static float BUTTON_SCALE = 1f;
+	private static float BUTTON_SCALE = 1.0f;
 
 	private static float ALBUM_SCALE  = 0.75f;
 
@@ -154,8 +153,6 @@ public class GameMode implements Screen {
 	private InputController inputController;
 	/** Constructs the game models and handle basic gameplay (CONTROLLER CLASS) */
 	private GameplayController gameplayController;
-	/** Asset directory for level loading */
-	private AssetDirectory assetDirectory;
 	/** Lets the intro phase know to just resume the gameplay and not to reset the level */
 	private boolean justPaused;
 
@@ -176,12 +173,9 @@ public class GameMode implements Screen {
 	/** time in special units for measuring how far we are in the intro sequence */
 	private int endTime = 0;
 
-	/** Play button x and y coordinates represented as a vector */
-	private Vector2 playButtonCoords;
 
 	/** the current level */
 	private int currLevel;
-	private int activeBM;
 
 	private int currDifficulty;
 
@@ -240,7 +234,6 @@ public class GameMode implements Screen {
 		saidThree = false;
 		saidTwo = false;
 		saidOne = false;
-		activeBM = 0;
 
 		// Null out all pointers, 0 out all ints, etc.
 		gameState = GameState.INTRO;
@@ -338,11 +331,6 @@ public class GameMode implements Screen {
 		menuButton = directory.getEntry("menu-button", Texture.class);
 		pauseBackground = directory.getEntry("pause-background", Texture.class);
 		whiteBackground = directory.getEntry("white-background", Texture.class);
-		resumeCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 + 130);
-		restartCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 + 43);
-		levelCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 - 43);
-		menuCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 - 130);
-		pauseCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2);
 
 		nextWonCoords = new Vector2(canvas.getWidth()*3/4+ nextButtonWon.getWidth()*2, canvas.getHeight()/7);
 		restartWonCoords = new Vector2(canvas.getWidth()*3/4 - nextButtonWon.getWidth()*2, canvas.getHeight()/7);
@@ -521,7 +509,6 @@ public class GameMode implements Screen {
 				gameplayController.recieveInput(inputController);
 				if (inputController.didExit()) {
 					gameplayController.level.pauseMusic();
-					activeBM = gameplayController.activeBandMember;
 					gameState = GameState.PAUSE;
 				} else {
 					play(delta);
@@ -533,10 +520,10 @@ public class GameMode implements Screen {
 					int screenX = (int) inputController.getMouseX();
 					int screenY = (int) inputController.getMouseY();
 					screenY = canvas.getHeight() - screenY;
-					boolean didResume = (isButtonPressed(screenX, screenY, resumeButton, resumeCoords));
-					boolean didLevel = (isButtonPressed(screenX, screenY, levelButton, levelCoords));
-					boolean didMenu = (isButtonPressed(screenX, screenY, menuButton, menuCoords));
-					boolean didRestart = (isButtonPressed(screenX, screenY, restartButton, restartCoords));
+					boolean didResume = (isButtonPressed(screenX, screenY, resumeButton, centerX, 1.325f*centerY, BUTTON_SCALE * scale));
+					boolean didRestart = (isButtonPressed(screenX, screenY, restartButton, centerX, 1.1075f*centerY, BUTTON_SCALE * scale));
+					boolean didLevel = (isButtonPressed(screenX, screenY, levelButton, centerX, 0.8925f*centerY, BUTTON_SCALE * scale));
+					boolean didMenu = (isButtonPressed(screenX, screenY, menuButton, centerX, 0.675f*centerY, BUTTON_SCALE * scale));
 					if (didLevel) {
 						s.playSound(0, 0.3f);
 						pressState = ExitCode.TO_LEVEL;
@@ -702,15 +689,15 @@ public class GameMode implements Screen {
 				Color color = new Color(1f, 1f, 1f, 0.65f);
 				canvas.draw(whiteBackground, color, 0, 0, 0, 0, 0, 1f, 1f);
 				canvas.draw(pauseBackground, Color.WHITE, pauseBackground.getWidth() / 2, pauseBackground.getHeight() / 2,
-						pauseCoords.x, pauseCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
+						centerX, centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 				canvas.draw(resumeButton, Color.WHITE, resumeButton.getWidth() / 2, resumeButton.getHeight() / 2,
-						resumeCoords.x, resumeCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
+						centerX, 1.325f*centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 				canvas.draw(restartButton, Color.WHITE, restartButton.getWidth() / 2, restartButton.getHeight() / 2,
-						restartCoords.x, restartCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
+						centerX, 1.1075f*centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 				canvas.draw(levelButton, Color.WHITE, levelButton.getWidth() / 2, levelButton.getHeight() / 2,
-						levelCoords.x, levelCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
+						centerX, 0.8925f*centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 				canvas.draw(menuButton, Color.WHITE, menuButton.getWidth() / 2, menuButton.getHeight() / 2,
-						menuCoords.x, menuCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
+						centerX, 0.675f*centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 			}
 
 			// draw the countdown
@@ -905,19 +892,21 @@ public class GameMode implements Screen {
 	 * @param screenX the x-coordinate of the mouse on the screen
 	 * @param screenY the y-coordinate of the mouse on the screen
 	 * @param buttonTexture the specified button texture
-	 * @param buttonCoords the specified button coordinates as a Vector2 object
+	 * @param x the x-coordinate of the button
+	 * @param y the y-coordinate of the button
+	 * @param scale the current scale
 	 * @return whether the button specified was pressed
 	 */
-	public boolean isButtonPressed(int screenX, int screenY, Texture buttonTexture, Vector2 buttonCoords) {
+	public boolean isButtonPressed(int screenX, int screenY, Texture buttonTexture, float x, float y, float scale) {
 		// buttons are rectangles
 		// buttonCoords hold the center of the rectangle, buttonTexture has the width and height
 		// get half the x length of the button portrayed
-		float xRadius = BUTTON_SCALE * buttonTexture.getWidth()/2.0f;
-		boolean xInBounds = buttonCoords.x - xRadius <= screenX && buttonCoords.x + xRadius >= screenX;
+		float xRadius = scale * buttonTexture.getWidth()/2.0f;
+		boolean xInBounds = x - xRadius <= screenX && x + xRadius >= screenX;
 
 		// get half the y length of the button portrayed
-		float yRadius = BUTTON_SCALE * buttonTexture.getHeight()/2.0f;
-		boolean yInBounds = buttonCoords.y - yRadius <= screenY && buttonCoords.y + yRadius >= screenY;
+		float yRadius = scale * buttonTexture.getHeight()/2.0f;
+		boolean yInBounds = y - yRadius <= screenY && y + yRadius >= screenY;
 		return xInBounds && yInBounds;
 	}
 
@@ -954,17 +943,15 @@ public class GameMode implements Screen {
 	 * @param width  The new width in pixels
 	 * @param height The new height in pixels
 	 */
+	@Override
 	public void resize(int width, int height) {
 		gameplayController.resize(Math.max(250,width), Math.max(200,height));
-//		// Compute the drawing scale
-//		float sx = ((float)width)/STANDARD_WIDTH;
-//		float sy = ((float)height)/STANDARD_HEIGHT;
-//		scale = (sx < sy ? sx : sy);
-//
-////        this.width = (int)(BAR_WIDTH_RATIO*width);
-//		centerY = (int)(BAR_HEIGHT_RATIO*height);
-//		centerX = width/2;
-//		heightY = height;
+		// Compute the drawing scale
+		float sx = ((float)width)/STANDARD_WIDTH;
+		float sy = ((float)height)/STANDARD_HEIGHT;
+		scale = Math.min(sx, sy);
+		centerY = height/2;
+		centerX = width/2;
 	}
 
 	/**
