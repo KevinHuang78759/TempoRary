@@ -21,7 +21,7 @@ public class SoundController<T>{
 
     public SoundController(){
         effectList = new HashMap<>();
-        volumeAdjust = 1f;
+        volumeAdjust = SaveManager.getInstance().getFXVolume();
     }
 
     public void addSound(T id, String fileName){
