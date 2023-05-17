@@ -44,23 +44,26 @@ public class SaveManager {
     }
 
     // TODO: SAVE LEVEL AFTER BEATING IT
-    public void saveGame(String levelName, int score) {
-
+    public void saveGame(String levelName, long score) {
+        levels.putLong(levelName, score);
+        levels.flush();
     }
 
     // TODO: RETRIEVE LEVEL DATA AND GET SIGNATURE
-    public void getLevelData() {
-
+    // currently just returns the high score for now
+    public long getLevelData(String levelName) {
+        return levels.getLong(levelName, 0);
     }
 
-    // TODO: SAVE SETTINGS UPON EXIT
-    public void saveSettings(int[] hitBindings, IntMap<int[]> switchBindings, float musicVol, float fxVol) {
+    public void saveSettings(int[] hitBindings, int[] hitBindingsAlt, IntMap<int[]> switchBindings, IntMap<int[]> switchBindingsAlt, float musicVol, float fxVol) {
         for (int i = 0; i < hitBindings.length; i++) {
-            hitBindingSettings.putInteger("" + i, hitBindings[i]);
+            hitBindingSettings.putInteger("main." + i, hitBindings[i]);
+            hitBindingSettings.putInteger("alt." + i, hitBindingsAlt[i]);
         }
         for (int i = 0; i < InputController.MAX_BAND_MEMBERS; i++) {
             for (int j = 0; j < i + 1; j++) {
-                switchBindingSettings[i].putInteger("" + j, switchBindings.get(i)[j]);
+                switchBindingSettings[i].putInteger("main." + j, switchBindings.get(i)[j]);
+                switchBindingSettings[i].putInteger("alt." + j, switchBindingsAlt.get(i)[j]);
             }
             switchBindingSettings[i].flush();
         }
@@ -71,10 +74,14 @@ public class SaveManager {
     }
 
     // MEANT TO BE CALLED ONCE WHEN INITIALIZING SETTINGS
-    public int[] getHitKeybindingSettings(int[] def) {
+    public int[] getHitKeybindingSettings(int[] def, boolean main) {
         int[] temp = new int[InputController.MAX_LINES_PER_LANE];
         for (int i = 0; i < temp.length; i++) {
-            temp[i] = hitBindingSettings.getInteger("" + i, -2);
+            if (main) {
+                temp[i] = hitBindingSettings.getInteger("main." + i, -2);
+            } else {
+                temp[i] = hitBindingSettings.getInteger("alt." + i, -2);
+            }
             if (temp[i] == -2) {
                 return def;
             }
@@ -82,12 +89,16 @@ public class SaveManager {
         return temp;
     }
 
-    public IntMap<int[]> getSwitchKeybindingSettings(IntMap<int[]> def) {
+    public IntMap<int[]> getSwitchKeybindingSettings(IntMap<int[]> def, boolean main) {
         IntMap<int[]> temp = new IntMap<>();
         for (int i = 0; i < InputController.MAX_BAND_MEMBERS; i++) {
             int[] curr = new int[i + 1];
             for (int j = 0; j < curr.length; j++) {
-                curr[j] = switchBindingSettings[i].getInteger("" + j, -2);
+                if (main) {
+                    curr[j] = switchBindingSettings[i].getInteger("main." + j, -2);
+                } else {
+                    curr[j] = switchBindingSettings[i].getInteger("alt." + j, -2);
+                }
                 if (curr[j] == -2) {
                     return def;
                 }
@@ -113,7 +124,18 @@ public class SaveManager {
 
     // TODO: CLEAR SAVED DATA
     public void clearSavedData() {
+        levels.clear();
+        levels.flush();
+    }
 
+    public void resetSettings() {
+        volumeSettings.clear();
+        hitBindingSettings.clear();
+        for (Preferences s:
+             switchBindingSettings) {
+            s.clear();
+            s.flush();
+        }
     }
 
 }

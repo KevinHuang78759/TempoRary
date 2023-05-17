@@ -638,6 +638,8 @@ public class GameMode implements Screen {
 		// so that it is checked near the end of the game.
 		if (gameplayController.checkWinCon()){
 			endTime++;
+			SaveManager.getInstance().saveGame(gameplayController.level.getLevelName(), gameplayController.sb.getScore());
+
 			if (endTime >= 60) {
 				gameplayController.level.stopMusic();
 			}
