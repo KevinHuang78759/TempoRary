@@ -434,26 +434,15 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
             }
         });
 
-        musicVolumeSlider.addListener(new InputListener() {
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                s.playSound(0, 0.3f);
-                return false;
-            }
-        });
-
         fxVolumeSlider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
+                float oldVal = soundFXVolume;
                 soundFXVolume = ((Slider) actor).getValue();
-            }
-        });
-
-        fxVolumeSlider.addListener(new InputListener() {
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                s.playSound(0, 0.3f);
-                return false;
+                SoundController.setVolumeAdjust(soundFXVolume);
+                if (oldVal != ((Slider) actor).getValue()) {
+                    s.playSound(0, 0.3f);
+                }
             }
         });
     }
