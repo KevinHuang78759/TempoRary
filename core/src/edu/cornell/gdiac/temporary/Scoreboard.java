@@ -8,14 +8,9 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
 
-import java.beans.beancontext.BeanContext;
-
 import static java.lang.Math.max;
 
 public class Scoreboard {
-
-
-
     private Texture[] letterGrades;
 
     private long[] scoreThreholds;
@@ -86,7 +81,7 @@ public class Scoreboard {
         background = new Texture(Gdx.files.internal("images/scoreboard_background.png"));
         this.maxLevel = maxLevel;
 
-        fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Blinker-Regular.ttf"));
+        fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Blinker-SemiBold.ttf"));
 
         fontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         boldFont = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Blinker-Bold.ttf"));
@@ -100,11 +95,11 @@ public class Scoreboard {
         scoreLayout = new GlyphLayout();
         multiplierLayout = new GlyphLayout();
         comboLayout = new GlyphLayout();
-        letterGrades[0] = new Texture(Gdx.files.internal("images/win_lose/X.png"));
-        letterGrades[1] = new Texture(Gdx.files.internal("images/win_lose/score_C.png"));
-        letterGrades[2] = new Texture(Gdx.files.internal("images/win_lose/score_B.png"));
-        letterGrades[3] = new Texture(Gdx.files.internal("images/win_lose/score_A.png"));
-        letterGrades[4] = new Texture(Gdx.files.internal("images/win_lose/score_S.png"));
+        letterGrades[0] = new Texture(Gdx.files.internal("images/win_lose/D.png"));
+        letterGrades[1] = new Texture(Gdx.files.internal("images/win_lose/C.png"));
+        letterGrades[2] = new Texture(Gdx.files.internal("images/win_lose/B.png"));
+        letterGrades[3] = new Texture(Gdx.files.internal("images/win_lose/A.png"));
+        letterGrades[4] = new Texture(Gdx.files.internal("images/win_lose/S.png"));
     }
 
     public void setletterTH(long[] th){
@@ -117,13 +112,13 @@ public class Scoreboard {
     }
 
     public void resetScoreboard() {
+        curTH = 0;
         totalScore = 0;
         level = 0;
         meter = 0;
     }
 
     public void resetCombo(){
-
         meter = 0;
         level = 0;
     }
@@ -162,8 +157,6 @@ public class Scoreboard {
     private float scoreScale = 1f;
     private float multiplierScale = 1f;
     private float comboScale = 1f;
-
-
 
     public void setScoreScale(float heightConfine){
         String disp = "Score 0000000";
