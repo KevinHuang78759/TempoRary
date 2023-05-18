@@ -768,40 +768,40 @@ public class GameMode implements Screen {
 
 		long score = gameplayController.sb.getScore();
 		canvas.draw(combo, Color.WHITE, combo.getWidth()/2, combo.getHeight()/2,
-				comboCoords.x, comboCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+				comboCoords.x, comboCoords.y, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		long maxCombo =gameplayController.sb.getMaxCombo();
 		canvas.drawText(String.valueOf(maxCombo), lucidaFont,comboCoords.x+combo.getWidth()/2,comboCoords.y,
 				Color.WHITE);
 
 		canvas.draw(perfect, Color.WHITE, perfect.getWidth()/2, perfect.getHeight()/2,
-				perfectCoords.x, perfectCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+				perfectCoords.x, perfectCoords.y, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		long nPerfect = gameplayController.getNPerfect();
 		canvas.drawText(String.valueOf(nPerfect), lucidaFont,perfectCoords.x+combo.getWidth()/2,perfectCoords.y,
 				Color.WHITE);
 
 		canvas.draw(good, Color.WHITE, good.getWidth()/2, good.getHeight()/2,
-				goodCoords.x, goodCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+				goodCoords.x, goodCoords.y, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		long nGood = gameplayController.getNGood();
 		canvas.drawText(String.valueOf(nGood), lucidaFont,goodCoords.x+good.getWidth()/2,goodCoords.y,
 				Color.WHITE);
 
 		canvas.draw(ok, Color.WHITE, ok.getWidth()/2, ok.getHeight()/2,
-				okCoords.x, okCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+				okCoords.x, okCoords.y, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		long nOk =gameplayController.getNOk();
 		canvas.drawText(String.valueOf(nOk), lucidaFont,okCoords.x+good.getWidth()/2,okCoords.y,
 				Color.WHITE);
 
 		canvas.draw(miss, Color.WHITE, miss.getWidth()/2, miss.getHeight()/2,
-				missCoords.x, missCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+				missCoords.x, missCoords.y, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		long nMiss = gameplayController.getNOk();
 		canvas.drawText(String.valueOf(nMiss), lucidaFont,missCoords.x+good.getWidth()/2,missCoords.y,
 				Color.WHITE);
 
 		canvas.draw(line, Color.WHITE, line.getWidth()/2, line.getHeight()/2,
-				lineCoords.x, lineCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+				lineCoords.x, lineCoords.y, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 
 		canvas.draw(scoreIcon, Color.WHITE, scoreIcon.getWidth()/2, scoreIcon.getHeight()/2,
-				scoreIconCoords.x, scoreIconCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+				scoreIconCoords.x, scoreIconCoords.y, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 
 		canvas.drawText(String.valueOf(score), lucidaFont,scoreIconCoords.x+good.getWidth(),scoreIconCoords.y,
 				Color.WHITE);
@@ -817,16 +817,16 @@ public class GameMode implements Screen {
 
 		if (score>=sThreshold){
 			canvas.draw(scoreS, Color.WHITE, scoreS.getWidth()/2, scoreS.getHeight()/2,
-					scoreSCoords.x, scoreSCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+					scoreSCoords.x, scoreSCoords.y, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		} else if (score>=aThreshold) {
 			canvas.draw(scoreA, Color.WHITE, scoreA.getWidth()/2, scoreA.getHeight()/2,
-					scoreACoords.x, scoreACoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+					scoreACoords.x, scoreACoords.y, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		}else if (score>=bThreshold) {
 			canvas.draw(scoreB, Color.WHITE, scoreB.getWidth()/2, scoreB.getHeight()/2,
-					scoreBCoords.x, scoreBCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+					scoreBCoords.x, scoreBCoords.y, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		} else if (score>=cThreshold) {
 			canvas.draw(scoreC, Color.WHITE, scoreC.getWidth()/2, scoreC.getHeight()/2,
-					scoreCCoords.x, scoreCCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+					scoreCCoords.x, scoreCCoords.y, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		}
 
 	}
@@ -838,11 +838,11 @@ public class GameMode implements Screen {
 	 * */
 	public void drawLose(){
 		canvas.drawBackground(loseBackground.getTexture(),0,0);
-		canvas.draw(ruinShow, Color.WHITE,ruinShow.getWidth()/2,ruinShow.getHeight()/2,ruinShowCoords.x,ruinShowCoords.y,
-				0,WON_BUTTON_SCALE,WON_BUTTON_SCALE);
+		canvas.draw(ruinShow, Color.WHITE,ruinShow.getWidth()/2,ruinShow.getHeight()/2,0.5f*centerX,
+				centerY, 0,WON_BUTTON_SCALE*scale,WON_BUTTON_SCALE*scale);
 		drawNextRetryLevel(false);
 		canvas.draw(cross, Color.WHITE, cross.getWidth()/2, cross.getHeight()/2,
-				crossCoords.x, crossCoords.y, 0, WON_BUTTON_SCALE,WON_BUTTON_SCALE);
+				centerX*1.1f, centerY*1.3f, 0, WON_BUTTON_SCALE*scale,WON_BUTTON_SCALE*scale);
 	}
 
 
@@ -851,11 +851,11 @@ public class GameMode implements Screen {
 	 *
 	 */
 	public void drawNextRetryLevel(boolean drawNextLevel){
-		canvas.draw(resultIcon,Color.WHITE,resultIcon.getWidth()/2,resultIcon.getHeight()/2,resultIconCoords.x,
-		resultIconCoords.y,0,WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+		canvas.draw(resultIcon,Color.WHITE,resultIcon.getWidth()/2,resultIcon.getHeight()/2,centerX,
+		1.8f*centerY,0,WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 
 		canvas.draw(goBack, Color.WHITE, goBack.getWidth()/2, goBack.getHeight()/2,
-				goBackCoords.x, goBackCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+				centerX*0.2f, 1.8f*centerY, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 
 		// TODO: FIX THIS
 //		if (nextIdx<=9 && drawNextLevel){
@@ -864,15 +864,15 @@ public class GameMode implements Screen {
 //		}
 
 		canvas.draw(restartButtonWon, Color.WHITE, restartButtonWon.getWidth()/2, restartButtonWon.getHeight()/2,
-				restartWonCoords.x, restartWonCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+				restartWonCoords.x, centerY*0.2f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		canvas.draw(levelButtonWon, Color.WHITE, levelButtonWon.getWidth()/2, levelButtonWon.getHeight()/2,
-				levelWonCoords.x, levelWonCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+				levelWonCoords.x, centerY*0.2f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 
 		canvas.draw(levelAlbumCover,Color.WHITE, levelAlbumCover.getWidth()/2,levelAlbumCover.getHeight()/2,
-				levelAlbumCoverCoords.x,levelAlbumCoverCoords.y,0,ALBUM_SCALE,ALBUM_SCALE );
+				1.5f*centerX,centerY,0,ALBUM_SCALE*scale,ALBUM_SCALE*scale);
 
 		canvas.draw(difficultyIcon, Color.WHITE, difficultyIcon.getWidth()/2,difficultyIcon.getHeight()/2,
-				difficultyIconCoords.x,difficultyIconCoords.y,0,WON_BUTTON_SCALE,WON_BUTTON_SCALE);
+				difficultyIconCoords.x,centerY*0.4f,0,WON_BUTTON_SCALE*scale,WON_BUTTON_SCALE*scale);
 	}
 
 	/**
