@@ -114,6 +114,7 @@ public class GameplayController {
 	 * @param height
 	 */
 	public GameplayController(float width, float height){
+		sb = new Scoreboard(4, new int[]{1, 2, 3, 5}, new long[]{10, 20, 30});
 		particles = new Array<>();
 		backing = new Array<>();
 		noteIndicatorParticles =new Array<>();
@@ -156,6 +157,7 @@ public class GameplayController {
 	}
 
 	public void setBounds(float width, float height){
+
 		//Ratio of play area width to play area height
 		float playAreaRatio = 2f;
 		totalHeight = height;
@@ -180,6 +182,8 @@ public class GameplayController {
 			BOTTOMBOUND = hCenter - playHeight/2f;
 		}
 
+		sb.setBounds(new Vector2(width, height), new Vector2(0f,19f*TOPBOUND/20f + height/20f));
+
 	}
 
 	public void setWidths(){
@@ -200,10 +204,7 @@ public class GameplayController {
 	 * Loads a level
 	 */
 	public void loadLevel(JsonValue levelData, AssetDirectory directory){
-		sb = new Scoreboard(4, new int[]{1, 2, 3, 5}, new long[]{10, 20, 30});
-		sb.setScoreScale((totalHeight - TOPBOUND)/5f);
-		sb.setComboScale((totalHeight - TOPBOUND)/3f);
-		sb.setMultiplierScale((totalHeight - TOPBOUND)/5f);
+		sb.resetScoreboard();
 		particles = new Array<>();
 		backing = new Array<>();
 		level = null;
@@ -238,9 +239,6 @@ public class GameplayController {
 
 	public void reloadLevel(){
 		sb.resetScoreboard();
-		sb.setScoreScale((totalHeight - TOPBOUND)/5f);
-		sb.setComboScale((totalHeight - TOPBOUND)/3f);
-		sb.setMultiplierScale((totalHeight - TOPBOUND)/5f);
 		particles = new Array<>();
 		backing = new Array<>();
 		level.resetLevel();
@@ -278,9 +276,6 @@ public class GameplayController {
 		setWidths();
 		setYVals();
 		updateBandMemberCoords();
-		sb.setScoreScale((totalHeight - TOPBOUND)/5f);
-		sb.setComboScale((totalHeight - TOPBOUND)/3f);
-		sb.setMultiplierScale((totalHeight - TOPBOUND)/5f);
 	}
 
 
