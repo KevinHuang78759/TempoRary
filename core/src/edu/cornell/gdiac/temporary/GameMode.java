@@ -806,26 +806,9 @@ public class GameMode implements Screen {
 		drawNextRetryLevel(true);
 
 		//draw score from JSON thresholds
-
-		long aThreshold = gameplayController.level.getaThreshold();
-		long bThreshold = gameplayController.level.getbThreshold();
-		long cThreshold = gameplayController.level.getcThreshold();
-		long sThreshold = gameplayController.level.getsThreshold();
-
-		if (score>=sThreshold){
-			canvas.draw(scoreS, Color.WHITE, scoreS.getWidth()/2, scoreS.getHeight()/2,
-					scoreSCoords.x, scoreSCoords.y, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
-		} else if (score>=aThreshold) {
-			canvas.draw(scoreA, Color.WHITE, scoreA.getWidth()/2, scoreA.getHeight()/2,
-					scoreACoords.x, scoreACoords.y, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
-		}else if (score>=bThreshold) {
-			canvas.draw(scoreB, Color.WHITE, scoreB.getWidth()/2, scoreB.getHeight()/2,
-					scoreBCoords.x, scoreBCoords.y, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
-		} else if (score>=cThreshold) {
-			canvas.draw(scoreC, Color.WHITE, scoreC.getWidth()/2, scoreC.getHeight()/2,
-					scoreCCoords.x, scoreCCoords.y, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
-		}
-
+		Texture letterGrade = gameplayController.sb.getLetterGrade();
+		canvas.draw(letterGrade, Color.WHITE, scoreS.getWidth()/2, scoreS.getHeight()/2,
+				centerX*1.25f, centerY*1.4f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 	}
 
 
@@ -839,7 +822,7 @@ public class GameMode implements Screen {
 				centerY, 0,WON_BUTTON_SCALE*scale,WON_BUTTON_SCALE*scale);
 		drawNextRetryLevel(false);
 		canvas.draw(cross, Color.WHITE, cross.getWidth()/2, cross.getHeight()/2,
-				centerX*1.1f, centerY*1.3f, 0, WON_BUTTON_SCALE*scale,WON_BUTTON_SCALE*scale);
+				centerX*1.25f, centerY*1.4f, 0, WON_BUTTON_SCALE*scale,WON_BUTTON_SCALE*scale);
 	}
 
 
