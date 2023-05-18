@@ -16,6 +16,10 @@ public class Scoreboard {
 
 
 
+    private Texture[] letterGrades;
+
+    private long[] scoreThreholds;
+    private int curTH;
     private Texture background;
 
     private Vector2 BL;
@@ -71,6 +75,9 @@ public class Scoreboard {
     private int maxLevel;
 
     public Scoreboard(int maxLevel, int[] multiplers, long[] meters){
+        curTH = 0;
+        letterGrades = new Texture[5];
+        scoreThreholds = new long[4];
         totalScore = 0;
         level = 0;
         meter = 0;
@@ -93,6 +100,15 @@ public class Scoreboard {
         scoreLayout = new GlyphLayout();
         multiplierLayout = new GlyphLayout();
         comboLayout = new GlyphLayout();
+        letterGrades[0] = new Texture(Gdx.files.internal("images/win_lose/X.png"));
+        letterGrades[1] = new Texture(Gdx.files.internal("images/win_lose/score_C.png"));
+        letterGrades[2] = new Texture(Gdx.files.internal("images/win_lose/score_B.png"));
+        letterGrades[3] = new Texture(Gdx.files.internal("images/win_lose/score_A.png"));
+        letterGrades[4] = new Texture(Gdx.files.internal("images/win_lose/score_S.png"));
+    }
+
+    public void setletterTH(long[] th){
+        scoreThreholds = th;
     }
 
     public void setBounds(Vector2 tr, Vector2 bl){
@@ -120,6 +136,9 @@ public class Scoreboard {
         }
         totalScore += (long) hitVal* (long)levelMultipliers[level];
         maxCombo = max(maxCombo,meter);
+        if(curTH < 4 && totalScore >= scoreThreholds[curTH]){
+            ++curTH;
+        }
     }
 
     public long getScore(){
@@ -135,6 +154,9 @@ public class Scoreboard {
         scoreFont.dispose();
         comboFont.dispose();
         multiplierFont.dispose();
+        for(int i = 0; i < letterGrades.length; ++i){
+            letterGrades[i].dispose();
+        }
     }
 
     private float scoreScale = 1f;
@@ -181,6 +203,15 @@ public class Scoreboard {
         canvas.drawTextSetColor(disp, multiplierFont, xPos - multiplierLayout.width/2f, yPos + multiplierLayout.height/2f);
     }
 
+    public void displayLetterGrade(GameCanvas canvas){
+        float sc = (2f*(TR.y - BL.y)/3f)/letterGrades[curTH].getHeight();
+        canvas.draw(letterGrades[curTH], Color.WHITE,
+                 letterGrades[curTH].getWidth()/2f, letterGrades[curTH].getHeight()/2f,
+                    BL.x*5f/6f + TR.x/6f, (BL.y + TR.y)/2f,
+                    0f,
+                    sc, sc);
+    }
+
     public void drawBackground(GameCanvas canvas){
         canvas.draw(background,
                     tint,
@@ -192,6 +223,7 @@ public class Scoreboard {
 
     public void displayScoreBoard(GameCanvas canvas){
         drawBackground(canvas);
+        displayLetterGrade(canvas);
         setScoreScale((TR.y - BL.y)/5f);
         displayScore((TR.x + BL.x)/2f, BL.y + (TR.y - BL.y)/4f, canvas);
         setComboScale(7f*(TR.y - BL.y)/20f);

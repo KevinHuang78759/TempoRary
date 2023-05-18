@@ -235,6 +235,7 @@ public class GameplayController {
 		numberOk =0;
 		numberGood =0;
 		numberPerfect =0;
+		sb.setletterTH(new long[]{level.getcThreshold(), level.getbThreshold(), level.getaThreshold(), level.getsThreshold()});
 	}
 
 	public void reloadLevel(){
@@ -265,6 +266,7 @@ public class GameplayController {
 		numberOk =0;
 		numberGood =0;
 		numberPerfect =0;
+		sb.setletterTH(new long[]{level.getcThreshold(), level.getbThreshold(), level.getaThreshold(), level.getsThreshold()});
 		garbageCollectNoteIndicators();
 	}
 
