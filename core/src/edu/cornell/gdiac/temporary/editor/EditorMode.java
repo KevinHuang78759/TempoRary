@@ -805,6 +805,8 @@ public class EditorMode implements Screen {
      * @param level the JSON value corresponding to the JSON file containing all the level information
      */
     private void loadLevel(JsonValue level) {
+        boolean loadNew = true;
+
         levelName = level.getString("levelName");
         songName = level.getString("song");
         sampleRate = music.getSampleRate();
@@ -817,10 +819,13 @@ public class EditorMode implements Screen {
         playPosition = startPosition;
         laneNumber = level.get("bandMembers").size;
         lineNumber = level.getInt("linesPerMember");
-        AThreshold = level.getInt("thresholdA");
-        BThreshold = level.getInt("thresholdB");
-        CThreshold = level.getInt("thresholdC");
-        SThreshold = level.getInt("thresholdS");
+        if (loadNew) {
+            AThreshold = level.getInt("thresholdA");
+            BThreshold = level.getInt("thresholdB");
+            CThreshold = level.getInt("thresholdC");
+            SThreshold = level.getInt("thresholdS");
+            fallSpeed = level.getInt("fallSpeed");
+        }
         selectedProbabilities = new int[laneNumber];
         typingProbabilities = new boolean[laneNumber];
         probabilityButtonLocations = new Vector2[laneNumber];
@@ -837,7 +842,6 @@ public class EditorMode implements Screen {
             instrumentsTextLocations[i] = new Vector2();
         }
         maxCompetency = level.getInt("maxCompetency");
-        fallSpeed = level.getInt("fallSpeed");
 
 
         //initialize band member lanes
@@ -894,7 +898,7 @@ public class EditorMode implements Screen {
                 addNote(type, lane, line, position, duration);
                 currentPlaceType = tmpPlaceType;
             }
-            if (true) {
+            if (loadNew) {
                 JsonValue memberFlags = level.get("bandMembers").get(lane).get("compFlags");
                 for (int i = 0; i < memberFlags.size; i++) {
                     int position = memberFlags.get(i).getInt("position") + startPosition;
@@ -907,7 +911,7 @@ public class EditorMode implements Screen {
                 }
             }
         }
-        if (true) {
+        if (loadNew) {
             JsonValue randomHits = level.get("randomHits");
             for (int i = 0; i < randomHits.size; i++) {
                 int position = randomHits.get(i).getInt("position") + startPosition;
@@ -1090,8 +1094,8 @@ public class EditorMode implements Screen {
         displayFont = directory.getEntry("times", BitmapFont.class);
         inputController.setEditorProcessor();
         JsonReader jr = new JsonReader();
-        defaultLevel = jr.parse(Gdx.files.internal("levels/challenger-easy.json"));
-        music = directory.getEntry("challenger", MusicQueue.class);
+        defaultLevel = jr.parse(Gdx.files.internal("levels/tutorial-easy.json"));
+        music = directory.getEntry("tutorial", MusicQueue.class);
         initializeLevel(4, 4);
     }
 

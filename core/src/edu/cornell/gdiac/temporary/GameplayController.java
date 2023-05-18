@@ -766,22 +766,23 @@ public class GameplayController {
 		//Now check for hit and held notes
 		int checkBandMember = curP == PlayPhase.NOTES ? activeBandMember : goalBandMember;
 		for (Note n : level.getBandMembers()[checkBandMember].getHitNotes()){
+			int gain = level.getBandMembers()[checkBandMember].getNoteGain();
 			if (n.getNoteType() == Note.NoteType.BEAT){
 				if (triggers[n.getLine()] && !hitReg[n.getLine()]){
 					//Check for all the notes in this line and in the active band member
 					//See if any are close enough
-					checkHit(n, currentSample, 4, 3, 2, -1, n.getY(),true, hitReg, false);
+					checkHit(n, currentSample, 4*gain, 3*gain, 2*gain, -gain, n.getY(),true, hitReg, false);
 				}
 			}
 			// HOLD NOTE
 			else {
 				//Check if we hit the trigger down close enough to the head
 				if(triggers[n.getLine()] && !hitReg[n.getLine()]){
-					checkHit(n, currentSample, 4, 3, 2, -1, n.getBottomY(),false, hitReg, false);
+					checkHit(n, currentSample, 4*gain, 3*gain, 2*gain, -gain, n.getBottomY(),false, hitReg, false);
 				}
 				//check if we lifted close to the end (we only check if we ended up holding the note in the first place)
 				if(lifted[n.getLine()] && n.isHolding()){
-					checkHit(n, currentSample, 3, 2, 1, -1, n.getBottomY(),true, hitReg, true);
+					checkHit(n, currentSample, 3*gain, 2*gain, gain, -gain, n.getBottomY(),true, hitReg, true);
 					n.setHeldFor(0);
 					// destroy (if you are already holding)
 					if (n.isHolding()) n.setDestroyed(true);

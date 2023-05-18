@@ -606,10 +606,10 @@ public class InputController {
 	public boolean didPressPlay() {return play;}
 	public boolean didPressPlay(boolean relocate) {
 		if (!relocate) {
-			return play && !Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT);
+			return play && Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT);
 		}
 		else {
-			return play && Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT);
+			return play && !Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT);
 		}
 	}
 	public boolean didHoldPlay() {return playPress;}

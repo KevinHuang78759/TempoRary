@@ -152,6 +152,19 @@ public class BandMember {
     }
 
     /**
+     * Queue to hold all the notes for this band member across the entire level
+     */
+    private Queue<CompFlag> allFlags;
+
+    public void setAllFlags(Queue<CompFlag> l){
+        allFlags = l;
+    }
+
+    public Queue<CompFlag> getAllFlags(){
+        return allFlags;
+    }
+
+    /**
      * backing array used for garbage collection
      */
     private Array<Note> backing;
@@ -207,6 +220,7 @@ public class BandMember {
         hitNotes = new Array<>();
         switchNotes = new Array<>();
         allNotes = new Queue<>();
+        allFlags = new Queue<>();
         backing = new Array<>();
     }
 
@@ -269,6 +283,18 @@ public class BandMember {
         }
     }
 
+    /**
+     * set CompFlags from the queue
+     * @param currentSample
+     */
+    public void spawnFlags(long currentSample){
+        //add everything at the front of the queue that's supposed to start on this frame
+        while(!allFlags.isEmpty() && allFlags.first().getStartSample() <= currentSample){
+            CompFlag f = allFlags.removeFirst();
+            lossRate = f.getLossRate();
+            noteGain = f.getNoteGain();
+        }
+    }
 
     public void garbageCollect(){
         //Stop and copy both the switch and hit notes
