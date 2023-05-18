@@ -5,9 +5,9 @@
   "song" : "YR",
   "startPosition" : 0,
   "bpm" : 150,
-  "maxCompetency" : 175,
+  "maxCompetency" : 150,
   "linesPerMember" : 4,
-  "a-threshold":640000,"b-threshold":530000,"c-threshold":320000,"s-threshold":750000,
+  "a-threshold":800000,"b-threshold":500000,"c-threshold":320000,"s-threshold":1100000,
   "bandMembers" : [
     {
       "instrument" : "piano",
