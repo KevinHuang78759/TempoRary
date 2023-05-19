@@ -73,6 +73,8 @@ public class InputController {
 	private boolean[] switchesLast;
 	private boolean[] moves;
 
+	private boolean autoplay = true;
+
 	/** XBox Controller support */
 	private XBoxController xbox;
 
@@ -169,6 +171,7 @@ public class InputController {
 		clicking = false;
 		typed = false;
 		// we hardcode 4 for this because this is now the specification for the game
+		triggerPress = new boolean[4];
 		triggerLast = new boolean[4];
 		switchesLast = new boolean[4];
 		triggers = new boolean[4];
@@ -334,6 +337,16 @@ public class InputController {
 
 	// READ KEYBOARD FOR THE GAME (not level editor)
 
+	public void setTrigger(int line, boolean val) {
+		if (autoplay) {
+			triggerPress[line] = val;
+		}
+	}
+
+	public void resetTriggers() {
+		Arrays.fill(triggerPress, false);
+	}
+
 	/**
 	 * Reads input from the keyboard.
 	 *
@@ -352,14 +365,18 @@ public class InputController {
 		calibrationHitJustPressed = !calibrationHitLast && calibrationHitPressed;
 		calibrationHitLast = calibrationHitPressed;
 
-		triggerPress = new boolean[4];
 		boolean[] switchesPress = new boolean[4];
 
 		for (int i = 0; i < triggerBindingsMain.length; i++) {
-			triggerPress[i] = Gdx.input.isKeyPressed(triggerBindingsMain[i]) || Gdx.input.isKeyPressed(triggerBindingsAlt[i]);
+			if (!autoplay) {
+				triggerPress[i] = Gdx.input.isKeyPressed(triggerBindingsMain[i]) || Gdx.input.isKeyPressed(triggerBindingsAlt[i]);
+			}
 			if (i < numBandMembers) {
 				switchesPress[i] = Gdx.input.isKeyPressed(switchesBindingsMain.get(numBandMembers - 1)[i])
 						|| Gdx.input.isKeyPressed(switchesBindingsAlt.get(numBandMembers - 1)[i]);
+				if (switchesPress[i]) {
+					resetTriggers();
+				}
 			}
 		}
 

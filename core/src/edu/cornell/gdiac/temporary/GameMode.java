@@ -18,7 +18,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
@@ -26,9 +25,6 @@ import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.temporary.entity.Particle;
 
 
-import edu.cornell.gdiac.temporary.entity.BandMember;
-import edu.cornell.gdiac.temporary.entity.Particle;
-import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.ScreenListener;
 
 /**
@@ -425,7 +421,7 @@ public class GameMode implements Screen {
 		// Test whether to reset the game.
 		switch (gameState) {
 			case INTRO:
-				gameplayController.recieveInput(inputController);
+				gameplayController.receiveInput(inputController);
 				// wait a few frames before starting
 				if (ticks == 0) {
 					gameplayController.start();
@@ -506,7 +502,7 @@ public class GameMode implements Screen {
 				}
 				break;
 			case PLAY:
-				gameplayController.recieveInput(inputController);
+				gameplayController.receiveInput(inputController);
 				if (inputController.didExit()) {
 					gameplayController.level.pauseMusic();
 					gameState = GameState.PAUSE;
@@ -604,8 +600,6 @@ public class GameMode implements Screen {
 	 */
 	protected void play(float delta) {
 		// Update objects.
-
-
 		if (gameState == GameState.PLAY) {
 			gameplayController.reactToAction();
 			gameplayController.update(1, ticks);

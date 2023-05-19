@@ -200,6 +200,7 @@ public class GameplayController {
 	 * Loads a level
 	 */
 	public void loadLevel(JsonValue levelData, AssetDirectory directory){
+		InputController.getInstance().resetTriggers();
 		sb = new Scoreboard(4, new int[]{1, 2, 3, 5}, new long[]{10, 20, 30});
 		sb.setScoreScale((totalHeight - TOPBOUND)/5f);
 		sb.setComboScale((totalHeight - TOPBOUND)/3f);
@@ -237,6 +238,7 @@ public class GameplayController {
 	}
 
 	public void reloadLevel(){
+		InputController.getInstance().resetTriggers();
 		sb.resetScoreboard();
 		sb.setScoreScale((totalHeight - TOPBOUND)/5f);
 		sb.setComboScale((totalHeight - TOPBOUND)/3f);
@@ -700,7 +702,7 @@ public class GameplayController {
 	}
 
 
-	public void recieveInput(InputController input){
+	public void receiveInput(InputController input){
 		switches = input.didSwitch();
 		triggers = input.didTrigger();
 		lifted = input.triggerLifted;
@@ -729,7 +731,6 @@ public class GameplayController {
 
 		// SWITCH NOTE HIT HANDLING
 		if (curP == PlayPhase.NOTES){
-
 			for (int i = 0; i < switches.length; ++i){
 				if (switches[i] && i != activeBandMember){
 					//Check only the lanes that are not the current active lane
@@ -766,21 +767,33 @@ public class GameplayController {
 		//Now check for hit and held notes
 		int checkBandMember = curP == PlayPhase.NOTES ? activeBandMember : goalBandMember;
 		for (Note n : level.getBandMembers()[checkBandMember].getHitNotes()){
-			if (n.getNoteType() == Note.NoteType.BEAT){
+			// TODO: AUTOPLAY TEST
+			if (n.getNoteType() == Note.NoteType.BEAT) {
+				if (currentSample >= n.getHitSample()) {
+					InputController.getInstance().setTrigger(n.getLine(), true);
+				}
 				if (triggers[n.getLine()] && !hitReg[n.getLine()]){
 					//Check for all the notes in this line and in the active band member
 					//See if any are close enough
 					checkHit(n, currentSample, 4, 3, 2, -1, n.getY(),true, hitReg, false);
+					InputController.getInstance().setTrigger(n.getLine(), false);
 				}
 			}
 			// HOLD NOTE
 			else {
+				if (currentSample >= n.getHitSample() && currentSample <= n.getHitSample() + n.getHoldSamples()) {
+					InputController.getInstance().setTrigger(n.getLine(), true);
+				}
+				if (currentSample > n.getHitSample() + n.getHoldSamples()) {
+					InputController.getInstance().setTrigger(n.getLine(), false);
+				}
+
 				//Check if we hit the trigger down close enough to the head
-				if(triggers[n.getLine()] && !hitReg[n.getLine()]){
+				if(triggers[n.getLine()] && !hitReg[n.getLine()]) {
 					checkHit(n, currentSample, 4, 3, 2, -1, n.getBottomY(),false, hitReg, false);
 				}
 				//check if we lifted close to the end (we only check if we ended up holding the note in the first place)
-				if(lifted[n.getLine()] && n.isHolding()){
+				if(lifted[n.getLine()] && n.isHolding()) {
 					checkHit(n, currentSample, 3, 2, 1, -1, n.getBottomY(),true, hitReg, true);
 					n.setHeldFor(0);
 					// destroy (if you are already holding)
@@ -805,6 +818,7 @@ public class GameplayController {
 					n.setDestroyed(true);
 					sb.resetCombo();
 				}
+
 			}
 		}
 	}
