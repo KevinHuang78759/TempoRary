@@ -217,6 +217,10 @@ public class GameMode implements Screen {
 		gameState = GameState.INTRO;
 		pressState = NO_BUTTON_PRESSED;
 		gameplayController.garbageCollectNoteIndicators();
+		gameplayController.reset();
+		gameplayController.reloadLevel();
+		ticks = 0;
+		endTime = 0;
 	}
 
 	/**
@@ -228,6 +232,7 @@ public class GameMode implements Screen {
 	}
 
 	public void readLevel(String levelString, AssetDirectory assetDirectory, int selectedLevel, int difficulty) {
+		System.out.println("selectedlevel"+selectedLevel);
 		currLevel = selectedLevel;
 		currDifficulty = difficulty;
 		directory = assetDirectory;
@@ -294,8 +299,8 @@ public class GameMode implements Screen {
 		whiteBackground = directory.getEntry("white-background", Texture.class);
 
 		System.out.println("currSong:"+currLevel);
-		levelAlbumCover = directory.getEntry(String.valueOf(currLevel), Texture.class);
-		levelAlbumCoverCoords = new Vector2(canvas.getWidth()*3/4, canvas.getHeight()/2);
+		Texture albumCovers[] = LevelSelect.getAlbumCovers();
+		levelAlbumCover = albumCovers[currLevel];
 		difficultyIcon = directory.getEntry(matchDifficulty(currDifficulty), Texture.class);
 
 		goBack = directory.getEntry("go-back", Texture.class);
@@ -418,9 +423,10 @@ public class GameMode implements Screen {
 						System.out.println("pressed level");
 						pressState = ExitCode.TO_LEVEL;
 					}
-					if (didNext) {
+					if ((nextIdx<=LevelSelect.getnLevels()) && didNext) {
 						s.playSound(0, 0.3f);
 						goNextLevel();
+						reset();
 					}
 				}
 				break;
@@ -460,9 +466,10 @@ public class GameMode implements Screen {
 							pressState = ExitCode.TO_LEVEL;
 						}
 
-						if (didNext) {
+						if (((nextIdx<=LevelSelect.getnLevels()) && didNext)) {
 							s.playSound(0, 0.3f);
 							goNextLevel();
+							reset();
 						}
 
 					}
@@ -531,6 +538,9 @@ public class GameMode implements Screen {
 
 	private void goNextLevel(){
 		String levelNames[]=LevelSelect.getAllLevels();
+		currLevel ++;
+		Texture allAlbums[] = LevelSelect.getAlbumCovers();
+		levelAlbumCover = allAlbums[currLevel];
 		LevelSelect.setSelectedJson(levelNames[nextIdx]);
 		pressState = ExitCode.TO_PLAYING;
 	}
@@ -724,19 +734,19 @@ public class GameMode implements Screen {
 		canvas.draw(good, Color.WHITE, good.getWidth()/2, good.getHeight()/2,
 				centerX*0.45f, centerY, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		long nGood = gameplayController.getNGood();
-		canvas.drawText(String.valueOf(nGood), blinkerRegular,centerX*0.45f+(scale*combo.getWidth()/2),centerY*1.04f,
+		canvas.drawText(String.valueOf(nGood), blinkerRegular,centerX*0.45f+(scale*combo.getWidth()/2),centerY*1.03f,
 				Color.WHITE);
 
 		canvas.draw(ok, Color.WHITE, ok.getWidth()/2, ok.getHeight()/2,
 				centerX*0.45f, centerY*0.75f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		long nOk =gameplayController.getNOk();
-		canvas.drawText(String.valueOf(nOk), blinkerRegular,centerX*0.45f+(scale*combo.getWidth()/2),centerY*0.8f,
+		canvas.drawText(String.valueOf(nOk), blinkerRegular,centerX*0.45f+(scale*combo.getWidth()/2),centerY*0.78f,
 				Color.WHITE);
 
 		canvas.draw(miss, Color.WHITE, miss.getWidth()/2, miss.getHeight()/2,
 				centerX*0.45f, centerY*0.5f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		long nMiss = gameplayController.getNOk();
-		canvas.drawText(String.valueOf(nMiss), blinkerRegular,centerX*0.45f+(scale*combo.getWidth()/2), centerY*0.55f,
+		canvas.drawText(String.valueOf(nMiss), blinkerRegular,centerX*0.45f+(scale*combo.getWidth()/2), centerY*0.53f,
 				Color.WHITE);
 
 		canvas.draw(line, Color.WHITE, line.getWidth()/2, line.getHeight()/2,
@@ -744,7 +754,7 @@ public class GameMode implements Screen {
 
 		canvas.draw(scoreIcon, Color.WHITE, scoreIcon.getWidth()/2, scoreIcon.getHeight()/2,
 				centerX*0.45f, centerY*0.25f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
-		canvas.drawText(String.valueOf(score), blinkerRegular,centerX*0.45f+(scale*combo.getWidth()/2),centerY*0.27f,
+		canvas.drawText(String.valueOf(score), blinkerRegular,centerX*0.45f+(scale*combo.getWidth()/2),centerY*0.28f,
 				Color.WHITE);
 
 		drawNextRetryLevel();

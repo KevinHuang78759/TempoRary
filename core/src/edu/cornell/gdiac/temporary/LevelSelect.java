@@ -46,7 +46,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     private Texture levelBackground;
 
     /** button for a level */
-    private Texture[] albumCovers;
+    private static Texture[] albumCovers;
 
     /** coordinates for each album; will always have 3 elements;
      * albumCoverCoords[0] left, [1] center, [2] right, */
@@ -165,7 +165,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     public int getSelectedDifficulty(){
         return selectedDifficulty;
     }
-    public Texture[] getAlbumCovers(){
+    public static Texture[] getAlbumCovers(){
         return albumCovers;
     }
 
