@@ -14,12 +14,14 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.util.ScreenListener;
+import org.w3c.dom.Text;
 
 /**
  * This class is just a ported over LoadingMode without the asset loading part, only the menu part
@@ -102,6 +104,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private Stage stage;
     private Table mainTable;
     private Container<Table> tableContainer;
+    private ButtonGroup<TextButton> buttonGroup = new ButtonGroup<>();
     private Dialog dialog;
 
     // styles
@@ -138,6 +141,10 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private Texture scrollBackground;
     private Texture listSelectBackground;
     private Texture dialogBackground;
+    private Texture leftButtonGroup;
+    private Texture middleButtonGroup;
+    private Texture rightButtonGroup;
+    private Texture buttonGroupSelected;
 
     // fonts
     private BitmapFont blinkerBold;
@@ -208,6 +215,10 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         dialogBackground = directory.getEntry("dialog-background", Texture.class);
         calibrationButton = directory.getEntry("calibration-button", Texture.class);
         calibrationButtonPressed = directory.getEntry("calibration-button-pressed", Texture.class);
+        leftButtonGroup = directory.getEntry("left-button-group", Texture.class);
+        middleButtonGroup = directory.getEntry("middle-button-group", Texture.class);
+        rightButtonGroup = directory.getEntry("right-button-group", Texture.class);
+        buttonGroupSelected = directory.getEntry("button-group-selected", Texture.class);
 
         keyImageMap.put("Left", directory.getEntry("left-arrow-graphic", Texture.class));
         keyImageMap.put("Right", directory.getEntry("right-arrow-graphic", Texture.class));
@@ -430,6 +441,28 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     }
 
     private void regenerateControlTable(final Table table) {
+        // button group
+        HorizontalGroup horizontalGroup = new HorizontalGroup();
+
+        for (int i = 1; i < InputController.MAX_BAND_MEMBERS; i++) {
+            TextButton.TextButtonStyle tempStyle = new TextButton.TextButtonStyle();
+            if (i == 1) {
+                tempStyle.up = new TextureRegionDrawable(leftButtonGroup);
+            } else if (i == InputController.MAX_BAND_MEMBERS - 1) {
+                tempStyle.up = new TextureRegionDrawable(rightButtonGroup);
+            } else {
+                tempStyle.up = new TextureRegionDrawable(middleButtonGroup);
+            }
+            tempStyle.checked = new TextureRegionDrawable(buttonGroupSelected);
+            tempStyle.checkedFontColor = Color.WHITE;
+            tempStyle.font = blinkerSemiBoldSmaller;
+            tempStyle.fontColor = fontColor;
+            TextButton memberSelectButton = new TextButton(i + 1 + " Members", tempStyle);
+
+            buttonGroup.add(memberSelectButton);
+            horizontalGroup.addActor(memberSelectButton);
+        }
+
         // controls for note hits
         table.add(new Label("Note Hits", labelStyle)).padBottom(30).expandX();
         String[] currentTriggerKeybinds = InputController.triggerKeyBinds(true);
@@ -439,6 +472,10 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
             table.add(getControlWidget(i + 1, currentTriggerKeybinds[i], currentTriggerKeybindsAlt[i], fishOutline)).padBottom(30);
         }
 
+        table.row();
+
+        table.add();
+        table.add(horizontalGroup).colspan(4).left();
         table.row();
 
         // controls for switching
@@ -591,6 +628,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         s.addSound(0, "sound/click.ogg");
         this.canvas = canvas;
         stage = new Stage(new ExtendViewport(1200, 800));
+        stage.setDebugAll(true);
         mainTable = new Table();
         tableContainer = new Container<>();
 
@@ -636,6 +674,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
                     break;
                 case SETTINGS:
                     drawSettings();
+                    currBandMemberCount = buttonGroup.getCheckedIndex() + 2;
                     break;
             }
             // We are ready, notify our listener
