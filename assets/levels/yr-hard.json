@@ -10,7 +10,7 @@
   "a-threshold":800000,"b-threshold":500000,"c-threshold":320000,"s-threshold":1100000,
   "bandMembers" : [
     {
-      "instrument" : "piano",
+      "instrument" : "voice",
       "competencyLossRate" : 15,
       "notes" : [
         {
@@ -1784,7 +1784,7 @@
     }
   ,
     {
-      "instrument" : "piano",
+      "instrument" : "drum",
       "competencyLossRate" : 15,
       "notes" : [
         {
@@ -2764,7 +2764,7 @@
     }
   ,
     {
-      "instrument" : "piano",
+      "instrument" : "violin",
       "competencyLossRate" : 15,
       "notes" : [
         {

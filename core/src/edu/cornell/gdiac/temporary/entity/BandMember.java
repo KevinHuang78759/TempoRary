@@ -18,6 +18,17 @@ public class BandMember {
     FilmStrip INACTIVE_NOTES;
     FilmStrip INACTIVE_NO_NOTES;
     FilmStrip INACTIVE_LOW;
+
+    public void setFilmStrips(FilmStrip[] f){
+        INACTIVE_NOTES = f[0];
+        INACTIVE_NO_NOTES = f[1];
+        INACTIVE_LOW = f[2];
+        DF = f[3];
+        JK = f[4];
+        ACTIVE_IDLE = f[5];
+        MISS = f[6];
+
+    }
     boolean done;
     float sample;
     float samplesPerBeat;
@@ -174,24 +185,25 @@ public class BandMember {
                 characterSprite = ACTIVE_IDLE;
                 int total = characterSprite.getSize();
                 int cur = (int)(total*(sample % samplesPerBeat)/samplesPerBeat);
+                System.out.println("cur: " + cur + "total: " + total);
                 characterSprite.setFrame(cur);
             }
             else if(AS == ACTIVE_STATE.MISS){
                 characterSprite = MISS;
                 int total = characterSprite.getSize();
-                int cur = (int)(total*((sample - start)/samplesPerBeat));
+                int cur = (int)(total*(( (sample - start) % samplesPerBeat)/samplesPerBeat));
                 characterSprite.setFrame(cur);
             }
             else if(AS == ACTIVE_STATE.JK){
                 characterSprite = JK;
                 int total = characterSprite.getSize();
-                int cur = (int)(total*((sample - start)/samplesPerBeat));
+                int cur = (int)(total*(( (sample - start) % samplesPerBeat)/samplesPerBeat));
                 characterSprite.setFrame(cur);
             }
             else if(AS == ACTIVE_STATE.DF){
                 characterSprite = DF;
                 int total = characterSprite.getSize();
-                int cur = (int)(total*((sample - start)/samplesPerBeat));
+                int cur = (int)(total*(( (sample - start) % samplesPerBeat)/samplesPerBeat));
                 characterSprite.setFrame(cur);
             }
         }
@@ -409,6 +421,9 @@ public class BandMember {
         mode = -1;
         AS = ACTIVE_STATE.IDLE;
         sample = 0f;
+        DFprev = false;
+        JKprev = false;
+
     }
 
     public void setHpBarFilmStrip(Texture t, int numFrames){
@@ -677,12 +692,6 @@ public class BandMember {
     public void setFrame(int frame){
         this.frame = frame;
         characterSprite.setFrame(frame);
-    }
-    public void setCharacterFilmstrip(FilmStrip t){
-        characterFrames = t.getSize();
-        characterSprite = t;
-        characterSprite.setFrame(0);
-        frame = 0;
     }
 
 }

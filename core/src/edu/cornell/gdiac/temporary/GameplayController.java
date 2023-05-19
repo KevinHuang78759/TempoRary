@@ -610,7 +610,9 @@ public class GameplayController {
 	public int okHit;
 	public int miss;
 
-
+	boolean DF;
+	boolean MISS;
+	boolean JK;
 	/**
 	 * Handles logic of a hit, whether it is on beat or not, etc.
 	 * @param note the note that we are trying to hit
@@ -625,6 +627,7 @@ public class GameplayController {
 						 boolean destroy,
 						 boolean[] hitReg,
 						 boolean lifted) {
+
 		Note.NoteType nt = note.getNoteType();
 		// check for precondition that lifted is true iff note type is HELD
 		assert !lifted || nt == Note.NoteType.HELD;
@@ -638,6 +641,10 @@ public class GameplayController {
 		// check if note was hit or on beat
 		if(dist < miss) {
 			if (dist < okHit) {
+				if(nt != Note.NoteType.SWITCH){
+					DF = note.getLine() < NUM_LANES/2;
+					JK = note.getLine() >= NUM_LANES/2;
+				}
 				//If so, destroy the note and set a positive hit status. Also set that we
 				//have registered a hit for this line for this click. This ensures that
 				//We do not have a single hit count for two notes that are close together
@@ -684,12 +691,14 @@ public class GameplayController {
 				sb.receiveHit(pointsReceived);
 			} else {
 				// lose some competency since you played a bit off beat
+				MISS = true;
 				sb.resetCombo();
 				note.setHitStatus(offBeatLoss);
 			}
 		}
 		//if we let go too early we need to reset the combo
 		if (lifted && dist >= miss){
+			MISS = true;
 			sb.resetCombo();
 			note.setHitStatus(offBeatLoss);
 		}
@@ -698,6 +707,10 @@ public class GameplayController {
 
 
 	public void recieveInput(InputController input){
+		DF = false;
+		JK = false;
+		MISS = false;
+
 		switches = input.didSwitch();
 		triggers = input.didTrigger();
 		lifted = input.triggerLifted;
@@ -740,6 +753,7 @@ public class GameplayController {
 					//reset progress
 					t_progress = 0; //transition progress
 					t_start = level.getLevelSample();
+					level.swapActive(activeBandMember, goalBandMember);
 					return;
 				}
 			}
@@ -786,6 +800,12 @@ public class GameplayController {
 				}
 				// check the hold
 				if (n.isHolding()) {
+					if(n.getLine() < NUM_LANES/2){
+						DF = true;
+					}
+					else{
+						JK = true;
+					}
 					// update competency every beat
 					long samplesPerBeat = (long) (level.getMusic().getSampleRate() * (60f / level.getBpm()));
 					// approximation of how many samples held
@@ -803,7 +823,10 @@ public class GameplayController {
 					sb.resetCombo();
 				}
 			}
+
 		}
+		level.recieveInterrupt(activeBandMember, DF, JK, MISS);
+
 	}
 
 	public void dispose(){
