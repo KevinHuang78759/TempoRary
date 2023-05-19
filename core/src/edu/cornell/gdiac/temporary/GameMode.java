@@ -17,6 +17,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
@@ -134,6 +136,8 @@ public class GameMode implements Screen {
 	/** Reference to drawing context to display graphics (VIEW CLASS) */
 	private GameCanvas canvas;
 
+	private BitmapFont blinkerRegular;
+
 	/** Reads input from keyboard or game pad (CONTROLLER CLASS) */
 	private InputController inputController;
 	/** Constructs the game models and handle basic gameplay (CONTROLLER CLASS) */
@@ -180,7 +184,8 @@ public class GameMode implements Screen {
 	AssetDirectory directory;
 
 
-	String levelString;
+	FreeTypeFontGenerator generator;
+	FreeTypeFontGenerator.FreeTypeFontParameter parameter;
 
 	/**
 	 * Creates a new game with the given drawing context.
@@ -202,6 +207,7 @@ public class GameMode implements Screen {
 		gameplayController = new GameplayController(canvas.getWidth(),canvas.getHeight());
 		introSFX = new SoundController<>();
 		s = new SoundController<>();
+		scoreLayout = new GlyphLayout();
 	}
 
 	/**
@@ -260,6 +266,11 @@ public class GameMode implements Screen {
 	 * @param directory     Reference to the asset directory.
 	 */
 	public void populate(AssetDirectory directory) {
+		generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Blinker-Regular.ttf"));
+		parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+		parameter.size = 30;
+		blinkerRegular = generator.generateFont(parameter);
+
 		streetLevelBackground = new FilmStrip(directory.getEntry("street-background", Texture.class), 1, 1);
 		winBackground = new FilmStrip(directory.getEntry("win-background", Texture.class), 1, 1);
 		loseBackground = new FilmStrip(directory.getEntry("lose-background", Texture.class), 1, 1);
@@ -508,6 +519,16 @@ public class GameMode implements Screen {
 		}
 	}
 
+	private GlyphLayout scoreLayout;
+	private float scoreScale = 1f;
+
+	public void setScoreScale(float heightConfine){
+		String disp = "Score 0000000";
+		scoreLayout.setText(blinkerRegular, disp);
+		scoreScale *= heightConfine/scoreLayout.height;
+		blinkerRegular.getData().setScale(scoreScale);
+	}
+
 	private void goNextLevel(){
 		String levelNames[]=LevelSelect.getAllLevels();
 		LevelSelect.setSelectedJson(levelNames[nextIdx]);
@@ -532,7 +553,6 @@ public class GameMode implements Screen {
 	 */
 	protected void play(float delta) {
 		// Update objects.
-
 
 		if (gameState == GameState.PLAY) {
 			gameplayController.reactToAction();
@@ -685,48 +705,49 @@ public class GameMode implements Screen {
 	public void drawWin(){
 		canvas.drawBackground(winBackground.getTexture(),0,0);
 		displayFont.setColor(Color.WHITE);
+		setScoreScale(30);
 
 		// draw the next button; next should be
 		long score = gameplayController.sb.getScore();
 		canvas.draw(combo, Color.WHITE, combo.getWidth()/2, combo.getHeight()/2,
 				centerX*0.45f, centerY*1.5f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		long maxCombo =gameplayController.sb.getMaxCombo();
-		canvas.drawText(String.valueOf(maxCombo), lucidaFont,centerX*0.45f+(scale*combo.getWidth()/2),centerY*1.5f,
+		canvas.drawText(String.valueOf(maxCombo), blinkerRegular,centerX*0.45f+(scale*combo.getWidth()/2),centerY*1.53f,
 				Color.WHITE);
 
 		canvas.draw(perfect, Color.WHITE, perfect.getWidth()/2, perfect.getHeight()/2,
 				centerX*0.45f, centerY*1.25f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		long nPerfect = gameplayController.getNPerfect();
-		canvas.drawText(String.valueOf(nPerfect), lucidaFont,centerX*0.45f+(scale*combo.getWidth()/2),centerY*1.25f,
+		canvas.drawText(String.valueOf(nPerfect), blinkerRegular,centerX*0.45f+(scale*combo.getWidth()/2),centerY*1.28f,
 				Color.WHITE);
 
 		canvas.draw(good, Color.WHITE, good.getWidth()/2, good.getHeight()/2,
 				centerX*0.45f, centerY, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		long nGood = gameplayController.getNGood();
-		canvas.drawText(String.valueOf(nGood), lucidaFont,centerX*0.45f+(scale*combo.getWidth()/2),centerY,
+		canvas.drawText(String.valueOf(nGood), blinkerRegular,centerX*0.45f+(scale*combo.getWidth()/2),centerY*1.04f,
 				Color.WHITE);
 
 		canvas.draw(ok, Color.WHITE, ok.getWidth()/2, ok.getHeight()/2,
 				centerX*0.45f, centerY*0.75f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		long nOk =gameplayController.getNOk();
-		canvas.drawText(String.valueOf(nOk), lucidaFont,centerX*0.45f+(scale*combo.getWidth()/2),centerY*0.75f,
+		canvas.drawText(String.valueOf(nOk), blinkerRegular,centerX*0.45f+(scale*combo.getWidth()/2),centerY*0.8f,
 				Color.WHITE);
 
 		canvas.draw(miss, Color.WHITE, miss.getWidth()/2, miss.getHeight()/2,
 				centerX*0.45f, centerY*0.5f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		long nMiss = gameplayController.getNOk();
-		canvas.drawText(String.valueOf(nMiss), lucidaFont,centerX*0.45f+(scale*combo.getWidth()/2), centerY*0.5f,
+		canvas.drawText(String.valueOf(nMiss), blinkerRegular,centerX*0.45f+(scale*combo.getWidth()/2), centerY*0.55f,
 				Color.WHITE);
 
 		canvas.draw(line, Color.WHITE, line.getWidth()/2, line.getHeight()/2,
-				centerX*0.45f, centerY*0.375f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
+				centerX*0.6f, centerY*0.375f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 
 		canvas.draw(scoreIcon, Color.WHITE, scoreIcon.getWidth()/2, scoreIcon.getHeight()/2,
 				centerX*0.45f, centerY*0.25f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
-		canvas.drawText(String.valueOf(score), lucidaFont,centerX*0.45f+(scale*combo.getWidth()/2),centerY*0.25f,
+		canvas.drawText(String.valueOf(score), blinkerRegular,centerX*0.45f+(scale*combo.getWidth()/2),centerY*0.27f,
 				Color.WHITE);
 
-		drawNextRetryLevel(true);
+		drawNextRetryLevel();
 
 		Texture letterGrade = gameplayController.sb.getLetterGrade();
 		canvas.draw(letterGrade, Color.WHITE, letterGrade.getWidth()/2, letterGrade.getHeight()/2,
@@ -742,7 +763,7 @@ public class GameMode implements Screen {
 		canvas.drawBackground(loseBackground.getTexture(),0,0);
 		canvas.draw(ruinShow, Color.WHITE,ruinShow.getWidth()/2,ruinShow.getHeight()/2,0.5f*centerX,
 				centerY, 0,WON_BUTTON_SCALE*scale,WON_BUTTON_SCALE*scale);
-		drawNextRetryLevel(false);
+		drawNextRetryLevel();
 		canvas.draw(cross, Color.WHITE, cross.getWidth()/2, cross.getHeight()/2,
 				centerX*1.25f, centerY*1.45f, 0, WON_BUTTON_SCALE*scale,WON_BUTTON_SCALE*scale);
 	}
@@ -752,14 +773,14 @@ public class GameMode implements Screen {
 	 * Draws next, retry, and level on the right of the win/lose screen; things in common for win/lose screen.
 	 *
 	 */
-	public void drawNextRetryLevel(boolean drawNextLevel){
+	public void drawNextRetryLevel(){
 		canvas.draw(resultIcon,Color.WHITE,resultIcon.getWidth()/2,resultIcon.getHeight()/2,centerX,
 		1.8f*centerY,0,WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 
 		canvas.draw(goBack, Color.WHITE, goBack.getWidth()/2, goBack.getHeight()/2,
 				centerX*0.2f, 1.8f*centerY, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 
-		if (nextIdx<=LevelSelect.getnLevels() && drawNextLevel){
+		if (nextIdx<=LevelSelect.getnLevels()){
 			canvas.draw(nextButtonWon, Color.WHITE, nextButtonWon.getWidth()/2, nextButtonWon.getHeight()/2,
 					1.75f*centerX, centerY*0.3f, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
 		}
@@ -851,6 +872,9 @@ public class GameMode implements Screen {
 		float sx = ((float)width)/STANDARD_WIDTH;
 		float sy = ((float)height)/STANDARD_HEIGHT;
 		scale = Math.min(sx, sy);
+		parameter.size = Math.round(30*(1+scale));
+		blinkerRegular = generator.generateFont(parameter);
+
 		centerY = height/2;
 		centerX = width/2;
 	}
