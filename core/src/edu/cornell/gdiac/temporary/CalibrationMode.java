@@ -90,7 +90,7 @@ public class CalibrationMode implements Screen {
         inputController = InputController.getInstance();
         this.canvas = canvas;
         userHitBeats = new LinkedList<>();
-        offset = 0;
+        offset = SaveManager.getInstance().getCalibrationOffset();
         isCalibrated = false;
         instructionsLayout = new GlyphLayout();
         smallerFontLayout = new GlyphLayout();
@@ -260,6 +260,7 @@ public class CalibrationMode implements Screen {
             sum += userHitBeats.get(i);
         }
         this.offset = userHitBeats.size() > 0 ? sum / userHitBeats.size() : 0;
+        SaveManager.getInstance().saveCalibration(offset);
         isCalibrated = true;
     }
 

@@ -14,7 +14,7 @@ public class SaveManager {
     /** LibGDX Preferences for all the game's levels */
     // TODO: UPDATE THIS TYPE WITH A COLLECTION
     private Preferences levels;
-    /** LibGDX Preferences for user volume settings */
+    /** LibGDX Preferences for user volume settings (and calibration) */
     private Preferences volumeSettings;
     /** LibGDX preferences for hit bindings */
     private Preferences hitBindingSettings;
@@ -73,6 +73,11 @@ public class SaveManager {
         volumeSettings.flush();
     }
 
+    public void saveCalibration(int offset) {
+        volumeSettings.putInteger("calibration", offset);
+        volumeSettings.flush();
+    }
+
     // MEANT TO BE CALLED ONCE WHEN INITIALIZING SETTINGS
     public int[] getHitKeybindingSettings(int[] def, boolean main) {
         int[] temp = new int[InputController.MAX_LINES_PER_LANE];
@@ -122,6 +127,13 @@ public class SaveManager {
         return volumeSettings.getFloat("fx", 1);
     }
 
+    /**
+     * Retrieves saved calibration offset data
+     */
+    public int getCalibrationOffset() {
+        return volumeSettings.getInteger("calibration", 0);
+    }
+
     // TODO: CLEAR SAVED DATA
     public void clearSavedData() {
         levels.clear();
@@ -137,5 +149,4 @@ public class SaveManager {
             s.flush();
         }
     }
-
 }
