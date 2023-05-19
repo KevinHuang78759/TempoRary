@@ -172,7 +172,8 @@ public class GameMode implements Screen {
 	private int introTime;
 	/** time in special units for measuring how far we are in the intro sequence */
 	private int endTime = 0;
-
+	/** volume of the music */
+    private float volume;
 
 	/** the current level */
 	private int currLevel;
@@ -251,6 +252,7 @@ public class GameMode implements Screen {
 		gameState = GameState.INTRO;
 		pressState = NO_BUTTON_PRESSED;
 		gameplayController.garbageCollectNoteIndicators();
+		volume = gameplayController.level.getMusicVolume();
 	}
 
 	/**
@@ -285,6 +287,7 @@ public class GameMode implements Screen {
 
 	public void setSoundVolume(float fxVolume, float musicVolume) {
 		gameplayController.level.setMusicVolume(musicVolume);
+		volume = gameplayController.level.getMusicVolume();
 	}
 
 	/**
@@ -627,7 +630,7 @@ public class GameMode implements Screen {
 			endTime++;
 			SaveManager.getInstance().saveGame(gameplayController.level.getLevelName(), gameplayController.sb.getScore());
 			if (endTime < 150) {
-				gameplayController.level.setMusicVolume(1- ((float) endTime / 150));
+				gameplayController.level.setMusicVolume(volume*(1- ((float) endTime / 150)));
 			}
 			if (endTime == 150) {
 				gameplayController.level.stopMusic();

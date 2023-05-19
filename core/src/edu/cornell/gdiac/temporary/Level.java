@@ -315,6 +315,10 @@ public class Level {
         music.setVolume(vol);
     }
 
+    public float getMusicVolume() {
+        return music.getVolume();
+    }
+
     // TODO: REMOVE THIS AND REPLACE WITH ACTUAL ANIMATION BASED ON SAMPLE
     /**
      * Takes BPM and converts it to rate of animation (as all animations should be on beat)
