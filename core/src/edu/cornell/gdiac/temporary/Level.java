@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Queue;
@@ -308,6 +309,19 @@ public class Level {
                     break;
             }
         }
+
+        // TUTORIAL LOGIC
+
+        // need autoplay ranges, need switch ranges, need random hit
+        JsonValue tutorialData = data.get("tutorial");
+        Array<Integer> arr = new Array<>();
+        for (int i = 0; i < tutorialData.get("autoplayRange").size; i++) {
+
+        }
+    }
+
+    public boolean isInAutoplay() {
+        return false;
     }
 
     // TODO: document and multiply by the base music volume
