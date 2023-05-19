@@ -104,15 +104,11 @@ public class GameMode implements Screen {
 	private Texture ruinShow;
 
 	private Texture resultIcon;
-
 	private Texture difficultyIcon;
-
-	private Vector2 levelAlbumCoverCoords;
 	private Texture levelButton;
 	private Texture menuButton;
 	private Texture pauseBackground;
 	private Texture whiteBackground;
-
 	private Texture nextButtonWon;
 	private Texture restartButtonWon;
 	private Texture levelButtonWon;
@@ -162,18 +158,13 @@ public class GameMode implements Screen {
 	/** time in special units for measuring how far we are in the intro sequence */
 	private int endTime = 0;
 
-
 	/** the current level */
 	private int currLevel;
-
 	private int currDifficulty;
 
 	/** the index of the next game */
-
 	private int nextIdx;
-
 	private Texture cross;
-
 	private Texture combo;
 	private Texture perfect;
 	private Texture good;
@@ -182,8 +173,6 @@ public class GameMode implements Screen {
 	private Texture line;
 	private Texture scoreIcon;
 	AssetDirectory directory;
-
-
 	FreeTypeFontGenerator generator;
 	FreeTypeFontGenerator.FreeTypeFontParameter parameter;
 
@@ -218,9 +207,9 @@ public class GameMode implements Screen {
 		pressState = NO_BUTTON_PRESSED;
 		gameplayController.garbageCollectNoteIndicators();
 		gameplayController.reset();
-		gameplayController.reloadLevel();
 		ticks = 0;
 		endTime = 0;
+//		resetLevel();
 	}
 
 	/**
@@ -231,7 +220,10 @@ public class GameMode implements Screen {
 		gameplayController.setOffset(offset);
 	}
 
+
+
 	public void readLevel(String levelString, AssetDirectory assetDirectory, int selectedLevel, int difficulty) {
+
 		System.out.println("selectedlevel"+selectedLevel);
 		currLevel = selectedLevel;
 		currDifficulty = difficulty;
@@ -285,20 +277,15 @@ public class GameMode implements Screen {
 		resumeButton = directory.getEntry("resume-button", Texture.class);
 		restartButton = directory.getEntry("restart-button", Texture.class);
 		levelButton = directory.getEntry("level-select-button", Texture.class);
-
 		resultIcon =  directory.getEntry("result", Texture.class);
 		nextButtonWon = directory.getEntry("win-lose-next", Texture.class);
 		restartButtonWon = directory.getEntry("win-lose-restart", Texture.class);
 		levelButtonWon = directory.getEntry("win-lose-select", Texture.class);
 		cross = directory.getEntry("x", Texture.class);
 		ruinShow = directory.getEntry("ruin-show",Texture.class);
-
-
 		menuButton = directory.getEntry("menu-button", Texture.class);
 		pauseBackground = directory.getEntry("pause-background", Texture.class);
 		whiteBackground = directory.getEntry("white-background", Texture.class);
-
-		System.out.println("currSong:"+currLevel);
 		Texture albumCovers[] = LevelSelect.getAlbumCovers();
 		levelAlbumCover = albumCovers[currLevel];
 		difficultyIcon = directory.getEntry(matchDifficulty(currDifficulty), Texture.class);
@@ -425,8 +412,9 @@ public class GameMode implements Screen {
 					}
 					if ((nextIdx<=LevelSelect.getnLevels()) && didNext) {
 						s.playSound(0, 0.3f);
+
 						goNextLevel();
-						reset();
+//						reset();
 					}
 				}
 				break;
@@ -465,13 +453,6 @@ public class GameMode implements Screen {
 							System.out.println("pressed level");
 							pressState = ExitCode.TO_LEVEL;
 						}
-
-						if (((nextIdx<=LevelSelect.getnLevels()) && didNext)) {
-							s.playSound(0, 0.3f);
-							goNextLevel();
-							reset();
-						}
-
 					}
 					if (inputController.didReset()) {
 						s.playSound(0, 0.3f);
@@ -537,12 +518,18 @@ public class GameMode implements Screen {
 	}
 
 	private void goNextLevel(){
-		String levelNames[]=LevelSelect.getAllLevels();
-		currLevel ++;
+		// load in album cover
+		currLevel ++; //level is song
 		Texture allAlbums[] = LevelSelect.getAlbumCovers();
 		levelAlbumCover = allAlbums[currLevel];
+
+		//load in next json
+		String levelNames[]=LevelSelect.getAllLevels();
 		LevelSelect.setSelectedJson(levelNames[nextIdx]);
+
+		readLevel(levelNames[nextIdx], directory, currLevel, currDifficulty);
 		pressState = ExitCode.TO_PLAYING;
+		gameState = GameState.PLAY;
 	}
 
 	/**
@@ -759,6 +746,11 @@ public class GameMode implements Screen {
 
 		drawNextRetryLevel();
 
+		if (nextIdx<=LevelSelect.getnLevels()){
+			canvas.draw(nextButtonWon, Color.WHITE, nextButtonWon.getWidth()/2, nextButtonWon.getHeight()/2,
+					1.75f*centerX, centerY*0.3f, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+		}
+
 		Texture letterGrade = gameplayController.sb.getLetterGrade();
 		canvas.draw(letterGrade, Color.WHITE, letterGrade.getWidth()/2, letterGrade.getHeight()/2,
 				centerX*1.25f, centerY*1.45f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
@@ -789,11 +781,6 @@ public class GameMode implements Screen {
 
 		canvas.draw(goBack, Color.WHITE, goBack.getWidth()/2, goBack.getHeight()/2,
 				centerX*0.2f, 1.8f*centerY, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
-
-		if (nextIdx<=LevelSelect.getnLevels()){
-			canvas.draw(nextButtonWon, Color.WHITE, nextButtonWon.getWidth()/2, nextButtonWon.getHeight()/2,
-					1.75f*centerX, centerY*0.3f, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
-		}
 
 		canvas.draw(restartButtonWon, Color.WHITE, restartButtonWon.getWidth()/2, restartButtonWon.getHeight()/2,
 				1.25f*centerX, centerY*0.3f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
