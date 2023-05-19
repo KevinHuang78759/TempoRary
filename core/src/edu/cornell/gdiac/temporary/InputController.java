@@ -67,16 +67,21 @@ public class InputController {
 	//We need to track their previous values so that we dont register a hold as repeated clicks
 	boolean[] triggerPress;
 	boolean[] triggerLifted;
+	boolean[] switchesPress;
 	private static boolean[] triggers;
 	private boolean[] triggerLast;
 	private static boolean[] switches;
 	private boolean[] switchesLast;
 	private boolean[] moves;
 
-	private boolean autoplay = true;
+	private boolean autoplay;
 
 	/** XBox Controller support */
 	private XBoxController xbox;
+
+	public void setAutoplay(boolean ap) {
+		autoplay = ap;
+	}
 
 	/**
 	 * Returns true if the reset button was pressed.
@@ -173,6 +178,7 @@ public class InputController {
 		// we hardcode 4 for this because this is now the specification for the game
 		triggerPress = new boolean[4];
 		triggerLast = new boolean[4];
+		switchesPress = new boolean[4];
 		switchesLast = new boolean[4];
 		triggers = new boolean[4];
 		switches = new boolean[4];
@@ -343,6 +349,12 @@ public class InputController {
 		}
 	}
 
+	public void setSwitch(int line, boolean val) {
+		if (autoplay) {
+			switchesPress[line] = val;
+		}
+	}
+
 	public void resetTriggers() {
 		Arrays.fill(triggerPress, false);
 	}
@@ -364,8 +376,6 @@ public class InputController {
 
 		calibrationHitJustPressed = !calibrationHitLast && calibrationHitPressed;
 		calibrationHitLast = calibrationHitPressed;
-
-		boolean[] switchesPress = new boolean[4];
 
 		for (int i = 0; i < triggerBindingsMain.length; i++) {
 			if (!autoplay) {

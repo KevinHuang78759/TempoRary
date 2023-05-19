@@ -767,7 +767,6 @@ public class GameplayController {
 		//Now check for hit and held notes
 		int checkBandMember = curP == PlayPhase.NOTES ? activeBandMember : goalBandMember;
 		for (Note n : level.getBandMembers()[checkBandMember].getHitNotes()){
-			// TODO: AUTOPLAY TEST
 			if (n.getNoteType() == Note.NoteType.BEAT) {
 				if (currentSample >= n.getHitSample()) {
 					InputController.getInstance().setTrigger(n.getLine(), true);
