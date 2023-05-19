@@ -1706,42 +1706,42 @@ bandMembers: [
 		]
 		compFlags: [
 			{
-				rate: 2
+				rate: 4
 				gain: 3
 				position: 0
 			}
 			{
-				rate: 2
+				rate: 4
 				gain: 4
 				position: 1148250
 			}
 			{
-				rate: 2
+				rate: 4
 				gain: 2
 				position: 1377900
 			}
 			{
-				rate: 2
+				rate: 4
 				gain: 1
 				position: 2314872
 			}
 			{
-				rate: 2
+				rate: 4
 				gain: 3
 				position: 2406732
 			}
 			{
-				rate: 3
+				rate: 6
 				gain: 3
 				position: 2682312
 			}
 			{
-				rate: 3
+				rate: 4
 				gain: 1
 				position: 3306960
 			}
 			{
-				rate: 4
+				rate: 9
 				gain: 2
 				position: 3398820
 			}
@@ -3097,27 +3097,27 @@ bandMembers: [
 		]
 		compFlags: [
 			{
-				rate: 2
+				rate: 4
 				gain: 1
 				position: 0
 			}
 			{
-				rate: 2
+				rate: 4
 				gain: 3
 				position: 1433016
 			}
 			{
-				rate: 2
+				rate: 4
 				gain: 1
 				position: 2314872
 			}
 			{
-				rate: 2
+				rate: 4
 				gain: 3
 				position: 2737428
 			}
 			{
-				rate: 2
+				rate: 4
 				gain: 1
 				position: 3306960
 			}

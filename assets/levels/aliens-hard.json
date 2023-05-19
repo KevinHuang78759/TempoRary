@@ -1,18 +1,18 @@
 {
 levelName: null
-levelNumber: 1,
-	levelImage: "null"
-	background: "cafe-background",
-	song: aliens
+levelNumber: 1
+levelImage: cafe
+background: cafe-background
+song: aliens
 startPosition: 0
 bpm: 85
 fallSpeed: 5
 maxCompetency: 100
 linesPerMember: 4
-thresholdA: 40000
-thresholdB: 30000
-thresholdC: 20000
-thresholdS: 50000
+thresholdA: 4000
+thresholdB: 3000
+thresholdC: 2000
+thresholdS: 5000
 bandMembers: [
 	{
 		instrument: piano
@@ -510,7 +510,13 @@ bandMembers: [
 				line: 2
 			}
 		]
-		compFlags: []
+		compFlags: [
+			{
+				rate: 3
+				gain: 4
+				position: 0
+			}
+		]
 	}
 	{
 		instrument: drum
@@ -1524,7 +1530,13 @@ bandMembers: [
 				line: 0
 			}
 		]
-		compFlags: []
+		compFlags: [
+			{
+				rate: 3
+				gain: 4
+				position: 0
+			}
+		]
 	}
 	{
 		instrument: voice
@@ -1596,7 +1608,13 @@ bandMembers: [
 				line: 3
 			}
 		]
-		compFlags: []
+		compFlags: [
+			{
+				rate: 3
+				gain: 4
+				position: 0
+			}
+		]
 	}
 	{
 		instrument: violin
@@ -2364,7 +2382,13 @@ bandMembers: [
 				line: 3
 			}
 		]
-		compFlags: []
+		compFlags: [
+			{
+				rate: 3
+				gain: 4
+				position: 0
+			}
+		]
 	}
 ]
 randomHits: []

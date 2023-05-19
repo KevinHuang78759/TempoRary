@@ -1,18 +1,18 @@
 {
 levelName: American
-levelNumber: 1,
-	levelImage: "null"
-	background: "cafe-background",
-	song: American
+levelNumber: 1
+levelImage: cafe
+background: cafe-background
+song: American
 startPosition: 0
 bpm: 160
 fallSpeed: 5
 maxCompetency: 20
 linesPerMember: 4
-thresholdA: 660000
-thresholdB: 520000
-thresholdC: 300000
-thresholdS: 715000
+thresholdA: 4000
+thresholdB: 3000
+thresholdC: 2000
+thresholdS: 5000
 bandMembers: [
 	{
 		instrument: piano
@@ -462,7 +462,13 @@ bandMembers: [
 				line: 1
 			}
 		]
-		compFlags: []
+		compFlags: [
+			{
+				rate: 2
+				gain: 4
+				position: 0
+			}
+		]
 	}
 	{
 		instrument: piano
@@ -1260,7 +1266,13 @@ bandMembers: [
 				line: 1
 			}
 		]
-		compFlags: []
+		compFlags: [
+			{
+				rate: 2
+				gain: 4
+				position: 0
+			}
+		]
 	}
 	{
 		instrument: piano
@@ -1908,7 +1920,13 @@ bandMembers: [
 				line: 1
 			}
 		]
-		compFlags: []
+		compFlags: [
+			{
+				rate: 2
+				gain: 4
+				position: 0
+			}
+		]
 	}
 	{
 		instrument: piano
@@ -2502,7 +2520,13 @@ bandMembers: [
 				line: 3
 			}
 		]
-		compFlags: []
+		compFlags: [
+			{
+				rate: 2
+				gain: 4
+				position: 0
+			}
+		]
 	}
 ]
 randomHits: []

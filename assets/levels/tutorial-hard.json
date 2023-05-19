@@ -1,9 +1,9 @@
 {
 levelName: Praeludium
-levelNumber: 1,
-	levelImage: "null"
-	background: "cafe-background",
-	song: Tutorial
+levelNumber: 1
+levelImage: cafe
+background: cafe-background
+song: Tutorial
 startPosition: 0
 bpm: 90
 fallSpeed: 5
@@ -240,7 +240,13 @@ bandMembers: [
 				line: 2
 			}
 		]
-		compFlags: []
+		compFlags: [
+			{
+				rate: 3
+				gain: 4
+				position: 0
+			}
+		]
 	}
 	{
 		instrument: voice
@@ -648,7 +654,13 @@ bandMembers: [
 				line: 2
 			}
 		]
-		compFlags: []
+		compFlags: [
+			{
+				rate: 3
+				gain: 4
+				position: 0
+			}
+		]
 	}
 	{
 		instrument: violin
@@ -852,7 +864,13 @@ bandMembers: [
 				line: 0
 			}
 		]
-		compFlags: []
+		compFlags: [
+			{
+				rate: 3
+				gain: 4
+				position: 0
+			}
+		]
 	}
 ]
 randomHits: []

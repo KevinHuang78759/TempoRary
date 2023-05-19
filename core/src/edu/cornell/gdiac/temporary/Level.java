@@ -240,6 +240,7 @@ public class Level {
         //Read in Json  Value and populate asset textures
         lastDec = 0;
         levelName = data.getString("levelName");
+        System.out.println(levelName);
         levelNumber = data.getInt("levelNumber");
         maxCompetency = data.getInt("maxCompetency");
         aThreshold = data.get("thresholdA").asLong();

@@ -1,12 +1,12 @@
 {
 levelName: YR
-levelNumber: 1,
-	levelImage: "null"
-	background: "cafe-background",
-	song: YR
+levelNumber: 1
+levelImage: cafe
+background: cafe-background
+song: YR
 startPosition: 0
 bpm: 150
-fallSpeed: 5
+fallSpeed: 10
 maxCompetency: 175
 linesPerMember: 4
 thresholdA: 640000
@@ -1140,7 +1140,13 @@ bandMembers: [
 				line: 2
 			}
 		]
-		compFlags: []
+		compFlags: [
+			{
+				rate: 2
+				gain: 4
+				position: 0
+			}
+		]
 	}
 	{
 		instrument: piano
@@ -1782,7 +1788,13 @@ bandMembers: [
 				line: 1
 			}
 		]
-		compFlags: []
+		compFlags: [
+			{
+				rate: 2
+				gain: 4
+				position: 0
+			}
+		]
 	}
 	{
 		instrument: piano
@@ -2760,7 +2772,13 @@ bandMembers: [
 				line: 1
 			}
 		]
-		compFlags: []
+		compFlags: [
+			{
+				rate: 2
+				gain: 4
+				position: 0
+			}
+		]
 	}
 	{
 		instrument: piano
@@ -3936,7 +3954,13 @@ bandMembers: [
 				line: 3
 			}
 		]
-		compFlags: []
+		compFlags: [
+			{
+				rate: 2
+				gain: 4
+				position: 0
+			}
+		]
 	}
 ]
 randomHits: []
