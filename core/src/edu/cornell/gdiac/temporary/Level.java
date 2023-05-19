@@ -529,7 +529,6 @@ public class Level {
             sample = startSample + (int) (((float) rate/60f)*ticks);
         }
 
-        System.out.println(bandMembers[2].getHitNotes().size);
         for (int i = 0; i < bandMembers.length; ++i) {
             BandMember bandMember = bandMembers[i];
             if (mode==1) {

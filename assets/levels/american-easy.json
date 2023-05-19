@@ -9,10 +9,10 @@
   "fallSpeed" : 10,
   "maxCompetency" :40,
   "linesPerMember" : 4,
-  "thesholdA" : 350000,
-  "thesholdB" : 225000,
-  "thesholdC" : 100000,
-  "thesholdS" : 460000,
+  "thresholdA" : 350000,
+  "thresholdB" : 225000,
+  "thresholdC" : 100000,
+  "thresholdS" : 460000,
   "bandMembers" : [
     {
       "instrument" : "piano",
@@ -352,11 +352,11 @@
         {
           "rate" : 1,
           "gain" : 4,
-          "position" : 0,
+          "position" : 0
         }
       ]
     }
-,
+  ,
     {
       "instrument" : "piano",
       "notes" : [
@@ -755,11 +755,11 @@
         {
           "rate" : 1,
           "gain" : 4,
-          "position" : 0,
+          "position" : 0
         }
       ]
     }
-,
+  ,
     {
       "instrument" : "piano",
       "notes" : [
@@ -888,11 +888,11 @@
         {
           "rate" : 1,
           "gain" : 4,
-          "position" : 0,
+          "position" : 0
         }
       ]
     }
-,
+  ,
     {
       "instrument" : "piano",
       "notes" : [
@@ -1171,10 +1171,9 @@
         {
           "rate" : 1,
           "gain" : 4,
-          "position" : 0,
+          "position" : 0
         }
       ]
     }
-
-  ],
+  ]
 }

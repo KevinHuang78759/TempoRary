@@ -756,7 +756,8 @@ public class GameplayController {
 					}
 					for(Note n : level.getBandMembers()[activeBandMember].getHitNotes()){
 						if(n.getNoteType() == Note.NoteType.HELD && n.isHolding()){
-							checkHit(n, currentSample, 3, 2, 1, -1, n.getY(),true, hitReg, true);
+							int liftedGainRate = (int) (level.gainRate(activeBandMember) * 0.75);
+							checkHit(n, currentSample, liftedGainRate, -1, n.getBottomY(),true, hitReg, true);
 						}
 					}
 					//set goalBM

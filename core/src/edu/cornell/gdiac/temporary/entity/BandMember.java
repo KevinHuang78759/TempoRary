@@ -188,7 +188,6 @@ public class BandMember {
                 characterSprite = ACTIVE_IDLE;
                 int total = characterSprite.getSize();
                 int cur = (int)(total*(sample % samplesPerBeat)/samplesPerBeat);
-                System.out.println("cur: " + cur + "total: " + total);
                 characterSprite.setFrame(cur);
             }
             else if(AS == ACTIVE_STATE.MISS){
