@@ -101,14 +101,9 @@ public class GameMode implements Screen {
 
 	private Texture ruinShow;
 
-	private Vector2 ruinShowCoords;
-
 	private Texture resultIcon;
 
-	private Vector2 resultIconCoords;
 	private Texture difficultyIcon;
-
-	private Vector2 difficultyIconCoords;
 
 	private Vector2 levelAlbumCoverCoords;
 	private Texture levelButton;
@@ -185,40 +180,16 @@ public class GameMode implements Screen {
 
 	// TODO: REMOVE ALL INSTANCES OF VECTOR2
 	private Texture cross;
-	private Vector2 crossCoords;
 
 	private Texture combo;
-	private Vector2 comboCoords;
 	private Texture perfect;
-	private Vector2 perfectCoords;
-
 	private Texture good;
-	private Vector2 goodCoords;
-
 	private Texture ok;
-	private Vector2 okCoords;
-
 	private Texture miss;
-	private Vector2 missCoords;
-
 	private Texture line;
-	private Vector2 lineCoords;
-
 	private Texture scoreIcon;
-	private Vector2 scoreIconCoords;
 	AssetDirectory directory;
 
-	private Texture scoreA;
-	private Vector2 scoreACoords;
-
-	private Texture scoreB;
-	private Vector2 scoreBCoords;
-
-	private Texture scoreC;
-	private Vector2 scoreCCoords;
-
-	private Texture scoreS;
-	private Vector2 scoreSCoords;
 
 	String levelString;
 
@@ -273,8 +244,8 @@ public class GameMode implements Screen {
 		int end = level.indexOf(".");
 
 		JsonReader jr = new JsonReader();
-//		nextIdx = Integer.parseInt(level.substring(start + 1, end))+3;
-		nextIdx = currLevel++;
+		nextIdx = Integer.parseInt(level.substring(start + 1, end))+3;
+//		nextIdx = currLevel++;
 
 		JsonValue levelData = jr.parse(Gdx.files.internal(level));
 
@@ -320,7 +291,6 @@ public class GameMode implements Screen {
 		levelButton = directory.getEntry("level-select-button", Texture.class);
 
 		resultIcon =  directory.getEntry("result", Texture.class);
-		resultIconCoords=new Vector2(canvas.getWidth()/2,canvas.getHeight()-resultIcon.getHeight()/2);
 		nextButtonWon = directory.getEntry("win-lose-next", Texture.class);
 		restartButtonWon = directory.getEntry("win-lose-restart", Texture.class);
 		levelButtonWon = directory.getEntry("win-lose-select", Texture.class);
@@ -339,48 +309,16 @@ public class GameMode implements Screen {
 		System.out.println("currSong:"+currLevel);
 		levelAlbumCover = directory.getEntry(String.valueOf(currLevel), Texture.class);
 		levelAlbumCoverCoords = new Vector2(canvas.getWidth()*3/4, canvas.getHeight()/2);
-
 		difficultyIcon = directory.getEntry(matchDifficulty(currDifficulty), Texture.class);
-		difficultyIconCoords = new Vector2(levelAlbumCoverCoords.x+(difficultyIcon.getWidth()*1.3f),
-				levelAlbumCoverCoords.y-(difficultyIcon.getWidth()*1.2f));
-
-		crossCoords = new Vector2(levelAlbumCoverCoords.x-cross.getWidth()+10, levelAlbumCoverCoords.y+(cross.getHeight())-20);
-
-		ruinShowCoords= new Vector2(canvas.getWidth()/3,canvas.getHeight()/2);
 
 		goBack = directory.getEntry("go-back", Texture.class);
-		goBackCoords=new Vector2 (goBack.getWidth(), canvas.getHeight()-goBack.getWidth());
-
 		combo = directory.getEntry("combo", Texture.class);
-		comboCoords = new Vector2((canvas.getWidth()/7f)+(combo.getWidth()/2)-2,levelAlbumCoverCoords.y+cross.getHeight());
-
 		perfect = directory.getEntry("perfect", Texture.class);
-		perfectCoords = new Vector2((canvas.getWidth()/7f)+(perfect.getWidth()/2)-2,comboCoords.y-perfect.getHeight()*2f);
-
 		good=directory.getEntry("good", Texture.class);
-		goodCoords = new Vector2((canvas.getWidth()/7f)+(good.getWidth()/2)+3,perfectCoords.y-perfect.getHeight()*2f);
-
 		ok=directory.getEntry("ok", Texture.class);
-		okCoords =new Vector2((canvas.getWidth()/7f)+(ok.getWidth()/2)+10,goodCoords.y-perfect.getHeight()*2f);
-
 		miss=directory.getEntry("miss", Texture.class);
-		missCoords=new Vector2((canvas.getWidth()/7f)+(miss.getWidth()/2)+5,okCoords.y-perfect.getHeight()*2f);
-
 		line=directory.getEntry("line", Texture.class);
-		lineCoords=new Vector2(canvas.getWidth()/3f-30,missCoords.y-perfect.getHeight()*2f);
-
 		scoreIcon = directory.getEntry("score", Texture.class);
-		scoreIconCoords=new Vector2((canvas.getWidth()/7f)+(scoreIcon.getWidth()/2)-6,lineCoords.y-perfect.getHeight()*2f);
-
-		scoreA = directory.getEntry("score-a", Texture.class);
-		scoreB = directory.getEntry("score-b", Texture.class);
-		scoreC = directory.getEntry("score-c", Texture.class);
-		scoreS = directory.getEntry("score-s", Texture.class);
-
-		scoreACoords=new Vector2(levelAlbumCoverCoords.x-scoreA.getWidth()+10, levelAlbumCoverCoords.y+(scoreA.getHeight()));
-		scoreBCoords=new Vector2(levelAlbumCoverCoords.x-scoreA.getWidth()+10, levelAlbumCoverCoords.y+(scoreA.getHeight()));
-		scoreCCoords=new Vector2(levelAlbumCoverCoords.x-scoreA.getWidth()+10, levelAlbumCoverCoords.y+(scoreA.getHeight()));
-		scoreSCoords=new Vector2(levelAlbumCoverCoords.x-scoreA.getWidth()+10, levelAlbumCoverCoords.y+(scoreA.getHeight()));
 		introMask = directory.getEntry("white-background", Texture.class);
 		introThree = directory.getEntry("intro-3", Texture.class);
 		introTwo = directory.getEntry("intro-2", Texture.class);
@@ -804,7 +742,7 @@ public class GameMode implements Screen {
 		drawNextRetryLevel(true);
 
 		Texture letterGrade = gameplayController.sb.getLetterGrade();
-		canvas.draw(letterGrade, Color.WHITE, scoreS.getWidth()/2, scoreS.getHeight()/2,
+		canvas.draw(letterGrade, Color.WHITE, letterGrade.getWidth()/2, letterGrade.getHeight()/2,
 				centerX*1.25f, centerY*1.45f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 	}
 
@@ -835,10 +773,10 @@ public class GameMode implements Screen {
 				centerX*0.2f, 1.8f*centerY, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 
 		// TODO: FIX THIS
-//		if (nextIdx<=9 && drawNextLevel){
-//			canvas.draw(nextButtonWon, Color.WHITE, nextButtonWon.getWidth()/2, nextButtonWon.getHeight()/2,
-//					1.75f*centerX, centerY*0.3f, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
-//		}
+		if (nextIdx<=9 && drawNextLevel){
+			canvas.draw(nextButtonWon, Color.WHITE, nextButtonWon.getWidth()/2, nextButtonWon.getHeight()/2,
+					1.75f*centerX, centerY*0.3f, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+		}
 
 		canvas.draw(restartButtonWon, Color.WHITE, restartButtonWon.getWidth()/2, restartButtonWon.getHeight()/2,
 				1.25f*centerX, centerY*0.3f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
