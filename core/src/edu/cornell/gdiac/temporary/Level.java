@@ -474,7 +474,7 @@ public class Level {
             sample = startSample + (int) (((float) rate/60f)*ticks);
         }
 
-
+        System.out.println(bandMembers[2].getHitNotes().size);
         for (int i = 0; i < bandMembers.length; ++i) {
             BandMember bandMember = bandMembers[i];
             if (mode==1) {
@@ -482,16 +482,19 @@ public class Level {
                 bandMember.pickFrame();
             }
 
-            //spawn new notes accordingly
-            bandMember.spawnNotes(sample);
-            //update the note frames
-            bandMember.updateNotes(spawnY, sample);
+
+
 
             if (!bandMember.getHitNotes().isEmpty() && mode == 1) {
                 float loss = -1f * bandMember.getLossRate() * (sample - lastDec) / ((float) music.getSampleRate());
                 // TODO: ONLY UPDATE IF YOU ARE NOT HOLDING
                 bandMember.compUpdate(loss);
             }
+            //spawn new notes accordingly
+            bandMember.spawnNotes(sample);
+            //update the note frames
+            bandMember.updateNotes(spawnY, sample);
+
         }
         lastDec = sample;
     }

@@ -1,29 +1,35 @@
 {
-  "levelname" : "American medium",
+  "levelname" : "American",
   "background" : "concert-background",
-  "levelNumber" : 9,
+  "levelNumber" : 8,
   "song" : "American",
   "startPosition" : 0,
   "bpm" : 160,
-  "maxCompetency" :20,
+  "maxCompetency" :30,
   "linesPerMember" : 4,
-  "a-threshold":660000,"b-threshold":520000,"c-threshold":300000,"s-threshold":715000,
+  "a-threshold":550000,"b-threshold":475000,"c-threshold":350000,"s-threshold":650000,
   "bandMembers" : [
     {
       "instrument" : "piano",
       "competencyLossRate" :2,
       "notes" : [
         {
-          "type" : "held",
+          "type" : "beat",
           "position" : 72000,
-          "duration" : 13500,
+          "duration" : 0,
           "line" : 2
+        },
+        {
+          "type" : "beat",
+          "position" : 85500,
+          "duration" : 0,
+          "line" : 3
         },
         {
           "type" : "beat",
           "position" : 90000,
           "duration" : 0,
-          "line" : 3
+          "line" : 2
         },
         {
           "type" : "beat",
@@ -41,13 +47,13 @@
           "type" : "beat",
           "position" : 117000,
           "duration" : 0,
-          "line" : 0
+          "line" : 1
         },
         {
           "type" : "beat",
           "position" : 126000,
           "duration" : 0,
-          "line" : 1
+          "line" : 0
         },
         {
           "type" : "beat",
@@ -56,64 +62,28 @@
           "line" : 0
         },
         {
-          "type" : "beat",
-          "position" : 144000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 157500,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 162000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 171000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 180000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 189000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 198000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 207000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
           "type" : "held",
+          "position" : 144000,
+          "duration" : 63000,
+          "line" : 0
+        },
+        {
+          "type" : "beat",
           "position" : 216000,
-          "duration" : 13500,
+          "duration" : 0,
           "line" : 2
+        },
+        {
+          "type" : "beat",
+          "position" : 229500,
+          "duration" : 0,
+          "line" : 3
         },
         {
           "type" : "beat",
           "position" : 234000,
           "duration" : 0,
-          "line" : 3
+          "line" : 2
         },
         {
           "type" : "beat",
@@ -131,13 +101,13 @@
           "type" : "beat",
           "position" : 261000,
           "duration" : 0,
-          "line" : 0
+          "line" : 1
         },
         {
           "type" : "beat",
           "position" : 270000,
           "duration" : 0,
-          "line" : 1
+          "line" : 0
         },
         {
           "type" : "beat",
@@ -146,105 +116,45 @@
           "line" : 0
         },
         {
-          "type" : "beat",
+          "type" : "held",
           "position" : 288000,
-          "duration" : 0,
+          "duration" : 63000,
           "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 301500,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 306000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 315000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 324000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 333000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 342000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 351000,
-          "duration" : 0,
-          "line" : 2
         },
         {
           "type" : "held",
           "position" : 360000,
-          "duration" : 13500,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 378000,
-          "duration" : 0,
+          "duration" : 27000,
           "line" : 3
         },
         {
-          "type" : "beat",
-          "position" : 387000,
-          "duration" : 0,
+          "type" : "held",
+          "position" : 360000,
+          "duration" : 27000,
           "line" : 2
         },
         {
           "type" : "held",
           "position" : 396000,
-          "duration" : 13500,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 414000,
-          "duration" : 0,
+          "duration" : 27000,
           "line" : 3
         },
         {
-          "type" : "beat",
-          "position" : 423000,
-          "duration" : 0,
+          "type" : "held",
+          "position" : 396000,
+          "duration" : 27000,
           "line" : 2
         },
         {
           "type" : "held",
           "position" : 432000,
-          "duration" : 13500,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 450000,
-          "duration" : 0,
+          "duration" : 27000,
           "line" : 3
         },
         {
-          "type" : "beat",
-          "position" : 459000,
-          "duration" : 0,
+          "type" : "held",
+          "position" : 432000,
+          "duration" : 27000,
           "line" : 2
         },
         {
@@ -255,21 +165,9 @@
         },
         {
           "type" : "beat",
-          "position" : 477000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
           "position" : 486000,
           "duration" : 0,
           "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 495000,
-          "duration" : 0,
-          "line" : 2
         },
         {
           "type" : "beat",
@@ -320,142 +218,472 @@
           "line" : 0
         },
         {
-          "type" : "beat",
-          "position" : 576000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
           "type" : "switch",
-          "position" : 1152000,
+          "position" : 3834000,
           "duration" : 0,
           "line" : -1
         },
         {
+          "type" : "held",
+          "position" : 3906000,
+          "duration" : 27000,
+          "line" : 3
+        },
+        {
           "type" : "beat",
-          "position" : 1188000,
+          "position" : 3942000,
           "duration" : 0,
           "line" : 2
         },
         {
           "type" : "beat",
-          "position" : 1201500,
+          "position" : 3951000,
+          "duration" : 0,
+          "line" : 1
+        },
+        {
+          "type" : "beat",
+          "position" : 3960000,
+          "duration" : 0,
+          "line" : 0
+        },
+        {
+          "type" : "held",
+          "position" : 3978000,
+          "duration" : 27000,
+          "line" : 3
+        },
+        {
+          "type" : "beat",
+          "position" : 4014000,
+          "duration" : 0,
+          "line" : 2
+        },
+        {
+          "type" : "beat",
+          "position" : 4023000,
+          "duration" : 0,
+          "line" : 1
+        },
+        {
+          "type" : "beat",
+          "position" : 4032000,
+          "duration" : 0,
+          "line" : 0
+        },
+        {
+          "type" : "held",
+          "position" : 4050000,
+          "duration" : 27000,
+          "line" : 1
+        },
+        {
+          "type" : "held",
+          "position" : 4086000,
+          "duration" : 27000,
+          "line" : 2
+        },
+        {
+          "type" : "beat",
+          "position" : 4122000,
+          "duration" : 0,
+          "line" : 1
+        },
+        {
+          "type" : "beat",
+          "position" : 4140000,
+          "duration" : 0,
+          "line" : 2
+        },
+        {
+          "type" : "beat",
+          "position" : 4158000,
+          "duration" : 0,
+          "line" : 1
+        },
+        {
+          "type" : "beat",
+          "position" : 4176000,
+          "duration" : 0,
+          "line" : 2
+        },
+        {
+          "type" : "beat",
+          "position" : 4194000,
+          "duration" : 0,
+          "line" : 1
+        },
+        {
+          "type" : "beat",
+          "position" : 4212000,
+          "duration" : 0,
+          "line" : 2
+        },
+        {
+          "type" : "beat",
+          "position" : 4230000,
           "duration" : 0,
           "line" : 3
         },
         {
           "type" : "beat",
-          "position" : 1206000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 1215000,
+          "position" : 4248000,
           "duration" : 0,
           "line" : 0
         },
         {
           "type" : "beat",
-          "position" : 1224000,
+          "position" : 4257000,
+          "duration" : 0,
+          "line" : 1
+        },
+        {
+          "type" : "beat",
+          "position" : 4266000,
           "duration" : 0,
           "line" : 2
         },
         {
           "type" : "beat",
-          "position" : 1237500,
+          "position" : 4275000,
           "duration" : 0,
           "line" : 3
         },
         {
           "type" : "beat",
-          "position" : 1242000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 1251000,
+          "position" : 4284000,
           "duration" : 0,
           "line" : 0
         },
         {
           "type" : "beat",
-          "position" : 1260000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 1273500,
+          "position" : 4302000,
           "duration" : 0,
           "line" : 3
         },
         {
           "type" : "beat",
-          "position" : 1278000,
+          "position" : 4320000,
+          "duration" : 0,
+          "line" : 3
+        },
+        {
+          "type" : "beat",
+          "position" : 4338000,
           "duration" : 0,
           "line" : 2
         },
         {
           "type" : "beat",
-          "position" : 1287000,
+          "position" : 4356000,
           "duration" : 0,
-          "line" : 0
+          "line" : 2
         },
         {
           "type" : "beat",
-          "position" : 1296000,
+          "position" : 4374000,
           "duration" : 0,
           "line" : 1
         },
         {
           "type" : "beat",
-          "position" : 1305000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 1314000,
+          "position" : 4392000,
           "duration" : 0,
           "line" : 1
         },
         {
           "type" : "beat",
-          "position" : 1323000,
+          "position" : 4410000,
           "duration" : 0,
           "line" : 0
         },
         {
           "type" : "beat",
-          "position" : 1332000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 1341000,
+          "position" : 4428000,
           "duration" : 0,
           "line" : 0
         },
         {
           "type" : "beat",
-          "position" : 1350000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 1359000,
+          "position" : 4446000,
           "duration" : 0,
           "line" : 0
         },
         {
           "type" : "beat",
-          "position" : 1368000,
+          "position" : 4464000,
+          "duration" : 0,
+          "line" : 0
+        },
+        {
+          "type" : "beat",
+          "position" : 4482000,
           "duration" : 0,
           "line" : 1
+        },
+        {
+          "type" : "beat",
+          "position" : 4500000,
+          "duration" : 0,
+          "line" : 2
+        },
+        {
+          "type" : "beat",
+          "position" : 4518000,
+          "duration" : 0,
+          "line" : 3
+        },
+        {
+          "type" : "beat",
+          "position" : 4536000,
+          "duration" : 0,
+          "line" : 3
+        },
+        {
+          "type" : "beat",
+          "position" : 4554000,
+          "duration" : 0,
+          "line" : 0
+        },
+        {
+          "type" : "beat",
+          "position" : 4572000,
+          "duration" : 0,
+          "line" : 0
+        },
+        {
+          "type" : "beat",
+          "position" : 4578000,
+          "duration" : 0,
+          "line" : 1
+        },
+        {
+          "type" : "beat",
+          "position" : 4584000,
+          "duration" : 0,
+          "line" : 0
+        },
+        {
+          "type" : "beat",
+          "position" : 4590000,
+          "duration" : 0,
+          "line" : 3
+        },
+        {
+          "type" : "beat",
+          "position" : 4596000,
+          "duration" : 0,
+          "line" : 2
+        },
+        {
+          "type" : "beat",
+          "position" : 4602000,
+          "duration" : 0,
+          "line" : 3
+        },
+        {
+          "type" : "beat",
+          "position" : 4608000,
+          "duration" : 0,
+          "line" : 0
+        },
+        {
+          "type" : "beat",
+          "position" : 4614000,
+          "duration" : 0,
+          "line" : 1
+        },
+        {
+          "type" : "beat",
+          "position" : 4620000,
+          "duration" : 0,
+          "line" : 0
+        },
+        {
+          "type" : "beat",
+          "position" : 4626000,
+          "duration" : 0,
+          "line" : 3
+        },
+        {
+          "type" : "beat",
+          "position" : 4632000,
+          "duration" : 0,
+          "line" : 2
+        },
+        {
+          "type" : "beat",
+          "position" : 4638000,
+          "duration" : 0,
+          "line" : 3
+        },
+        {
+          "type" : "beat",
+          "position" : 4644000,
+          "duration" : 0,
+          "line" : 0
+        },
+        {
+          "type" : "beat",
+          "position" : 4650000,
+          "duration" : 0,
+          "line" : 1
+        },
+        {
+          "type" : "beat",
+          "position" : 4656000,
+          "duration" : 0,
+          "line" : 0
+        },
+        {
+          "type" : "beat",
+          "position" : 4662000,
+          "duration" : 0,
+          "line" : 3
+        },
+        {
+          "type" : "beat",
+          "position" : 4668000,
+          "duration" : 0,
+          "line" : 2
+        },
+        {
+          "type" : "beat",
+          "position" : 4674000,
+          "duration" : 0,
+          "line" : 3
+        },
+        {
+          "type" : "beat",
+          "position" : 4680000,
+          "duration" : 0,
+          "line" : 0
+        },
+        {
+          "type" : "beat",
+          "position" : 4686000,
+          "duration" : 0,
+          "line" : 1
+        },
+        {
+          "type" : "beat",
+          "position" : 4692000,
+          "duration" : 0,
+          "line" : 0
+        },
+        {
+          "type" : "beat",
+          "position" : 4698000,
+          "duration" : 0,
+          "line" : 3
+        },
+        {
+          "type" : "beat",
+          "position" : 4704000,
+          "duration" : 0,
+          "line" : 2
+        },
+        {
+          "type" : "beat",
+          "position" : 4710000,
+          "duration" : 0,
+          "line" : 3
+        },
+        {
+          "type" : "beat",
+          "position" : 4716000,
+          "duration" : 0,
+          "line" : 0
+        },
+        {
+          "type" : "beat",
+          "position" : 4722000,
+          "duration" : 0,
+          "line" : 1
+        },
+        {
+          "type" : "beat",
+          "position" : 4728000,
+          "duration" : 0,
+          "line" : 0
+        },
+        {
+          "type" : "beat",
+          "position" : 4734000,
+          "duration" : 0,
+          "line" : 3
+        },
+        {
+          "type" : "beat",
+          "position" : 4740000,
+          "duration" : 0,
+          "line" : 2
+        },
+        {
+          "type" : "beat",
+          "position" : 4746000,
+          "duration" : 0,
+          "line" : 3
+        },
+        {
+          "type" : "beat",
+          "position" : 4752000,
+          "duration" : 0,
+          "line" : 3
+        },
+        {
+          "type" : "beat",
+          "position" : 4752000,
+          "duration" : 0,
+          "line" : 0
+        },
+        {
+          "type" : "beat",
+          "position" : 4788000,
+          "duration" : 0,
+          "line" : 2
+        },
+        {
+          "type" : "beat",
+          "position" : 4788000,
+          "duration" : 0,
+          "line" : 1
+        },
+        {
+          "type" : "beat",
+          "position" : 4824000,
+          "duration" : 0,
+          "line" : 3
+        },
+        {
+          "type" : "beat",
+          "position" : 4824000,
+          "duration" : 0,
+          "line" : 0
+        },
+        {
+          "type" : "beat",
+          "position" : 4860000,
+          "duration" : 0,
+          "line" : 2
+        },
+        {
+          "type" : "beat",
+          "position" : 4860000,
+          "duration" : 0,
+          "line" : 1
+        },
+        {
+          "type" : "beat",
+          "position" : 4896000,
+          "duration" : 0,
+          "line" : 3
+        },
+        {
+          "type" : "beat",
+          "position" : 4896000,
+          "duration" : 0,
+          "line" : 0
         }
       ],
       "lossRates" : []
@@ -467,21 +695,33 @@
       "notes" : [
         {
           "type" : "switch",
-          "position" : 612000,
+          "position" : 576000,
           "duration" : 0,
           "line" : -1
         },
         {
-          "type" : "held",
+          "type" : "beat",
           "position" : 648000,
-          "duration" : 18000,
-          "line" : 1
+          "duration" : 0,
+          "line" : 2
         },
         {
-          "type" : "held",
+          "type" : "beat",
+          "position" : 666000,
+          "duration" : 0,
+          "line" : 3
+        },
+        {
+          "type" : "beat",
           "position" : 720000,
-          "duration" : 18000,
-          "line" : 1
+          "duration" : 0,
+          "line" : 2
+        },
+        {
+          "type" : "beat",
+          "position" : 738000,
+          "duration" : 0,
+          "line" : 3
         },
         {
           "type" : "beat",
@@ -505,7 +745,7 @@
           "type" : "beat",
           "position" : 837000,
           "duration" : 0,
-          "line" : 1
+          "line" : 2
         },
         {
           "type" : "beat",
@@ -523,7 +763,7 @@
           "type" : "beat",
           "position" : 864000,
           "duration" : 0,
-          "line" : 1
+          "line" : 0
         },
         {
           "type" : "beat",
@@ -538,64 +778,34 @@
           "line" : 1
         },
         {
-          "type" : "beat",
-          "position" : 900000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
           "type" : "held",
           "position" : 927000,
-          "duration" : 9000,
+          "duration" : 18000,
           "line" : 2
         },
         {
           "type" : "beat",
-          "position" : 936000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 945000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "held",
           "position" : 954000,
-          "duration" : 27000,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 981000,
           "duration" : 0,
           "line" : 1
         },
         {
-          "type" : "beat",
-          "position" : 990000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 999000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
           "type" : "held",
+          "position" : 981000,
+          "duration" : 27000,
+          "line" : 1
+        },
+        {
+          "type" : "beat",
           "position" : 1008000,
-          "duration" : 18000,
+          "duration" : 0,
           "line" : 2
         },
         {
           "type" : "beat",
           "position" : 1026000,
           "duration" : 0,
-          "line" : 0
+          "line" : 1
         },
         {
           "type" : "beat",
@@ -619,7 +829,7 @@
           "type" : "beat",
           "position" : 1089000,
           "duration" : 0,
-          "line" : 1
+          "line" : 2
         },
         {
           "type" : "beat",
@@ -637,7 +847,7 @@
           "type" : "beat",
           "position" : 1116000,
           "duration" : 0,
-          "line" : 1
+          "line" : 0
         },
         {
           "type" : "beat",
@@ -653,267 +863,111 @@
         },
         {
           "type" : "beat",
-          "position" : 1152000,
+          "position" : 1179000,
+          "duration" : 0,
+          "line" : 2
+        },
+        {
+          "type" : "held",
+          "position" : 1188000,
+          "duration" : 27000,
+          "line" : 2
+        },
+        {
+          "type" : "held",
+          "position" : 1224000,
+          "duration" : 27000,
+          "line" : 2
+        },
+        {
+          "type" : "held",
+          "position" : 1260000,
+          "duration" : 27000,
+          "line" : 2
+        },
+        {
+          "type" : "beat",
+          "position" : 1296000,
+          "duration" : 0,
+          "line" : 1
+        },
+        {
+          "type" : "beat",
+          "position" : 1296000,
+          "duration" : 0,
+          "line" : 0
+        },
+        {
+          "type" : "beat",
+          "position" : 1314000,
+          "duration" : 0,
+          "line" : 1
+        },
+        {
+          "type" : "beat",
+          "position" : 1314000,
+          "duration" : 0,
+          "line" : 0
+        },
+        {
+          "type" : "beat",
+          "position" : 1332000,
+          "duration" : 0,
+          "line" : 1
+        },
+        {
+          "type" : "beat",
+          "position" : 1332000,
+          "duration" : 0,
+          "line" : 0
+        },
+        {
+          "type" : "beat",
+          "position" : 1350000,
+          "duration" : 0,
+          "line" : 1
+        },
+        {
+          "type" : "beat",
+          "position" : 1350000,
           "duration" : 0,
           "line" : 0
         },
         {
           "type" : "switch",
-          "position" : 1386000,
-          "duration" : 0,
-          "line" : -1
-        },
-        {
-          "type" : "held",
-          "position" : 1404000,
-          "duration" : 54000,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 1458000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 1476000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "held",
-          "position" : 1494000,
-          "duration" : 18000,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 1530000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "held",
-          "position" : 1548000,
-          "duration" : 36000,
-          "line" : 3
-        },
-        {
-          "type" : "held",
-          "position" : 1548000,
-          "duration" : 36000,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 1602000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 1602000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 1620000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 1620000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "held",
-          "position" : 1638000,
-          "duration" : 18000,
-          "line" : 2
-        },
-        {
-          "type" : "held",
-          "position" : 1638000,
-          "duration" : 18000,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 1674000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 1674000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 1692000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 1692000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "held",
-          "position" : 1710000,
-          "duration" : 18000,
-          "line" : 2
-        },
-        {
-          "type" : "held",
-          "position" : 1710000,
-          "duration" : 54000,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 1737000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 1746000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 1755000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 1764000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 1773000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "held",
-          "position" : 1782000,
-          "duration" : 18000,
-          "line" : 2
-        },
-        {
-          "type" : "held",
-          "position" : 1782000,
-          "duration" : 18000,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 1818000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 1818000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 1836000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 1836000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 1836000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 1836000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "switch",
-          "position" : 2880000,
-          "duration" : 0,
-          "line" : -1
-        },
-        {
-          "type" : "beat",
-          "position" : 2907000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 2916000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
           "position" : 2943000,
           "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 2952000,
-          "duration" : 0,
-          "line" : 3
+          "line" : -1
         },
         {
           "type" : "beat",
           "position" : 2979000,
           "duration" : 0,
-          "line" : 3
+          "line" : 1
         },
         {
           "type" : "beat",
           "position" : 2988000,
           "duration" : 0,
-          "line" : 3
+          "line" : 1
         },
         {
           "type" : "beat",
-          "position" : 3006000,
+          "position" : 3015000,
           "duration" : 0,
-          "line" : 3
+          "line" : 1
         },
         {
           "type" : "beat",
           "position" : 3024000,
           "duration" : 0,
-          "line" : 3
+          "line" : 1
         },
         {
           "type" : "beat",
-          "position" : 3042000,
+          "position" : 3051000,
           "duration" : 0,
-          "line" : 3
+          "line" : 1
         },
         {
           "type" : "beat",
@@ -935,21 +989,9 @@
         },
         {
           "type" : "beat",
-          "position" : 3105000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
           "position" : 3114000,
           "duration" : 0,
           "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 3123000,
-          "duration" : 0,
-          "line" : 0
         },
         {
           "type" : "beat",
@@ -977,21 +1019,9 @@
         },
         {
           "type" : "beat",
-          "position" : 3177000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
           "position" : 3186000,
           "duration" : 0,
           "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 3195000,
-          "duration" : 0,
-          "line" : 0
         },
         {
           "type" : "beat",
@@ -1000,50 +1030,20 @@
           "line" : 0
         },
         {
-          "type" : "beat",
+          "type" : "held",
           "position" : 3222000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 3235500,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 3240000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 3249000,
-          "duration" : 0,
-          "line" : 0
+          "duration" : 27000,
+          "line" : 1
         },
         {
           "type" : "beat",
           "position" : 3258000,
           "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 3271500,
-          "duration" : 0,
-          "line" : 3
+          "line" : 0
         },
         {
           "type" : "beat",
           "position" : 3276000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 3289500,
           "duration" : 0,
           "line" : 3
         },
@@ -1051,23 +1051,11 @@
           "type" : "beat",
           "position" : 3294000,
           "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 3307500,
-          "duration" : 0,
-          "line" : 3
+          "line" : 0
         },
         {
           "type" : "beat",
           "position" : 3312000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 3325500,
           "duration" : 0,
           "line" : 3
         },
@@ -1075,23 +1063,11 @@
           "type" : "beat",
           "position" : 3330000,
           "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 3343500,
-          "duration" : 0,
-          "line" : 3
+          "line" : 0
         },
         {
           "type" : "beat",
           "position" : 3348000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 3361500,
           "duration" : 0,
           "line" : 3
         },
@@ -1099,37 +1075,25 @@
           "type" : "beat",
           "position" : 3366000,
           "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 3379500,
-          "duration" : 0,
-          "line" : 3
+          "line" : 0
         },
         {
           "type" : "held",
           "position" : 3384000,
-          "duration" : 36000,
+          "duration" : 54000,
           "line" : 3
         },
         {
           "type" : "beat",
-          "position" : 3438000,
+          "position" : 3456000,
           "duration" : 0,
           "line" : 2
         },
         {
-          "type" : "held",
-          "position" : 3456000,
-          "duration" : 18000,
-          "line" : 1
-        },
-        {
-          "type" : "held",
+          "type" : "beat",
           "position" : 3474000,
-          "duration" : 36000,
-          "line" : 0
+          "duration" : 0,
+          "line" : 1
         },
         {
           "type" : "beat",
@@ -1153,759 +1117,73 @@
           "type" : "beat",
           "position" : 3582000,
           "duration" : 0,
-          "line" : 3
+          "line" : 2
         },
         {
           "type" : "beat",
           "position" : 3600000,
           "duration" : 0,
-          "line" : 2
+          "line" : 1
         },
         {
-          "type" : "held",
+          "type" : "beat",
           "position" : 3618000,
-          "duration" : 18000,
-          "line" : 1
+          "duration" : 0,
+          "line" : 0
         },
         {
           "type" : "beat",
           "position" : 3654000,
           "duration" : 0,
-          "line" : 1
+          "line" : 0
         },
         {
           "type" : "beat",
           "position" : 3672000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 3672000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 3690000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 3690000,
           "duration" : 0,
           "line" : 2
         },
         {
           "type" : "beat",
+          "position" : 3690000,
+          "duration" : 0,
+          "line" : 1
+        },
+        {
+          "type" : "held",
           "position" : 3708000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 3717000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 3726000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 3735000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 3744000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 3753000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "held",
-          "position" : 3762000,
-          "duration" : 36000,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 3798000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 3816000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 3816000,
-          "duration" : 0,
-          "line" : 1
-        }
-      ],
-      "lossRates" : []
-    }
-  ,
-    {
-      "instrument" : "piano",
-      "competencyLossRate" :2,
-      "notes" : [
-        {
-          "type" : "switch",
-          "position" : 1854000,
-          "duration" : 0,
-          "line" : -1
-        },
-        {
-          "type" : "beat",
-          "position" : 1890000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 1903500,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 1908000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 1917000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 1926000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 1935000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 1944000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 1953000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "held",
-          "position" : 1962000,
-          "duration" : 18000,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 1980000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "held",
-          "position" : 2007000,
-          "duration" : 9000,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 2016000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 2025000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "held",
-          "position" : 2034000,
           "duration" : 27000,
           "line" : 2
         },
         {
           "type" : "beat",
-          "position" : 2061000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 2070000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 2079000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "held",
-          "position" : 2088000,
-          "duration" : 18000,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 2106000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 2142000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 2155500,
+          "position" : 3744000,
           "duration" : 0,
           "line" : 3
         },
         {
           "type" : "beat",
-          "position" : 2160000,
+          "position" : 3753000,
           "duration" : 0,
           "line" : 2
         },
         {
-          "type" : "beat",
-          "position" : 2169000,
-          "duration" : 0,
+          "type" : "held",
+          "position" : 3762000,
+          "duration" : 36000,
           "line" : 1
         },
         {
           "type" : "beat",
-          "position" : 2178000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 2187000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 2196000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 2205000,
+          "position" : 3798000,
           "duration" : 0,
           "line" : 0
         },
         {
-          "type" : "held",
-          "position" : 2214000,
-          "duration" : 18000,
-          "line" : 1
-        },
-        {
-          "type" : "switch",
+          "type" : "beat",
           "position" : 3816000,
           "duration" : 0,
-          "line" : -1
-        },
-        {
-          "type" : "held",
-          "position" : 3834000,
-          "duration" : 13500,
-          "line" : 3
-        },
-        {
-          "type" : "held",
-          "position" : 3852000,
-          "duration" : 13500,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 3870000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 3879000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 3888000,
-          "duration" : 0,
           "line" : 0
-        },
-        {
-          "type" : "held",
-          "position" : 3906000,
-          "duration" : 13500,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 3924000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 3933000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 3942000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 3951000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 3960000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "held",
-          "position" : 3978000,
-          "duration" : 13500,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 3996000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 4005000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 4014000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 4023000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 4032000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "held",
-          "position" : 4050000,
-          "duration" : 13500,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 4068000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 4077000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "held",
-          "position" : 4086000,
-          "duration" : 13500,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 4104000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 4113000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 4122000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 4135500,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 4140000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 4153500,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 4158000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 4171500,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 4176000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 4189500,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 4194000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 4207500,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 4212000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 4221000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 4230000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 4239000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 4248000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 4257000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 4266000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 4275000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 4284000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 4290000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 4296000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 4302000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 4308000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 4314000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 4320000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 4326000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 4332000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 4338000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 4344000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 4350000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 4356000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 4362000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 4368000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 4374000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 4380000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 4386000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 4392000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 4398000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 4404000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 4410000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 4416000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 4422000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 4428000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 4434000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 4440000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 4446000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 4452000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 4458000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "held",
-          "position" : 4464000,
-          "duration" : 18000,
-          "line" : 0
-        },
-        {
-          "type" : "held",
-          "position" : 4482000,
-          "duration" : 18000,
-          "line" : 1
-        },
-        {
-          "type" : "held",
-          "position" : 4500000,
-          "duration" : 18000,
-          "line" : 2
-        },
-        {
-          "type" : "held",
-          "position" : 4518000,
-          "duration" : 18000,
-          "line" : 3
-        },
-        {
-          "type" : "held",
-          "position" : 4536000,
-          "duration" : 18000,
-          "line" : 2
-        },
-        {
-          "type" : "held",
-          "position" : 4554000,
-          "duration" : 18000,
-          "line" : 1
         }
       ],
       "lossRates" : []
@@ -1915,6 +1193,126 @@
       "instrument" : "piano",
       "competencyLossRate" :2,
       "notes" : [
+        {
+          "type" : "switch",
+          "position" : 1368000,
+          "duration" : 0,
+          "line" : -1
+        },
+        {
+          "type" : "held",
+          "position" : 1404000,
+          "duration" : 54000,
+          "line" : 2
+        },
+        {
+          "type" : "beat",
+          "position" : 1476000,
+          "duration" : 0,
+          "line" : 1
+        },
+        {
+          "type" : "beat",
+          "position" : 1494000,
+          "duration" : 0,
+          "line" : 0
+        },
+        {
+          "type" : "beat",
+          "position" : 1530000,
+          "duration" : 0,
+          "line" : 2
+        },
+        {
+          "type" : "held",
+          "position" : 1548000,
+          "duration" : 54000,
+          "line" : 3
+        },
+        {
+          "type" : "held",
+          "position" : 1548000,
+          "duration" : 54000,
+          "line" : 2
+        },
+        {
+          "type" : "beat",
+          "position" : 1620000,
+          "duration" : 0,
+          "line" : 3
+        },
+        {
+          "type" : "beat",
+          "position" : 1620000,
+          "duration" : 0,
+          "line" : 2
+        },
+        {
+          "type" : "beat",
+          "position" : 1638000,
+          "duration" : 0,
+          "line" : 1
+        },
+        {
+          "type" : "beat",
+          "position" : 1638000,
+          "duration" : 0,
+          "line" : 0
+        },
+        {
+          "type" : "beat",
+          "position" : 1674000,
+          "duration" : 0,
+          "line" : 0
+        },
+        {
+          "type" : "beat",
+          "position" : 1692000,
+          "duration" : 0,
+          "line" : 3
+        },
+        {
+          "type" : "held",
+          "position" : 1692000,
+          "duration" : 63000,
+          "line" : 0
+        },
+        {
+          "type" : "beat",
+          "position" : 1782000,
+          "duration" : 0,
+          "line" : 3
+        },
+        {
+          "type" : "beat",
+          "position" : 1782000,
+          "duration" : 0,
+          "line" : 2
+        },
+        {
+          "type" : "beat",
+          "position" : 1818000,
+          "duration" : 0,
+          "line" : 2
+        },
+        {
+          "type" : "beat",
+          "position" : 1818000,
+          "duration" : 0,
+          "line" : 1
+        },
+        {
+          "type" : "beat",
+          "position" : 1836000,
+          "duration" : 0,
+          "line" : 1
+        },
+        {
+          "type" : "beat",
+          "position" : 1836000,
+          "duration" : 0,
+          "line" : 0
+        },
         {
           "type" : "switch",
           "position" : 2232000,
@@ -1922,106 +1320,52 @@
           "line" : -1
         },
         {
-          "type" : "beat",
-          "position" : 2259000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
           "type" : "held",
           "position" : 2268000,
-          "duration" : 18000,
+          "duration" : 27000,
           "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 2295000,
-          "duration" : 0,
-          "line" : 1
         },
         {
           "type" : "held",
           "position" : 2304000,
-          "duration" : 18000,
+          "duration" : 27000,
           "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 2331000,
-          "duration" : 0,
-          "line" : 2
         },
         {
           "type" : "held",
           "position" : 2340000,
-          "duration" : 18000,
+          "duration" : 27000,
           "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 2367000,
-          "duration" : 0,
-          "line" : 3
         },
         {
           "type" : "held",
           "position" : 2376000,
-          "duration" : 18000,
+          "duration" : 27000,
           "line" : 3
         },
         {
           "type" : "beat",
-          "position" : 2403000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "held",
           "position" : 2412000,
-          "duration" : 18000,
+          "duration" : 0,
           "line" : 2
         },
         {
-          "type" : "held",
+          "type" : "beat",
           "position" : 2412000,
-          "duration" : 18000,
+          "duration" : 0,
           "line" : 1
         },
         {
           "type" : "beat",
-          "position" : 2439000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 2439000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "held",
           "position" : 2448000,
-          "duration" : 18000,
+          "duration" : 0,
           "line" : 2
         },
         {
-          "type" : "held",
+          "type" : "beat",
           "position" : 2448000,
-          "duration" : 18000,
+          "duration" : 0,
           "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 2475000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 2475000,
-          "duration" : 0,
-          "line" : 0
         },
         {
           "type" : "beat",
@@ -2039,13 +1383,13 @@
           "type" : "beat",
           "position" : 2502000,
           "duration" : 0,
-          "line" : 3
+          "line" : 2
         },
         {
           "type" : "beat",
           "position" : 2502000,
           "duration" : 0,
-          "line" : 0
+          "line" : 1
         },
         {
           "type" : "beat",
@@ -2063,13 +1407,13 @@
           "type" : "beat",
           "position" : 2538000,
           "duration" : 0,
-          "line" : 3
+          "line" : 2
         },
         {
           "type" : "beat",
           "position" : 2538000,
           "duration" : 0,
-          "line" : 0
+          "line" : 1
         },
         {
           "type" : "beat",
@@ -2123,49 +1467,25 @@
           "type" : "beat",
           "position" : 2628000,
           "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 2632500,
-          "duration" : 0,
-          "line" : 1
+          "line" : 0
         },
         {
           "type" : "beat",
           "position" : 2637000,
           "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 2641500,
-          "duration" : 0,
-          "line" : 0
+          "line" : 1
         },
         {
           "type" : "beat",
           "position" : 2646000,
           "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 2650500,
-          "duration" : 0,
-          "line" : 1
+          "line" : 0
         },
         {
           "type" : "beat",
           "position" : 2655000,
           "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 2659500,
-          "duration" : 0,
-          "line" : 0
+          "line" : 1
         },
         {
           "type" : "beat",
@@ -2175,21 +1495,9 @@
         },
         {
           "type" : "beat",
-          "position" : 2668500,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
           "position" : 2673000,
           "duration" : 0,
           "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 2677500,
-          "duration" : 0,
-          "line" : 0
         },
         {
           "type" : "beat",
@@ -2201,307 +1509,183 @@
           "type" : "beat",
           "position" : 2691000,
           "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 2700000,
-          "duration" : 0,
           "line" : 3
         },
         {
           "type" : "beat",
           "position" : 2700000,
           "duration" : 0,
-          "line" : 0
+          "line" : 2
         },
         {
-          "type" : "beat",
+          "type" : "held",
           "position" : 2718000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 2727000,
-          "duration" : 0,
+          "duration" : 54000,
           "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 2736000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 2745000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 2754000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 2763000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 2772000,
-          "duration" : 0,
-          "line" : 1
         },
         {
           "type" : "held",
           "position" : 2790000,
-          "duration" : 13500,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 2808000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 2817000,
-          "duration" : 0,
+          "duration" : 54000,
           "line" : 1
         },
         {
-          "type" : "beat",
-          "position" : 2826000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 2835000,
-          "duration" : 0,
+          "type" : "held",
+          "position" : 2862000,
+          "duration" : 54000,
           "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 2844000,
-          "duration" : 0,
-          "line" : 1
-        },
+        }
+      ],
+      "lossRates" : []
+    }
+  ,
+    {
+      "instrument" : "piano",
+      "competencyLossRate" :2,
+      "notes" : [
         {
           "type" : "switch",
-          "position" : 4572000,
+          "position" : 1854000,
           "duration" : 0,
           "line" : -1
         },
         {
           "type" : "beat",
-          "position" : 4590000,
+          "position" : 1890000,
           "duration" : 0,
           "line" : 2
         },
         {
           "type" : "beat",
-          "position" : 4596000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 4602000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 4608000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 4614000,
+          "position" : 1903500,
           "duration" : 0,
           "line" : 3
         },
         {
           "type" : "beat",
-          "position" : 4620000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 4626000,
+          "position" : 1908000,
           "duration" : 0,
           "line" : 2
         },
         {
           "type" : "beat",
-          "position" : 4632000,
+          "position" : 1917000,
           "duration" : 0,
           "line" : 1
         },
         {
           "type" : "beat",
-          "position" : 4638000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 4644000,
+          "position" : 1926000,
           "duration" : 0,
           "line" : 0
         },
         {
           "type" : "beat",
-          "position" : 4650000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 4656000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 4662000,
+          "position" : 1935000,
           "duration" : 0,
           "line" : 2
         },
         {
           "type" : "beat",
-          "position" : 4668000,
+          "position" : 1944000,
           "duration" : 0,
           "line" : 1
         },
         {
           "type" : "beat",
-          "position" : 4674000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 4680000,
+          "position" : 1953000,
           "duration" : 0,
           "line" : 0
         },
         {
           "type" : "beat",
-          "position" : 4686000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 4692000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 4698000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 4704000,
+          "position" : 1962000,
           "duration" : 0,
           "line" : 1
         },
         {
           "type" : "beat",
-          "position" : 4710000,
-          "duration" : 0,
-          "line" : 2
-        },
-        {
-          "type" : "beat",
-          "position" : 4716000,
-          "duration" : 0,
-          "line" : 0
-        },
-        {
-          "type" : "beat",
-          "position" : 4722000,
-          "duration" : 0,
-          "line" : 3
-        },
-        {
-          "type" : "beat",
-          "position" : 4728000,
+          "position" : 1980000,
           "duration" : 0,
           "line" : 0
         },
         {
           "type" : "held",
-          "position" : 4734000,
-          "duration" : 18000,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 4752000,
-          "duration" : 0,
+          "position" : 2007000,
+          "duration" : 27000,
           "line" : 3
         },
         {
-          "type" : "beat",
-          "position" : 4788000,
-          "duration" : 0,
+          "type" : "held",
+          "position" : 2034000,
+          "duration" : 27000,
+          "line" : 2
+        },
+        {
+          "type" : "held",
+          "position" : 2061000,
+          "duration" : 27000,
+          "line" : 1
+        },
+        {
+          "type" : "held",
+          "position" : 2088000,
+          "duration" : 18000,
           "line" : 0
         },
         {
           "type" : "beat",
-          "position" : 4788000,
+          "position" : 2142000,
           "duration" : 0,
           "line" : 2
         },
         {
           "type" : "beat",
-          "position" : 4824000,
-          "duration" : 0,
-          "line" : 1
-        },
-        {
-          "type" : "beat",
-          "position" : 4824000,
+          "position" : 2155500,
           "duration" : 0,
           "line" : 3
         },
         {
           "type" : "beat",
-          "position" : 4860000,
+          "position" : 2160000,
           "duration" : 0,
-          "line" : 0
+          "line" : 2
         },
         {
           "type" : "beat",
-          "position" : 4860000,
+          "position" : 2169000,
           "duration" : 0,
           "line" : 1
         },
         {
           "type" : "beat",
-          "position" : 4896000,
+          "position" : 2178000,
           "duration" : 0,
           "line" : 0
         },
         {
           "type" : "beat",
-          "position" : 4896000,
+          "position" : 2187000,
           "duration" : 0,
-          "line" : 3
+          "line" : 2
+        },
+        {
+          "type" : "beat",
+          "position" : 2196000,
+          "duration" : 0,
+          "line" : 1
+        },
+        {
+          "type" : "beat",
+          "position" : 2205000,
+          "duration" : 0,
+          "line" : 0
+        },
+        {
+          "type" : "beat",
+          "position" : 2214000,
+          "duration" : 0,
+          "line" : 1
         }
       ],
       "lossRates" : []

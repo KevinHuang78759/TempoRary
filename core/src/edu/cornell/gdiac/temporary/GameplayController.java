@@ -308,12 +308,10 @@ public class GameplayController {
 				//If a note is out of bounds and it has not been hit, we need to mark it destroyed and assign
 				//a negative hit status
 				if(n.getY() < noteDieY && !n.isDestroyed()){
-					if (n.getNoteType() == Note.NoteType.HELD) {
-					}
 					n.setDestroyed(true);
 					if(i == activeBandMember){
 						sb.resetCombo();
-						float hitStatusX = LEFTBOUND+((activeBandMember+1)*(HIT_IND_SIZE/3))+((activeBandMember+1) * smallwidth);
+						float hitStatusX = LEFTBOUND+((activeBandMember+1)*(HIT_IND_SIZE/3f))+((activeBandMember+1) * smallwidth);
 						float hitStatusY = BOTTOMBOUND-(HIT_IND_SIZE/1.6f);
 						spawnHitIndicator(hitStatusX,hitStatusY,missIndicator,1);
 						MISS = true;
@@ -741,12 +739,16 @@ public class GameplayController {
 
 		// SWITCH NOTE HIT HANDLING
 		if (curP == PlayPhase.NOTES){
-
 			for (int i = 0; i < switches.length; ++i){
 				if (switches[i] && i != activeBandMember){
 					//Check only the lanes that are not the current active lane
 					for(Note n : level.getBandMembers()[i].getSwitchNotes()) {
 						checkHit(n, currentSample, 5, 4, 3, 0, n.getY(),true, hitReg, false);
+					}
+					for(Note n : level.getBandMembers()[activeBandMember].getHitNotes()){
+						if(n.getNoteType() == Note.NoteType.HELD && n.isHolding()){
+							checkHit(n, currentSample, 3, 2, 1, -1, n.getY(),true, hitReg, true);
+						}
 					}
 					//set goalBM
 					goalBandMember = i;
@@ -797,7 +799,7 @@ public class GameplayController {
 					checkHit(n, currentSample, 3, 2, 1, -1, n.getBottomY(),true, hitReg, true);
 					n.setHeldFor(0);
 					// destroy (if you are already holding)
-					if (n.isHolding()) n.setDestroyed(true);
+					n.setDestroyed(true);
 					n.setHolding(false);
 				}
 				// check the hold
