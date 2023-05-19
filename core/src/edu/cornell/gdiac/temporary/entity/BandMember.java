@@ -8,6 +8,9 @@ import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.temporary.*;
 import edu.cornell.gdiac.util.FilmStrip;
 
+import java.util.Map;
+import java.util.PriorityQueue;
+
 
 public class BandMember {
 
@@ -376,13 +379,23 @@ public class BandMember {
     private Array<Note> backing;
 
 
+    private int gainRate;
     private int lossRate;
+    private PriorityQueue<Long[]> compData;
+    public void setCompData(PriorityQueue<Long[]> compData) {
+        this.compData = compData;
+    }
+    public PriorityQueue<Long[]> getCompData() {
+        return compData;
+    }
     public void setLossRate(int t){
         lossRate = t;
     }
     public int getLossRate(){
         return lossRate;
     }
+    public void setGainRate(int t) { gainRate = t; }
+    public int getGainRate() { return gainRate; }
     /**
      * Maximum competency
      */

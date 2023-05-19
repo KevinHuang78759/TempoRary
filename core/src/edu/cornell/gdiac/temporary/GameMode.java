@@ -172,7 +172,8 @@ public class GameMode implements Screen {
 	private int introTime;
 	/** time in special units for measuring how far we are in the intro sequence */
 	private int endTime = 0;
-
+	/** volume of the music */
+    private float volume;
 
 	/** the current level */
 	private int currLevel;
@@ -251,6 +252,7 @@ public class GameMode implements Screen {
 		gameState = GameState.INTRO;
 		pressState = NO_BUTTON_PRESSED;
 		gameplayController.garbageCollectNoteIndicators();
+		volume = gameplayController.level.getMusicVolume();
 	}
 
 	/**
@@ -285,6 +287,7 @@ public class GameMode implements Screen {
 
 	public void setSoundVolume(float fxVolume, float musicVolume) {
 		gameplayController.level.setMusicVolume(musicVolume);
+		volume = gameplayController.level.getMusicVolume();
 	}
 
 	/**
@@ -545,35 +548,35 @@ public class GameMode implements Screen {
 				}
 				break;
 			case WON:
-					if (didInput) {
-						int screenX = (int) inputController.getMouseX();
-						int screenY = (int) inputController.getMouseY();
-						screenY = canvas.getHeight() - screenY;
-						boolean didGoBack = (isButtonPressed(screenX, screenY, goBack, goBackCoords, WON_BUTTON_SCALE));
-						boolean didRestartWon = (isButtonPressed(screenX, screenY, restartButtonWon, restartWonCoords, WON_BUTTON_SCALE));
-						boolean didLevel = (isButtonPressed(screenX, screenY, levelButtonWon, levelWonCoords, WON_BUTTON_SCALE));
-						boolean didNext = (isButtonPressed(screenX, screenY, nextButtonWon, nextWonCoords, WON_BUTTON_SCALE));
-						if (didGoBack) {
-							s.playSound(0, 0.3f);
-							pressState = ExitCode.TO_MENU;
-						}
-						if (didRestartWon) {
-							s.playSound(0, 0.3f);
-							System.out.println("pressed restart");
-							pressState = ExitCode.TO_PLAYING;
-							resetLevel();
-						}
-						if (didLevel) {
-							s.playSound(0, 0.3f);
-							System.out.println("pressed level");
-							pressState = ExitCode.TO_LEVEL;
-						}
-						if (didNext) {
-							s.playSound(0, 0.3f);
-							goNextLevel();
-						}
+				if (didInput) {
+					int screenX = (int) inputController.getMouseX();
+					int screenY = (int) inputController.getMouseY();
+					screenY = canvas.getHeight() - screenY;
+					boolean didGoBack = (isButtonPressed(screenX, screenY, goBack, goBackCoords, WON_BUTTON_SCALE));
+					boolean didRestartWon = (isButtonPressed(screenX, screenY, restartButtonWon, restartWonCoords, WON_BUTTON_SCALE));
+					boolean didLevel = (isButtonPressed(screenX, screenY, levelButtonWon, levelWonCoords, WON_BUTTON_SCALE));
+					boolean didNext = (isButtonPressed(screenX, screenY, nextButtonWon, nextWonCoords, WON_BUTTON_SCALE));
+					if (didGoBack) {
+						s.playSound(0, 0.3f);
+						pressState = ExitCode.TO_MENU;
 					}
-					break;
+					if (didRestartWon) {
+						s.playSound(0, 0.3f);
+						System.out.println("pressed restart");
+						pressState = ExitCode.TO_PLAYING;
+						resetLevel();
+					}
+					if (didLevel) {
+						s.playSound(0, 0.3f);
+						System.out.println("pressed level");
+						pressState = ExitCode.TO_LEVEL;
+					}
+					if (didNext) {
+						s.playSound(0, 0.3f);
+						goNextLevel();
+					}
+				}
+				break;
 			default:
 				break;
 		}
@@ -626,11 +629,13 @@ public class GameMode implements Screen {
 		if (gameplayController.checkWinCon()){
 			endTime++;
 			SaveManager.getInstance().saveGame(gameplayController.level.getLevelName(), gameplayController.sb.getScore());
-
-			if (endTime >= 60) {
+			if (endTime < 150) {
+				gameplayController.level.setMusicVolume(volume*(1- ((float) endTime / 150)));
+			}
+			if (endTime == 150) {
 				gameplayController.level.stopMusic();
 			}
-			if (endTime >= 120) {
+			if (endTime >= 180) {
 				gameState = GameState.WON;
 				endTime = 0;
 			}
@@ -656,18 +661,17 @@ public class GameMode implements Screen {
 				drawLose();
 			}
 		}
-		if (gameState == GameState.WON) {
+		if (gameState == GameState.WON || (gameState == GameState.PLAY && endTime >= 150) ) {
 			drawWin();
-		}
-		if (gameState == GameState.PLAY || gameState == GameState.INTRO || gameState == GameState.PAUSE || (gameState == GameState.OVER && ticks < 120)){
+		} else if (gameState == GameState.PLAY || gameState == GameState.INTRO || gameState == GameState.PAUSE || (gameState == GameState.OVER && ticks < 120)){
 //			drawLose();
 //			gameState = GameState.OVER;
 //		}
 //			Draw everything in the current level
 			gameplayController.level.drawEverything(canvas,
-			gameplayController.activeBandMember, gameplayController.goalBandMember,
-						inputController.triggerPress, inputController.didSwitch(),
-						gameplayController.inBetweenWidth/5f);
+					gameplayController.activeBandMember, gameplayController.goalBandMember,
+					inputController.triggerPress, inputController.didSwitch(),
+					gameplayController.inBetweenWidth/5f);
 
 			// Draw the particles on top
 			for (Particle o : gameplayController.getParticles()) {
@@ -696,11 +700,10 @@ public class GameMode implements Screen {
 				canvas.draw(menuButton, Color.WHITE, menuButton.getWidth() / 2, menuButton.getHeight() / 2,
 						centerX, 0.675f*centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 			}
-
+			float scl;
+			float lerpFactor;
 			// draw the countdown
 			if (gameState == GameState.INTRO) {
-				float scl = 1f;
-				float lerpFactor = 0f;
 				if (introTime%100 <= 20){
 					//lerp from 0 to 1.25
 					lerpFactor = ((float) (introTime%100))/20f;
@@ -740,14 +743,25 @@ public class GameMode implements Screen {
 					canvas.draw(introGo, mask, introGo.getWidth() / 2, introGo.getHeight() / 2, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, 1.25f, 1.25f);
 				}
 			}
-			if (gameState == GameState.PLAY && endTime > 0) {
-				if (endTime <= 60) {
-					mask.set(0f, 0f, 0f, (((float)(endTime))/60f));
+			if (gameState == GameState.PLAY && endTime >= 120) {
+				if (endTime <= 150) {
+					mask.set(1f, 1f, 1f, (((float)(endTime-120))/30f));
 					canvas.draw(introMask, mask, introMask.getWidth()/2, introMask.getHeight()/2, canvas.getWidth()/2, canvas.getHeight()/2, 0, 3, 3);
+				} else {
+					canvas.draw(introMask, Color.WHITE, introMask.getWidth()/2, introMask.getHeight()/2, canvas.getWidth()/2, canvas.getHeight()/2, 0, 3, 3);
 				}
-				else {
-					canvas.draw(introMask, Color.BLACK, introMask.getWidth()/2, introMask.getHeight()/2, canvas.getWidth()/2, canvas.getHeight()/2, 0, 3, 3);
+			}
+			if ((gameState == GameState.OVER && ticks < 120)){
+				//gray lose filter
+				if (ticks < 20){
+					mask.set(0.5f, 0.4f, 0.6f, 0.7f*((float) ticks)/20f);
+				} else {
+					mask.set(0.5f, 0.4f, 0.6f, 0.7f);
 				}
+				if (ticks > 110) {
+					mask.lerp(0.0f, 0.0f, 0.0f, 1f, ((float) (ticks - 110)) / 10f);
+				}
+				canvas.draw(introMask, mask, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, 0, 0, 3, 3);
 			}
 		}
 		canvas.end();
@@ -826,6 +840,13 @@ public class GameMode implements Screen {
 					scoreCCoords.x, scoreCCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
 		}
 
+		// draw transition mask
+
+		if (endTime >= 150) {
+			mask.set(1f, 1f, 1f, (float)(1-(endTime-150)/30f));
+			canvas.draw(introMask, mask, introMask.getWidth()/2, introMask.getHeight()/2, canvas.getWidth()/2, canvas.getHeight()/2, 0, 3, 3);
+		}
+
 	}
 
 
@@ -849,7 +870,7 @@ public class GameMode implements Screen {
 	 */
 	public void drawNextRetryLevel(boolean drawNextLevel){
 		canvas.draw(resultIcon,Color.WHITE,resultIcon.getWidth()/2,resultIcon.getHeight()/2,resultIconCoords.x,
-		resultIconCoords.y,0,WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+				resultIconCoords.y,0,WON_BUTTON_SCALE, WON_BUTTON_SCALE);
 
 		canvas.draw(goBack, Color.WHITE, goBack.getWidth()/2, goBack.getHeight()/2,
 				goBackCoords.x, goBackCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);

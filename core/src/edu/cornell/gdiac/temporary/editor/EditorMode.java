@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.temporary.editor;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.utils.*;
@@ -244,6 +245,9 @@ public class EditorMode implements Screen {
     /** Precision of note placement (i.e PlaceType = Quarter with precision = 1 is half notes.
      * Precision = 2 is quarter notes. Precision = 3 is sixteenth notes.)*/
     private int precision;
+
+    /** which lane the notes are heard when playing */
+    private int meowLane;
 
     /** Type of note selected to be placed*/
     private EditorNote.NoteType selectedNoteType;
@@ -641,6 +645,7 @@ public class EditorMode implements Screen {
         speed = 2;
         currentPlaceType = PlaceType.QUARTER;
         precision = 2;
+        meowLane = 0;
         selectedNoteType = EditorNote.NoteType.BEAT;
         selectedLossRate = 3;
         selectedNoteGain = 3;
@@ -800,6 +805,8 @@ public class EditorMode implements Screen {
      * @param level the JSON value corresponding to the JSON file containing all the level information
      */
     private void loadLevel(JsonValue level) {
+        boolean loadNew = true;
+
         levelName = level.getString("levelName");
         songName = level.getString("song");
         sampleRate = music.getSampleRate();
@@ -812,10 +819,13 @@ public class EditorMode implements Screen {
         playPosition = startPosition;
         laneNumber = level.get("bandMembers").size;
         lineNumber = level.getInt("linesPerMember");
-        AThreshold = level.getInt("thresholdA");
-        BThreshold = level.getInt("thresholdB");
-        CThreshold = level.getInt("thresholdC");
-        SThreshold = level.getInt("thresholdS");
+        if (loadNew) {
+            AThreshold = level.getInt("thresholdA");
+            BThreshold = level.getInt("thresholdB");
+            CThreshold = level.getInt("thresholdC");
+            SThreshold = level.getInt("thresholdS");
+            fallSpeed = level.getInt("fallSpeed");
+        }
         selectedProbabilities = new int[laneNumber];
         typingProbabilities = new boolean[laneNumber];
         probabilityButtonLocations = new Vector2[laneNumber];
@@ -832,7 +842,6 @@ public class EditorMode implements Screen {
             instrumentsTextLocations[i] = new Vector2();
         }
         maxCompetency = level.getInt("maxCompetency");
-        fallSpeed = level.getInt("fallSpeed");
 
 
         //initialize band member lanes
@@ -889,29 +898,39 @@ public class EditorMode implements Screen {
                 addNote(type, lane, line, position, duration);
                 currentPlaceType = tmpPlaceType;
             }
-            JsonValue memberFlags = level.get("bandMembers").get(lane).get("compFlags");
-            for (int i = 0; i < memberFlags.size; i++){
-                int position = memberFlags.get(i).getInt("position") + startPosition;
-                int lossRate = memberFlags.get(i).getInt("rate");
-                int noteGain = memberFlags.get(i).getInt("gain");
+            if (loadNew) {
+                JsonValue memberFlags = level.get("bandMembers").get(lane).get("compFlags");
+                for (int i = 0; i < memberFlags.size; i++) {
+                    int position = memberFlags.get(i).getInt("position") + startPosition;
+                    int lossRate = memberFlags.get(i).getInt("rate");
+                    int noteGain = memberFlags.get(i).getInt("gain");
+                    PlaceType tmpPlaceType = currentPlaceType;
+                    currentPlaceType = PlaceType.AUTO;
+                    addFlag(lane, position, lossRate, noteGain);
+                    currentPlaceType = tmpPlaceType;
+                }
+            }
+            if (!loadNew){
                 PlaceType tmpPlaceType = currentPlaceType;
                 currentPlaceType = PlaceType.AUTO;
-                addFlag(lane, position, lossRate, noteGain);
+                addFlag(lane, startPosition, level.get("bandMembers").get(lane).getInt("competencyLossRate"), 4);
                 currentPlaceType = tmpPlaceType;
             }
         }
-        JsonValue randomHits = level.get("randomHits");
-        for (int i = 0; i < randomHits.size; i++){
-            int position = randomHits.get(i).getInt("position") + startPosition;
-            JsonValue probabilities = randomHits.get(i).get("probabilities");
-            int[] probability = new int[probabilities.size];
-            for (int j = 0; j < probabilities.size; j++){
-                probability[j] = probabilities.get(j).getInt("probability");
+        if (loadNew) {
+            JsonValue randomHits = level.get("randomHits");
+            for (int i = 0; i < randomHits.size; i++) {
+                int position = randomHits.get(i).getInt("position") + startPosition;
+                JsonValue probabilities = randomHits.get(i).get("probabilities");
+                int[] probability = new int[probabilities.size];
+                for (int j = 0; j < probabilities.size; j++) {
+                    probability[j] = probabilities.get(j).getInt("probability");
+                }
+                PlaceType tmpPlaceType = currentPlaceType;
+                currentPlaceType = PlaceType.AUTO;
+                addHit(position, probability);
+                currentPlaceType = tmpPlaceType;
             }
-            PlaceType tmpPlaceType = currentPlaceType;
-            currentPlaceType = PlaceType.AUTO;
-            addHit(position, probability);
-            currentPlaceType = tmpPlaceType;
         }
     }
 
@@ -947,6 +966,8 @@ public class EditorMode implements Screen {
         class Level {
             public String levelName;
             public int levelNumber;
+            public String levelImage;
+            public String background;
             public String song;
             public int startPosition;
             public int bpm;
@@ -969,6 +990,8 @@ public class EditorMode implements Screen {
         Level l = new Level();
         l.levelName = this.levelName;
         l.levelNumber = 1;
+        l.levelImage = "cafe";
+        l.background = "cafe-background";
         l.song = songName;
         l.startPosition = this.startPosition;
         l.bpm = BPM;
@@ -1035,7 +1058,7 @@ public class EditorMode implements Screen {
         }
         Json json = new Json();
         try {
-            file = new FileWriter("test_easy_level.json");
+            file = new FileWriter("saved-level.json");
             file.write(json.prettyPrint(l) );
             file.close();
         } catch (IOException e) {
@@ -1076,8 +1099,9 @@ public class EditorMode implements Screen {
         flagOrigin = new Vector2(flagAnimator.getRegionWidth()/2.0f, flagAnimator.getRegionHeight()/2.0f);
         displayFont = directory.getEntry("times", BitmapFont.class);
         inputController.setEditorProcessor();
-        defaultLevel = directory.getEntry("level_test", JsonValue.class);
-        music = directory.getEntry("aliens", MusicQueue.class);
+        JsonReader jr = new JsonReader();
+        defaultLevel = jr.parse(Gdx.files.internal("levels/yr-hard.json"));
+        music = directory.getEntry("YR", MusicQueue.class);
         initializeLevel(4, 4);
     }
 
@@ -1410,13 +1434,15 @@ public class EditorMode implements Screen {
             note.setY(songPosToScreenY(note.getPos()));
             note.setOnScreen(onScreen(note.getPos()));
             if (playing) {
-                if (playPosition >= note.getPos() - beat/4){
-                    if (note.shouldMeow()) {
-                        soundController.playSound("meow", 0.5f);
-                        note.setMeow(false);
+                if (note.getType() != EditorNote.NoteType.SWITCH && note.getLane() == meowLane){
+                    if (playPosition >= note.getPos() - beat / 4) {
+                        if (note.shouldMeow()) {
+                            soundController.playSound("meow", 0.75f);
+                            note.setMeow(false);
+                        }
+                    } else {
+                        note.setMeow(true);
                     }
-                } else {
-                    note.setMeow(true);
                 }
             }
         }
@@ -2036,6 +2062,14 @@ public class EditorMode implements Screen {
             if (inputController.setHeldNotes()) {
                 selectedNoteType = EditorNote.NoteType.HELD;
                 setToPlaceNotes();
+            }
+
+            if (inputController.changedMeow()) {
+                if (meowLane < laneNumber-1){
+                    meowLane++;
+                } else {
+                    meowLane = 0;
+                }
             }
 
             if (inputController.durationUp()) {

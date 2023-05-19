@@ -1,17 +1,21 @@
 {
-  "levelname" : "YR hard",
-  "background" : "livestream-background",
+  "levelname" : "YR",
   "levelNumber" : 12,
+  "levelImage" : "livestream",
+  "background" : "livestream-background",
   "song" : "YR",
   "startPosition" : 0,
   "bpm" : 150,
-  "maxCompetency" : 150,
+  "fallSpeed" : 10,
+  "maxCompetency" :40,
   "linesPerMember" : 4,
-  "a-threshold":800000,"b-threshold":500000,"c-threshold":320000,"s-threshold":1100000,
+  "thesholdA" : 800000,
+  "thesholdB" : 500000,
+  "thesholdC" : 320000,
+  "thesholdS" : 1100000,
   "bandMembers" : [
     {
-      "instrument" : "voice",
-      "competencyLossRate" : 15,
+      "instrument" : "piano",
       "notes" : [
         {
           "type" : "beat",
@@ -1136,12 +1140,17 @@
           "line" : 2
         }
       ],
-      "lossRates" : []
+      "compFlags" : [
+        {
+          "rate" : 1,
+          "gain" : 4,
+          "position" : 0,
+        }
+      ]
     }
-  ,
+,
     {
       "instrument" : "piano",
-      "competencyLossRate" : 15,
       "notes" : [
         {
           "type" : "switch",
@@ -1780,12 +1789,17 @@
           "line" : 1
         }
       ],
-      "lossRates" : []
+      "compFlags" : [
+        {
+          "rate" : 1,
+          "gain" : 4,
+          "position" : 0,
+        }
+      ]
     }
-  ,
+,
     {
-      "instrument" : "drum",
-      "competencyLossRate" : 15,
+      "instrument" : "piano",
       "notes" : [
         {
           "type" : "switch",
@@ -2760,12 +2774,17 @@
           "line" : 1
         }
       ],
-      "lossRates" : []
+      "compFlags" : [
+        {
+          "rate" : 1,
+          "gain" : 4,
+          "position" : 0,
+        }
+      ]
     }
-  ,
+,
     {
-      "instrument" : "violin",
-      "competencyLossRate" : 15,
+      "instrument" : "piano",
       "notes" : [
         {
           "type" : "switch",
@@ -3938,9 +3957,14 @@
           "line" : 3
         }
       ],
-      "lossRates" : []
+      "compFlags" : [
+        {
+          "rate" : 1,
+          "gain" : 4,
+          "position" : 0,
+        }
+      ]
     }
 
   ],
-  "randomHits" : []
 }

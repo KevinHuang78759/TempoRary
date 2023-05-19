@@ -1,17 +1,21 @@
 {
   "levelname" : "American",
-  "background" : "concert-background",
   "levelNumber" : 7,
+  "levelImage" : "livestream",
+  "background" : "livestream-background",
   "song" : "American",
   "startPosition" : 0,
   "bpm" : 160,
+  "fallSpeed" : 10,
   "maxCompetency" :40,
   "linesPerMember" : 4,
-  "a-threshold":350000,"b-threshold":225000,"c-threshold":100000,"s-threshold":460000,
+  "thesholdA" : 350000,
+  "thesholdB" : 225000,
+  "thesholdC" : 100000,
+  "thesholdS" : 460000,
   "bandMembers" : [
     {
       "instrument" : "piano",
-      "competencyLossRate" :1,
       "notes" : [
         {
           "type" : "held",
@@ -344,12 +348,17 @@
           "line" : 0
         }
       ],
-      "lossRates" : []
+      "compFlags" : [
+        {
+          "rate" : 1,
+          "gain" : 4,
+          "position" : 0,
+        }
+      ]
     }
-  ,
+,
     {
       "instrument" : "piano",
-      "competencyLossRate" :1,
       "notes" : [
         {
           "type" : "switch",
@@ -742,12 +751,17 @@
           "line" : 2
         }
       ],
-      "lossRates" : []
+      "compFlags" : [
+        {
+          "rate" : 1,
+          "gain" : 4,
+          "position" : 0,
+        }
+      ]
     }
-  ,
+,
     {
       "instrument" : "piano",
-      "competencyLossRate" :1,
       "notes" : [
         {
           "type" : "switch",
@@ -870,12 +884,17 @@
           "line" : 0
         }
       ],
-      "lossRates" : []
+      "compFlags" : [
+        {
+          "rate" : 1,
+          "gain" : 4,
+          "position" : 0,
+        }
+      ]
     }
-  ,
+,
     {
       "instrument" : "piano",
-      "competencyLossRate" :1,
       "notes" : [
         {
           "type" : "switch",
@@ -1148,9 +1167,14 @@
           "line" : 1
         }
       ],
-      "lossRates" : []
+      "compFlags" : [
+        {
+          "rate" : 1,
+          "gain" : 4,
+          "position" : 0,
+        }
+      ]
     }
 
   ],
-  "randomHits" : []
 }
