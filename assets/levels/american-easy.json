@@ -1,8 +1,8 @@
 {
   "levelname" : "American",
   "levelNumber" : 7,
-  "levelImage" : "livestream",
-  "background" : "livestream-background",
+  "levelImage" : "cafe",
+  "background" : "cafe-background",
   "song" : "American",
   "startPosition" : 0,
   "bpm" : 160,
