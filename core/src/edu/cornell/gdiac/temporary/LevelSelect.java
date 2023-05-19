@@ -9,6 +9,7 @@ import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
@@ -99,7 +100,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     /** A string array of levels in order;
      * invariant 1: in order; allLevels[0] is song 1 easy level.
      * invariant 2: size is a multiple of 3, because we have 3 difficulties */
-    private String[] allLevels;
+    private static String[] allLevels;
 
     private Texture goLeft;
 
@@ -132,6 +133,8 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
     float albumScales[];
 
+    static int nLevels;
+
 
     public LevelSelect(GameCanvas canvas) {
         s = new SoundController<>();
@@ -145,6 +148,16 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         isInTransition = false;
     }
 
+    /**
+     * Return the total number of levels in this game
+     */
+    public static int getnLevels(){
+        return nLevels;
+    }
+
+    /**
+     * Return the index of the selected song
+     */
     public int getSelectedLevel(){
         return selectedLevel;
     }
@@ -154,6 +167,10 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     }
     public Texture[] getAlbumCovers(){
         return albumCovers;
+    }
+
+    public static String[] getAllLevels() {
+        return allLevels;
     }
 
     /**
@@ -186,6 +203,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         JsonValue levelData = jr.parse(Gdx.files.internal("assets.json"));
         allLevels = levelData.get("levels").asStringArray();
         numSongs = allLevels.length/3;
+        nLevels = allLevels.length;
         assert allLevels.length%3 == 0;
         albumCoverCoords = new Vector2[allLevels.length];
         albumScales = new float[allLevels.length];
@@ -562,6 +580,12 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         active = true;
     }
 
+    int currLevel;
+
+    public String getLevelString(){
+        return allLevels[currLevel];
+    }
+
     @Override
     public void render(float delta) {
         if (active) {
@@ -572,6 +596,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 //                System.out.println("selected level:" + selectedLevel);
 //                System.out.println("selected difficulty:" + selectedDifficulty);
                 int gameIdx = selectedDifficulty+(selectedLevel*3);
+                currLevel = gameIdx;
                 System.out.println("game index: "+gameIdx);
                 selectedJson=allLevels[gameIdx-1];
                 listener.exitScreen(this, ExitCode.TO_PLAYING);
@@ -591,8 +616,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         float sx = ((float)width)/STANDARD_WIDTH;
         float sy = ((float)height)/STANDARD_HEIGHT;
         scale = (sx < sy ? sx : sy);
-
-
 
     }
 
