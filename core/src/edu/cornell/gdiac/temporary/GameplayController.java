@@ -316,6 +316,7 @@ public class GameplayController {
 						float hitStatusX = LEFTBOUND+((activeBandMember+1)*(HIT_IND_SIZE/3))+((activeBandMember+1) * smallwidth);
 						float hitStatusY = BOTTOMBOUND-(HIT_IND_SIZE/1.6f);
 						spawnHitIndicator(hitStatusX,hitStatusY,missIndicator,1);
+						MISS = true;
 					}
 				}
 				if(n.isDestroyed()){
@@ -457,6 +458,7 @@ public class GameplayController {
 		for (Particle o: noteIndicatorParticles){
 			o.update(0f);
 		}
+		level.recieveInterrupt(activeBandMember, DF, JK, MISS);
 	}
 
 	/**
@@ -825,7 +827,7 @@ public class GameplayController {
 			}
 
 		}
-		level.recieveInterrupt(activeBandMember, DF, JK, MISS);
+
 
 	}
 
