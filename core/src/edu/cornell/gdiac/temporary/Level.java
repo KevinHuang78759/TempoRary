@@ -254,6 +254,7 @@ public class Level {
         // switch note is twice as slow
         spawnOffsetSwitch = 2L * spawnOffset;
         System.out.println(spawnOffset);
+        float samplesPerBeat = songSource.getSampleRate() * 60f/bpm;
         for(int i = 0; i < bandMembers.length; i++){
             bandMembers[i] = new BandMember();
             JsonValue bandMemberData = data.get("bandMembers").get(i);
@@ -293,6 +294,7 @@ public class Level {
             bandMembers[i].setLossRate(bandMemberData.getInt("competencyLossRate"));
             bandMembers[i].setHpBarFilmStrip(hpbar, 47);
             bandMembers[i].setIndicatorTextures(noteIndicator, noteIndicatorHit);
+            bandMembers[i].setSPB(samplesPerBeat);
             switch (bandMemberData.getString("instrument")) {
                 case "violin":
                     bandMembers[i].setCharacterFilmstrip(violinSprite);
@@ -408,6 +410,19 @@ public class Level {
 
     private long sample = 0;
 
+    public void recieveInterrupt(int BM_id, boolean DFflag, boolean JKflag, boolean MISSflag){
+        bandMembers[BM_id].recieveSample(sample);
+        bandMembers[BM_id].recieveFlags(DFflag, JKflag, MISSflag);
+    }
+
+    public void setActive(int id){
+        bandMembers[id].setMode(1);
+    }
+    public void swapActive(int prev, int next){
+        bandMembers[prev].changeMode();
+        bandMembers[next].changeMode();
+    }
+
     /**
      * Spawns new notes according to what sample we are at. Also decrements bandmembers' competency
      * for some amount about once a second. It also updates the frame of the bandmember.
@@ -423,14 +438,13 @@ public class Level {
             int startSample = -(int) (((float) rate/60f)*introLength);
             sample = startSample + (int) (((float) rate/60f)*ticks);
         }
-        float samplesPerBeat = rate * 60f/bpm;
 
-        for (BandMember bandMember : bandMembers) {
-            //update the uh frame
-            float frameprogress = (sample % samplesPerBeat) / (samplesPerBeat);
-            int totalframes = bandMember.getCharacterFrames();
+
+        for (int i = 0; i < bandMembers.length; ++i) {
+            BandMember bandMember = bandMembers[i];
             if (mode==1) {
-                bandMember.setFrame((int) (totalframes * frameprogress));
+                bandMember.recieveSample(sample);
+                bandMember.pickFrame();
             }
 
             //spawn new notes accordingly
