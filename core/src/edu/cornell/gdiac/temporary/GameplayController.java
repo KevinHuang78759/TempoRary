@@ -28,6 +28,8 @@ import com.badlogic.gdx.graphics.Texture;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.temporary.entity.*;
 
+import java.util.Arrays;
+
 /**
  * Controller to handle gameplay interactions.
  * This controller also acts as the root class for all the models.
@@ -117,6 +119,7 @@ public class GameplayController {
 	 * @param height
 	 */
 	public GameplayController(float width, float height){
+		sb = new Scoreboard(4, new int[]{1, 2, 3, 5}, new long[]{10, 20, 30});
 		particles = new Array<>();
 		backing = new Array<>();
 		noteIndicatorParticles =new Array<>();
@@ -159,6 +162,7 @@ public class GameplayController {
 	}
 
 	public void setBounds(float width, float height){
+
 		//Ratio of play area width to play area height
 		float playAreaRatio = 2f;
 		totalHeight = height;
@@ -183,6 +187,8 @@ public class GameplayController {
 			BOTTOMBOUND = hCenter - playHeight/2f;
 		}
 
+		sb.setBounds(new Vector2(width, height), new Vector2(0f,19f*TOPBOUND/20f + height/20f));
+
 	}
 
 	public void setWidths(){
@@ -199,17 +205,11 @@ public class GameplayController {
 		level.setBandMemberHitY(hitY);
 	}
 
-	public void setFxVolume(float fxVolume) {
-		sfx.setVolumeAdjust(fxVolume);
-	}
 	/**
 	 * Loads a level
 	 */
 	public void loadLevel(JsonValue levelData, AssetDirectory directory){
-		sb = new Scoreboard(4, new int[]{1, 2, 3, 5}, new long[]{10, 20, 30});
-		sb.setScoreScale((totalHeight - TOPBOUND)/5f);
-		sb.setComboScale((totalHeight - TOPBOUND)/3f);
-		sb.setMultiplierScale((totalHeight - TOPBOUND)/5f);
+		sb.resetScoreboard();
 		particles = new Array<>();
 		backing = new Array<>();
 		level = null;
@@ -240,13 +240,11 @@ public class GameplayController {
 		numberOk =0;
 		numberGood =0;
 		numberPerfect =0;
+		sb.setletterTH(new long[]{level.getcThreshold(), level.getbThreshold(), level.getaThreshold(), level.getsThreshold()});
 	}
 
 	public void reloadLevel(){
 		sb.resetScoreboard();
-		sb.setScoreScale((totalHeight - TOPBOUND)/5f);
-		sb.setComboScale((totalHeight - TOPBOUND)/3f);
-		sb.setMultiplierScale((totalHeight - TOPBOUND)/5f);
 		particles = new Array<>();
 		backing = new Array<>();
 		level.resetLevel();
@@ -273,6 +271,7 @@ public class GameplayController {
 		numberOk =0;
 		numberGood =0;
 		numberPerfect =0;
+		sb.setletterTH(new long[]{level.getcThreshold(), level.getbThreshold(), level.getaThreshold(), level.getsThreshold()});
 		garbageCollectNoteIndicators();
 	}
 
@@ -284,9 +283,6 @@ public class GameplayController {
 		setWidths();
 		setYVals();
 		updateBandMemberCoords();
-		sb.setScoreScale((totalHeight - TOPBOUND)/5f);
-		sb.setComboScale((totalHeight - TOPBOUND)/3f);
-		sb.setMultiplierScale((totalHeight - TOPBOUND)/5f);
 	}
 
 
@@ -613,6 +609,8 @@ public class GameplayController {
 	/** Trigger inputs */
 	public boolean[] triggers;
 
+	public boolean[] lifted;
+
 	public int perfectHit;
 	public int goodHit;
 	public int okHit;
@@ -705,23 +703,27 @@ public class GameplayController {
 	}
 
 
-	/**
-	 * Handle transitions and inputs
-	 * @param input
-	 */
-	public void handleActions(InputController input){
-		//Read in inputs
+	public void recieveInput(InputController input){
 		switches = input.didSwitch();
 		triggers = input.didTrigger();
-
+		lifted = input.triggerLifted;
 		for (boolean trigger : triggers) {
 			if (trigger) {
 				sfx.playSound("tap", GLOBAL_VOLUME_ADJ);
 				break;
 			}
 		}
-
-		boolean[] lifted = input.triggerLifted;
+		for (boolean trigger : switches) {
+			if (trigger) {
+				sfx.playSound("switch", GLOBAL_VOLUME_ADJ);
+				break;
+			}
+		}
+	}
+	/**
+	 * Handle reaction to input
+	 */
+	public void reactToAction(){
 		long currentSample = level.getLevelSample();
 
 		//This array tells us if a hit has already been registered in this frame for the ith bm.
@@ -730,12 +732,7 @@ public class GameplayController {
 
 		// SWITCH NOTE HIT HANDLING
 		if (curP == PlayPhase.NOTES){
-			for (boolean trigger : switches) {
-				if (trigger) {
-					sfx.playSound("switch", GLOBAL_VOLUME_ADJ);
-					break;
-				}
-			}
+
 			for (int i = 0; i < switches.length; ++i){
 				if (switches[i] && i != activeBandMember){
 					//Check only the lanes that are not the current active lane
@@ -749,7 +746,7 @@ public class GameplayController {
 					curP = PlayPhase.TRANSITION;
 					//reset progress
 					t_progress = 0; //transition progress
-					t_start = level.getCurrentSample();
+					t_start = level.getLevelSample();
 					return;
 				}
 			}
@@ -759,7 +756,7 @@ public class GameplayController {
 			garbageCollectNoteIndicators();
 
 			// Increment progress
-			t_progress = level.getCurrentSample() - t_start;
+			t_progress = level.getLevelSample() - t_start;
 
 			// Check if we are done, if so set active BM and change phase
 			if(t_progress >= T_SwitchPhases){

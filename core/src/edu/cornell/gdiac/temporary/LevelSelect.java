@@ -16,7 +16,7 @@ import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.ScreenListener;
 
 public class LevelSelect implements Screen, InputProcessor, ControllerListener {
-
+    SoundController<Integer> s;
     private static String selectedJson;
 
     float WON_BUTTON_SCALE = 0.7f;
@@ -134,6 +134,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
 
     public LevelSelect(GameCanvas canvas) {
+        s = new SoundController<>();
         this.canvas  = canvas;
         selectedDifficulty= 2; // default medium difficulty
         selectedLevel = 0;
@@ -177,6 +178,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
      *
      */
     public void populate(AssetDirectory assetDirectory) {
+        s.addSound(0, "sound/click.ogg");
         directory  = assetDirectory;
         background  = directory.getEntry("background",Texture.class); //menu background
         goBack = directory.getEntry("go-back", Texture.class);
@@ -384,19 +386,23 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             }
 
             if (isButtonPressed(screenX, screenY, easyButton, easyButtonCoords, scale)) {
+                s.playSound(0, 0.3f);
                 selectedDifficulty = 1;
             }
 
             if (isButtonPressed(screenX, screenY, mediumButton, mediumButtonCoords, scale)) {
+                s.playSound(0, 0.3f);
                 selectedDifficulty = 2;
             }
 
             if (isButtonPressed(screenX, screenY, hardButton, hardButtonCoords, scale)) {
+                s.playSound(0, 0.3f);
                 selectedDifficulty = 3;
             }
 
             // if there are a previous level, we allow decrement.
             if (isButtonPressed(screenX, screenY, goLeft, goLeftCoords, 0.9f*scale)) {
+                s.playSound(0, 0.3f);
                 if (selectedLevel-1>=0){
                     prevLevel = selectedLevel;
                     selectedLevel--;
@@ -405,6 +411,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
             // if there are a next level, we allow increment.
             if (isButtonPressed(screenX, screenY, goRight, goRightCoords, 0.9f*scale)) {
+                s.playSound(0, 0.3f);
                 if (selectedLevel+1< numSongs){
                     prevLevel = selectedLevel;
                     selectedLevel++;
@@ -415,6 +422,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             if (selectedLevel-1>=0){
                 Vector2 temp = new Vector2(albumCoverLeftX,albumCoverY);
                 if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel-1], temp, cornerScale)) {
+                    s.playSound(0, 0.3f);
                     prevLevel = selectedLevel;
                     selectedLevel--;
                     return true;
@@ -424,6 +432,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             if (selectedLevel+1< numSongs){
                 Vector2 temp = new Vector2(albumCoverRightX,albumCoverY);
                 if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel], temp, cornerScale)) {
+                    s.playSound(0, 0.3f);
                     prevLevel = selectedLevel;
                     selectedLevel++;
                 }
@@ -431,11 +440,13 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
 
             if (isButtonPressed(screenX, screenY, playButton, playButtonCoords,scale)) {
+                s.playSound(0, 0.3f);
                 playPressed=true;
             }
 
 
             if (isButtonPressed(screenX, screenY, goBack, goBackCoords,WON_BUTTON_SCALE)){
+                s.playSound(0, 0.3f);
                 listener.exitScreen(this,  ExitCode.TO_MENU);
             }
 

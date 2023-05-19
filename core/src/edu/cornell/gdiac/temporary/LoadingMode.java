@@ -99,8 +99,6 @@ public class LoadingMode implements Screen {
 	private int centerY;
 	/** The x-coordinate of the center of the progress bar */
 	private int centerX;
-	/** The height of the canvas window (necessary since sprite origin != screen origin) */
-	private int heightY;
 	/** Scaling factor for when the student changes the resolution. */
 	private float scale;
 
@@ -251,8 +249,8 @@ public class LoadingMode implements Screen {
 	 */
 	private void draw() {
 		canvas.begin();
-		canvas.draw(background, 0, 0, canvas.getWidth(), canvas.getHeight());
-		canvas.draw(loadingText, Color.WHITE, loadingText.getWidth()/2, loadingText.getHeight()/2, canvas.getWidth()/2, canvas.getHeight()/2 - 220, 0, 1, 1);
+		canvas.drawBackground(background, 0, 0);
+		canvas.draw(loadingText, Color.WHITE, loadingText.getWidth()/2, loadingText.getHeight()/2, canvas.getWidth()/2, 0.23f * canvas.getHeight(), 0, 1.5f * scale, 1.5f * scale);
 		drawProgress(canvas);
 		canvas.end();
 	}
@@ -322,7 +320,6 @@ public class LoadingMode implements Screen {
 		innerWidth = (int)(BAR_WIDTH_RATIO*0.95*width);
 		centerY = (int)(BAR_HEIGHT_RATIO*height);
 		centerX = width/2;
-		heightY = height;
 	}
 
 	/**

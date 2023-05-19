@@ -347,6 +347,10 @@ public class Level {
         music.setVolume(vol);
     }
 
+    public float getMusicVolume() {
+        return music.getVolume();
+    }
+
     // TODO: REMOVE THIS AND REPLACE WITH ACTUAL ANIMATION BASED ON SAMPLE
     /**
      * Takes BPM and converts it to rate of animation (as all animations should be on beat)
@@ -392,7 +396,7 @@ public class Level {
             bandMember.setWidth(short_width);
             bandMember.setLineHeight(0f);
             bandMember.setHeight(maxLineHeight);
-            bandMember.setLaneTint(0f);
+            bandMember.setLaneTint(0.1f);
         }
         bandMembers[activeBandMember].setWidth(large_width);
         bandMembers[activeBandMember].setLineHeight(maxLineHeight);
@@ -421,13 +425,13 @@ public class Level {
         bandMembers[nextBM].setLaneTint(findTintColorProgress(t_progress, new SingleOperator() {
             @Override
             public float op(float x) {
-                return (float)Math.sin(x * Math.PI/2);
+                return 0.9f*(float)Math.sin(x * Math.PI/2) + 0.1f;
             }
         }));
         bandMembers[previousBM].setLaneTint(findTintColorProgress(1f - t_progress, new SingleOperator() {
             @Override
             public float op(float x) {
-                return x * x;
+                return 0.9f*x * x + 0.1f;
             }
         }));
         bandMembers[previousBM].setLineHeight(maxLineHeight*(1f-t_progress));
@@ -435,8 +439,7 @@ public class Level {
     }
 
     private float findTintColorProgress(float t_progress, SingleOperator op){
-        float prog = op.op(t_progress);
-        return prog;
+        return op.op(t_progress);
     }
 
     private long sample = 0;

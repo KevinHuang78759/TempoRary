@@ -41,6 +41,8 @@ import edu.cornell.gdiac.util.ScreenListener;
  */
 public class GameMode implements Screen {
 
+	SoundController<Integer> s;
+
 	/**
 	 * Track the current state of the game for the update loop.
 	 */
@@ -68,10 +70,7 @@ public class GameMode implements Screen {
 	private Texture introOne;
 	private Texture introGo;
 
-	private SoundController<String> introOneSFX;
-	private SoundController<String> introTwoSFX;
-	private SoundController<String> introThreeSFX;
-	private SoundController<String> introGoSFX;
+	private SoundController<String> introSFX;
 
 	private boolean saidThree;
 	private boolean saidTwo;
@@ -85,6 +84,15 @@ public class GameMode implements Screen {
 	private BitmapFont displayFont;
 
 	private BitmapFont lucidaFont;
+
+	/** Values used for resizing */
+	private static int STANDARD_WIDTH = 1200;
+	private static int STANDARD_HEIGHT = 800;
+	private float scale = 1.0f;
+	private int centerX = STANDARD_WIDTH/2;
+	private int centerY = STANDARD_HEIGHT/2;
+
+
 	/** Button textures */
 	private Texture resumeButton;
 	private Texture restartButton;
@@ -113,16 +121,6 @@ public class GameMode implements Screen {
 	private Texture levelButtonWon;
 
 	/* BUTTON LOCATIONS */
-	/** Resume button x and y coordinates represented as a vector */
-	private Vector2 resumeCoords;
-	/** Restart button x and y coordinates represented as a vector */
-	private Vector2 restartCoords;
-	/** Level select button x and y coordinates represented as a vector */
-	private Vector2 levelCoords;
-	/** Main menu button x and y coordinates represented as a vector */
-	private Vector2 menuCoords;
-	/** Pause background x and y coordinates represented as a vector*/
-	private Vector2 pauseCoords;
 
 	/** Resume button for win/lose screen x and y coordinates represented as a vector */
 	private Vector2 nextWonCoords;
@@ -137,7 +135,7 @@ public class GameMode implements Screen {
 	private Texture goBack;
 	private Vector2 goBackCoords;
 
-	private static float BUTTON_SCALE = 1f;
+	private static float BUTTON_SCALE = 1.0f;
 
 	private static float ALBUM_SCALE  = 0.75f;
 
@@ -155,8 +153,6 @@ public class GameMode implements Screen {
 	private InputController inputController;
 	/** Constructs the game models and handle basic gameplay (CONTROLLER CLASS) */
 	private GameplayController gameplayController;
-	/** Asset directory for level loading */
-	private AssetDirectory assetDirectory;
 	/** Lets the intro phase know to just resume the gameplay and not to reset the level */
 	private boolean justPaused;
 
@@ -176,13 +172,11 @@ public class GameMode implements Screen {
 	private int introTime;
 	/** time in special units for measuring how far we are in the intro sequence */
 	private int endTime = 0;
-
-	/** Play button x and y coordinates represented as a vector */
-	private Vector2 playButtonCoords;
+	/** volume of the music */
+    private float volume;
 
 	/** the current level */
 	private int currLevel;
-	private int activeBM;
 
 	private int currDifficulty;
 
@@ -241,17 +235,14 @@ public class GameMode implements Screen {
 		saidThree = false;
 		saidTwo = false;
 		saidOne = false;
-		activeBM = 0;
 
 		// Null out all pointers, 0 out all ints, etc.
 		gameState = GameState.INTRO;
 
 		// Create the controllers.
 		gameplayController = new GameplayController(canvas.getWidth(),canvas.getHeight());
-		introOneSFX = new SoundController<>();
-		introTwoSFX = new SoundController<>();
-		introThreeSFX = new SoundController<>();
-		introGoSFX = new SoundController<>();
+		introSFX = new SoundController<>();
+		s = new SoundController<>();
 	}
 
 	/**
@@ -261,6 +252,7 @@ public class GameMode implements Screen {
 		gameState = GameState.INTRO;
 		pressState = NO_BUTTON_PRESSED;
 		gameplayController.garbageCollectNoteIndicators();
+		volume = gameplayController.level.getMusicVolume();
 	}
 
 	/**
@@ -294,10 +286,9 @@ public class GameMode implements Screen {
 	}
 
 	public void setSoundVolume(float fxVolume, float musicVolume) {
-		gameplayController.setFxVolume(fxVolume);
 		gameplayController.level.setMusicVolume(musicVolume);
+		volume = gameplayController.level.getMusicVolume();
 	}
-
 
 	/**
 	 * Dispose of all (non-static) resources allocated to this mode.
@@ -343,11 +334,6 @@ public class GameMode implements Screen {
 		menuButton = directory.getEntry("menu-button", Texture.class);
 		pauseBackground = directory.getEntry("pause-background", Texture.class);
 		whiteBackground = directory.getEntry("white-background", Texture.class);
-		resumeCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 + 130);
-		restartCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 + 43);
-		levelCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 - 43);
-		menuCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2 - 130);
-		pauseCoords = new Vector2(canvas.getWidth()/2, canvas.getHeight()/2);
 
 		nextWonCoords = new Vector2(canvas.getWidth()*3/4+ nextButtonWon.getWidth()*2, canvas.getHeight()/7);
 		restartWonCoords = new Vector2(canvas.getWidth()*3/4 - nextButtonWon.getWidth()*2, canvas.getHeight()/7);
@@ -403,10 +389,11 @@ public class GameMode implements Screen {
 		introTwo = directory.getEntry("intro-2", Texture.class);
 		introOne = directory.getEntry("intro-1", Texture.class);
 		introGo = directory.getEntry("intro-go", Texture.class);
-		introOneSFX.addSound("one", "sound/1.mp3");
-		introTwoSFX.addSound("two", "sound/2.mp3");
-		introThreeSFX.addSound("three", "sound/3.mp3");
-		introGoSFX.addSound("go", "sound/go.mp3");
+		introSFX.addSound("one", "sound/1.mp3");
+		introSFX.addSound("two", "sound/2.mp3");
+		introSFX.addSound("three", "sound/3.mp3");
+		introSFX.addSound("go", "sound/go.mp3");
+		s.addSound(0, "sound/click.ogg");
 	}
 
 	private String matchDifficulty(int diff) {
@@ -441,6 +428,7 @@ public class GameMode implements Screen {
 		// Test whether to reset the game.
 		switch (gameState) {
 			case INTRO:
+				gameplayController.recieveInput(inputController);
 				// wait a few frames before starting
 				if (ticks == 0) {
 					gameplayController.start();
@@ -452,26 +440,23 @@ public class GameMode implements Screen {
 				introTime = gameplayController.updateIntro(ticks);
 				ticks++;
 				if (!justPaused) {
+					gameplayController.reactToAction();
 					gameplayController.update(0, ticks);
 				}
-				if (introTime >= 0) {
-					gameplayController.handleActions(inputController);
-				}
 				if (introTime >= 0 && !saidThree){
-					introThreeSFX.playSound("three", 0.3f);
+					introSFX.playSound("three", 0.3f);
 					saidThree = true;
 				}
 				if (introTime >= 100 && !saidTwo){
-					introTwoSFX.playSound("two", 0.3f);
+					introSFX.playSound("two", 0.3f);
 					saidTwo = true;
 				}
 				if (introTime >= 200 && !saidOne){
-					introOneSFX.playSound("one", 0.3f);
+					introSFX.playSound("one", 0.3f);
 					saidOne = true;
-					gameplayController.handleActions(inputController);
 				}
 				if (introTime >= 300) {
-					introGoSFX.playSound("go", 0.3f);
+					introSFX.playSound("go", 0.3f);
 					introTime = 0;
 					ticks = 0;
 					justPaused = false;
@@ -491,26 +476,31 @@ public class GameMode implements Screen {
 						boolean didNext = (isButtonPressed(screenX, screenY, nextButtonWon, nextWonCoords, WON_BUTTON_SCALE));
 
 						if (didGoBack) {
+							s.playSound(0, 0.3f);
 							System.out.println("pressed back");
 							pressState = ExitCode.TO_MENU;
 						}
 
 						if (didRestartWon) {
+							s.playSound(0, 0.3f);
 							System.out.println("pressed restart");
 							resetLevel();
 						}
 
 						if (didLevel) {
+							s.playSound(0, 0.3f);
 							System.out.println("pressed level");
 							pressState = ExitCode.TO_LEVEL;
 						}
 
 						if (didNext) {
+							s.playSound(0, 0.3f);
 							goNextLevel();
 						}
 
 					}
 					if (inputController.didReset()) {
+						s.playSound(0, 0.3f);
 						resetLevel();
 					}
 				} else {
@@ -519,9 +509,9 @@ public class GameMode implements Screen {
 				}
 				break;
 			case PLAY:
+				gameplayController.recieveInput(inputController);
 				if (inputController.didExit()) {
 					gameplayController.level.pauseMusic();
-					activeBM = gameplayController.activeBandMember;
 					gameState = GameState.PAUSE;
 				} else {
 					play(delta);
@@ -533,15 +523,18 @@ public class GameMode implements Screen {
 					int screenX = (int) inputController.getMouseX();
 					int screenY = (int) inputController.getMouseY();
 					screenY = canvas.getHeight() - screenY;
-					boolean didResume = (isButtonPressed(screenX, screenY, resumeButton, resumeCoords));
-					boolean didLevel = (isButtonPressed(screenX, screenY, levelButton, levelCoords));
-					boolean didMenu = (isButtonPressed(screenX, screenY, menuButton, menuCoords));
-					boolean didRestart = (isButtonPressed(screenX, screenY, restartButton, restartCoords));
+					boolean didResume = (isButtonPressed(screenX, screenY, resumeButton, centerX, 1.325f*centerY, BUTTON_SCALE * scale));
+					boolean didRestart = (isButtonPressed(screenX, screenY, restartButton, centerX, 1.1075f*centerY, BUTTON_SCALE * scale));
+					boolean didLevel = (isButtonPressed(screenX, screenY, levelButton, centerX, 0.8925f*centerY, BUTTON_SCALE * scale));
+					boolean didMenu = (isButtonPressed(screenX, screenY, menuButton, centerX, 0.675f*centerY, BUTTON_SCALE * scale));
 					if (didLevel) {
+						s.playSound(0, 0.3f);
 						pressState = ExitCode.TO_LEVEL;
 					} else if (didMenu) {
+						s.playSound(0, 0.3f);
 						pressState = ExitCode.TO_MENU;
 					} else if (didResume) {
+						s.playSound(0, 0.3f);
 						ticks = 60;
 						saidThree = false;
 						saidTwo = false;
@@ -549,36 +542,41 @@ public class GameMode implements Screen {
 						justPaused = true;
 						gameState = GameState.INTRO;
 					} else if (didRestart) {
+						s.playSound(0, 0.3f);
 						resetLevel();
 					}
 				}
 				break;
 			case WON:
-					if (didInput) {
-						int screenX = (int) inputController.getMouseX();
-						int screenY = (int) inputController.getMouseY();
-						screenY = canvas.getHeight() - screenY;
-						boolean didGoBack = (isButtonPressed(screenX, screenY, goBack, goBackCoords, WON_BUTTON_SCALE));
-						boolean didRestartWon = (isButtonPressed(screenX, screenY, restartButtonWon, restartWonCoords, WON_BUTTON_SCALE));
-						boolean didLevel = (isButtonPressed(screenX, screenY, levelButtonWon, levelWonCoords, WON_BUTTON_SCALE));
-						boolean didNext = (isButtonPressed(screenX, screenY, nextButtonWon, nextWonCoords, WON_BUTTON_SCALE));
-						if (didGoBack) {
-							pressState = ExitCode.TO_MENU;
-						}
-						if (didRestartWon) {
-							System.out.println("pressed restart");
-							pressState = ExitCode.TO_PLAYING;
-							resetLevel();
-						}
-						if (didLevel) {
-							System.out.println("pressed level");
-							pressState = ExitCode.TO_LEVEL;
-						}
-						if (didNext) {
-							goNextLevel();
-						}
+				if (didInput) {
+					int screenX = (int) inputController.getMouseX();
+					int screenY = (int) inputController.getMouseY();
+					screenY = canvas.getHeight() - screenY;
+					boolean didGoBack = (isButtonPressed(screenX, screenY, goBack, goBackCoords, WON_BUTTON_SCALE));
+					boolean didRestartWon = (isButtonPressed(screenX, screenY, restartButtonWon, restartWonCoords, WON_BUTTON_SCALE));
+					boolean didLevel = (isButtonPressed(screenX, screenY, levelButtonWon, levelWonCoords, WON_BUTTON_SCALE));
+					boolean didNext = (isButtonPressed(screenX, screenY, nextButtonWon, nextWonCoords, WON_BUTTON_SCALE));
+					if (didGoBack) {
+						s.playSound(0, 0.3f);
+						pressState = ExitCode.TO_MENU;
 					}
-					break;
+					if (didRestartWon) {
+						s.playSound(0, 0.3f);
+						System.out.println("pressed restart");
+						pressState = ExitCode.TO_PLAYING;
+						resetLevel();
+					}
+					if (didLevel) {
+						s.playSound(0, 0.3f);
+						System.out.println("pressed level");
+						pressState = ExitCode.TO_LEVEL;
+					}
+					if (didNext) {
+						s.playSound(0, 0.3f);
+						goNextLevel();
+					}
+				}
+				break;
 			default:
 				break;
 		}
@@ -609,10 +607,12 @@ public class GameMode implements Screen {
 	 */
 	protected void play(float delta) {
 		// Update objects.
-		gameplayController.handleActions(inputController);
+
 
 		if (gameState == GameState.PLAY) {
+			gameplayController.reactToAction();
 			gameplayController.update(1, ticks);
+
 		} else {
 			gameplayController.update(2, ticks);
 		}
@@ -628,10 +628,14 @@ public class GameMode implements Screen {
 		// so that it is checked near the end of the game.
 		if (gameplayController.checkWinCon()){
 			endTime++;
-			if (endTime >= 60) {
+			SaveManager.getInstance().saveGame(gameplayController.level.getLevelName(), gameplayController.sb.getScore());
+			if (endTime < 150) {
+				gameplayController.level.setMusicVolume(volume*(1- ((float) endTime / 150)));
+			}
+			if (endTime == 150) {
 				gameplayController.level.stopMusic();
 			}
-			if (endTime >= 120) {
+			if (endTime >= 180) {
 				gameState = GameState.WON;
 				endTime = 0;
 			}
@@ -657,18 +661,17 @@ public class GameMode implements Screen {
 				drawLose();
 			}
 		}
-		if (gameState == GameState.WON) {
+		if (gameState == GameState.WON || (gameState == GameState.PLAY && endTime >= 150) ) {
 			drawWin();
-		}
-		if (gameState == GameState.PLAY || gameState == GameState.INTRO || gameState == GameState.PAUSE || (gameState == GameState.OVER && ticks < 120)){
+		} else if (gameState == GameState.PLAY || gameState == GameState.INTRO || gameState == GameState.PAUSE || (gameState == GameState.OVER && ticks < 120)){
 //			drawLose();
 //			gameState = GameState.OVER;
 //		}
 //			Draw everything in the current level
 			gameplayController.level.drawEverything(canvas,
-			gameplayController.activeBandMember, gameplayController.goalBandMember,
-						inputController.triggerPress, inputController.didSwitch(),
-						gameplayController.inBetweenWidth/5f);
+					gameplayController.activeBandMember, gameplayController.goalBandMember,
+					inputController.triggerPress, inputController.didSwitch(),
+					gameplayController.inBetweenWidth/5f);
 
 			// Draw the particles on top
 			for (Particle o : gameplayController.getParticles()) {
@@ -680,25 +683,22 @@ public class GameMode implements Screen {
 			}
 
 			// draw the scoreboard
-			gameplayController.sb.displayCombo((gameplayController.LEFTBOUND + gameplayController.RIGHTBOUND)/2f,  (gameplayController.totalHeight + gameplayController.TOPBOUND)/2f, canvas);
-			gameplayController.sb.displayScore(gameplayController.LEFTBOUND,  (gameplayController.totalHeight - gameplayController.TOPBOUND)/4f + gameplayController.TOPBOUND, canvas);
-			gameplayController.sb.displayMultiplier(gameplayController.LEFTBOUND,  3*(gameplayController.totalHeight - gameplayController.TOPBOUND)/5f + gameplayController.TOPBOUND, canvas);
-
+			gameplayController.sb.displayScoreBoard(canvas);
 			// draw pause menu UI if paused
 			if (gameState == GameState.PAUSE) {
 				//Draw the buttons for the pause menu
 				Color color = new Color(1f, 1f, 1f, 0.65f);
 				canvas.draw(whiteBackground, color, 0, 0, 0, 0, 0, 1f, 1f);
 				canvas.draw(pauseBackground, Color.WHITE, pauseBackground.getWidth() / 2, pauseBackground.getHeight() / 2,
-						pauseCoords.x, pauseCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
+						centerX, centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 				canvas.draw(resumeButton, Color.WHITE, resumeButton.getWidth() / 2, resumeButton.getHeight() / 2,
-						resumeCoords.x, resumeCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
+						centerX, 1.325f*centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 				canvas.draw(restartButton, Color.WHITE, restartButton.getWidth() / 2, restartButton.getHeight() / 2,
-						restartCoords.x, restartCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
+						centerX, 1.1075f*centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 				canvas.draw(levelButton, Color.WHITE, levelButton.getWidth() / 2, levelButton.getHeight() / 2,
-						levelCoords.x, levelCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
+						centerX, 0.8925f*centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 				canvas.draw(menuButton, Color.WHITE, menuButton.getWidth() / 2, menuButton.getHeight() / 2,
-						menuCoords.x, menuCoords.y, 0, BUTTON_SCALE, BUTTON_SCALE);
+						centerX, 0.675f*centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 			}
 			float scl;
 			float lerpFactor;
@@ -743,13 +743,12 @@ public class GameMode implements Screen {
 					canvas.draw(introGo, mask, introGo.getWidth() / 2, introGo.getHeight() / 2, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, 1.25f, 1.25f);
 				}
 			}
-			if (gameState == GameState.PLAY && endTime > 0) {
-				if (endTime <= 60) {
-					mask.set(0f, 0f, 0f, (((float)(endTime))/60f));
+			if (gameState == GameState.PLAY && endTime >= 120) {
+				if (endTime <= 150) {
+					mask.set(1f, 1f, 1f, (((float)(endTime-120))/30f));
 					canvas.draw(introMask, mask, introMask.getWidth()/2, introMask.getHeight()/2, canvas.getWidth()/2, canvas.getHeight()/2, 0, 3, 3);
-				}
-				else {
-					canvas.draw(introMask, Color.BLACK, introMask.getWidth()/2, introMask.getHeight()/2, canvas.getWidth()/2, canvas.getHeight()/2, 0, 3, 3);
+				} else {
+					canvas.draw(introMask, Color.WHITE, introMask.getWidth()/2, introMask.getHeight()/2, canvas.getWidth()/2, canvas.getHeight()/2, 0, 3, 3);
 				}
 			}
 			if ((gameState == GameState.OVER && ticks < 120)){
@@ -841,6 +840,13 @@ public class GameMode implements Screen {
 					scoreCCoords.x, scoreCCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
 		}
 
+		// draw transition mask
+
+		if (endTime >= 150) {
+			mask.set(1f, 1f, 1f, (float)(1-(endTime-150)/30f));
+			canvas.draw(introMask, mask, introMask.getWidth()/2, introMask.getHeight()/2, canvas.getWidth()/2, canvas.getHeight()/2, 0, 3, 3);
+		}
+
 	}
 
 
@@ -864,7 +870,7 @@ public class GameMode implements Screen {
 	 */
 	public void drawNextRetryLevel(boolean drawNextLevel){
 		canvas.draw(resultIcon,Color.WHITE,resultIcon.getWidth()/2,resultIcon.getHeight()/2,resultIconCoords.x,
-		resultIconCoords.y,0,WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+				resultIconCoords.y,0,WON_BUTTON_SCALE, WON_BUTTON_SCALE);
 
 		canvas.draw(goBack, Color.WHITE, goBack.getWidth()/2, goBack.getHeight()/2,
 				goBackCoords.x, goBackCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
@@ -904,19 +910,21 @@ public class GameMode implements Screen {
 	 * @param screenX the x-coordinate of the mouse on the screen
 	 * @param screenY the y-coordinate of the mouse on the screen
 	 * @param buttonTexture the specified button texture
-	 * @param buttonCoords the specified button coordinates as a Vector2 object
+	 * @param x the x-coordinate of the button
+	 * @param y the y-coordinate of the button
+	 * @param scale the current scale
 	 * @return whether the button specified was pressed
 	 */
-	public boolean isButtonPressed(int screenX, int screenY, Texture buttonTexture, Vector2 buttonCoords) {
+	public boolean isButtonPressed(int screenX, int screenY, Texture buttonTexture, float x, float y, float scale) {
 		// buttons are rectangles
 		// buttonCoords hold the center of the rectangle, buttonTexture has the width and height
 		// get half the x length of the button portrayed
-		float xRadius = BUTTON_SCALE * buttonTexture.getWidth()/2.0f;
-		boolean xInBounds = buttonCoords.x - xRadius <= screenX && buttonCoords.x + xRadius >= screenX;
+		float xRadius = scale * buttonTexture.getWidth()/2.0f;
+		boolean xInBounds = x - xRadius <= screenX && x + xRadius >= screenX;
 
 		// get half the y length of the button portrayed
-		float yRadius = BUTTON_SCALE * buttonTexture.getHeight()/2.0f;
-		boolean yInBounds = buttonCoords.y - yRadius <= screenY && buttonCoords.y + yRadius >= screenY;
+		float yRadius = scale * buttonTexture.getHeight()/2.0f;
+		boolean yInBounds = y - yRadius <= screenY && y + yRadius >= screenY;
 		return xInBounds && yInBounds;
 	}
 
@@ -953,17 +961,15 @@ public class GameMode implements Screen {
 	 * @param width  The new width in pixels
 	 * @param height The new height in pixels
 	 */
+	@Override
 	public void resize(int width, int height) {
 		gameplayController.resize(Math.max(250,width), Math.max(200,height));
-//		// Compute the drawing scale
-//		float sx = ((float)width)/STANDARD_WIDTH;
-//		float sy = ((float)height)/STANDARD_HEIGHT;
-//		scale = (sx < sy ? sx : sy);
-//
-////        this.width = (int)(BAR_WIDTH_RATIO*width);
-//		centerY = (int)(BAR_HEIGHT_RATIO*height);
-//		centerX = width/2;
-//		heightY = height;
+		// Compute the drawing scale
+		float sx = ((float)width)/STANDARD_WIDTH;
+		float sy = ((float)height)/STANDARD_HEIGHT;
+		scale = Math.min(sx, sy);
+		centerY = height/2;
+		centerX = width/2;
 	}
 
 	/**
