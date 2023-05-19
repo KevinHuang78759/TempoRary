@@ -306,6 +306,7 @@ public class Level {
             bandMembers[i].setMaxComp(maxCompetency);
             // TODO: FIX THIS SO THAT IT FITS THE LEVEL JSON
             bandMembers[i].setLossRate(1);
+            bandMembers[i].setNoteGain(1);
             bandMembers[i].setHpBarFilmStrip(hpbar, 47);
             bandMembers[i].setIndicatorTextures(noteIndicator, noteIndicatorHit);
             switch (bandMemberData.getString("instrument")) {

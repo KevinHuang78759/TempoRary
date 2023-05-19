@@ -910,6 +910,12 @@ public class EditorMode implements Screen {
                     currentPlaceType = tmpPlaceType;
                 }
             }
+            if (!loadNew){
+                PlaceType tmpPlaceType = currentPlaceType;
+                currentPlaceType = PlaceType.AUTO;
+                addFlag(lane, startPosition, level.get("bandMembers").get(lane).getInt("competencyLossRate"), 4);
+                currentPlaceType = tmpPlaceType;
+            }
         }
         if (loadNew) {
             JsonValue randomHits = level.get("randomHits");
@@ -1052,7 +1058,7 @@ public class EditorMode implements Screen {
         }
         Json json = new Json();
         try {
-            file = new FileWriter("test_easy_level.json");
+            file = new FileWriter("saved-level.json");
             file.write(json.prettyPrint(l) );
             file.close();
         } catch (IOException e) {
@@ -1094,8 +1100,8 @@ public class EditorMode implements Screen {
         displayFont = directory.getEntry("times", BitmapFont.class);
         inputController.setEditorProcessor();
         JsonReader jr = new JsonReader();
-        defaultLevel = jr.parse(Gdx.files.internal("levels/tutorial-easy.json"));
-        music = directory.getEntry("tutorial", MusicQueue.class);
+        defaultLevel = jr.parse(Gdx.files.internal("levels/yr-hard.json"));
+        music = directory.getEntry("YR", MusicQueue.class);
         initializeLevel(4, 4);
     }
 
