@@ -75,7 +75,7 @@ public class GameplayController {
 	 * it should already be completely invisible.
 	 */
 	public float noteDieY;
-	/** The calibration offset (int samples */
+	/** The calibration offset (int samples) */
 	public int offset;
 
 	/** The minimum x value margin */
