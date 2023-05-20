@@ -883,14 +883,12 @@ public class Level {
                 if(isTutorial){
                     bandMembers[i].drawControlBox(canvas, hitCBOX);
                     String[] controls = InputController.triggerKeyBinds(true);
-                    GlyphLayout l = new GlyphLayout(font,controls[0]);
-                    float boundSize = hitCBOX.getHeight()*Math.min(0.2f * bandMembers[i].getHeight()/hitCBOX.getHeight(), 0.85f*bandMembers[i].getWidth()/hitCBOX.getWidth());
-                    fontScale *= 0.2f*boundSize/l.width;
-                    font.getData().setScale(fontScale);
                     for(int k = 0; k < 4; ++k){
                         GlyphLayout layout = new GlyphLayout(font,controls[k]);
-
-
+                        float boundSize = hitCBOX.getHeight()*Math.min(0.2f * bandMembers[i].getHeight()/hitCBOX.getHeight(), 0.85f*bandMembers[i].getWidth()/hitCBOX.getWidth());
+                        fontScale *= 0.5*Math.min(boundSize/layout.width, boundSize/layout.height);
+                        font.getData().setScale(fontScale);
+                        layout = new GlyphLayout(font, controls[k]);
                         font.setColor(Color.WHITE);
                         canvas.drawTextSetColor(controls[k], font, bandMembers[i].getBottomLeft().x + bandMembers[i].getWidth()/8f + k*bandMembers[i].getWidth()/4f - layout.width/2, 0.85f*bandMembers[i].getHeight()+ bandMembers[i].getBottomLeft().y + layout.height/2);
                     }
@@ -908,9 +906,10 @@ public class Level {
                     String[] controls = InputController.switchKeyBinds(bandMembers.length,true);
                     GlyphLayout layout = new GlyphLayout(font,controls[i]);
                     float boundSize = switchCBOX.getHeight()*Math.min(0.2f * bandMembers[i].getHeight()/switchCBOX.getHeight(), 0.85f*bandMembers[i].getWidth()/switchCBOX.getWidth());
-                    fontScale *= 0.2f*boundSize/layout.width;
+                    fontScale *= 0.5*Math.min(boundSize/layout.width, boundSize/layout.height);
                     font.getData().setScale(fontScale);
                     font.setColor(Color.WHITE);
+                    layout = new GlyphLayout(font,controls[i]);
                     canvas.drawTextSetColor(controls[i], font, bandMembers[i].getBottomLeft().x + bandMembers[i].getWidth()/2f - layout.width/2f, 0.85f*bandMembers[i].getHeight()+ bandMembers[i].getBottomLeft().y + layout.height/2);
                 }
             }
