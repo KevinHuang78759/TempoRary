@@ -20,7 +20,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
@@ -28,9 +27,6 @@ import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.temporary.entity.Particle;
 
 
-import edu.cornell.gdiac.temporary.entity.BandMember;
-import edu.cornell.gdiac.temporary.entity.Particle;
-import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.ScreenListener;
 
 /**
@@ -318,7 +314,6 @@ public class GameMode implements Screen {
 		} else if (diff==3) {
 			return "hard";
 		} else{
-			System.out.println("difficulty not selected");
 			return "easy";
 		}
 	}
@@ -342,7 +337,7 @@ public class GameMode implements Screen {
 		// Test whether to reset the game.
 		switch (gameState) {
 			case INTRO:
-				gameplayController.recieveInput(inputController);
+				gameplayController.receiveInput(inputController);
 				// wait a few frames before starting
 				if (ticks == 0) {
 					gameplayController.start();
@@ -460,7 +455,7 @@ public class GameMode implements Screen {
 				}
 				break;
 			case PLAY:
-				gameplayController.recieveInput(inputController);
+				gameplayController.receiveInput(inputController);
 				if (inputController.didExit()) {
 					gameplayController.level.pauseMusic();
 					gameState = GameState.PAUSE;
@@ -546,7 +541,6 @@ public class GameMode implements Screen {
 	 */
 	protected void play(float delta) {
 		// Update objects.
-
 		if (gameState == GameState.PLAY) {
 			gameplayController.reactToAction();
 			gameplayController.update(1, ticks);
@@ -592,7 +586,6 @@ public class GameMode implements Screen {
 	 */
 	private void draw() {
 		canvas.begin();
-		// First draw the background
 		if (gameState == GameState.OVER) {
 			if (ticks >= 120) {
 				drawLose();
@@ -617,7 +610,9 @@ public class GameMode implements Screen {
 			}
 
 			// draw the scoreboard
-			gameplayController.sb.displayScoreBoard(canvas);
+			if (!gameplayController.level.isInAutoplayRange() && !gameplayController.level.isAutoSwitching()) {
+				gameplayController.sb.displayScoreBoard(canvas);
+			}
 			// draw pause menu UI if paused
 			if (gameState == GameState.PAUSE) {
 				//Draw the buttons for the pause menu

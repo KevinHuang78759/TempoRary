@@ -419,17 +419,19 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             }
 
             // draw easy, medium, and hard buttons
-            Texture tempEasy = (hoverState == EASY_HOVERED || selectedDifficulty==1? easyButton: easyButtonInactive);
-            canvas.draw(tempEasy, Color.WHITE, easyButton.getWidth()/2, easyButton.getHeight()/2,
-                    easyButtonCoords.x, easyButtonCoords.y, 0, 0.4f*scale, 0.4f*scale);
+            if (selectedLevel != 0) {
+                Texture tempEasy = (hoverState == EASY_HOVERED || selectedDifficulty == 1 ? easyButton : easyButtonInactive);
+                canvas.draw(tempEasy, Color.WHITE, easyButton.getWidth() / 2, easyButton.getHeight() / 2,
+                        easyButtonCoords.x, easyButtonCoords.y, 0, 0.4f * scale, 0.4f * scale);
 
-            Texture tempMedium = (hoverState == MEDIUM_HOVERED || selectedDifficulty==2 ? mediumButton: mediumButtonInactive);
-            canvas.draw(tempMedium, Color.WHITE, mediumButton.getWidth()/2, mediumButton.getHeight()/2,
-                    mediumButtonCoords.x, mediumButtonCoords.y, 0, 0.4f*scale, 0.4f*scale);
+                Texture tempMedium = (hoverState == MEDIUM_HOVERED || selectedDifficulty == 2 ? mediumButton : mediumButtonInactive);
+                canvas.draw(tempMedium, Color.WHITE, mediumButton.getWidth() / 2, mediumButton.getHeight() / 2,
+                        mediumButtonCoords.x, mediumButtonCoords.y, 0, 0.4f * scale, 0.4f * scale);
 
-            Texture tempHard = (hoverState == HARD_HOVERED || selectedDifficulty==3 ? hardButton: hardButtonInactive);
-            canvas.draw(tempHard, Color.WHITE, tempHard.getWidth()/2, tempHard.getHeight()/2,
-                    hardButtonCoords.x, hardButtonCoords.y, 0, 0.4f*scale, 0.4f*scale);
+                Texture tempHard = (hoverState == HARD_HOVERED || selectedDifficulty == 3 ? hardButton : hardButtonInactive);
+                canvas.draw(tempHard, Color.WHITE, tempHard.getWidth() / 2, tempHard.getHeight() / 2,
+                        hardButtonCoords.x, hardButtonCoords.y, 0, 0.4f * scale, 0.4f * scale);
+            }
 
 
             if (hoverState == HOW_TO_PLAY_HOVERED){
@@ -441,14 +443,12 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             }
 
             // draw past scores
-
             for (int i = 0; i < allLevels.length; i++) {
                 String noPath = allLevels[i].substring("levels/".length());
                 long highScore = SaveManager.getInstance().getHighScore(noPath);
                 String grade = SaveManager.getInstance().getGrade(noPath);
                 long highestCombo = SaveManager.getInstance().getHighestCombo(noPath);
-
-                drawPastScores(i % 3, i / 3 + 1, (int) highScore, grade, (int) highestCombo, !grade.equals(""));
+                drawPastScores(i / 3, i < 3 ? 1 : (i % 3 + 1), (int) highScore, grade, (int) highestCombo, !grade.equals(""));
             }
         }
 
@@ -563,20 +563,22 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             }
 
             if (!howToPlayPressed){
-                if (isButtonPressed(screenX, screenY, easyButton, easyButtonCoords, 0.4f*scale)) {
-                    s.playSound(0, 0.3f);
-                    selectedDifficulty = 1;
-                }
+                if (selectedLevel != 0) {
+                    if (isButtonPressed(screenX, screenY, easyButton, easyButtonCoords, 0.4f * scale)) {
+                        s.playSound(0, 0.3f);
+                        selectedDifficulty = 1;
+                    }
 
-                if (isButtonPressed(screenX, screenY, mediumButton, mediumButtonCoords, 0.4f*scale)) {
-                    s.playSound(0, 0.3f);
-                    selectedDifficulty = 2;
-                }
+                    if (isButtonPressed(screenX, screenY, mediumButton, mediumButtonCoords, 0.4f * scale)) {
+                        s.playSound(0, 0.3f);
+                        selectedDifficulty = 2;
+                    }
 
 
-                if (isButtonPressed(screenX, screenY, hardButton, hardButtonCoords, 0.4f*scale)) {
-                    s.playSound(0, 0.3f);
-                    selectedDifficulty = 3;
+                    if (isButtonPressed(screenX, screenY, hardButton, hardButtonCoords, 0.4f * scale)) {
+                        s.playSound(0, 0.3f);
+                        selectedDifficulty = 3;
+                    }
                 }
 
                 // if there are a previous level, we allow decrement.
@@ -628,10 +630,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                 }
             } else{
                 if (tutorialIdx==4){
-                    System.out.println("tutiral ready pressed1");
                     if (isButtonPressed(screenX, screenY, tutorialReady, tutorialReadyCoords, 0.9f*scale)) {
-
-                        System.out.println("tutiral ready pressed");
                         tutorialIdx=0;
                         howToPlayPressed = false;
                     }

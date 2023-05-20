@@ -1,10 +1,11 @@
 package edu.cornell.gdiac.temporary;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
@@ -12,18 +13,26 @@ import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.AudioEngine;
 import edu.cornell.gdiac.audio.AudioSource;
-import edu.cornell.gdiac.audio.AudioStream;
 import edu.cornell.gdiac.audio.MusicQueue;
 import edu.cornell.gdiac.temporary.entity.BandMember;
 import edu.cornell.gdiac.temporary.entity.Note;
 import edu.cornell.gdiac.util.FilmStrip;
 
-import javax.swing.plaf.TextUI;
-import java.nio.ByteBuffer;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
 public class Level {
+
+    private Texture arrow;
+    private Texture pawIndicator;
+
+    private Texture hitCBOX;
+    private Texture switchCBOX;
+
+    private FreeTypeFontGenerator fontGenerator;
+
+    private BitmapFont font;
+    private FreeTypeFontGenerator.FreeTypeFontParameter fontParameter;
 
     public BandMember[] getBandMembers() {
         return bandMembers;
@@ -137,6 +146,9 @@ public class Level {
         this.sThreshold = sThreshold;
     }
 
+    private Vector2 TR;
+    private Vector2 BL;
+
     private BandMember[] bandMembers;
 
     // TEXTURES
@@ -156,6 +168,11 @@ public class Level {
     private FilmStrip frontSplash;
     private FilmStrip ghostLoom;
 
+    private Texture autoplayBackground;
+    private Texture progressBackground;
+    private Texture progressForeground;
+    private Texture progressKnob;
+
     // PROPERTIES
     private String levelName;
     private int levelNumber;
@@ -168,6 +185,91 @@ public class Level {
     private long cThreshold;
     private long sThreshold;
     private MusicQueue music;
+
+    private boolean isTutorial;
+    private Queue<Long> autoplayRanges;
+    private Queue<Long> switchRanges;
+    private Queue<Long> arrowAppear;
+
+    private long startRange;
+    private long endRange;
+
+    private long startSwitchRange;
+    private long endSwitchRange = -1;
+    public long getStartSwitchRange() {
+        return startSwitchRange;
+    }
+    public long getEndSwitchRange() {
+        return endSwitchRange;
+    }
+
+    public boolean getIsTutorial() {
+        return isTutorial;
+    }
+
+    private int toBandMember;
+
+    public int getToBandMember() {
+        return toBandMember;
+    }
+
+    public boolean isInAutoplayRange() {
+        long currentSample = getCurrentSample();
+        if (isTutorial && !autoplayRanges.isEmpty()) {
+            if (autoplayRanges.size % 2 == 0) {
+                if (currentSample >= autoplayRanges.first()) {
+                    startRange = autoplayRanges.removeFirst();
+                    endRange = autoplayRanges.first();
+                    return true;
+                }
+            } else {
+                if (currentSample <= autoplayRanges.first()) {
+                    return true;
+                } else {
+                    autoplayRanges.removeFirst();
+                }
+            }
+            return false;
+        }
+        return false;
+    }
+
+    public boolean isAutoSwitching() {
+        long currentSample = getCurrentSample();
+        if (isTutorial && (currentSample <= endSwitchRange || endSwitchRange == -1 || !switchRanges.isEmpty())) {
+            // set it to one second before
+            if (!switchRanges.isEmpty()) {
+                if (currentSample >= switchRanges.first() - music.getSampleRate()/2) {
+                    startSwitchRange = switchRanges.first() - music.getSampleRate()/2;
+                    endSwitchRange = switchRanges.first() + music.getSampleRate()/2;
+                    switchRanges.removeFirst();
+                    toBandMember = switchRanges.removeFirst().intValue();
+                }
+            }
+            return currentSample <= endSwitchRange && currentSample >= startSwitchRange;
+        }
+        return false;
+    }
+
+    public boolean isArrowAppearing() {
+        long currentSample = getCurrentSample();
+        if (isTutorial && !arrowAppear.isEmpty()) {
+            if (arrowAppear.size % 2 == 0) {
+                if (currentSample >= arrowAppear.first()) {
+                    arrowAppear.removeFirst();
+                    return true;
+                }
+            } else {
+                if (currentSample <= arrowAppear.first()) {
+                    return true;
+                } else {
+                    arrowAppear.removeFirst();
+                }
+            }
+            return false;
+        }
+        return false;
+    }
 
     /**
      * The last sample that health was decremented due to continuous decay
@@ -233,7 +335,6 @@ public class Level {
         switchIndicator = directory.getEntry("switch-indicator", Texture.class);
         switchIndicatorHit = directory.getEntry("switch-indicator-hit", Texture.class);
 
-
         violinSet = new FilmStrip[7];
         violinSet[0] = new FilmStrip(directory.getEntry("violin-INACTIVE-NOTES", Texture.class), 1, 6, 6);
         violinSet[1] = new FilmStrip(directory.getEntry("violin-INACTIVE-NO-NOTES", Texture.class), 1, 6, 6);
@@ -274,6 +375,17 @@ public class Level {
 
         backSplash = new FilmStrip(directory.getEntry("back-splash", Texture.class), 5, 5, 23);
         frontSplash = new FilmStrip(directory.getEntry("front-splash", Texture.class), 5, 5, 21);
+
+        arrow = directory.getEntry("pointer-arrow", Texture.class);
+        pawIndicator = directory.getEntry("paw-indicator", Texture.class);
+        hitCBOX = directory.getEntry("hitCBox", Texture.class);
+        switchCBOX = directory.getEntry("switchCBox", Texture.class);
+
+        autoplayBackground = directory.getEntry("autoplay-background", Texture.class);
+        progressBackground = directory.getEntry("autoplay-progress-background", Texture.class);
+        progressForeground = directory.getEntry("autoplay-progress-foreground", Texture.class);
+        progressKnob = directory.getEntry("autoplay-progress-knob", Texture.class);
+
         this.data = data;
         //Read in Json  Value and populate asset textures
         lastDec = 0;
@@ -375,9 +487,41 @@ public class Level {
             bandMembers[i].recieveSample(sample);
             bandMembers[i].pickFrame();
         }
+
+        // TUTORIAL LOGIC
+
+        // need autoplay ranges, need switch ranges, need random hit
+        JsonValue tutorialData = data.get("tutorialData");
+        if (tutorialData != null) {
+            fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Blinker-SemiBold.ttf"));
+
+            fontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+            fontParameter.size = 96;
+            font = fontGenerator.generateFont(fontParameter);
+            fontScale = 1f;
+            isTutorial = true;
+
+            autoplayRanges = new Queue<>();
+            switchRanges = new Queue<>();
+            arrowAppear = new Queue<>();
+
+            long[] autoplayRanges = tutorialData.get("autoplayRanges").asLongArray();
+            for (long val : autoplayRanges) {
+                this.autoplayRanges.addLast(val);
+            }
+
+            long[] switchRanges = tutorialData.get("switchSamples").asLongArray();
+            for (long val : switchRanges) {
+                this.switchRanges.addLast(val);
+            }
+
+            long[] arrowAppear = tutorialData.get("arrowAppear").asLongArray();
+            for (long val : arrowAppear) {
+                this.arrowAppear.addLast(val);
+            }
+        }
     }
 
-    // TODO: document and multiply by the base music volume
     public void setMusicVolume(float vol) {
         music.setVolume(vol);
     }
@@ -386,7 +530,6 @@ public class Level {
         return music.getVolume();
     }
 
-    // TODO: REMOVE THIS AND REPLACE WITH ACTUAL ANIMATION BASED ON SAMPLE
     /**
      * Takes BPM and converts it to rate of animation (as all animations should be on beat)
      * @param bpm BPM of song in level
@@ -480,11 +623,10 @@ public class Level {
 
     private long sample;
 
-    public void recieveInterrupt(int BM_id, boolean DFflag, boolean JKflag, boolean MISSflag){
+    public void receiveInterrupt(int BM_id, boolean DFflag, boolean JKflag, boolean MISSflag){
         bandMembers[BM_id].recieveSample(sample);
         bandMembers[BM_id].recieveFlags(DFflag, JKflag, MISSflag);
     }
-
 
     public void swapActive(int prev, int next){
         bandMembers[prev].changeMode();
@@ -537,9 +679,6 @@ public class Level {
                 bandMember.pickFrame();
             }
 
-
-
-
             if (!bandMember.getHitNotes().isEmpty() && mode == 1 && !bandMember.hasHold()) {
                 float loss = -1f * bandMember.getLossRate() * (sample - lastDec) / ((float) music.getSampleRate());
                 // TODO: ONLY UPDATE IF YOU ARE NOT HOLDING
@@ -581,11 +720,12 @@ public class Level {
         music.addSource(songSource);
         // reset volume
         music.setVolume(oldVolume);
-        float samplesPerBeat = songSource.getSampleRate() * 60f/bpm;
         bandMembers = new BandMember[data.get("bandMembers").size];
         int fallSpeed = data.getInt("fallSpeed");
         spawnOffset = 10*music.getSampleRate()/fallSpeed;
-        spawnOffsetSwitch = spawnOffset * 2L;
+        // switch note is twice as slow
+        spawnOffsetSwitch = 2L * spawnOffset;
+        float samplesPerBeat = songSource.getSampleRate() * 60f/bpm;
         for(int i = 0; i < bandMembers.length; i++){
             bandMembers[i] = new BandMember();
             JsonValue bandMemberData = data.get("bandMembers").get(i);
@@ -651,6 +791,39 @@ public class Level {
             bandMembers[i].recieveSample(sample);
             bandMembers[i].pickFrame();
         }
+
+        // TUTORIAL LOGIC
+
+        // need autoplay ranges, need switch ranges, need random hit
+        JsonValue tutorialData = data.get("tutorialData");
+        if (tutorialData != null) {
+            fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Blinker-SemiBold.ttf"));
+
+            fontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+            fontParameter.size = 96;
+            font = fontGenerator.generateFont(fontParameter);
+            fontScale = 1f;
+            isTutorial = true;
+
+            autoplayRanges = new Queue<>();
+            switchRanges = new Queue<>();
+            arrowAppear = new Queue<>();
+
+            long[] autoplayRanges = tutorialData.get("autoplayRanges").asLongArray();
+            for (long val : autoplayRanges) {
+                this.autoplayRanges.addLast(val);
+            }
+
+            long[] switchRanges = tutorialData.get("switchSamples").asLongArray();
+            for (long val : switchRanges) {
+                this.switchRanges.addLast(val);
+            }
+
+            long[] arrowAppear = tutorialData.get("arrowAppear").asLongArray();
+            for (long val : arrowAppear) {
+                this.arrowAppear.addLast(val);
+            }
+        }
     }
 
     public void stopMusic() {
@@ -686,7 +859,7 @@ public class Level {
      * @return
      */
     public boolean hasUnlocked(){ return true; };
-
+    float fontScale;
     /**
      * this draws everything the level needs to display on the given canvas
      * @param canvas - what are we drawing on
@@ -707,19 +880,92 @@ public class Level {
             }
             bandMembers[i].drawCharacterSprite(canvas);
             bandMembers[i].drawHPBar(canvas);
+
             //If we are the goal of the active lane we need to draw separation lines and held/beat notes
             //We also need to draw a separate hit bar for each line
             if(active == i || goal == i){
+
                 bandMembers[i].drawHitNotes(canvas);
                 bandMembers[i].drawLineSeps(canvas, sepLine);
                 bandMembers[i].drawIndicator(canvas, noteIndicator, noteIndicatorHit, triggers);
+                if (isInAutoplayRange()) {
+                    int j = bandMembers[i].getHitNotes().isEmpty() ? -1 : bandMembers[i].getHitNotes().first().getLine();
+                    bandMembers[i].drawPawIndicator(canvas, pawIndicator, j);
+
+                }
+                if (isArrowAppearing()) {
+                    bandMembers[i].drawArrow(canvas, arrow);
+                }
+                if(isTutorial){
+                    bandMembers[i].drawControlBox(canvas, hitCBOX);
+                    String[] controls = InputController.triggerKeyBinds(true);
+                    for(int k = 0; k < 4; ++k){
+                        GlyphLayout layout = new GlyphLayout(font,controls[k]);
+                        float boundSize = hitCBOX.getHeight()*Math.min(0.2f * bandMembers[i].getHeight()/hitCBOX.getHeight(), 0.85f*bandMembers[i].getWidth()/hitCBOX.getWidth());
+                        fontScale *= 0.5*Math.min(boundSize/layout.width, boundSize/layout.height);
+                        font.getData().setScale(fontScale);
+                        layout = new GlyphLayout(font, controls[k]);
+                        font.setColor(Color.WHITE);
+                        canvas.drawTextSetColor(controls[k], font, bandMembers[i].getBottomLeft().x + bandMembers[i].getWidth()/8f + k*bandMembers[i].getWidth()/4f - layout.width/2, 0.85f*bandMembers[i].getHeight()+ bandMembers[i].getBottomLeft().y + layout.height/2);
+                    }
+                }
             }
             //Otherwise just draw the switch notes, and we only have 1 hit bar to draw
             else{
                 bandMembers[i].drawSwitchNotes(canvas);
                 bandMembers[i].drawIndicator(canvas, switchIndicator, switchIndicatorHit, switches[i]);
+                if (isAutoSwitching() && i == toBandMember && getCurrentSample() <= (endSwitchRange + startSwitchRange)/2f) {
+                    bandMembers[i].drawPawIndicator(canvas, pawIndicator);
+                }
+                if(isTutorial){
+                    bandMembers[i].drawControlBox(canvas, switchCBOX);
+                    String[] controls = InputController.switchKeyBinds(bandMembers.length - 1);
+                    GlyphLayout layout = new GlyphLayout(font,controls[i]);
+                    float boundSize = switchCBOX.getHeight()*Math.min(0.2f * bandMembers[i].getHeight()/switchCBOX.getHeight(), 0.85f*bandMembers[i].getWidth()/switchCBOX.getWidth());
+                    fontScale *= 0.5*Math.min(boundSize/layout.width, boundSize/layout.height);
+                    font.getData().setScale(fontScale);
+                    font.setColor(Color.WHITE);
+                    layout = new GlyphLayout(font,controls[i]);
+                    canvas.drawTextSetColor(controls[i], font, bandMembers[i].getBottomLeft().x + bandMembers[i].getWidth()/2f - layout.width/2f, 0.85f*bandMembers[i].getHeight()+ bandMembers[i].getBottomLeft().y + layout.height/2);
+                }
             }
         }
+
+        if (isInAutoplayRange() || isAutoSwitching()) {
+            canvas.draw(autoplayBackground,
+                    Color.BLACK,
+                    autoplayBackground.getWidth()/2f, autoplayBackground.getHeight()/2f,
+                    (TR.x + BL.x)/2f, (TR.y + BL.y)/2f,
+                    0f,
+                    (TR.x - BL.x)/(autoplayBackground.getWidth()),(TR.y - BL.y)/(autoplayBackground.getHeight()));
+            canvas.draw(progressBackground,
+                    Color.WHITE,
+                    progressBackground.getWidth()/2f, progressBackground.getHeight()/2f,
+                    (TR.x + BL.x)/2f, (BL.y),
+                    0f,
+                    (TR.x - BL.x)/(progressBackground.getWidth()),(BL.y - (BL.y - (TR.y - BL.y) * 0.1f))/(progressBackground.getHeight()));
+            long st = isInAutoplayRange() ? startRange : startSwitchRange;
+            long fin = isInAutoplayRange() ? endRange : endSwitchRange;
+            canvas.draw(progressForeground,
+                    Color.WHITE,
+                    0, progressForeground.getHeight()/2f,
+                    0, (BL.y),
+                    0f,
+                    (TR.x - BL.x)/(progressForeground.getWidth()) * ((float) (getCurrentSample() - st)/(fin - st)),
+                    (BL.y - (BL.y - (TR.y - BL.y) * 0.1f))/(progressForeground.getHeight()));
+            canvas.draw(progressKnob,
+                    Color.WHITE,
+                    progressKnob.getWidth()/2f, progressKnob.getHeight()/2f,
+                    progressForeground.getWidth() * (TR.x - BL.x)/(progressForeground.getWidth()) * ((float) (getCurrentSample() - st)/(fin - st)),
+                    (BL.y),
+                    0f,
+                    ((BL.y - (TR.y - BL.y) * 0.2f) - BL.y)/progressKnob.getWidth(),((BL.y - (TR.y - BL.y) * 0.2f) - BL.y)/progressKnob.getWidth());
+        }
+    }
+
+    public void setBounds(Vector2 TR, Vector2 BL) {
+        this.TR = TR;
+        this.BL = BL;
     }
 
     public void dispose(){

@@ -65,14 +65,26 @@ public class InputController {
 	//We need to track their previous values so that we dont register a hold as repeated clicks
 	boolean[] triggerPress;
 	boolean[] triggerLifted;
+	boolean[] switchesPress;
 	private static boolean[] triggers;
 	private boolean[] triggerLast;
 	private static boolean[] switches;
 	private boolean[] switchesLast;
 	private boolean[] moves;
 
+	private boolean autoplay;
+	private boolean autoswitch;
+
 	/** XBox Controller support */
 	private XBoxController xbox;
+
+	public void setAutoplay(boolean ap) {
+		autoplay = ap;
+	}
+
+	public void setAutoswitch(boolean as) {
+		autoswitch = as;
+	}
 
 	/**
 	 * Returns true if the reset button was pressed.
@@ -167,7 +179,9 @@ public class InputController {
 		clicking = false;
 		typed = false;
 		// we hardcode 4 for this because this is now the specification for the game
+		triggerPress = new boolean[4];
 		triggerLast = new boolean[4];
+		switchesPress = new boolean[4];
 		switchesLast = new boolean[4];
 		triggers = new boolean[4];
 		switches = new boolean[4];
@@ -286,6 +300,27 @@ public class InputController {
 
 	// READ KEYBOARD FOR THE GAME (not level editor)
 
+	public void setTrigger(int line, boolean val) {
+		if (autoplay) {
+			triggerPress[line] = val;
+		}
+	}
+
+	public void setSwitch(int line, boolean val) {
+		if (autoswitch) {
+			switchesPress[line] = val;
+		}
+	}
+
+	public void resetTriggers() {
+		Arrays.fill(triggerPress, false);
+	}
+
+	public void resetSwitches() {
+		Arrays.fill(switchesPress, false);
+	}
+
+
 	/**
 	 * Reads input from the keyboard.
 	 *
@@ -304,13 +339,17 @@ public class InputController {
 		calibrationHitJustPressed = !calibrationHitLast && calibrationHitPressed;
 		calibrationHitLast = calibrationHitPressed;
 
-		triggerPress = new boolean[4];
-		boolean[] switchesPress = new boolean[4];
-
 		for (int i = 0; i < triggerBindingsMain.length; i++) {
-			triggerPress[i] = Gdx.input.isKeyPressed(triggerBindingsMain[i]);
+			if (!autoplay && !autoswitch) {
+				triggerPress[i] = Gdx.input.isKeyPressed(triggerBindingsMain[i]);
+			}
 			if (i < numBandMembers) {
-				switchesPress[i] = Gdx.input.isKeyPressed(switchesBindingsMain.get(numBandMembers - 1)[i]);
+				if (!autoswitch && !autoplay) {
+					switchesPress[i] = Gdx.input.isKeyPressed(switchesBindingsMain.get(numBandMembers - 1)[i]);
+				}
+				if (switchesPress[i]) {
+					resetTriggers();
+				}
 			}
 		}
 

@@ -1,8 +1,8 @@
 {
-levelName: "tutorial-easy.json",
+levelName: "tutorial-easy.json"
 levelNumber: 1
-levelImage: cafe
-background: cafe-background
+levelImage: basement
+background: basement-background
 song: Tutorial
 startPosition: 0
 bpm: 90

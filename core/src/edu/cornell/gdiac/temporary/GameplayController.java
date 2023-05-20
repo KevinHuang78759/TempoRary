@@ -21,6 +21,7 @@
 package edu.cornell.gdiac.temporary;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.graphics.Texture;
@@ -162,7 +163,6 @@ public class GameplayController {
 	}
 
 	public void setBounds(float width, float height){
-
 		//Ratio of play area width to play area height
 		float playAreaRatio = 2f;
 		totalHeight = height;
@@ -188,7 +188,6 @@ public class GameplayController {
 		}
 
 		sb.setBounds(new Vector2(width, height), new Vector2(0f,19f*TOPBOUND/20f + height/20f));
-
 	}
 
 	public void setWidths(){
@@ -209,6 +208,7 @@ public class GameplayController {
 	 * Loads a level
 	 */
 	public void loadLevel(JsonValue levelData, AssetDirectory directory){
+		InputController.getInstance().resetTriggers();
 		sb.resetScoreboard();
 		particles = new Array<>();
 		backing = new Array<>();
@@ -241,9 +241,11 @@ public class GameplayController {
 		numberGood =0;
 		numberPerfect =0;
 		sb.setletterTH(new long[]{level.getcThreshold(), level.getbThreshold(), level.getaThreshold(), level.getsThreshold()});
+		level.setBounds(new Vector2(totalWidth, totalHeight), new Vector2(0f,19f*TOPBOUND/20f + totalHeight/20f));
 	}
 
 	public void reloadLevel(){
+		InputController.getInstance().resetTriggers();
 		sb.resetScoreboard();
 		particles = new Array<>();
 		backing = new Array<>();
@@ -281,11 +283,11 @@ public class GameplayController {
 	 */
 	public void resize(int width, int height){
 		setBounds(width, height);
+		level.setBounds(new Vector2(totalWidth, totalHeight), new Vector2(0f,19f*TOPBOUND/20f + totalHeight/20f));
 		setWidths();
 		setYVals();
 		updateBandMemberCoords();
 	}
-
 
 	/**
 	 * Sets the offset in determining beat calculation, converting it to samples
@@ -446,11 +448,23 @@ public class GameplayController {
 		return ((int)(3f/countTime)) + 121;
 	}
 
+	private boolean switchSetInAutoPlay = false;
+
 	/**
 	 * Updates the state.
 	 *
 	 */
 	public void update(int mode, int ticks){
+		// check if we are in autoplay
+		InputController.getInstance().setAutoplay(level.isInAutoplayRange());
+		InputController.getInstance().setAutoswitch(level.isAutoSwitching());
+		if (level.isAutoSwitching() && !switchSetInAutoPlay) {
+			if (level.getCurrentSample() >= (level.getStartSwitchRange() + level.getEndSwitchRange()) / 2f) {
+				InputController.getInstance().setSwitch(level.getToBandMember(), true);
+				switchSetInAutoPlay = true;
+			}
+		}
+
 		//First, check for dead notes and remove them from active arrays
 		checkDeadNotes();
 
@@ -462,11 +476,15 @@ public class GameplayController {
 			o.update(0f);
 		}
 
-		level.recieveInterrupt(activeBandMember, DF, JK, MISS);
+		level.receiveInterrupt(activeBandMember, DF, JK, MISS);
 		level.updateCompRates();
 		//Then, update the notes for each band member and spawn new notes
 		level.updateBandMemberNotes(noteSpawnY, mode, ticks, getIntroLength());
 
+		if (!level.isAutoSwitching()) {
+			InputController.getInstance().resetSwitches();
+			switchSetInAutoPlay = false;
+		}
 	}
 
 	/**
@@ -499,8 +517,6 @@ public class GameplayController {
 	 * The maximum number of lines per lane
 	 */
 	public int lpl = 4;
-
-
 
 	/**
 	 * Garbage collect for note indicators.
@@ -724,11 +740,10 @@ public class GameplayController {
 	}
 
 
-	public void recieveInput(InputController input){
+	public void receiveInput(InputController input){
 		DF = false;
 		JK = false;
 		MISS = false;
-
 		switches = input.didSwitch();
 		triggers = input.didTrigger();
 		lifted = input.triggerLifted;
@@ -801,21 +816,32 @@ public class GameplayController {
 		//Now check for hit and held notes
 		int checkBandMember = curP == PlayPhase.NOTES ? activeBandMember : goalBandMember;
 		for (Note n : level.getBandMembers()[checkBandMember].getHitNotes()){
-			if (n.getNoteType() == Note.NoteType.BEAT){
+			if (n.getNoteType() == Note.NoteType.BEAT) {
+				if (currentSample >= n.getHitSample()) {
+					InputController.getInstance().setTrigger(n.getLine(), true);
+				}
 				if (triggers[n.getLine()] && !hitReg[n.getLine()]){
 					//Check for all the notes in this line and in the active band member
 					//See if any are close enough
 					checkHit(n, currentSample, level.gainRate(activeBandMember), -1, n.getY(),true, hitReg, false);
+					InputController.getInstance().setTrigger(n.getLine(), false);
 				}
 			}
 			// HOLD NOTE
 			else {
+				if (currentSample >= n.getHitSample() && currentSample <= n.getHitSample() + n.getHoldSamples()) {
+					InputController.getInstance().setTrigger(n.getLine(), true);
+				}
+				if (currentSample > n.getHitSample() + n.getHoldSamples()) {
+					InputController.getInstance().setTrigger(n.getLine(), false);
+				}
+
 				//Check if we hit the trigger down close enough to the head
-				if(triggers[n.getLine()] && !hitReg[n.getLine()]){
+				if(triggers[n.getLine()] && !hitReg[n.getLine()]) {
 					checkHit(n, currentSample, level.gainRate(activeBandMember), -1, n.getBottomY(),false, hitReg, false);
 				}
 				//check if we lifted close to the end (we only check if we ended up holding the note in the first place)
-				if(lifted[n.getLine()] && n.isHolding()){
+				if(lifted[n.getLine()] && n.isHolding()) {
 					int liftedGainRate = (int) (level.gainRate(activeBandMember) * 0.75);
 					checkHit(n, currentSample, liftedGainRate, -1, n.getBottomY(),true, hitReg, true);
 					n.setHeldFor(0);
@@ -848,10 +874,7 @@ public class GameplayController {
 					sb.resetCombo();
 				}
 			}
-
 		}
-
-
 	}
 
 	public void dispose(){

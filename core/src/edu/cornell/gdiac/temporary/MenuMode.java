@@ -44,7 +44,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private Texture playButton;
     private Texture calibrationButton;
     private Texture calibrationButtonPressed;
-    private Texture levelEditorButton;
     private Texture settingsButton;
     private Texture exitButton;
     private Texture settingsButtonHover;
@@ -80,9 +79,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
     private static final int NO_BUTTON_HOVERED = 106;
     private static final int PLAY_HOVERED = 107;
-    /** Pressed down button state for the level editor button */
-    private static final int LEVEL_EDITOR_HOVERED = 108;
-    /** Pressed down button state for the calibration button */
     private static final int SETTINGS_HOVERED = 110;
     private static final int EXIT_HOVERED = 111;
 
@@ -188,7 +184,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         settingsBackground = directory.getEntry("settings-background", Texture.class);
         playButton = directory.getEntry("play-button", Texture.class);
         playButtonHover = directory.getEntry("play-button-active", Texture.class);
-        levelEditorButton = directory.getEntry("level-editor", Texture.class);
         settingsButton = directory.getEntry("settings", Texture.class);
         settingsButtonHover = directory.getEntry("settings-active", Texture.class);
         exitButton = directory.getEntry("quit-button-menu", Texture.class);
@@ -312,16 +307,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         Button calibButton = new ImageButton(calibrationButtonStyle);
         headerTable.add(calibButton);
 
-//        switchTable.add(new Label("Full Screen", labelStyle)).left().padRight(30).padBottom(5);
-
-        // TODO: FULL GET RID OF THIS
-//        final CheckBox fullscreenCheckbox = new CheckBox("", checkBoxStyle);
-//        switchTable.add(fullscreenCheckbox).padBottom(5);
-        // TODO: ADD BACK SPACEBAR MODE WHEN IT'S IMPLEMENTED
-//        switchTable.row();
-//        switchTable.add(new Label("Spacebar Mode", labelStyle)).left().padRight(30);
-//        switchTable.add(new CheckBox("", checkBoxStyle));
-
         headerTable.add(switchTable);
 
         mainTable.add(headerTable).expandX().colspan(3);
@@ -404,21 +389,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
                 switchToHome();
             }
         });
-
-//        fullscreenCheckbox.addListener(new ChangeListener() {
-//            @Override
-//            public void changed(ChangeEvent changeEvent, Actor actor) {
-//                Graphics.DisplayMode currentMode = Gdx.graphics.getDisplayMode();
-//                // TODO: cache previous size before windowed mode
-//                if (!fullscreenCheckbox.isChecked()) {
-//                    Gdx.graphics.setWindowedMode(prevWidth, prevHeight);
-//                } else {
-//                    prevWidth = canvas.getWidth();
-//                    prevHeight = canvas.getHeight();
-//                    Gdx.graphics.setFullscreenMode(currentMode);
-//                }
-//            }
-//        });
 
         musicVolumeSlider.addListener(new ChangeListener() {
             @Override
@@ -683,10 +653,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         canvas.draw(exitButton, exitTint, exitButton.getWidth() / 2, exitButton.getHeight() / 2,
                 0.08f * canvas.getWidth(), 0.9f * canvas.getHeight(), 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
 
-        Color levelEditorButtonTint = (hoverState == LEVEL_EDITOR_HOVERED || pressState == LEVEL_EDITOR_PRESSED ? Color.GREEN: Color.WHITE);
-        canvas.draw(levelEditorButton, levelEditorButtonTint, levelEditorButton.getWidth()/2, levelEditorButton.getHeight()/2,
-                canvas.getWidth() / 2, 0.2f * canvas.getHeight(), 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
-
         canvas.end();
     }
 
@@ -802,10 +768,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
             if (isButtonPressed(screenX, screenY, exitButton, 0.08f * canvas.getWidth(), 0.9f * canvas.getHeight(), BUTTON_SCALE)) {
                 s.playSound(0, 0.3f);
                 pressState = EXIT_PRESSED;
-            }
-            if (isButtonPressed(screenX, screenY, levelEditorButton, canvas.getWidth()/2, canvas.getHeight()*0.2f, BUTTON_SCALE * scale)) {
-                s.playSound(0, 0.3f);
-                pressState = LEVEL_EDITOR_PRESSED;
             }
         }
         return false;
@@ -940,8 +902,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
             hoverState = SETTINGS_HOVERED;
         } else if (isButtonPressed(screenX, screenY, exitButton, 0.08f * canvas.getWidth(), 0.9f * canvas.getHeight(), BUTTON_SCALE)) {
             hoverState = EXIT_HOVERED;
-        } else if (isButtonPressed(screenX, screenY, levelEditorButton, canvas.getWidth()/2, canvas.getHeight()*0.2f, BUTTON_SCALE * scale)) {
-            hoverState = LEVEL_EDITOR_HOVERED;
         } else {
             hoverState = NO_BUTTON_HOVERED;
         }

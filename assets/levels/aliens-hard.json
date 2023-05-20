@@ -1,18 +1,18 @@
 {
 levelName: "aliens-hard.json",
 levelNumber: 1
-levelImage: cafe
-background: cafe-background
+levelImage: street
+background: street-background
 song: aliens
 startPosition: 0
 bpm: 85
-fallSpeed: 5
+fallSpeed: 9
 maxCompetency: 100
 linesPerMember: 4
-thresholdA: 4000
-thresholdB: 3000
-thresholdC: 2000
-thresholdS: 5000
+thresholdA: 100000
+thresholdB: 80000
+thresholdC: 60000
+thresholdS: 150000
 bandMembers: [
 	{
 		instrument: piano
@@ -24,22 +24,10 @@ bandMembers: [
 				line: 0
 			}
 			{
-				type: switch
-				position: 188272
-				duration: 0
-				line: -1
-			}
-			{
 				type: beat
 				position: 195160
 				duration: 0
 				line: 0
-			}
-			{
-				type: switch
-				position: 206640
-				duration: 0
-				line: -1
 			}
 			{
 				type: held
@@ -49,7 +37,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 326032
+				position: 311280
 				duration: 0
 				line: -1
 			}
@@ -60,22 +48,10 @@ bandMembers: [
 				line: 3
 			}
 			{
-				type: switch
-				position: 431648
-				duration: 0
-				line: -1
-			}
-			{
 				type: beat
 				position: 438536
 				duration: 0
 				line: 3
-			}
-			{
-				type: switch
-				position: 450016
-				duration: 0
-				line: -1
 			}
 			{
 				type: held
@@ -85,7 +61,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 579759
+				position: 568086
 				duration: 0
 				line: -1
 			}
@@ -114,12 +90,6 @@ bandMembers: [
 				line: 1
 			}
 			{
-				type: switch
-				position: 715944
-				duration: 0
-				line: -1
-			}
-			{
 				type: held
 				position: 720944
 				duration: 89544
@@ -133,7 +103,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 817110
+				position: 789873
 				duration: 0
 				line: -1
 			}
@@ -142,6 +112,12 @@ bandMembers: [
 				position: 824264
 				duration: 0
 				line: 1
+			}
+			{
+				type: switch
+				position: 824892
+				duration: 0
+				line: -1
 			}
 			{
 				type: beat
@@ -162,12 +138,6 @@ bandMembers: [
 				line: 0
 			}
 			{
-				type: switch
-				position: 852129
-				duration: 0
-				line: -1
-			}
-			{
 				type: held
 				position: 858704
 				duration: 89544
@@ -181,7 +151,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 984423
+				position: 964968
 				duration: 0
 				line: -1
 			}
@@ -196,12 +166,6 @@ bandMembers: [
 				position: 989576
 				duration: 89544
 				line: 0
-			}
-			{
-				type: switch
-				position: 1089480
-				duration: 0
-				line: -1
 			}
 			{
 				type: beat
@@ -228,12 +192,6 @@ bandMembers: [
 				line: 1
 			}
 			{
-				type: switch
-				position: 1105044
-				duration: 0
-				line: -1
-			}
-			{
 				type: held
 				position: 1122744
 				duration: 89544
@@ -244,12 +202,6 @@ bandMembers: [
 				position: 1122744
 				duration: 89544
 				line: 2
-			}
-			{
-				type: switch
-				position: 1245120
-				duration: 0
-				line: -1
 			}
 			{
 				type: held
@@ -264,12 +216,6 @@ bandMembers: [
 				line: 3
 			}
 			{
-				type: switch
-				position: 1377414
-				duration: 0
-				line: -1
-			}
-			{
 				type: held
 				position: 1384488
 				duration: 89544
@@ -283,7 +229,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 1509708
+				position: 1494144
 				duration: 0
 				line: -1
 			}
@@ -301,7 +247,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 1642002
+				position: 1610874
 				duration: 0
 				line: -1
 			}
@@ -391,7 +337,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 2147832
+				position: 2132268
 				duration: 0
 				line: -1
 			}
@@ -409,7 +355,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 2272344
+				position: 2268453
 				duration: 0
 				line: -1
 			}
@@ -427,7 +373,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 2408529
+				position: 2396856
 				duration: 0
 				line: -1
 			}
@@ -439,7 +385,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 2540823
+				position: 2533041
 				duration: 0
 				line: -1
 			}
@@ -450,12 +396,6 @@ bandMembers: [
 				line: 3
 			}
 			{
-				type: switch
-				position: 2673117
-				duration: 0
-				line: -1
-			}
-			{
 				type: held
 				position: 2681728
 				duration: 105616
@@ -463,7 +403,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 2809302
+				position: 2785956
 				duration: 0
 				line: -1
 			}
@@ -472,12 +412,6 @@ bandMembers: [
 				position: 2817192
 				duration: 105616
 				line: 0
-			}
-			{
-				type: switch
-				position: 2941596
-				duration: 0
-				line: -1
 			}
 			{
 				type: held
@@ -493,7 +427,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 3073890
+				position: 3066108
 				duration: 0
 				line: -1
 			}
@@ -513,7 +447,7 @@ bandMembers: [
 		compFlags: [
 			{
 				rate: 3
-				gain: 4
+				gain: 3
 				position: 0
 			}
 		]
@@ -521,12 +455,6 @@ bandMembers: [
 	{
 		instrument: drum
 		notes: [
-			{
-				type: switch
-				position: 107912
-				duration: 0
-				line: -1
-			}
 			{
 				type: beat
 				position: 112504
@@ -582,12 +510,6 @@ bandMembers: [
 				line: 1
 			}
 			{
-				type: switch
-				position: 241080
-				duration: 0
-				line: -1
-			}
-			{
 				type: beat
 				position: 247968
 				duration: 0
@@ -640,12 +562,6 @@ bandMembers: [
 				position: 307664
 				duration: 0
 				line: 2
-			}
-			{
-				type: switch
-				position: 353584
-				duration: 0
-				line: -1
 			}
 			{
 				type: beat
@@ -708,12 +624,6 @@ bandMembers: [
 				line: 1
 			}
 			{
-				type: switch
-				position: 486752
-				duration: 0
-				line: -1
-			}
-			{
 				type: beat
 				position: 495936
 				duration: 0
@@ -769,7 +679,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 579759
+				position: 568086
 				duration: 0
 				line: -1
 			}
@@ -853,7 +763,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 836565
+				position: 824892
 				duration: 0
 				line: -1
 			}
@@ -996,12 +906,6 @@ bandMembers: [
 				line: 3
 			}
 			{
-				type: switch
-				position: 1105044
-				duration: 0
-				line: -1
-			}
-			{
 				type: beat
 				position: 1108968
 				duration: 0
@@ -1050,12 +954,6 @@ bandMembers: [
 				line: 3
 			}
 			{
-				type: switch
-				position: 1245120
-				duration: 0
-				line: -1
-			}
-			{
 				type: beat
 				position: 1253616
 				duration: 0
@@ -1098,12 +996,6 @@ bandMembers: [
 				line: 3
 			}
 			{
-				type: switch
-				position: 1377414
-				duration: 0
-				line: -1
-			}
-			{
 				type: beat
 				position: 1379896
 				duration: 0
@@ -1140,16 +1032,16 @@ bandMembers: [
 				line: 3
 			}
 			{
+				type: switch
+				position: 1494144
+				duration: 0
+				line: -1
+			}
+			{
 				type: beat
 				position: 1501584
 				duration: 0
 				line: 0
-			}
-			{
-				type: switch
-				position: 1509708
-				duration: 0
-				line: -1
 			}
 			{
 				type: beat
@@ -1189,7 +1081,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 2147832
+				position: 2132268
 				duration: 0
 				line: -1
 			}
@@ -1236,12 +1128,6 @@ bandMembers: [
 				line: 1
 			}
 			{
-				type: switch
-				position: 2272344
-				duration: 0
-				line: -1
-			}
-			{
 				type: beat
 				position: 2284017
 				duration: 0
@@ -1272,34 +1158,16 @@ bandMembers: [
 				line: 0
 			}
 			{
-				type: switch
-				position: 2373510
-				duration: 0
-				line: -1
-			}
-			{
 				type: beat
 				position: 2381292
 				duration: 0
 				line: 3
 			}
 			{
-				type: switch
-				position: 2389074
-				duration: 0
-				line: -1
-			}
-			{
 				type: beat
 				position: 2396856
 				duration: 0
 				line: 0
-			}
-			{
-				type: switch
-				position: 2408529
-				duration: 0
-				line: -1
 			}
 			{
 				type: beat
@@ -1342,12 +1210,6 @@ bandMembers: [
 				position: 2533041
 				duration: 0
 				line: 0
-			}
-			{
-				type: switch
-				position: 2540823
-				duration: 0
-				line: -1
 			}
 			{
 				type: beat
@@ -1398,12 +1260,6 @@ bandMembers: [
 				line: 0
 			}
 			{
-				type: switch
-				position: 2673117
-				duration: 0
-				line: -1
-			}
-			{
 				type: beat
 				position: 2680899
 				duration: 0
@@ -1444,12 +1300,6 @@ bandMembers: [
 				position: 2793738
 				duration: 0
 				line: 1
-			}
-			{
-				type: switch
-				position: 2809302
-				duration: 0
-				line: -1
 			}
 			{
 				type: beat
@@ -1494,12 +1344,6 @@ bandMembers: [
 				line: 0
 			}
 			{
-				type: switch
-				position: 2941596
-				duration: 0
-				line: -1
-			}
-			{
 				type: beat
 				position: 2953269
 				duration: 0
@@ -1532,8 +1376,8 @@ bandMembers: [
 		]
 		compFlags: [
 			{
-				rate: 3
-				gain: 4
+				rate: 2
+				gain: 3
 				position: 0
 			}
 		]
@@ -1543,25 +1387,7 @@ bandMembers: [
 		notes: [
 			{
 				type: switch
-				position: 551040
-				duration: 0
-				line: -1
-			}
-			{
-				type: switch
-				position: 555632
-				duration: 0
-				line: -1
-			}
-			{
-				type: switch
-				position: 560224
-				duration: 0
-				line: -1
-			}
-			{
-				type: switch
-				position: 564816
+				position: 498048
 				duration: 0
 				line: -1
 			}
@@ -1579,19 +1405,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 2103136
-				duration: 0
-				line: -1
-			}
-			{
-				type: switch
-				position: 2112320
-				duration: 0
-				line: -1
-			}
-			{
-				type: switch
-				position: 2121504
+				position: 2031102
 				duration: 0
 				line: -1
 			}
@@ -1611,7 +1425,7 @@ bandMembers: [
 		compFlags: [
 			{
 				rate: 3
-				gain: 4
+				gain: 3
 				position: 0
 			}
 		]
@@ -1621,19 +1435,7 @@ bandMembers: [
 		notes: [
 			{
 				type: switch
-				position: 1089480
-				duration: 0
-				line: -1
-			}
-			{
-				type: switch
-				position: 1097262
-				duration: 0
-				line: -1
-			}
-			{
-				type: switch
-				position: 1105044
+				position: 1081698
 				duration: 0
 				line: -1
 			}
@@ -1819,7 +1621,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 1377414
+				position: 1369632
 				duration: 0
 				line: -1
 			}
@@ -1908,12 +1710,6 @@ bandMembers: [
 				line: 2
 			}
 			{
-				type: switch
-				position: 1509708
-				duration: 0
-				line: -1
-			}
-			{
 				type: beat
 				position: 1521381
 				duration: 0
@@ -1987,7 +1783,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 2673117
+				position: 2657553
 				duration: 0
 				line: -1
 			}
@@ -2082,12 +1878,6 @@ bandMembers: [
 				line: 2
 			}
 			{
-				type: switch
-				position: 2809302
-				duration: 0
-				line: -1
-			}
-			{
 				type: beat
 				position: 2817192
 				duration: 0
@@ -2148,12 +1938,6 @@ bandMembers: [
 				line: 2
 			}
 			{
-				type: switch
-				position: 2879340
-				duration: 0
-				line: -1
-			}
-			{
 				type: held
 				position: 2883776
 				duration: 57400
@@ -2167,7 +1951,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 2941596
+				position: 2922141
 				duration: 0
 				line: -1
 			}
@@ -2274,16 +2058,16 @@ bandMembers: [
 				line: 2
 			}
 			{
-				type: switch
-				position: 3073890
-				duration: 0
-				line: -1
-			}
-			{
 				type: beat
 				position: 3081672
 				duration: 0
 				line: 0
+			}
+			{
+				type: switch
+				position: 3085563
+				duration: 0
+				line: -1
 			}
 			{
 				type: beat
@@ -2358,6 +2142,12 @@ bandMembers: [
 				line: 2
 			}
 			{
+				type: switch
+				position: 3284004
+				duration: 0
+				line: -1
+			}
+			{
 				type: held
 				position: 3315132
 				duration: 124512
@@ -2372,20 +2162,20 @@ bandMembers: [
 			{
 				type: held
 				position: 3439644
-				duration: 124512
+				duration: 147858
 				line: 1
 			}
 			{
 				type: held
 				position: 3486336
-				duration: 124512
+				duration: 101166
 				line: 3
 			}
 		]
 		compFlags: [
 			{
 				rate: 3
-				gain: 4
+				gain: 3
 				position: 0
 			}
 		]

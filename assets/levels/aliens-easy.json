@@ -1,18 +1,18 @@
 {
 levelName: "aliens-easy.json",
 levelNumber: 1
-levelImage: cafe
-background: cafe-background
+levelImage: street
+background: street-background
 song: aliens
 startPosition: 0
 bpm: 85
 fallSpeed: 5
 maxCompetency: 100
-linesPerMember: 4
-thresholdA: 4000
-thresholdB: 3000
-thresholdC: 2000
-thresholdS: 5000
+linesPerMember: 4,
+thresholdA: 80000
+	thresholdB: 70000
+	thresholdC: 60000
+	thresholdS: 90000,
 bandMembers: [
 	{
 		instrument: piano
@@ -512,8 +512,8 @@ bandMembers: [
 		]
 		compFlags: [
 			{
-				rate: 3
-				gain: 4
+				rate: 2
+				gain: 3
 				position: 0
 			}
 		]
@@ -1532,8 +1532,8 @@ bandMembers: [
 		]
 		compFlags: [
 			{
-				rate: 3
-				gain: 4
+				rate: 2
+				gain: 3
 				position: 0
 			}
 		]
@@ -1610,8 +1610,8 @@ bandMembers: [
 		]
 		compFlags: [
 			{
-				rate: 3
-				gain: 4
+				rate: 2
+				gain: 3
 				position: 0
 			}
 		]
@@ -2384,8 +2384,8 @@ bandMembers: [
 		]
 		compFlags: [
 			{
-				rate: 3
-				gain: 4
+				rate: 2
+				gain: 3
 				position: 0
 			}
 		]
