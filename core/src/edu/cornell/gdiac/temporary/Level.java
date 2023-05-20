@@ -23,6 +23,9 @@ public class Level {
     private Texture arrow;
     private Texture pawIndicator;
 
+    private Texture hitCBOX;
+    private Texture switchCBOX;
+
     public BandMember[] getBandMembers() {
         return bandMembers;
     }
@@ -365,6 +368,8 @@ public class Level {
 
         arrow = directory.getEntry("pointer-arrow", Texture.class);
         pawIndicator = directory.getEntry("paw-indicator", Texture.class);
+        hitCBOX = directory.getEntry("hitCBox", Texture.class);
+        switchCBOX = directory.getEntry("switchCBox", Texture.class);
 
         autoplayBackground = directory.getEntry("autoplay-background", Texture.class);
         progressBackground = directory.getEntry("autoplay-progress-background", Texture.class);
@@ -849,15 +854,20 @@ public class Level {
             //If we are the goal of the active lane we need to draw separation lines and held/beat notes
             //We also need to draw a separate hit bar for each line
             if(active == i || goal == i){
+
                 bandMembers[i].drawHitNotes(canvas);
                 bandMembers[i].drawLineSeps(canvas, sepLine);
                 bandMembers[i].drawIndicator(canvas, noteIndicator, noteIndicatorHit, triggers);
                 if (isInAutoplayRange()) {
                     int j = bandMembers[i].getHitNotes().isEmpty() ? -1 : bandMembers[i].getHitNotes().first().getLine();
                     bandMembers[i].drawPawIndicator(canvas, pawIndicator, j);
+
                 }
                 if (isArrowAppearing()) {
                     bandMembers[i].drawArrow(canvas, arrow);
+                }
+                if(isTutorial){
+                    bandMembers[i].drawControlBox(canvas, hitCBOX);
                 }
             }
             //Otherwise just draw the switch notes, and we only have 1 hit bar to draw
@@ -866,6 +876,9 @@ public class Level {
                 bandMembers[i].drawIndicator(canvas, switchIndicator, switchIndicatorHit, switches[i]);
                 if (isAutoSwitching() && i == (active + 1) % bandMembers.length && getCurrentSample() <= (endSwitchRange + startSwitchRange)/2f) {
                     bandMembers[i].drawPawIndicator(canvas, pawIndicator);
+                }
+                if(isTutorial){
+                    bandMembers[i].drawControlBox(canvas, switchCBOX);
                 }
             }
         }
