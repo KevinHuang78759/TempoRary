@@ -589,7 +589,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         s.addSound(0, "sound/click.ogg");
         this.canvas = canvas;
         stage = new Stage(new ExtendViewport(1200, 800));
-        stage.setDebugAll(true);
         mainTable = new Table();
         tableContainer = new Container<>();
 
