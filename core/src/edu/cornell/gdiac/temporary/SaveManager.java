@@ -13,8 +13,7 @@ public class SaveManager {
     /** Singleton save manager */
     private static SaveManager saveManager;
     /** LibGDX Preferences for all the game's levels */
-    // TODO: UPDATE THIS TYPE WITH A COLLECTION
-    private ObjectMap<String, Preferences> levels;
+    private Preferences levels;
     /** LibGDX Preferences for user volume settings (and calibration) */
     private Preferences volumeSettings;
     /** LibGDX preferences for hit bindings */
@@ -23,8 +22,7 @@ public class SaveManager {
     private Preferences[] switchBindingSettings;
 
     private SaveManager() {
-        // TODO: UPDATE THIS WITH A LOOP OF ALL OF OUR LEVELS
-        levels = new ObjectMap<>();
+        levels = Gdx.app.getPreferences("edu.cornell.gdiac.temporary.levels");
         volumeSettings = Gdx.app.getPreferences("edu.cornell.gdiac.temporary.settings.volume");
         hitBindingSettings = Gdx.app.getPreferences("edu.cornell.gdiac.temporary.settings.hitBindingSettings");
         switchBindingSettings = new Preferences[InputController.MAX_BAND_MEMBERS];
@@ -45,38 +43,25 @@ public class SaveManager {
     }
 
     public void saveGame(String levelName, long score, String grade, long maxCombo) {
-        if (levels.get(levelName) == null) {
-            levels.put(levelName, Gdx.app.getPreferences("edu.cornell.gdiac.temporary.levels"));
-        }
-        Preferences pref = levels.get(levelName);
-        if (score >= pref.getLong("highScore", 0)) {
-            pref.putLong("highScore", score);
-            pref.putString("grade", grade);
-            pref.putLong("maxCombo", maxCombo);
-            pref.flush();
+        if (score >= levels.getLong(levelName+".highScore", 0)) {
+            levels.putLong(levelName+".highScore", score);
+            levels.putString(levelName+".grade", grade);
+            levels.putLong(levelName+".maxCombo", maxCombo);
+            levels.flush();
         }
     }
 
     // currently just returns the high score for now
     public long getHighScore(String levelName) {
-        if (levels.get(levelName) == null) {
-            levels.put(levelName, Gdx.app.getPreferences("edu.cornell.gdiac.temporary.levels"));
-        }
-        return levels.get(levelName).getLong(levelName, 0);
+        return levels.getLong(levelName+".highScore", 0);
     }
 
     public String getGrade(String levelName) {
-        if (levels.get(levelName) == null) {
-            levels.put(levelName, Gdx.app.getPreferences("edu.cornell.gdiac.temporary.levels"));
-        }
-        return levels.get(levelName).getString(levelName, "");
+        return levels.getString(levelName+".grade", "");
     }
 
     public long getHighestCombo(String levelName) {
-        if (levels.get(levelName) == null) {
-            levels.put(levelName, Gdx.app.getPreferences("edu.cornell.gdiac.temporary.levels"));
-        }
-        return levels.get(levelName).getLong(levelName, 0);
+        return levels.getLong(levelName+".maxCombo", 0);
     }
 
     public void saveSettings(int[] hitBindings, IntMap<int[]> switchBindings, float musicVol, float fxVol) {
