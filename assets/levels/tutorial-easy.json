@@ -9,10 +9,10 @@ bpm: 90
 fallSpeed: 5
 maxCompetency: 100
 linesPerMember: 4
-thresholdA: 4000
-thresholdB: 3000
-thresholdC: 2000
-thresholdS: 5000
+thresholdA: 180000
+thresholdB: 160000
+thresholdC: 150000
+thresholdS: 200000
 bandMembers: [
 	{
 		instrument: piano
@@ -338,13 +338,13 @@ bandMembers: [
 		]
 		compFlags: [
 			{
-				rate: 5
-				gain: 3
+				rate: 4
+				gain: 4
 				position: 0
 			}
 			{
 				rate: 3
-				gain: 2
+				gain: 4
 				position: 499800
 			}
 			{
@@ -354,7 +354,7 @@ bandMembers: [
 			}
 			{
 				rate: 3
-				gain: 2
+				gain: 4
 				position: 2146200
 			}
 		]
@@ -671,7 +671,7 @@ bandMembers: [
 			}
 			{
 				rate: 3
-				gain: 2
+				gain: 4
 				position: 382200
 			}
 			{
@@ -681,7 +681,7 @@ bandMembers: [
 			}
 			{
 				rate: 3
-				gain: 2
+				gain: 4
 				position: 1969800
 			}
 			{
@@ -923,13 +923,13 @@ bandMembers: [
 				position: 1528800
 			}
 			{
-				rate: 5
-				gain: 2
+				rate: 4
+				gain: 4
 				position: 1705200
 			}
 			{
 				rate: 3
-				gain: 2
+				gain: 4
 				position: 2058000
 			}
 		]

@@ -1100,8 +1100,8 @@ public class EditorMode implements Screen {
         displayFont = directory.getEntry("times", BitmapFont.class);
         inputController.setEditorProcessor();
         JsonReader jr = new JsonReader();
-        defaultLevel = jr.parse(Gdx.files.internal("levels/yr-hard.json"));
-        music = directory.getEntry("YR", MusicQueue.class);
+        defaultLevel = jr.parse(Gdx.files.internal("levels/tutorial-easy.json"));
+        music = directory.getEntry("tutorial", MusicQueue.class);
         initializeLevel(4, 4);
     }
 

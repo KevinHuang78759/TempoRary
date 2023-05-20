@@ -154,6 +154,7 @@ public class Level {
     private FilmStrip[] pianoSet;
     private FilmStrip backSplash;
     private FilmStrip frontSplash;
+    private FilmStrip ghostLoom;
 
     // PROPERTIES
     private String levelName;
@@ -210,7 +211,7 @@ public class Level {
     private static class CustomComparator implements Comparator<Long[]> {
         @Override
         public int compare(Long[] o1, Long[] o2) {
-            return Long.compare(o1[0], o2[1]);
+            return Long.compare(o1[0], o2[0]);
         }
     }
 
@@ -268,6 +269,8 @@ public class Level {
         pianoSet[4] = new FilmStrip(directory.getEntry("piano-ACTIVE-RIGHT", Texture.class), 1, 8, 8);
         pianoSet[5] = new FilmStrip(directory.getEntry("piano-ACTIVE-IDLE", Texture.class), 1, 6, 6);
         pianoSet[6] = new FilmStrip(directory.getEntry("piano-ACTIVE-MISS", Texture.class), 1, 1, 1);
+
+        ghostLoom = new FilmStrip(directory.getEntry("ghost-loom", Texture.class), 1, 1, 1);
 
         backSplash = new FilmStrip(directory.getEntry("back-splash", Texture.class), 5, 5, 23);
         frontSplash = new FilmStrip(directory.getEntry("front-splash", Texture.class), 5, 5, 21);
@@ -351,12 +354,6 @@ public class Level {
             bandMembers[i].setAllNotes(notes);
             bandMembers[i].setCurComp(maxCompetency);
             bandMembers[i].setMaxComp(maxCompetency);
-            // TODO: FIX THIS SO THAT IT FITS THE LEVEL JSON
-            Long[] firstCompData = bandMembers[i].getCompData().poll();
-            if (firstCompData != null) {
-                bandMembers[i].setLossRate(firstCompData[1].intValue());
-                bandMembers[i].setGainRate(firstCompData[2].intValue());
-            }
             bandMembers[i].setHpBarFilmStrip(hpbar, 47);
             bandMembers[i].setIndicatorTextures(noteIndicator, noteIndicatorHit);
             bandMembers[i].setSPB(samplesPerBeat);
@@ -374,6 +371,7 @@ public class Level {
                     bandMembers[i].setFilmStrips(singerSet);
                     break;
             }
+            bandMembers[i].setLoomFilmStrip(ghostLoom);
             bandMembers[i].recieveSample(sample);
             bandMembers[i].pickFrame();
         }
@@ -516,6 +514,7 @@ public class Level {
      * Spawns new notes according to what sample we are at. Also decrements bandmembers competency. It also updates the frame of the bandmember.
      */
     public void updateBandMemberNotes(float spawnY, int mode, int ticks, int introLength){
+        //mode: 0 is INTRO, 1 is PLAYING, 2 is GAME_OVER
         //First get the sample we at
         int rate = music.getSampleRate();
         if (mode == 1)       {
@@ -531,6 +530,10 @@ public class Level {
             BandMember bandMember = bandMembers[i];
             if (mode==1) {
                 bandMember.recieveSample(sample);
+                bandMember.pickFrame();
+            }
+            if (mode==2){
+                bandMember.setGameOver(true);
                 bandMember.pickFrame();
             }
 
@@ -644,6 +647,7 @@ public class Level {
                     bandMembers[i].setFilmStrips(singerSet);
                     break;
             }
+            bandMembers[i].setLoomFilmStrip(ghostLoom);
             bandMembers[i].recieveSample(sample);
             bandMembers[i].pickFrame();
         }
@@ -698,6 +702,9 @@ public class Level {
             bandMembers[i].drawBackground(canvas, activeLane, inactiveLane);
             bandMembers[i].drawBorder(canvas, HUnit, VUnit, CUnit, borderThickness);
             //draw the character sprite and the comp bar
+            if (i == active){
+                bandMembers[i].drawGhostLoom(canvas);
+            }
             bandMembers[i].drawCharacterSprite(canvas);
             bandMembers[i].drawHPBar(canvas);
             //If we are the goal of the active lane we need to draw separation lines and held/beat notes
@@ -713,7 +720,6 @@ public class Level {
                 bandMembers[i].drawIndicator(canvas, switchIndicator, switchIndicatorHit, switches[i]);
             }
         }
-
     }
 
     public void dispose(){

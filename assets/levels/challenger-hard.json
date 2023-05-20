@@ -6,13 +6,13 @@ background: cafe-background
 song: challenger
 startPosition: 0
 bpm: 144
-fallSpeed: 5
+fallSpeed: 7
 maxCompetency: 100
 linesPerMember: 4
-thresholdA: 4000
-thresholdB: 3000
-thresholdC: 2000
-thresholdS: 5000
+thresholdA: 170000
+thresholdB: 190000
+thresholdC: 210000
+thresholdS: 230000
 bandMembers: [
 	{
 		instrument: piano

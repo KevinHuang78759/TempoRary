@@ -22,6 +22,10 @@ public class BandMember {
     FilmStrip INACTIVE_NO_NOTES;
     FilmStrip INACTIVE_LOW;
 
+    public void setLoomFilmStrip(FilmStrip f){
+        ghostLoomSprite = f;
+    }
+
     public void setFilmStrips(FilmStrip[] f){
         INACTIVE_NOTES = f[0];
         INACTIVE_NO_NOTES = f[1];
@@ -30,7 +34,6 @@ public class BandMember {
         JK = f[4];
         ACTIVE_IDLE = f[5];
         MISS = f[6];
-
     }
     boolean done;
     float sample;
@@ -42,6 +45,11 @@ public class BandMember {
         assert  k == -1 || k ==1;
         mode = k;
     }
+
+    private boolean gameOver;
+    public void setGameOver(boolean value){
+        gameOver = value;
+    }
     private boolean DFprev;
     private boolean JKprev;
 
@@ -49,6 +57,7 @@ public class BandMember {
     public boolean hasHold(){
         return held;
     }
+
     public void setSPB(float s){
         samplesPerBeat = s;
     }
@@ -192,18 +201,16 @@ public class BandMember {
     }
 
     public void pickFrame(){
-
-        if(mode == 1){
-            if(AS == ACTIVE_STATE.IDLE){
-                characterSprite = ACTIVE_IDLE;
-                int total = characterSprite.getSize();
-                int cur = (int)(total*(sample % samplesPerBeat)/samplesPerBeat);
-                characterSprite.setFrame(cur);
-            }
-            else if(AS == ACTIVE_STATE.MISS){
+        if(mode == 1 || gameOver){
+            if(AS == ACTIVE_STATE.MISS || gameOver){
                 characterSprite = MISS;
                 int total = characterSprite.getSize();
                 int cur = (int)(total*(( (sample - start) % samplesPerBeat)/samplesPerBeat));
+                characterSprite.setFrame(cur);
+            } else if(AS == ACTIVE_STATE.IDLE){
+                characterSprite = ACTIVE_IDLE;
+                int total = characterSprite.getSize();
+                int cur = (int)(total*(sample % samplesPerBeat)/samplesPerBeat);
                 characterSprite.setFrame(cur);
             }
             else if(AS == ACTIVE_STATE.JK){
@@ -266,6 +273,8 @@ public class BandMember {
     private Texture missIndicator;
 
     private FilmStrip characterSprite;
+
+    private FilmStrip ghostLoomSprite;
 
     public void setBottomLeft(Vector2 V){
         bottomLeftCorner = V;
@@ -438,9 +447,11 @@ public class BandMember {
         hitNotes = new Array<>();
         switchNotes = new Array<>();
         allNotes = new Queue<>();
+        compData = new PriorityQueue<>();
         backing = new Array<>();
         done = false;
         mode = -1;
+        gameOver = false;
         AS = ACTIVE_STATE.IDLE;
         sample = 0f;
         DFprev = false;
@@ -682,6 +693,15 @@ public class BandMember {
         float trueHeight = scale*characterSprite.getRegionHeight();
         canvas.draw(characterSprite, Color.WHITE, characterSprite.getRegionWidth()/ 2f, characterSprite.getRegionHeight()/2f,
                 bottomLeftCorner.x + width/2, (bottomLeftCorner.y - borderthickness - trueHeight/2), 0.0f, scale, scale);
+    }
+
+    public void drawGhostLoom(GameCanvas canvas){
+        float scale = Math.min((bottomLeftCorner.y*4/5)/ghostLoomSprite.getRegionHeight(), 1.5f*width/ghostLoomSprite.getRegionWidth());
+        float trueHeight = scale*characterSprite.getRegionHeight();
+        float timeStep = (sample % (2f*samplesPerBeat))/(2f*samplesPerBeat);
+        float hover = scale*characterSprite.getRegionHeight()/3f + (float) ((scale*characterSprite.getRegionHeight()/20f)*(Math.sin(2*Math.PI*((double) timeStep))));
+        canvas.draw(ghostLoomSprite, Color.WHITE, ghostLoomSprite.getRegionWidth()/2f, ghostLoomSprite.getRegionHeight()/2f,
+                bottomLeftCorner.x + width/2, bottomLeftCorner.y - borderthickness - trueHeight/2 + hover, 0.0f, scale, scale);
     }
 
     /**
