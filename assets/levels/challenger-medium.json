@@ -1,5 +1,5 @@
 {
-levelName: challenger-medium
+levelName: "challenger-medium.json",
 levelNumber: 1
 levelImage: cafe
 background: cafe-background

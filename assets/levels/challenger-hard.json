@@ -1,5 +1,5 @@
 {
-levelName: challenger-hard
+levelName: "challenger-hard.json",
 levelNumber: 1
 levelImage: cafe
 background: cafe-background

@@ -17,6 +17,8 @@ import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.util.ScreenListener;
 
+import java.util.Locale;
+
 public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     SoundController<Integer> s;
     private static String selectedJson;
@@ -439,7 +441,15 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             }
 
             // draw past scores
-            drawPastScores(1, 2,1000000,"S",1000, true);
+
+            for (int i = 0; i < allLevels.length; i++) {
+                String noPath = allLevels[i].substring("levels/".length());
+                long highScore = SaveManager.getInstance().getHighScore(noPath);
+                String grade = SaveManager.getInstance().getGrade(noPath);
+                long highestCombo = SaveManager.getInstance().getHighestCombo(noPath);
+
+                drawPastScores(i % 3, i / 3 + 1, (int) highScore, grade, (int) highestCombo, !grade.equals(""));
+            }
         }
 
         canvas.end();
@@ -450,7 +460,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
      *
      */
     private void drawPastScores(int level, int diff, int pastScore, String letterGrade, int combo, boolean hasData){
-        if (hasData&& level == selectedLevel && diff ==selectedDifficulty ){
+        if (hasData && level == selectedLevel && diff == selectedDifficulty ){
             canvas.draw(scoreBox, Color.WHITE, scoreBox.getWidth()/2f, scoreBox.getHeight()/2f,
                     canvas.getWidth()/2f, canvas.getHeight()*0.85f, 0, scale, scale);
 
@@ -465,8 +475,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             canvas.drawText(Integer.toString(pastScore), blinkerBold,canvas.getWidth()*0.5f,
                     canvas.getHeight()*0.83f, Color.valueOf("1531D7"));
 
-//            Texture pastLetterGrade = letterGrades.get(letterGrade);
-            Texture pastLetterGrade = directory.getEntry("score-s",Texture.class);
+            Texture pastLetterGrade = directory.getEntry("score-"+letterGrade.toLowerCase(Locale.ROOT) ,Texture.class);
             canvas.draw(pastLetterGrade, Color.WHITE, pastLetterGrade.getWidth()/2f, pastLetterGrade.getHeight()/2f,
                     canvas.getWidth()/2f*0.85f, canvas.getHeight()*0.85f, 0, 0.55f*scale,
                     0.55f*scale);
