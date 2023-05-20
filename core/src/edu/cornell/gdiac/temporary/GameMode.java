@@ -277,7 +277,6 @@ public class GameMode implements Screen {
 		levelButton = directory.getEntry("level-select-button", Texture.class);
 
 		resultIcon =  directory.getEntry("result", Texture.class);
-		resultIconCoords=new Vector2(canvas.getWidth()/2,canvas.getHeight()-resultIcon.getHeight()/2);
 		nextButtonWon = directory.getEntry("win-lose-next", Texture.class);
 		restartButtonWon = directory.getEntry("win-lose-restart", Texture.class);
 		levelButtonWon = directory.getEntry("win-lose-select", Texture.class);
@@ -413,7 +412,7 @@ public class GameMode implements Screen {
 						System.out.println("pressed level");
 						pressState = ExitCode.TO_LEVEL;
 					}
-					if ((nextIdx<=LevelSelect.getnLevels()) && didNext) {
+					if ((nextIdx<LevelSelect.getnLevels()) && didNext) {
 						s.playSound(0, 0.3f);
 
 						goNextLevel();
