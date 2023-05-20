@@ -229,9 +229,10 @@ public class Level {
         if (isTutorial && (currentSample <= endSwitchRange || endSwitchRange == -1 || !switchRanges.isEmpty())) {
             // set it to one second before
             if (!switchRanges.isEmpty()) {
-                if (currentSample >= switchRanges.first() - music.getSampleRate() / 2) {
-                    startSwitchRange = switchRanges.first() - music.getSampleRate() / 2;
-                    endSwitchRange = switchRanges.first() + music.getSampleRate() / 2;
+                if (currentSample >= switchRanges.first() - music.getSampleRate()) {
+                    startSwitchRange = switchRanges.first() - music.getSampleRate();
+                    endSwitchRange = switchRanges.first() + music.getSampleRate();
+                    switchRanges.removeFirst();
                 }
             }
             return currentSample <= endSwitchRange && currentSample >= startSwitchRange;
@@ -863,14 +864,13 @@ public class Level {
             else{
                 bandMembers[i].drawSwitchNotes(canvas);
                 bandMembers[i].drawIndicator(canvas, switchIndicator, switchIndicatorHit, switches[i]);
-                if (isInAutoplayRange()) {
-//                    int j = bandMembers[i].getHitNotes().isEmpty() ? -1 : bandMembers[i].getHitNotes().first().getLine();
-//                    bandMembers[i].drawPawIndicator(canvas, pawIndicator, j);
+                if (isAutoSwitching() && i == (active + 1) % bandMembers.length && getCurrentSample() <= (endSwitchRange + startSwitchRange)/2f) {
+                    bandMembers[i].drawPawIndicator(canvas, pawIndicator);
                 }
             }
         }
 
-        if (isInAutoplayRange()) {
+        if (isInAutoplayRange() || isAutoSwitching()) {
             canvas.draw(autoplayBackground,
                     Color.WHITE,
                     autoplayBackground.getWidth()/2f, autoplayBackground.getHeight()/2f,
@@ -883,16 +883,20 @@ public class Level {
                     (TR.x + BL.x)/2f, (TR.y + TR.y + TR.y * 0.3f)/2f,
                     0f,
                     (TR.x - BL.x)/(progressBackground.getWidth()),(TR.y + TR.y * 0.3f - TR.y)/(progressBackground.getHeight()));
+            long st = isInAutoplayRange() ? startRange : startSwitchRange;
+            long fin = isInAutoplayRange() ? endRange : endSwitchRange;
             canvas.draw(progressForeground,
                     Color.WHITE,
                     0, progressForeground.getHeight()/2f,
                     0, (TR.y + TR.y + TR.y * 0.3f)/2f,
                     0f,
-                    (TR.x - BL.x)/(progressForeground.getWidth()) * ((float) (getCurrentSample() - startRange)/(endRange - startRange)),(TR.y + TR.y * 0.3f - TR.y)/(progressForeground.getHeight()));
+                    (TR.x - BL.x)/(progressForeground.getWidth()) * ((float) (getCurrentSample() - st)/(fin - st)),
+                    (TR.y + TR.y * 0.3f - TR.y)/(progressForeground.getHeight()));
             canvas.draw(progressKnob,
                     Color.WHITE,
                     progressKnob.getWidth()/2f, progressKnob.getHeight()/2f,
-                    progressForeground.getWidth() * (TR.x - BL.x)/(progressForeground.getWidth()) * ((float) (getCurrentSample() - startRange)/(endRange - startRange)), (TR.y + TR.y + TR.y * 0.3f)/2f,
+                    progressForeground.getWidth() * (TR.x - BL.x)/(progressForeground.getWidth()) * ((float) (getCurrentSample() - st)/(fin - st)),
+                    (TR.y + TR.y + TR.y * 0.3f)/2f,
                     0f,
                     (TR.y + TR.y * 0.6f - TR.y)/progressKnob.getWidth(),(TR.y + TR.y * 0.6f - TR.y)/progressKnob.getWidth());
         }

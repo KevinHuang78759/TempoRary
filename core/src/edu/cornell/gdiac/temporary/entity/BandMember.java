@@ -553,6 +553,13 @@ public class BandMember {
         }
     }
 
+    public void drawPawIndicator(GameCanvas canvas, Texture pawIndicator) {
+        float scale = NOTE_SIZE_SCALE*width/pawIndicator.getWidth();
+            canvas.draw(pawIndicator, Color.WHITE, pawIndicator.getWidth() / 2, pawIndicator.getHeight() / 2,
+                    bottomLeftCorner.x + width/2, hitY,
+                    0.0f, scale, scale);
+    }
+
     /**
      * Draw the hit bar in a certain color according to if we triggered the line. Pass in a value for a switchable lane
      * also draw the keyBind
