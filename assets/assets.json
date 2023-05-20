@@ -112,6 +112,8 @@
         "note-indicator-hit": "images/bandmember_lanes/note_indicator_hit.png",
         "switch-indicator": "images/bandmember_lanes/switch_indicator_line.png",
         "switch-indicator-hit": "images/bandmember_lanes/switch_indicator_line.png",
+        "pointer-arrow": "images/ui/arrow.png",
+
         "violin-cat": "images/cats/violin_spritesheet.png",
 
         "violin-INACTIVE-NOTES": "images/cats/violin/Violin_INACTIVE_Notes.png",

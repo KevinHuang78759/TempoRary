@@ -257,12 +257,6 @@ public class BandMember {
 
     private FilmStrip characterSprite;
 
-    private Texture arrow;
-
-    public void setArrow(Texture arrow) {
-        this.arrow = arrow;
-    }
-
     public void setBottomLeft(Vector2 V){
         bottomLeftCorner = V;
     }
@@ -673,11 +667,11 @@ public class BandMember {
                 0.0f, scale, scale);
     }
 
-    public void drawArrow(GameCanvas canvas) {
-        float scale = Math.min((bottomLeftCorner.y*4/5)/characterSprite.getRegionHeight(), 1.5f*width/characterSprite.getRegionWidth());
-        float trueHeight = scale*hpbar.getRegionHeight();
-        canvas.draw(hpbar, Color.WHITE, 0, 0, bottomLeftCorner.x + width/10, (bottomLeftCorner.y - trueHeight)/2,
-                0.0f, scale, scale);
+    public void drawArrow(GameCanvas canvas, Texture arrow) {
+        float scale = Math.min((bottomLeftCorner.y*1/4)/arrow.getHeight(), 1.5f*width/arrow.getWidth());
+        float trueHeight = scale*arrow.getHeight();
+        canvas.draw(arrow, Color.WHITE, arrow.getWidth()/2, arrow.getHeight()/2, bottomLeftCorner.x + width/5, (bottomLeftCorner.y - trueHeight),
+                90f, scale, scale);
     }
 
     public void drawCharacterSprite(GameCanvas canvas) {

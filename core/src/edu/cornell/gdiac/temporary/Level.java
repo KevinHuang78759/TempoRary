@@ -20,6 +20,8 @@ import java.util.PriorityQueue;
 
 public class Level {
 
+    private Texture arrow;
+
     public BandMember[] getBandMembers() {
         return bandMembers;
     }
@@ -338,6 +340,8 @@ public class Level {
 
         backSplash = new FilmStrip(directory.getEntry("back-splash", Texture.class), 5, 5, 23);
         frontSplash = new FilmStrip(directory.getEntry("front-splash", Texture.class), 5, 5, 21);
+
+        arrow = directory.getEntry("pointer-arrow", Texture.class);
 
         autoplayBackground = directory.getEntry("autoplay-background", Texture.class);
         progressBackground = directory.getEntry("autoplay-progress-background", Texture.class);
@@ -826,7 +830,7 @@ public class Level {
                 bandMembers[i].drawLineSeps(canvas, sepLine);
                 bandMembers[i].drawIndicator(canvas, noteIndicator, noteIndicatorHit, triggers);
                 if (isArrowAppearing()) {
-                    bandMembers[i].drawArrow(canvas);
+                    bandMembers[i].drawArrow(canvas, arrow);
                 }
             }
             //Otherwise just draw the switch notes, and we only have 1 hit bar to draw
