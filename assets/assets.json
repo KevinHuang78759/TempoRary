@@ -88,6 +88,8 @@
         "level-select-button": "images/ui/level_select.png",
         "how-to-play-active": "images/ui/how_to_play_active.png",
       "how-to-play-inactive": "images/ui/how_to_play_inactive.png",
+      "htp1": "images/tutorialization_assets/how_to_play_1.png",
+      "htp2": "images/tutorialization_assets/how_to_play_2.png",
         "quit-button": "images/ui/quit.png",
         "restart-button": "images/ui/restart.png",
         "resume-button": "images/ui/resume.png",

@@ -112,7 +112,14 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
     private Texture howToPlayInactive;
 
-    Map<String, Texture> letterGrades =new HashMap<>();
+//    Map<String, Texture> letterGrades =new HashMap<>();
+
+    private Texture letterGradeA;
+    private Texture letterGradeB;
+    private Texture letterGradeC;
+    private Texture letterGradeD;
+
+    private Texture letterGradeS;
 
 
     /** hardButton x and y coordinates represented as a vector */
@@ -260,16 +267,11 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         hardButtonInactive = directory.getEntry("hard-inactive",Texture.class);
         goLeft = directory.getEntry("level-select-left",Texture.class);
         goRight = directory.getEntry("level-select-right",Texture.class);
-//        Texture d = directory.getEntry("score-d",Texture.class);
-//        letterGrades.put("d",d);
-//        Texture c = directory.getEntry("score-c",Texture.class);
-//        letterGrades.put("c", c);
-//        Texture b =  directory.getEntry("score-b",Texture.class);
-//        letterGrades.put("b", b);
-//        Texture a =  directory.getEntry("score-a",Texture.class);
-//        letterGrades.put("a",a);
-//        Texture s =  directory.getEntry("score-s",Texture.class);
-//        letterGrades.put("s", s);
+        letterGradeD = directory.getEntry("score-d",Texture.class);
+        letterGradeC= directory.getEntry("score-c",Texture.class);
+        letterGradeB= directory.getEntry("score-b",Texture.class);
+        letterGradeA = directory.getEntry("score-a",Texture.class);
+        letterGradeS = directory.getEntry("score-s",Texture.class);
         levelBackground = directory.getEntry("level-select-background", Texture.class);
         scoreBox = directory.getEntry("score-box",Texture.class);
         scoreLine = directory.getEntry("score-box-line",Texture.class);
@@ -277,6 +279,9 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         for (int i = 0; i < numSongs; i++){
             albumCovers[i] = directory.getEntry(Integer.toString(i+1),Texture.class);
         }
+
+        howToPlay1 = directory.getEntry("htp1",Texture.class);
+        howToPlay2 = directory.getEntry("htp1",Texture.class);
 
         setCoords(canvas.getWidth(),canvas.getHeight());
         howToPlayActive = directory.getEntry("how-to-play-active", Texture.class);
@@ -592,6 +597,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             if (isButtonPressed(screenX, screenY, howToPlayInactive, howToPlayCoords,scale)){
                 howToPlayPressed = true;
                 System.out.println("howtoplay pressed");
+
             }
         }
 
