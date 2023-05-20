@@ -359,8 +359,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     public void draw(){
         canvas.begin();
 
-
-        if (howToPlayPressed && tutorialIdx<5){
+        if (howToPlayPressed ){
             canvas.draw(howToPlayBackgrounds[tutorialIdx], 0, 0, canvas.getWidth(), canvas.getHeight());
             if (tutorialIdx<4){
                 canvas.draw(tutorialGoRight, Color.WHITE, tutorialGoRight.getWidth()/2, tutorialGoRight.getHeight()/2,
@@ -369,7 +368,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             if (tutorialIdx==4){
                 canvas.draw(tutorialReady, Color.WHITE, tutorialReady.getWidth()/2, tutorialReady.getHeight()/2,
                         tutorialReadyCoords.x, tutorialReadyCoords.y,0, 0.9f * scale, 0.9f * scale);
-
             }
         } else{
             canvas.draw(levelBackground, 0, 0, canvas.getWidth(), canvas.getHeight());
@@ -453,7 +451,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
      */
     private void drawPastScores(int level, int diff, int pastScore, String letterGrade, int combo, boolean hasData){
         if (hasData&& level == selectedLevel && diff ==selectedDifficulty ){
-//            System.out.println(letterGrades.values());
             canvas.draw(scoreBox, Color.WHITE, scoreBox.getWidth()/2f, scoreBox.getHeight()/2f,
                     canvas.getWidth()/2f, canvas.getHeight()*0.85f, 0, scale, scale);
 
@@ -621,17 +618,20 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                     listener.exitScreen(this, ExitCode.TO_MENU);
                 }
             } else{
-                if (tutorialIdx<5 && howToPlayPressed){
-                    if (isButtonPressed(screenX, screenY, tutorialGoRight, tutorialGoRightCoords, 0.9f*scale)) {
-                        tutorialIdx++;
-                    }
-                }
-
                 if (tutorialIdx==4){
+                    System.out.println("tutiral ready pressed1");
                     if (isButtonPressed(screenX, screenY, tutorialReady, tutorialReadyCoords, 0.9f*scale)) {
+
+                        System.out.println("tutiral ready pressed");
                         tutorialIdx=0;
                         howToPlayPressed = false;
                     }
+
+                } else if (tutorialIdx<5 && howToPlayPressed){
+                    if (isButtonPressed(screenX, screenY, tutorialGoRight, tutorialGoRightCoords, 0.9f*scale)) {
+                        tutorialIdx++;
+                    }
+
                 }
             }
 
