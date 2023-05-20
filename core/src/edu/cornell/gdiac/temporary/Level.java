@@ -720,7 +720,6 @@ public class Level {
         music.addSource(songSource);
         // reset volume
         music.setVolume(oldVolume);
-        float samplesPerBeat = songSource.getSampleRate() * 60f/bpm;
         bandMembers = new BandMember[data.get("bandMembers").size];
         int fallSpeed = data.getInt("fallSpeed");
         spawnOffset = 10*music.getSampleRate()/fallSpeed;
@@ -921,7 +920,7 @@ public class Level {
                 }
                 if(isTutorial){
                     bandMembers[i].drawControlBox(canvas, switchCBOX);
-                    String[] controls = InputController.switchKeyBinds(bandMembers.length,true);
+                    String[] controls = InputController.switchKeyBinds(bandMembers.length);
                     GlyphLayout layout = new GlyphLayout(font,controls[i]);
                     float boundSize = switchCBOX.getHeight()*Math.min(0.2f * bandMembers[i].getHeight()/switchCBOX.getHeight(), 0.85f*bandMembers[i].getWidth()/switchCBOX.getWidth());
                     fontScale *= 0.5*Math.min(boundSize/layout.width, boundSize/layout.height);

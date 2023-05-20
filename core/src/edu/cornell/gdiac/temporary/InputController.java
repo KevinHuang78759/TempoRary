@@ -344,9 +344,8 @@ public class InputController {
 				triggerPress[i] = Gdx.input.isKeyPressed(triggerBindingsMain[i]);
 			}
 			if (i < numBandMembers) {
-				if (!autoswitch) {
-					switchesPress[i] = Gdx.input.isKeyPressed(switchesBindingsMain.get(numBandMembers - 1)[i])
-							;
+				if (!autoswitch && !autoplay) {
+					switchesPress[i] = Gdx.input.isKeyPressed(switchesBindingsMain.get(numBandMembers - 1)[i]);
 				}
 				if (switchesPress[i]) {
 					resetTriggers();
