@@ -439,7 +439,14 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             }
 
             // draw past scores
-            drawPastScores(1, 2,1000000,"S",1000, true);
+
+            for (int i = 0; i < allLevels.length; i++) {
+                long highScore = SaveManager.getInstance().getHighScore(allLevels[i]);
+                String grade = SaveManager.getInstance().getGrade(allLevels[i]);
+                long highestCombo = SaveManager.getInstance().getHighScore(allLevels[i]);
+
+                drawPastScores((i + 1) % 3, (i + 1) / 3, (int)highScore, grade, (int)highestCombo, !grade.equals(""));
+            }
         }
 
         canvas.end();

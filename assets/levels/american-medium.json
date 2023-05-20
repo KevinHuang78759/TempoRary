@@ -1,5 +1,5 @@
 {
-  "levelname" : "AmericanMED",
+  "levelName" : "american-medium.json",
   "levelNumber" : 8,
   "levelImage" : "cafe",
   "background" : "cafe-background",

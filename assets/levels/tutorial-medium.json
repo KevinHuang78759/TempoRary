@@ -1,5 +1,5 @@
 {
-levelName: PraeludiumMedium
+levelName: "tutorial-medium.json",
 levelNumber: 1
 levelImage: cafe
 background: cafe-background

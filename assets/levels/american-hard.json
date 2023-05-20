@@ -1,5 +1,5 @@
 {
-	"levelname" : "AmericanHARD",
+	"levelName" : "american-hard.json",
 	"levelNumber" : 9,
 	"levelImage" : "cafe",
 	"background" : "cafe-background",

@@ -3,6 +3,7 @@ package edu.cornell.gdiac.temporary;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.utils.IntMap;
+import com.badlogic.gdx.utils.ObjectMap;
 
 import java.util.Arrays;
 
@@ -13,7 +14,7 @@ public class SaveManager {
     private static SaveManager saveManager;
     /** LibGDX Preferences for all the game's levels */
     // TODO: UPDATE THIS TYPE WITH A COLLECTION
-    private Preferences levels;
+    private ObjectMap<String, Preferences> levels;
     /** LibGDX Preferences for user volume settings (and calibration) */
     private Preferences volumeSettings;
     /** LibGDX preferences for hit bindings */
@@ -23,7 +24,7 @@ public class SaveManager {
 
     private SaveManager() {
         // TODO: UPDATE THIS WITH A LOOP OF ALL OF OUR LEVELS
-        levels = Gdx.app.getPreferences("edu.cornell.gdiac.temporary.settings.levels");
+        levels = new ObjectMap<>();
         volumeSettings = Gdx.app.getPreferences("edu.cornell.gdiac.temporary.settings.volume");
         hitBindingSettings = Gdx.app.getPreferences("edu.cornell.gdiac.temporary.settings.hitBindingSettings");
         switchBindingSettings = new Preferences[InputController.MAX_BAND_MEMBERS];
@@ -43,16 +44,39 @@ public class SaveManager {
         return saveManager;
     }
 
-    // TODO: SAVE LEVEL AFTER BEATING IT
-    public void saveGame(String levelName, long score) {
-        levels.putLong(levelName, score);
-        levels.flush();
+    public void saveGame(String levelName, long score, String grade, long maxCombo) {
+        if (levels.get(levelName) == null) {
+            levels.put(levelName, Gdx.app.getPreferences("edu.cornell.gdiac.temporary.levels"));
+        }
+        Preferences pref = levels.get(levelName);
+        if (score >= pref.getLong("highScore", 0)) {
+            pref.putLong("highScore", score);
+            pref.putString("grade", grade);
+            pref.putLong("maxCombo", maxCombo);
+            pref.flush();
+        }
     }
 
-    // TODO: RETRIEVE LEVEL DATA AND GET SIGNATURE
     // currently just returns the high score for now
-    public long getLevelData(String levelName) {
-        return levels.getLong(levelName, 0);
+    public long getHighScore(String levelName) {
+        if (levels.get(levelName) == null) {
+            levels.put(levelName, Gdx.app.getPreferences("edu.cornell.gdiac.temporary.levels"));
+        }
+        return levels.get(levelName).getLong(levelName, 0);
+    }
+
+    public String getGrade(String levelName) {
+        if (levels.get(levelName) == null) {
+            levels.put(levelName, Gdx.app.getPreferences("edu.cornell.gdiac.temporary.levels"));
+        }
+        return levels.get(levelName).getString(levelName, "");
+    }
+
+    public long getHighestCombo(String levelName) {
+        if (levels.get(levelName) == null) {
+            levels.put(levelName, Gdx.app.getPreferences("edu.cornell.gdiac.temporary.levels"));
+        }
+        return levels.get(levelName).getLong(levelName, 0);
     }
 
     public void saveSettings(int[] hitBindings, IntMap<int[]> switchBindings, float musicVol, float fxVol) {
@@ -124,11 +148,6 @@ public class SaveManager {
         return volumeSettings.getInteger("calibration", 0);
     }
 
-    // TODO: CLEAR SAVED DATA
-    public void clearSavedData() {
-        levels.clear();
-        levels.flush();
-    }
 
     public void resetSettings() {
         volumeSettings.clear();
