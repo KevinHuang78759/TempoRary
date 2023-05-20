@@ -15,7 +15,7 @@
 	"thresholdS" : 715000,
 	"bandMembers" : [
 		{
-			"instrument" : "piano",
+			"instrument" : "drum",
 			"notes" : [
 				{
 					"type" : "held",
@@ -472,7 +472,7 @@
 		}
 	,
 		{
-			"instrument" : "piano",
+			"instrument" : "violin",
 			"notes" : [
 				{
 					"type" : "switch",
@@ -1277,7 +1277,7 @@
 		}
 	,
 		{
-			"instrument" : "piano",
+			"instrument" : "voice",
 			"notes" : [
 				{
 					"type" : "switch",

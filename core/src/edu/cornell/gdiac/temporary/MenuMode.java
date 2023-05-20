@@ -665,7 +665,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         canvas.draw(logo, Color.WHITE, logo.getWidth()/2, logo.getHeight()/2,
                 canvas.getWidth()/2, 0.65f * canvas.getHeight(), 0, 0.52f * scale, 0.52f * scale);
 
-        canvas.draw(catOrnament, 0, 0, canvas.getWidth(), canvas.getHeight());
+        canvas.drawBackground(catOrnament, 0, 0);
 
         if (pressState == PLAY_PRESSED || hoverState == PLAY_HOVERED) {
             canvas.draw(playButtonHover, Color.WHITE, playButtonHover.getWidth() / 2, playButton.getHeight() / 2,

@@ -238,37 +238,37 @@ public class Level {
         violinSet[0] = new FilmStrip(directory.getEntry("violin-INACTIVE-NOTES", Texture.class), 1, 6, 6);
         violinSet[1] = new FilmStrip(directory.getEntry("violin-INACTIVE-NO-NOTES", Texture.class), 1, 6, 6);
         violinSet[2] = new FilmStrip(directory.getEntry("violin-INACTIVE-LOW", Texture.class), 1, 2, 2);
-        violinSet[3] = new FilmStrip(directory.getEntry("violin-ACTIVE-LEFT", Texture.class), 1, 8, 8);
-        violinSet[4] = new FilmStrip(directory.getEntry("violin-ACTIVE-RIGHT", Texture.class), 1, 8, 8);
+        violinSet[3] = new FilmStrip(directory.getEntry("violin-ACTIVE-LEFT", Texture.class), 3, 3, 8);
+        violinSet[4] = new FilmStrip(directory.getEntry("violin-ACTIVE-RIGHT", Texture.class), 3, 3, 8);
         violinSet[5] = new FilmStrip(directory.getEntry("violin-ACTIVE-IDLE", Texture.class), 1, 6, 6);
         violinSet[6] = new FilmStrip(directory.getEntry("violin-ACTIVE-MISS", Texture.class), 1, 1, 1);
 
         singerSet = new FilmStrip[7];
         singerSet[0] = new FilmStrip(directory.getEntry("singer-INACTIVE-NOTES", Texture.class), 1, 6, 6);
-        singerSet[1] = new FilmStrip(directory.getEntry("singer-INACTIVE-NO-NOTES", Texture.class), 1, 8, 8);
-        singerSet[2] = new FilmStrip(directory.getEntry("singer-INACTIVE-LOW", Texture.class), 1, 4, 4);
-        singerSet[3] = new FilmStrip(directory.getEntry("singer-ACTIVE-LEFT", Texture.class), 1, 8, 8);
-        singerSet[4] = new FilmStrip(directory.getEntry("singer-ACTIVE-RIGHT", Texture.class), 1, 8, 8);
-        singerSet[5] = new FilmStrip(directory.getEntry("singer-ACTIVE-IDLE", Texture.class), 1, 8, 8);
+        singerSet[1] = new FilmStrip(directory.getEntry("singer-INACTIVE-NO-NOTES", Texture.class), 3, 3, 8);
+        singerSet[2] = new FilmStrip(directory.getEntry("singer-INACTIVE-LOW", Texture.class), 2, 2, 4);
+        singerSet[3] = new FilmStrip(directory.getEntry("singer-ACTIVE-LEFT", Texture.class), 3, 3, 8);
+        singerSet[4] = new FilmStrip(directory.getEntry("singer-ACTIVE-RIGHT", Texture.class), 3, 3, 8);
+        singerSet[5] = new FilmStrip(directory.getEntry("singer-ACTIVE-IDLE", Texture.class), 3, 3, 8);
         singerSet[6] = new FilmStrip(directory.getEntry("singer-ACTIVE-MISS", Texture.class), 1, 1, 1);
 
         drummerSet = new FilmStrip[7];
-        drummerSet[0] = new FilmStrip(directory.getEntry("drummer-INACTIVE-NOTES", Texture.class), 1, 6, 6);
-        drummerSet[1] = new FilmStrip(directory.getEntry("drummer-INACTIVE-NO-NOTES", Texture.class), 1, 6, 6);
-        drummerSet[2] = new FilmStrip(directory.getEntry("drummer-INACTIVE-LOW", Texture.class), 1, 4, 4);
-        drummerSet[3] = new FilmStrip(directory.getEntry("drummer-ACTIVE-LEFT", Texture.class), 1, 14, 14);
-        drummerSet[4] = new FilmStrip(directory.getEntry("drummer-ACTIVE-RIGHT", Texture.class), 1, 14, 14);
-        drummerSet[5] = new FilmStrip(directory.getEntry("drummer-ACTIVE-IDLE", Texture.class), 1, 6, 6);
+        drummerSet[0] = new FilmStrip(directory.getEntry("drummer-INACTIVE-NOTES", Texture.class), 2, 3, 6);
+        drummerSet[1] = new FilmStrip(directory.getEntry("drummer-INACTIVE-NO-NOTES", Texture.class), 2, 3, 6);
+        drummerSet[2] = new FilmStrip(directory.getEntry("drummer-INACTIVE-LOW", Texture.class), 2, 2, 4);
+        drummerSet[3] = new FilmStrip(directory.getEntry("drummer-ACTIVE-LEFT", Texture.class), 3, 3, 8);
+        drummerSet[4] = new FilmStrip(directory.getEntry("drummer-ACTIVE-RIGHT", Texture.class), 3, 3, 8);
+        drummerSet[5] = new FilmStrip(directory.getEntry("drummer-ACTIVE-IDLE", Texture.class), 2, 3, 6);
         drummerSet[6] = new FilmStrip(directory.getEntry("drummer-ACTIVE-MISS", Texture.class), 1, 1, 1);
 
         pianoSet = new FilmStrip[7];
-        pianoSet[0] = new FilmStrip(directory.getEntry("piano-INACTIVE-NOTES", Texture.class), 1, 8, 8);
-        pianoSet[1] = new FilmStrip(directory.getEntry("piano-INACTIVE-NO-NOTES", Texture.class), 1, 6, 6);
-        pianoSet[2] = new FilmStrip(directory.getEntry("piano-INACTIVE-LOW", Texture.class), 1, 3, 3);
-        pianoSet[3] = new FilmStrip(directory.getEntry("piano-ACTIVE-LEFT", Texture.class), 1, 8, 8);
-        pianoSet[4] = new FilmStrip(directory.getEntry("piano-ACTIVE-RIGHT", Texture.class), 1, 8, 8);
-        pianoSet[5] = new FilmStrip(directory.getEntry("piano-ACTIVE-IDLE", Texture.class), 1, 6, 6);
-        pianoSet[6] = new FilmStrip(directory.getEntry("piano-ACTIVE-MISS", Texture.class), 1, 1, 1);
+        pianoSet[0] = new FilmStrip(directory.getEntry("piano-INACTIVE-NOTES", Texture.class), 2, 3, 6);
+        pianoSet[1] = new FilmStrip(directory.getEntry("piano-INACTIVE-NO-NOTES", Texture.class), 2, 3, 6);
+        pianoSet[2] = new FilmStrip(directory.getEntry("piano-INACTIVE-LOW", Texture.class), 2, 2, 4);
+        pianoSet[3] = new FilmStrip(directory.getEntry("piano-ACTIVE-LEFT", Texture.class), 3, 3, 8);
+        pianoSet[4] = new FilmStrip(directory.getEntry("piano-ACTIVE-RIGHT", Texture.class), 3, 3, 8);
+        pianoSet[5] = new FilmStrip(directory.getEntry("piano-ACTIVE-IDLE", Texture.class), 2, 3, 6);
+        pianoSet[6] = new FilmStrip(directory.getEntry("piano-ACTIVE-MISS", Texture.class), 2, 2, 4);
 
         ghostLoom = new FilmStrip(directory.getEntry("ghost-loom", Texture.class), 1, 1, 1);
 
