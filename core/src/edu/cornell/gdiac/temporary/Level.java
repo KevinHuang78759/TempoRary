@@ -1,6 +1,7 @@
 package edu.cornell.gdiac.temporary;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonReader;
@@ -131,6 +132,9 @@ public class Level {
         this.sThreshold = sThreshold;
     }
 
+    private Vector2 TR;
+    private Vector2 BL;
+
     private BandMember[] bandMembers;
 
     // TEXTURES
@@ -148,6 +152,11 @@ public class Level {
     private FilmStrip[] pianoSet;
     private FilmStrip backSplash;
     private FilmStrip frontSplash;
+
+    private Texture autoplayBackground;
+    private Texture progressBackground;
+    private Texture progressForeground;
+    private Texture progressKnob;
 
     // PROPERTIES
     private String levelName;
@@ -167,6 +176,9 @@ public class Level {
     private Queue<Long> switchRanges;
     private Queue<Long> arrowAppear;
 
+    private long startRange;
+    private long endRange;
+
     public boolean getIsTutorial() {
         return isTutorial;
     }
@@ -176,7 +188,8 @@ public class Level {
         if (isTutorial && !autoplayRanges.isEmpty()) {
             if (autoplayRanges.size % 2 == 0) {
                 if (currentSample >= autoplayRanges.first()) {
-                    autoplayRanges.removeFirst();
+                    startRange = autoplayRanges.removeFirst();
+                    endRange = autoplayRanges.first();
                     return true;
                 }
             } else {
@@ -197,6 +210,26 @@ public class Level {
             if (currentSample >= switchRanges.first()) {
                 switchRanges.removeFirst();
                 return true;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    public boolean isArrowAppearing() {
+        long currentSample = getCurrentSample();
+        if (isTutorial && !arrowAppear.isEmpty()) {
+            if (arrowAppear.size % 2 == 0) {
+                if (currentSample >= arrowAppear.first()) {
+                    arrowAppear.removeFirst();
+                    return true;
+                }
+            } else {
+                if (currentSample <= arrowAppear.first()) {
+                    return true;
+                } else {
+                    arrowAppear.removeFirst();
+                }
             }
             return false;
         }
@@ -305,6 +338,12 @@ public class Level {
 
         backSplash = new FilmStrip(directory.getEntry("back-splash", Texture.class), 5, 5, 23);
         frontSplash = new FilmStrip(directory.getEntry("front-splash", Texture.class), 5, 5, 21);
+
+        autoplayBackground = directory.getEntry("autoplay-background", Texture.class);
+        progressBackground = directory.getEntry("autoplay-progress-background", Texture.class);
+        progressForeground = directory.getEntry("autoplay-progress-foreground", Texture.class);
+        progressKnob = directory.getEntry("autoplay-progress-knob", Texture.class);
+
         this.data = data;
         //Read in Json  Value and populate asset textures
         lastDec = 0;
@@ -548,7 +587,6 @@ public class Level {
         bandMembers[BM_id].recieveFlags(DFflag, JKflag, MISSflag);
     }
 
-
     public void swapActive(int prev, int next){
         bandMembers[prev].changeMode();
         bandMembers[next].changeMode();
@@ -595,9 +633,6 @@ public class Level {
                 bandMember.recieveSample(sample);
                 bandMember.pickFrame();
             }
-
-
-
 
             if (!bandMember.getHitNotes().isEmpty() && mode == 1) {
                 float loss = -1f * bandMember.getLossRate() * (sample - lastDec) / ((float) music.getSampleRate());
@@ -773,6 +808,37 @@ public class Level {
             }
         }
 
+        if (isInAutoplayRange()) {
+            canvas.draw(autoplayBackground,
+                    Color.WHITE,
+                    autoplayBackground.getWidth()/2f, autoplayBackground.getHeight()/2f,
+                    (TR.x + BL.x)/2f, (TR.y + BL.y)/2f,
+                    0f,
+                    (TR.x - BL.x)/(autoplayBackground.getWidth()),(TR.y - BL.y)/(autoplayBackground.getHeight()));
+            canvas.draw(progressBackground,
+                    Color.WHITE,
+                    progressBackground.getWidth()/2f, progressBackground.getHeight()/2f,
+                    (TR.x + BL.x)/2f, (TR.y + TR.y + TR.y * 0.3f)/2f,
+                    0f,
+                    (TR.x - BL.x)/(progressBackground.getWidth()),(TR.y + TR.y * 0.3f - TR.y)/(progressBackground.getHeight()));
+            canvas.draw(progressForeground,
+                    Color.WHITE,
+                    0, progressForeground.getHeight()/2f,
+                    0, (TR.y + TR.y + TR.y * 0.3f)/2f,
+                    0f,
+                    (TR.x - BL.x)/(progressForeground.getWidth()) * ((float) (getCurrentSample() - startRange)/(endRange - startRange)),(TR.y + TR.y * 0.3f - TR.y)/(progressForeground.getHeight()));
+            canvas.draw(progressKnob,
+                    Color.WHITE,
+                    progressKnob.getWidth()/2f, progressKnob.getHeight()/2f,
+                    progressForeground.getWidth() * (TR.x - BL.x)/(progressForeground.getWidth()) * ((float) (getCurrentSample() - startRange)/(endRange - startRange)), (TR.y + TR.y + TR.y * 0.3f)/2f,
+                    0f,
+                    (TR.y + TR.y * 0.6f - TR.y)/progressKnob.getWidth(),(TR.y + TR.y * 0.6f - TR.y)/progressKnob.getWidth());
+        }
+    }
+
+    public void setBounds(Vector2 TR, Vector2 BL) {
+        this.TR = TR;
+        this.BL = BL;
     }
 
     public void dispose(){

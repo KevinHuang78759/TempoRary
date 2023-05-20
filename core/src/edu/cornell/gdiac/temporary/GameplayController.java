@@ -188,7 +188,6 @@ public class GameplayController {
 		}
 
 		sb.setBounds(new Vector2(width, height), new Vector2(0f,19f*TOPBOUND/20f + height/20f));
-
 	}
 
 	public void setWidths(){
@@ -242,7 +241,7 @@ public class GameplayController {
 		numberGood =0;
 		numberPerfect =0;
 		sb.setletterTH(new long[]{level.getcThreshold(), level.getbThreshold(), level.getaThreshold(), level.getsThreshold()});
-	}
+		level.setBounds(new Vector2(totalWidth, totalHeight*0.05f), new Vector2(0f,0f));}
 
 	public void reloadLevel(){
 		InputController.getInstance().resetTriggers();

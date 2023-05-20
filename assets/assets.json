@@ -72,6 +72,12 @@
         "score-b": "images/win_lose/score_B.png",
         "score-c": "images/win_lose/score_C.png",
         "score-s": "images/win_lose/score_S.png",
+
+        "autoplay-background": "images/ui/autoplay_background.png",
+        "autoplay-progress-background": "images/ui/line_white.png",
+        "autoplay-progress-foreground": "images/ui/line_pink.png",
+        "autoplay-progress-knob": "images/ui/circle.png",
+
         "hard": "images/hard.png",
         "1": "images/album_covers/praeludium_album.png",
         "2": "images/album_covers/aliens_album.png",
