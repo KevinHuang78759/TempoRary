@@ -8,8 +8,230 @@ import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.temporary.*;
 import edu.cornell.gdiac.util.FilmStrip;
 
+import java.util.Map;
+import java.util.PriorityQueue;
+
 
 public class BandMember {
+
+    FilmStrip DF;
+    FilmStrip JK;
+    FilmStrip ACTIVE_IDLE;
+    FilmStrip MISS;
+    FilmStrip INACTIVE_NOTES;
+    FilmStrip INACTIVE_NO_NOTES;
+    FilmStrip INACTIVE_LOW;
+
+    public void setFilmStrips(FilmStrip[] f){
+        INACTIVE_NOTES = f[0];
+        INACTIVE_NO_NOTES = f[1];
+        INACTIVE_LOW = f[2];
+        DF = f[3];
+        JK = f[4];
+        ACTIVE_IDLE = f[5];
+        MISS = f[6];
+
+    }
+    boolean done;
+    float sample;
+    float samplesPerBeat;
+    float start;
+    float end;
+    private int mode;
+    public void setMode(int k){
+        assert  k == -1 || k ==1;
+        mode = k;
+    }
+    boolean DFprev;
+    boolean JKprev;
+    public void setSPB(float s){
+        samplesPerBeat = s;
+    }
+    private enum ACTIVE_STATE{
+        IDLE,MISS,DF,JK
+    }
+
+    ACTIVE_STATE AS;
+    public void changeMode(){
+        mode *= -1;
+    }
+
+
+    /**
+     * Always recieve sample first before handling interrupts
+     * @param s
+     */
+    public void recieveSample(float s){
+        sample = s;
+    }
+
+
+    private void beginProcess(ACTIVE_STATE  nextState, float s, float e){
+        start = s;
+        end = e;
+        done = false;
+        AS = nextState;
+    }
+    /**
+     * Respond to flags
+     * @param df
+     * @param jk
+     * @param miss
+     */
+    public void recieveFlags(boolean df, boolean jk, boolean miss){
+        if(AS == ACTIVE_STATE.IDLE){
+            if(miss){
+                beginProcess(ACTIVE_STATE.MISS, sample, sample + samplesPerBeat);
+            }
+            else if((!DFprev && df) && (!JKprev && jk)){
+                beginProcess(RandomController.rollInt(0,1) > 0 ? ACTIVE_STATE.JK : ACTIVE_STATE.DF, sample, sample + samplesPerBeat);
+            }
+            else if(!DFprev && df){
+                beginProcess(ACTIVE_STATE.DF, sample, sample + samplesPerBeat);
+            }
+            else if(!JKprev && jk){
+                beginProcess(ACTIVE_STATE.JK, sample, sample + samplesPerBeat);
+            }
+        }
+        else if(AS == ACTIVE_STATE.MISS){
+            if(sample >= end){
+                if(df && jk){
+                    int x = RandomController.rollInt(0,1);
+                    beginProcess(x > 0 ? ACTIVE_STATE.JK : ACTIVE_STATE.DF, sample, sample + samplesPerBeat);
+                }
+                else if(df){
+                    beginProcess(ACTIVE_STATE.DF, sample, sample + samplesPerBeat);
+                }
+                else if(jk){
+                    beginProcess(ACTIVE_STATE.JK, sample, sample + samplesPerBeat);
+                }
+            }
+        }
+        else if(AS == ACTIVE_STATE.DF){
+            if(miss){
+                beginProcess(ACTIVE_STATE.MISS, sample, sample + samplesPerBeat);
+            }
+            else if(!JKprev && jk){
+                beginProcess(ACTIVE_STATE.JK, sample, sample + samplesPerBeat);
+            }
+            else if(DFprev && !df){
+                if(done){
+                    if(jk){
+                        beginProcess(ACTIVE_STATE.JK, sample, sample + samplesPerBeat);
+                    }
+                    else{
+                        done = false;
+                        AS = ACTIVE_STATE.IDLE;
+                    }
+                }
+            }
+            else if(!DFprev && df){
+                beginProcess(ACTIVE_STATE.DF, sample, sample + samplesPerBeat);
+            }
+            else if(sample >= end){
+                if(df){
+                    beginProcess(ACTIVE_STATE.DF, sample, sample + samplesPerBeat);
+                    done = true;
+                }
+                else if(jk){
+                    beginProcess(ACTIVE_STATE.JK, sample, sample + samplesPerBeat);
+
+                }
+                else{
+                    done = false;
+                    AS = ACTIVE_STATE.IDLE;
+                }
+            }
+        }
+        else if(AS == ACTIVE_STATE.JK){
+            if(miss){
+                beginProcess(ACTIVE_STATE.MISS, sample, sample + samplesPerBeat);
+            }
+            else if(!DFprev && df){
+                beginProcess(ACTIVE_STATE.DF, sample, sample + samplesPerBeat);
+            }
+            else if(JKprev && !jk){
+                if(done){
+                    if(df){
+                        beginProcess(ACTIVE_STATE.DF, sample, sample + samplesPerBeat);
+                    }
+                    else{
+                        done = false;
+                        AS = ACTIVE_STATE.IDLE;
+                    }
+                }
+            }
+            else if(!JKprev && jk){
+                beginProcess(ACTIVE_STATE.JK, sample, sample + samplesPerBeat);
+            }
+            else if(sample >= end){
+                if(jk){
+                    beginProcess(ACTIVE_STATE.JK, sample, sample + samplesPerBeat);
+                    done = true;
+                }
+                else if(df){
+                    beginProcess(ACTIVE_STATE.DF, sample, sample + samplesPerBeat);
+                }
+                else{
+                    done = false;
+                    AS = ACTIVE_STATE.IDLE;
+                }
+            }
+        }
+        DFprev = df;
+        JKprev = jk;
+    }
+
+    public void pickFrame(){
+        if(mode == 1){
+            if(AS == ACTIVE_STATE.IDLE){
+                characterSprite = ACTIVE_IDLE;
+                int total = characterSprite.getSize();
+                int cur = (int)(total*(sample % samplesPerBeat)/samplesPerBeat);
+                characterSprite.setFrame(cur);
+            }
+            else if(AS == ACTIVE_STATE.MISS){
+                characterSprite = MISS;
+                int total = characterSprite.getSize();
+                int cur = (int)(total*(( (sample - start) % samplesPerBeat)/samplesPerBeat));
+                characterSprite.setFrame(cur);
+            }
+            else if(AS == ACTIVE_STATE.JK){
+                characterSprite = JK;
+                int total = characterSprite.getSize();
+                int cur = (int)(total*(( (sample - start) % samplesPerBeat)/samplesPerBeat));
+                characterSprite.setFrame(cur);
+            }
+            else if(AS == ACTIVE_STATE.DF){
+                characterSprite = DF;
+                int total = characterSprite.getSize();
+                int cur = (int)(total*(( (sample - start) % samplesPerBeat)/samplesPerBeat));
+                characterSprite.setFrame(cur);
+            }
+        }
+        else{
+            if(hitNotes.isEmpty()){
+                characterSprite = INACTIVE_NO_NOTES;
+                int total = characterSprite.getSize();
+                int cur = (int)(total*(sample % samplesPerBeat)/samplesPerBeat);
+                characterSprite.setFrame(cur);
+            }
+            else{
+                if(curComp/maxComp < 14f/47){
+                    characterSprite = INACTIVE_LOW;
+                    int total = characterSprite.getSize();
+                    int cur = (int)(total*(sample % samplesPerBeat)/samplesPerBeat);
+                    characterSprite.setFrame(cur);
+                }
+                else{
+                    characterSprite = INACTIVE_NOTES;
+                    int total = characterSprite.getSize();
+                    int cur = (int)(total*(sample % samplesPerBeat)/samplesPerBeat);
+                    characterSprite.setFrame(cur);
+                }
+            }
+        }
+    }
 
     private static final float NOTE_SIZE_SCALE = 0.7f;
 
@@ -156,13 +378,23 @@ public class BandMember {
     private Array<Note> backing;
 
 
+    private int gainRate;
     private int lossRate;
+    private PriorityQueue<Long[]> compData;
+    public void setCompData(PriorityQueue<Long[]> compData) {
+        this.compData = compData;
+    }
+    public PriorityQueue<Long[]> getCompData() {
+        return compData;
+    }
     public void setLossRate(int t){
         lossRate = t;
     }
     public int getLossRate(){
         return lossRate;
     }
+    public void setGainRate(int t) { gainRate = t; }
+    public int getGainRate() { return gainRate; }
     /**
      * Maximum competency
      */
@@ -197,6 +429,13 @@ public class BandMember {
         switchNotes = new Array<>();
         allNotes = new Queue<>();
         backing = new Array<>();
+        done = false;
+        mode = -1;
+        AS = ACTIVE_STATE.IDLE;
+        sample = 0f;
+        DFprev = false;
+        JKprev = false;
+
     }
 
     public void setHpBarFilmStrip(Texture t, int numFrames){
@@ -465,12 +704,6 @@ public class BandMember {
     public void setFrame(int frame){
         this.frame = frame;
         characterSprite.setFrame(frame);
-    }
-    public void setCharacterFilmstrip(FilmStrip t){
-        characterFrames = t.getSize();
-        characterSprite = t;
-        characterSprite.setFrame(0);
-        frame = 0;
     }
 
 }

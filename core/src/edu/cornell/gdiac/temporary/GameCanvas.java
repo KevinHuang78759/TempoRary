@@ -684,6 +684,16 @@ public class GameCanvas {
 		font.draw(spriteBatch, layout, x, y);
     }
 
+	public void drawTextSetColor(String text, BitmapFont font, float x, float y) {
+		if (!active) {
+			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+			return;
+		}
+
+		GlyphLayout layout = new GlyphLayout(font,text);
+		font.draw(spriteBatch, layout, x, y);
+	}
+
 	/**
 	 * Draws text on the screen.
 	 *

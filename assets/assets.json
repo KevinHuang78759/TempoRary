@@ -107,9 +107,45 @@
         "switch-indicator": "images/bandmember_lanes/switch_indicator_line.png",
         "switch-indicator-hit": "images/bandmember_lanes/switch_indicator_line.png",
         "violin-cat": "images/cats/violin_spritesheet.png",
+
+        "violin-INACTIVE-NOTES": "images/cats/violin/Violin_INACTIVE_Notes.png",
+        "violin-INACTIVE-NO-NOTES": "images/cats/violin/Violin_INACTIVE_No_Notes.png",
+        "violin-INACTIVE-LOW": "images/cats/violin/Violin_INACTIVE_Low.png",
+        "violin-ACTIVE-LEFT": "images/cats/violin/Violin_ACTIVE_DF.png",
+        "violin-ACTIVE-RIGHT": "images/cats/violin/Violin_ACTIVE_JK.png",
+        "violin-ACTIVE-IDLE": "images/cats/violin/Violin_ACTIVE_Idle.png",
+        "violin-ACTIVE-MISS": "images/cats/violin/Violin_ACTIVE_Miss.png",
+
         "singer-cat": "images/cats/sing_spritesheet.png",
+
+        "singer-INACTIVE-NOTES": "images/cats/singer/Voice_INACTIVE_Notes.png",
+        "singer-INACTIVE-NO-NOTES": "images/cats/singer/Voice_INACTIVE_No_Notes.png",
+        "singer-INACTIVE-LOW": "images/cats/singer/Voice_INACTIVE_Low.png",
+        "singer-ACTIVE-LEFT": "images/cats/singer/Voice_ACTIVE_DF.png",
+        "singer-ACTIVE-RIGHT": "images/cats/singer/Voice_ACTIVE_JK.png",
+        "singer-ACTIVE-IDLE": "images/cats/singer/Voice_ACTIVE_Idle.png",
+        "singer-ACTIVE-MISS": "images/cats/singer/Voice_ACTIVE_Miss.png",
+
         "drummer-cat": "images/cats/drum_spritesheet.png",
+
+        "drummer-INACTIVE-NOTES": "images/cats/drummer/Drums_INACTIVE_Notes.png",
+        "drummer-INACTIVE-NO-NOTES": "images/cats/drummer/Drums_INACTIVE_No_Notes.png",
+        "drummer-INACTIVE-LOW": "images/cats/drummer/Drums_INACTIVE_Low.png",
+        "drummer-ACTIVE-LEFT": "images/cats/drummer/Drums_ACTIVE_DF.png",
+        "drummer-ACTIVE-RIGHT": "images/cats/drummer/Drums_ACTIVE_JK.png",
+        "drummer-ACTIVE-IDLE": "images/cats/drummer/Drums_ACTIVE_Idle.png",
+        "drummer-ACTIVE-MISS": "images/cats/drummer/Drums_ACTIVE_Miss.png",
+
         "piano-cat": "images/cats/piano_spritesheet.png",
+
+        "piano-INACTIVE-NOTES": "images/cats/piano/Piano_INACTIVE_Notes.png",
+        "piano-INACTIVE-NO-NOTES": "images/cats/piano/Piano_INACTIVE_No_Notes.png",
+        "piano-INACTIVE-LOW": "images/cats/piano/Piano_INACTIVE_Low.png",
+        "piano-ACTIVE-LEFT": "images/cats/piano/Piano_ACTIVE_DF.png",
+        "piano-ACTIVE-RIGHT": "images/cats/piano/Piano_ACTIVE_JK.png",
+        "piano-ACTIVE-IDLE": "images/cats/piano/Piano_ACTIVE_Idle.png",
+        "piano-ACTIVE-MISS": "images/cats/piano/Piano_ACTIVE_Miss.png",
+
         "borderVUnit" : "images/bandmember_lanes/lane_edge_unit.png",
         "borderHUnit" : "images/bandmember_lanes/lane_edge_unit.png",
         "borderCorner" : "images/bandmember_lanes/laneCornerBL.png",
@@ -166,6 +202,11 @@
       "american": {
         "sources": [
           "music/American_Finale.ogg"
+        ]
+      },
+      "tutorial": {
+        "sources": [
+          "music/Tutorial.ogg"
         ]
       },
       "YR": {
