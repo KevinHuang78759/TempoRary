@@ -66,6 +66,7 @@
         "good": "images/win_lose/good.png",
         "ok": "images/win_lose/ok.png",
         "miss": "images/win_lose/miss.png",
+        "ghost-loom": "images/ui/cat_ghost_loom.png",
         "score": "images/win_lose/score.png",
         "line": "images/win_lose/Line.png",
         "score-a": "images/win_lose/score_A.png",
