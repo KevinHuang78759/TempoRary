@@ -3,6 +3,7 @@ package edu.cornell.gdiac.temporary;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.utils.IntMap;
+import com.badlogic.gdx.utils.ObjectMap;
 
 import java.util.Arrays;
 
@@ -12,7 +13,6 @@ public class SaveManager {
     /** Singleton save manager */
     private static SaveManager saveManager;
     /** LibGDX Preferences for all the game's levels */
-    // TODO: UPDATE THIS TYPE WITH A COLLECTION
     private Preferences levels;
     /** LibGDX Preferences for user volume settings (and calibration) */
     private Preferences volumeSettings;
@@ -22,8 +22,7 @@ public class SaveManager {
     private Preferences[] switchBindingSettings;
 
     private SaveManager() {
-        // TODO: UPDATE THIS WITH A LOOP OF ALL OF OUR LEVELS
-        levels = Gdx.app.getPreferences("edu.cornell.gdiac.temporary.settings.levels");
+        levels = Gdx.app.getPreferences("edu.cornell.gdiac.temporary.levels");
         volumeSettings = Gdx.app.getPreferences("edu.cornell.gdiac.temporary.settings.volume");
         hitBindingSettings = Gdx.app.getPreferences("edu.cornell.gdiac.temporary.settings.hitBindingSettings");
         switchBindingSettings = new Preferences[InputController.MAX_BAND_MEMBERS];
@@ -43,16 +42,26 @@ public class SaveManager {
         return saveManager;
     }
 
-    // TODO: SAVE LEVEL AFTER BEATING IT
-    public void saveGame(String levelName, long score) {
-        levels.putLong(levelName, score);
-        levels.flush();
+    public void saveGame(String levelName, long score, String grade, long maxCombo) {
+        if (score >= levels.getLong(levelName+".highScore", 0)) {
+            levels.putLong(levelName+".highScore", score);
+            levels.putString(levelName+".grade", grade);
+            levels.putLong(levelName+".maxCombo", maxCombo);
+            levels.flush();
+        }
     }
 
-    // TODO: RETRIEVE LEVEL DATA AND GET SIGNATURE
     // currently just returns the high score for now
-    public long getLevelData(String levelName) {
-        return levels.getLong(levelName, 0);
+    public long getHighScore(String levelName) {
+        return levels.getLong(levelName+".highScore", 0);
+    }
+
+    public String getGrade(String levelName) {
+        return levels.getString(levelName+".grade", "");
+    }
+
+    public long getHighestCombo(String levelName) {
+        return levels.getLong(levelName+".maxCombo", 0);
     }
 
     public void saveSettings(int[] hitBindings, IntMap<int[]> switchBindings, float musicVol, float fxVol) {
@@ -124,11 +133,6 @@ public class SaveManager {
         return volumeSettings.getInteger("calibration", 0);
     }
 
-    // TODO: CLEAR SAVED DATA
-    public void clearSavedData() {
-        levels.clear();
-        levels.flush();
-    }
 
     public void resetSettings() {
         volumeSettings.clear();

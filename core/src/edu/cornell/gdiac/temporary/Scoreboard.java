@@ -182,6 +182,22 @@ public class Scoreboard {
         return letterGrades[curTH];
     }
 
+    public String getLetterGradeAsString() {
+        switch (curTH) {
+            case 0:
+                return "D";
+            case 1:
+                return "C";
+            case 2:
+                return "B";
+            case 3:
+                return "A";
+            case 4:
+                return "S";
+            default:
+                return "";
+        }
+    }
 
     public void displayScore(float xPos, float yPos, GameCanvas canvas){
         String disp = Long.toString(totalScore);
