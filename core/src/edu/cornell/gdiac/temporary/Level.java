@@ -513,8 +513,7 @@ public class Level {
     }
 
     /**
-     * Spawns new notes according to what sample we are at. Also decrements bandmembers' competency
-     * for some amount about once a second. It also updates the frame of the bandmember.
+     * Spawns new notes according to what sample we are at. Also decrements bandmembers competency. It also updates the frame of the bandmember.
      */
     public void updateBandMemberNotes(float spawnY, int mode, int ticks, int introLength){
         //First get the sample we at
