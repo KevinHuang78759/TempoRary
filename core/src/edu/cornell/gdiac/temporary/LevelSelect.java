@@ -34,14 +34,21 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     /** Play button to display when done */
     private Texture playButton;
 
+    private Texture playButtonInactive;
+
     /** Play button to display easy level*/
     private Texture easyButton;
+
+    private Texture easyButtonInactive;
 
     /** Play button to display medium level */
     private Texture mediumButton;
 
+    private Texture mediumButtonInactive;
+
     /** Play button to display hard level */
     private Texture hardButton;
+    private Texture hardButtonInactive;
 
     private Texture levelBackground;
 
@@ -73,7 +80,9 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     /** true if we want to draw the left album */
     private boolean drawLeft;
 
-    private static float BUTTON_SCALE  = 0.75f;
+    private int hoverState;
+
+    private static float BUTTON_SCALE  = 0.6f;
 
     /** Play button x and y coordinates represented as a vector */
     private Vector2 playButtonCoords;
@@ -101,6 +110,8 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
      * invariant 1: in order; allLevels[0] is song 1 easy level.
      * invariant 2: size is a multiple of 3, because we have 3 difficulties */
     private static String[] allLevels;
+
+    private Texture levelGhost;
 
     private Texture goLeft;
 
@@ -209,10 +220,15 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         albumScales = new float[allLevels.length];
         gameplayController = new GameplayController(canvas.getWidth(),canvas.getHeight());
         albumCovers = new Texture[numSongs];
-        playButton = directory.getEntry("ghost-play",Texture.class);
-        easyButton = directory.getEntry("easy",Texture.class);
-        mediumButton = directory.getEntry("medium",Texture.class);
-        hardButton = directory.getEntry("hard",Texture.class);
+        playButton = directory.getEntry("play-button-active",Texture.class);
+        levelGhost = directory.getEntry("level-ghost",Texture.class);
+        playButtonInactive = directory.getEntry("play-button",Texture.class);
+        easyButton = directory.getEntry("easy-active",Texture.class);
+        easyButtonInactive =directory.getEntry("easy-inactive",Texture.class);
+        mediumButton = directory.getEntry("medium-active",Texture.class);
+        mediumButtonInactive = directory.getEntry("medium-inactive",Texture.class);
+        hardButton = directory.getEntry("hard-active",Texture.class);
+        hardButtonInactive = directory.getEntry("hard-inactive",Texture.class);
         goLeft = directory.getEntry("level-select-left",Texture.class);
         goRight = directory.getEntry("level-select-right",Texture.class);
         levelBackground = directory.getEntry("level-select-background", Texture.class);
@@ -237,10 +253,10 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         goBackCoords=new Vector2 (width/12f, height*9f/10f);
         goLeftCoords = new Vector2(width/10f,height/2f);
         goRightCoords = new Vector2(width-(width/10f),height/2f);
-        playButtonCoords = new Vector2(width/2f, height/8f);
-        mediumButtonCoords = new Vector2(width/2f , height/4f);
-        easyButtonCoords = new Vector2((width/2f)-(width/10f), height/4f);
-        hardButtonCoords = new Vector2((width/2f)+(width/10f), height/4f);
+        playButtonCoords = new Vector2(width/2f,height/9f);
+        mediumButtonCoords = new Vector2(width/2f , height/3.7f);
+        easyButtonCoords = new Vector2((width/2f)-(width/10f), height/3.7f);
+        hardButtonCoords = new Vector2((width/2f)+(width/10f), height/3.7f);
         drawLeft=false;
         albumCoverLeftX = width/4f;
         albumCoverMiddleX = width/2f;
@@ -271,6 +287,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         playPressed=false;
         pressedEscape = false;
         isInTransition = false;
+        hoverState = NO_BUTTON_HOVERED;
     }
 
 
@@ -282,17 +299,20 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                 goBackCoords.x, goBackCoords.y, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 
         // draw easy, medium, and hard buttons
-        Color easyButtonTint = (selectedDifficulty == EASY ? Color.GRAY: Color.WHITE);
-        canvas.draw(easyButton, easyButtonTint, easyButton.getWidth()/2, easyButton.getHeight()/2,
-                easyButtonCoords.x, easyButtonCoords.y, 0, 0.5f*scale, 0.5f*scale);
+        Texture tempEasy = (hoverState == EASY_HOVERED ? easyButton: easyButtonInactive);
+        canvas.draw(tempEasy, Color.WHITE, easyButton.getWidth()/2, easyButton.getHeight()/2,
+                easyButtonCoords.x, easyButtonCoords.y, 0, 0.4f*scale, 0.4f*scale);
 
-        Color medButtonTint = (selectedDifficulty == MEDIUM ? Color.GRAY: Color.WHITE);
-        canvas.draw(mediumButton, medButtonTint, mediumButton.getWidth()/2, mediumButton.getHeight()/2,
-                mediumButtonCoords.x, mediumButtonCoords.y, 0, 0.5f*scale, 0.5f*scale);
+        Texture tempMedium = (hoverState == MEDIUM_HOVERED ? mediumButton: mediumButtonInactive);
+        canvas.draw(tempMedium, Color.WHITE, mediumButton.getWidth()/2, mediumButton.getHeight()/2,
+                mediumButtonCoords.x, mediumButtonCoords.y, 0, 0.4f*scale, 0.4f*scale);
 
-        Color hardButtonTint = (selectedDifficulty == HARD ? Color.GRAY: Color.WHITE);
-        canvas.draw(hardButton, hardButtonTint, hardButton.getWidth()/2, hardButton.getHeight()/2,
-                hardButtonCoords.x, hardButtonCoords.y, 0, 0.5f*scale, 0.5f*scale);
+        Texture tempHard = (selectedDifficulty == HARD_HOVERED ? hardButton: hardButtonInactive);
+        canvas.draw(tempHard, Color.WHITE, hardButton.getWidth()/2, hardButton.getHeight()/2,
+                hardButtonCoords.x, hardButtonCoords.y, 0, 0.4f*scale, 0.4f*scale);
+
+        canvas.draw(levelGhost, Color.WHITE, hardButton.getWidth()/2, hardButton.getHeight()/2,
+                canvas.getWidth()/4f, canvas.getHeight()/9f, 0, BUTTON_SCALE*scale*0.1f, BUTTON_SCALE*scale*0.1f);
 
         // draw each song
         if (selectedLevel>=1){ //check that if there are a song to the left; if so, draw.
@@ -325,10 +345,13 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                     goRightCoords.x, goRightCoords.y, 0, 0.9f * scale, 0.9f * scale);
         }
 
-        // draw play button
-        Color playButtonTint = (playPressed ? Color.GRAY: Color.WHITE);
-        canvas.draw(playButton, playButtonTint, playButton.getWidth()/2, playButton.getHeight()/2,
+        if (hoverState == PLAY_HOVERED){
+            canvas.draw(playButton, Color.WHITE, playButton.getWidth()/2f, playButton.getHeight()/2f,
                     playButtonCoords.x, playButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+        }else{
+            canvas.draw(playButtonInactive, Color.WHITE, playButtonInactive.getWidth()/2f, playButtonInactive.getHeight()/2f,
+                    playButtonCoords.x,playButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+        }
 
         canvas.end();
     }
@@ -347,11 +370,11 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         // buttons are rectangles
         // buttonCoords hold the center of the rectangle, buttonTexture has the width and height
         // get half the x length of the button portrayed
-        float xRadius = BUTTON_SCALE * scale * buttonTexture.getWidth()/2.0f;
+        float xRadius = scale * buttonTexture.getWidth()/2.0f;
         boolean xInBounds = buttonCoords.x - xRadius <= screenX && buttonCoords.x + xRadius >= screenX;
 
         // get half the y length of the button portrayed
-        float yRadius = BUTTON_SCALE * scale * buttonTexture.getHeight()/2.0f;
+        float yRadius = scale * buttonTexture.getHeight()/2.0f;
         boolean yInBounds = buttonCoords.y - yRadius <= screenY && buttonCoords.y + yRadius >= screenY;
         return xInBounds && yInBounds;
     }
@@ -403,17 +426,17 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                 return true;
             }
 
-            if (isButtonPressed(screenX, screenY, easyButton, easyButtonCoords, scale)) {
+            if (isButtonPressed(screenX, screenY, easyButton, easyButtonCoords, 0.4f*scale)) {
                 s.playSound(0, 0.3f);
                 selectedDifficulty = 1;
             }
 
-            if (isButtonPressed(screenX, screenY, mediumButton, mediumButtonCoords, scale)) {
+            if (isButtonPressed(screenX, screenY, mediumButton, mediumButtonCoords, 0.4f*scale)) {
                 s.playSound(0, 0.3f);
                 selectedDifficulty = 2;
             }
 
-            if (isButtonPressed(screenX, screenY, hardButton, hardButtonCoords, scale)) {
+            if (isButtonPressed(screenX, screenY, hardButton, hardButtonCoords, 0.4f*scale)) {
                 s.playSound(0, 0.3f);
                 selectedDifficulty = 3;
             }
@@ -457,7 +480,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             }
 
 
-            if (isButtonPressed(screenX, screenY, playButton, playButtonCoords,scale)) {
+            if (isButtonPressed(screenX, screenY, playButton, playButtonCoords,BUTTON_SCALE*scale)) {
                 s.playSound(0, 0.3f);
                 playPressed=true;
             }
@@ -565,8 +588,30 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         return false;
     }
 
+
+    private static final int NO_BUTTON_HOVERED = 106;
+    private static final int PLAY_HOVERED = 107;
+    private static final int EASY_HOVERED = 108;
+    private static final int MEDIUM_HOVERED = 109;
+    private static final int HARD_HOVERED = 110;
+
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
+        screenY = canvas.getHeight() - screenY;
+
+        if (isButtonPressed(screenX, screenY, playButton, playButtonCoords,BUTTON_SCALE*scale)) {
+            hoverState = PLAY_HOVERED;
+        } else if (isButtonPressed(screenX, screenY, easyButton, easyButtonCoords,0.4f*scale)) {
+            hoverState = EASY_HOVERED;
+        }else if (isButtonPressed(screenX, screenY, mediumButton, mediumButtonCoords,0.4f*scale)) {
+            hoverState = MEDIUM_HOVERED;
+        }else if (isButtonPressed(screenX, screenY, hardButton, hardButtonCoords,0.4f*scale)) {
+            hoverState = HARD_HOVERED;
+        }else {
+            hoverState = NO_BUTTON_HOVERED;
+        }
+
+
         return false;
     }
 
