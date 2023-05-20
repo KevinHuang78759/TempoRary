@@ -86,6 +86,8 @@
         "4": "images/album_covers/american_album.png",
         "5": "images/album_covers/Yellow_river.png",
         "level-select-button": "images/ui/level_select.png",
+        "how-to-play-active": "images/ui/how_to_play_active.png",
+      "how-to-play-inactive": "images/ui/how_to_play_inactive.png",
         "quit-button": "images/ui/quit.png",
         "restart-button": "images/ui/restart.png",
         "resume-button": "images/ui/resume.png",

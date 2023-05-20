@@ -58,6 +58,10 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
     private Texture levelBackground;
 
+    private Texture howToPlay1;
+
+    private Texture howToPlay2;
+
     /** button for a level */
     private static Texture[] albumCovers;
 
@@ -103,6 +107,10 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     private static int STANDARD_WIDTH  = 1200;
     /** Standard window height (for scaling) */
     private static int STANDARD_HEIGHT = 800;
+
+    private Texture howToPlayActive;
+
+    private Texture howToPlayInactive;
 
     Map<String, Texture> letterGrades =new HashMap<>();
 
@@ -271,7 +279,11 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         }
 
         setCoords(canvas.getWidth(),canvas.getHeight());
+        howToPlayActive = directory.getEntry("how-to-play-active", Texture.class);
+        howToPlayInactive = directory.getEntry("how-to-play-inactive", Texture.class);
     }
+
+    Vector2 howToPlayCoords;
 
     /**
      * loadCoords set the coordinates of all assets
@@ -307,6 +319,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         }
         albumCoverCoords[selectedLevel] =new Vector2 (albumCoverMiddleX,albumCoverY);
         albumScales[selectedLevel] = centerScale;
+        howToPlayCoords= new Vector2(canvas.getWidth()*0.8f, canvas.getHeight()*0.2f);
 
     }
 
@@ -323,6 +336,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         pressedEscape = false;
         isInTransition = false;
         hoverState = NO_BUTTON_HOVERED;
+        howToPlayPressed = false;
     }
 
 
@@ -385,9 +399,17 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                 mediumButtonCoords.x, mediumButtonCoords.y, 0, 0.4f*scale, 0.4f*scale);
 
         Texture tempHard = (selectedDifficulty == HARD_HOVERED || selectedDifficulty==3 ? hardButton: hardButtonInactive);
-        canvas.draw(tempHard, Color.WHITE, hardButton.getWidth()/2, hardButton.getHeight()/2,
+        canvas.draw(tempHard, Color.WHITE, tempHard.getWidth()/2, tempHard.getHeight()/2,
                 hardButtonCoords.x, hardButtonCoords.y, 0, 0.4f*scale, 0.4f*scale);
 
+
+        if (hoverState == HOW_TO_PLAY_HOVERED){
+            canvas.draw(howToPlayActive, Color.WHITE, howToPlayActive.getWidth()/2, howToPlayActive.getHeight()/2,
+                    howToPlayCoords.x, howToPlayCoords.y, 0, scale, scale);
+        } else{
+            canvas.draw(howToPlayInactive, Color.WHITE, howToPlayInactive.getWidth()/2, howToPlayActive.getHeight()/2,
+                    howToPlayCoords.x, howToPlayCoords.y, 0, scale, scale);
+        }
 
         // draw past scores
         drawPastScores(1, 2,1000000,"S",1000, true);
@@ -406,19 +428,20 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                     canvas.getWidth()/2f, canvas.getHeight()*0.85f, 0, scale, scale);
 
             canvas.draw(scoreLine, Color.WHITE, scoreLine.getWidth()/2f, scoreLine.getHeight()/2f,
-                    canvas.getWidth()/2f+scoreLine.getWidth()/4, canvas.getHeight()*0.85f, 0, 0.85f*scale, 0.85f*scale);
+                    canvas.getWidth()/2f*1.1f, canvas.getHeight()*0.85f, 0, 0.85f*scale, 0.85f*scale);
 
             parameter.size = 40;
-            canvas.drawText("Combo "+combo, blinkerBold,canvas.getWidth()/2f+scoreLine.getWidth()/10,
-                    canvas.getHeight()*0.9f, Color.valueOf("FF00FE"));
+            canvas.drawText("Combo "+combo, blinkerBold,canvas.getWidth()*0.5f,
+                    canvas.getHeight()*0.89f, Color.valueOf("FF00FE"));
 
-            canvas.drawText(Integer.toString(pastScore), blinkerBold,canvas.getWidth()/2f+scoreLine.getWidth()/10,
-                    canvas.getHeight()*0.85f, Color.valueOf("1531D7"));
+            parameter.size = 48;
+            canvas.drawText(Integer.toString(pastScore), blinkerBold,canvas.getWidth()*0.5f,
+                    canvas.getHeight()*0.83f, Color.valueOf("1531D7"));
 
 //            Texture pastLetterGrade = letterGrades.get(letterGrade);
             Texture pastLetterGrade = directory.getEntry("score-s",Texture.class);
             canvas.draw(pastLetterGrade, Color.WHITE, pastLetterGrade.getWidth()/2f, pastLetterGrade.getHeight()/2f,
-                    canvas.getWidth()/2f-scoreBox.getWidth()/3, canvas.getHeight()*0.85f, 0, 0.55f*scale,
+                    canvas.getWidth()/2f*0.85f, canvas.getHeight()*0.85f, 0, 0.55f*scale,
                     0.55f*scale);
 
         }
@@ -505,8 +528,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             if (isButtonPressed(screenX, screenY, easyButton, easyButtonCoords, 0.4f*scale)) {
                 s.playSound(0, 0.3f);
                 selectedDifficulty = 1;
-
-
             }
 
             if (isButtonPressed(screenX, screenY, mediumButton, mediumButtonCoords, 0.4f*scale)) {
@@ -557,7 +578,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                 }
             }
 
-
             if (isButtonPressed(screenX, screenY, playButton, playButtonCoords,BUTTON_SCALE*scale)) {
                 s.playSound(0, 0.3f);
                 playPressed=true;
@@ -569,11 +589,16 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                 listener.exitScreen(this,  ExitCode.TO_MENU);
             }
 
-
+            if (isButtonPressed(screenX, screenY, howToPlayInactive, howToPlayCoords,scale)){
+                howToPlayPressed = true;
+                System.out.println("howtoplay pressed");
+            }
         }
 
         return false;
     }
+
+    boolean howToPlayPressed;
 
 
     boolean set1 = false;
@@ -622,8 +647,8 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
             } else{// we need to transition to left (move to the right)
                 if (selectedLevel>=1 && !set1) {
-                    albumCoverCoords[selectedLevel - 1] = new Vector2(0, albumCoverY);
-                    albumScales[selectedLevel - 1]=cornerScale;
+                    albumCoverCoords[selectedLevel-1] = new Vector2(0, albumCoverY);
+                    albumScales[selectedLevel-1]=cornerScale;
                     set1=true;
                 }
                 if (albumCoverCoords[prevLevel].x < albumCoverRightX) { // move previous level from center to left
@@ -673,6 +698,8 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     private static final int MEDIUM_HOVERED = 109;
     private static final int HARD_HOVERED = 110;
 
+    private static final int HOW_TO_PLAY_HOVERED = 111;
+
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
         screenY = canvas.getHeight() - screenY;
@@ -685,7 +712,9 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             hoverState = MEDIUM_HOVERED;
         }else if (isButtonPressed(screenX, screenY, hardButton, hardButtonCoords,0.4f*scale)) {
             hoverState = HARD_HOVERED;
-        }else {
+        }else if (isButtonPressed(screenX, screenY, howToPlayInactive, howToPlayCoords,scale)){
+            hoverState = HOW_TO_PLAY_HOVERED;
+        } else {
             hoverState = NO_BUTTON_HOVERED;
         }
 
