@@ -239,9 +239,9 @@ public class Level {
         if (isTutorial && (currentSample <= endSwitchRange || endSwitchRange == -1 || !switchRanges.isEmpty())) {
             // set it to one second before
             if (!switchRanges.isEmpty()) {
-                if (currentSample >= switchRanges.first() - music.getSampleRate()) {
-                    startSwitchRange = switchRanges.first() - music.getSampleRate();
-                    endSwitchRange = switchRanges.first() + music.getSampleRate();
+                if (currentSample >= switchRanges.first() - music.getSampleRate()/2) {
+                    startSwitchRange = switchRanges.first() - music.getSampleRate()/2;
+                    endSwitchRange = switchRanges.first() + music.getSampleRate()/2;
                     switchRanges.removeFirst();
                     toBandMember = switchRanges.removeFirst().intValue();
                 }
@@ -902,7 +902,6 @@ public class Level {
                     for(int k = 0; k < 4; ++k){
                         GlyphLayout layout = new GlyphLayout(font,controls[k]);
                         float boundSize = hitCBOX.getHeight()*Math.min(0.2f * bandMembers[i].getHeight()/hitCBOX.getHeight(), 0.85f*bandMembers[i].getWidth()/hitCBOX.getWidth());
-                        System.out.println(hitCBOX.getHeight() + " " +  bandMembers[i].getHeight() + " " + bandMembers[i].getWidth());
                         fontScale *= 0.5*Math.min(boundSize/layout.width, boundSize/layout.height);
                         font.getData().setScale(fontScale);
                         layout = new GlyphLayout(font, controls[k]);
@@ -920,7 +919,7 @@ public class Level {
                 }
                 if(isTutorial){
                     bandMembers[i].drawControlBox(canvas, switchCBOX);
-                    String[] controls = InputController.switchKeyBinds(bandMembers.length);
+                    String[] controls = InputController.switchKeyBinds(bandMembers.length - 1);
                     GlyphLayout layout = new GlyphLayout(font,controls[i]);
                     float boundSize = switchCBOX.getHeight()*Math.min(0.2f * bandMembers[i].getHeight()/switchCBOX.getHeight(), 0.85f*bandMembers[i].getWidth()/switchCBOX.getWidth());
                     fontScale *= 0.5*Math.min(boundSize/layout.width, boundSize/layout.height);

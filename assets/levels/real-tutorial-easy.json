@@ -1,19 +1,20 @@
 {
-levelName: "dfasdf"
-levelNumber: 1
-song: "waves"
+levelName: "real-tutorial-easy.json"
+levelNumber: 1,
+	background: basement-background,
+	song: "waves"
 startPosition: 0
 bpm: 85
 fallSpeed: 5
 maxCompetency: 100
-linesPerMember: 4
-thresholdA: 4000
-thresholdB: 3000
-thresholdC: 2000
-thresholdS: 5000
+linesPerMember: 4,
+thresholdA: 90000,
+thresholdB: 75000
+thresholdC: 50000
+thresholdS: 115000
 bandMembers: [
 	{
-		instrument: violin
+		instrument: piano,
 		notes: [
 			{
 				type: beat
@@ -110,6 +111,12 @@ bandMembers: [
 				position: 2032800
 				duration: 0
 				line: 3
+			}
+			{
+				type: switch,
+				position: 3218600,
+				duration: 0
+				line: -1
 			}
 			{
 				type: beat
@@ -316,6 +323,12 @@ bandMembers: [
 				line: 2
 			}
 			{
+				type: switch
+				position: 4895660
+				duration: 0
+				line: -1
+			}
+			{
 				type: beat
 				position: 4980360
 				duration: 0
@@ -432,39 +445,14 @@ bandMembers: [
 		]
 		compFlags: [
 			{
-				rate: 45
-				gain: 45
+				rate: 3
+				gain: 5
 				position: 0
-			}
-			{
-				rate: 45
-				gain: 45
-				position: 474320
-			}
-			{
-				rate: 45
-				gain: 45
-				position: 1075690
-			}
-			{
-				rate: 45
-				gain: 45
-				position: 1558480
-			}
-			{
-				rate: 75
-				gain: 75
-				position: 3218600
-			}
-			{
-				rate: 75
-				gain: 75
-				position: 4895660
 			}
 		]
 	}
 	{
-		instrument: violin
+		instrument: violin,
 		notes: [
 			{
 				type: held
@@ -489,6 +477,30 @@ bandMembers: [
 				position: 999460
 				duration: 84700
 				line: 0
+			}
+			{
+				type: beat
+				position: 1000000
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 1100000
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 1150000
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 1200000
+				duration: 0
+				line: 1
 			}
 			{
 				type: held
@@ -557,6 +569,12 @@ bandMembers: [
 				line: 2
 			}
 			{
+				type: switch
+				position: 4345110
+				duration: 0
+				line: -1
+			}
+			{
 				type: held
 				position: 4387460
 				duration: 152460
@@ -574,17 +592,17 @@ bandMembers: [
 				duration: 220220
 				line: 1
 			}
-		]
+		],
 		compFlags: [
 			{
-				rate: 75
-				gain: 75
-				position: 4345110
+				rate: 2
+				gain: 5
+				position: 0
 			}
 		]
 	}
 	{
-		instrument: violin
+		instrument: voice,
 		notes: [
 			{
 				type: beat
@@ -594,7 +612,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 2168320
+				position: 2066680
 				duration: 0
 				line: -1
 			}
@@ -979,49 +997,19 @@ bandMembers: [
 		]
 		compFlags: [
 			{
+				rate: 1
+				gain: 4
+				position: 0
+			},
+			{
 				rate: 50
 				gain: 15
 				position: 1795640
 			}
-			{
-				rate: 90
-				gain: 90
-				position: 1998920
-			}
-			{
-				rate: 75
-				gain: 75
-				position: 2066680
-			}
-			{
-				rate: 90
-				gain: 90
-				position: 2134440
-			}
-			{
-				rate: 45
-				gain: 45
-				position: 2151380
-			}
-			{
-				rate: 45
-				gain: 45
-				position: 2439360
-			}
-			{
-				rate: 45
-				gain: 45
-				position: 2718870
-			}
-			{
-				rate: 45
-				gain: 45
-				position: 2981440
-			}
 		]
 	}
 	{
-		instrument: violin
+		instrument: drum,
 		notes: [
 			{
 				type: beat
@@ -1232,7 +1220,7 @@ bandMembers: [
 			{
 				rate: 0
 				gain: 2
-				position: 982520
+				position: 0
 			}
 		]
 	}
@@ -1240,16 +1228,28 @@ bandMembers: [
 randomHits: [],
 	"tutorialData": {
 		"autoplayRanges": [
+			0,
+			474320,
+			1075690,
+			1558480,
 			2151380,
-			2439360
+			2439360,
+			2718870,
+			2981440
 		],
 		"switchSamples": [
-			646800,
-			800000
+			2066680,
+			2,
+			3218600,
+			0,
+			4345110,
+			1,
+			4895660,
+			0
 		],
 		"arrowAppear": [
-			88200,
-			352800
+			1998920,
+			2134440
 		]
 	}
 }

@@ -1,8 +1,7 @@
 {
 levelName: PraeludiumMedium
 levelNumber: 1
-levelImage: cafe
-background: cafe-background
+	background: basement-background,
 song: Tutorial
 startPosition: 0
 bpm: 90
