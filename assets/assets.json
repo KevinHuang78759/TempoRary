@@ -114,7 +114,10 @@
         "switch-indicator": "images/bandmember_lanes/switch_indicator_line.png",
         "switch-indicator-hit": "images/bandmember_lanes/switch_indicator_line.png",
         "pointer-arrow": "images/ui/arrow.png",
+
         "paw-indicator": "images/ui/pawindicator.png",
+        "switchCBox" : "images/ui/orange_box.png",
+        "hitCBox": "images/ui/purple_box.png",
 
         "violin-cat": "images/cats/violin_spritesheet.png",
 

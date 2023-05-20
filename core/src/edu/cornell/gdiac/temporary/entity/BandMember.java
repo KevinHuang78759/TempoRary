@@ -2,6 +2,7 @@ package edu.cornell.gdiac.temporary.entity;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Queue;
@@ -545,18 +546,33 @@ public class BandMember {
     }
 
     public void drawPawIndicator(GameCanvas canvas, Texture pawIndicator, int line) {
-        float scale = NOTE_SIZE_SCALE*(width/4)/pawIndicator.getWidth();
+        float scale = Math.min(0.2f * height/pawIndicator.getHeight(), 0.85f* width/pawIndicator.getWidth());
         if (line >= 0) {
             canvas.draw(pawIndicator, Color.WHITE, pawIndicator.getWidth() / 2, pawIndicator.getHeight() / 2,
-                    ((bottomLeftCorner.x + line * width / numLines) + (bottomLeftCorner.x + (line + 1) * width / numLines)) / 2 - 5, hitY,
+                    ((bottomLeftCorner.x + line * width / numLines) + (bottomLeftCorner.x + (line + 1) * width / numLines)) / 2 - 5, 0.65f*height + bottomLeftCorner.y,
                     0.0f, scale, scale);
         }
     }
 
+    public void drawControlBox(GameCanvas canvas, Texture backgroundBox){
+        if(mode == -1){
+            float scale = Math.min(0.2f * height/backgroundBox.getHeight(), 0.85f* width/backgroundBox.getWidth());
+            canvas.draw(backgroundBox, Color.WHITE, backgroundBox.getWidth()/2, backgroundBox.getHeight()/2, bottomLeftCorner.x + width/2f, 0.85f*height + bottomLeftCorner.y, 0f, scale, scale);
+        }
+        else{
+            float scale = Math.min(0.15f * height/backgroundBox.getHeight(), 0.85f* width/(4f*backgroundBox.getWidth()));
+            for(int i = 0; i < 4; ++i){
+                canvas.draw(backgroundBox, Color.WHITE, backgroundBox.getWidth()/2, backgroundBox.getHeight()/2, bottomLeftCorner.x + width/8f+i*width/4f, 0.85f*height + bottomLeftCorner.y, 0f, scale, scale);
+
+            }
+        }
+
+    }
+
     public void drawPawIndicator(GameCanvas canvas, Texture pawIndicator) {
-        float scale = NOTE_SIZE_SCALE*width/pawIndicator.getWidth();
+        float scale = Math.min(0.2f * height/pawIndicator.getHeight(), 0.85f* width/pawIndicator.getWidth());
             canvas.draw(pawIndicator, Color.WHITE, pawIndicator.getWidth() / 2, pawIndicator.getHeight() / 2,
-                    bottomLeftCorner.x + width/2, hitY,
+                    bottomLeftCorner.x + width/2, 0.65f*height + bottomLeftCorner.y,
                     0.0f, scale, scale);
     }
 
