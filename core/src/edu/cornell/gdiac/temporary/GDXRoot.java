@@ -184,8 +184,6 @@ public class GDXRoot extends Game implements ScreenListener {
 			setScreen(calibration);
 			calibration.show();
 		} else if (exitCode == ExitCode.TO_MENU) {
-			if (screen == calibration)
-				System.out.println(calibration.getOffset());
 			screen.hide();
 			menu.setScreenListener(this);
 			setScreen(menu);

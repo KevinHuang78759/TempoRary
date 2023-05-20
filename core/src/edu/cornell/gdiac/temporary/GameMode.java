@@ -314,7 +314,6 @@ public class GameMode implements Screen {
 		} else if (diff==3) {
 			return "hard";
 		} else{
-			System.out.println("difficulty not selected");
 			return "easy";
 		}
 	}

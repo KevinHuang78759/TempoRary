@@ -619,10 +619,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                 }
             } else{
                 if (tutorialIdx==4){
-                    System.out.println("tutiral ready pressed1");
                     if (isButtonPressed(screenX, screenY, tutorialReady, tutorialReadyCoords, 0.9f*scale)) {
-
-                        System.out.println("tutiral ready pressed");
                         tutorialIdx=0;
                         howToPlayPressed = false;
                     }
