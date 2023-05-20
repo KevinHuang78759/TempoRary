@@ -15,7 +15,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
@@ -101,7 +100,9 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     // SCENES FOR THE SETTINGS PAGE
     private Stage stage;
     private Table mainTable;
+    private final Table controlTable = new Table();
     private Container<Table> tableContainer;
+    private ButtonGroup<TextButton> buttonGroup;
     private Dialog dialog;
 
     // styles
@@ -138,6 +139,14 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private Texture scrollBackground;
     private Texture listSelectBackground;
     private Texture dialogBackground;
+    private Texture leftButtonGroup;
+    private Texture middleButtonGroup;
+    private Texture rightButtonGroup;
+    private Texture buttonGroupSelected;
+    private Texture leftButtonGroupSelected;
+    private Texture rightButtonGroupSelected;
+
+    private Texture switchSelectBackground;
 
     // fonts
     private BitmapFont blinkerBold;
@@ -208,6 +217,14 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         dialogBackground = directory.getEntry("dialog-background", Texture.class);
         calibrationButton = directory.getEntry("calibration-button", Texture.class);
         calibrationButtonPressed = directory.getEntry("calibration-button-pressed", Texture.class);
+        leftButtonGroup = directory.getEntry("left-button-group", Texture.class);
+        middleButtonGroup = directory.getEntry("middle-button-group", Texture.class);
+        rightButtonGroup = directory.getEntry("right-button-group", Texture.class);
+        leftButtonGroupSelected = directory.getEntry("left-selected-button-group", Texture.class);
+        buttonGroupSelected = directory.getEntry("button-group-selected", Texture.class);
+        rightButtonGroupSelected = directory.getEntry("right-selected-button-group", Texture.class);
+
+        switchSelectBackground = directory.getEntry("switch-select-background", Texture.class);
 
         keyImageMap.put("Left", directory.getEntry("left-arrow-graphic", Texture.class));
         keyImageMap.put("Right", directory.getEntry("right-arrow-graphic", Texture.class));
@@ -265,16 +282,13 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
         windowStyle.background = new TextureRegionDrawable(dialogBackground);
         windowStyle.titleFont = blinkerRegular;
-
     }
 
     // TODO: ADD A WAY TO RESET ALL SETTINGS AND CLEAR SAVE DATA
     private void addSceneElements() {
         // MAIN TABLE IS 3 COLUMNS, EACH TABLE ADDED SHOULD SPAN 3 COLUMNS
-
         Table headerTable = new Table();
         Table switchTable = new Table();
-        final Table controlTable = new Table();
         Table volumeTable = new Table();
 
         final Button backButton = new Button(backButtonStyle);
@@ -360,13 +374,12 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
                     }
                     dialog.hide(null);
                 }
-                // TODO: GET RID OF THIS!!!!!!!!!
                 controlTable.clear();
                 regenerateControlTable(controlTable);
                 return true;
             }
 
-            public boolean keyUp (InputEvent event, int keycode) {
+            public boolean keyUp(InputEvent event, int keycode) {
                 return true;
             }
         });
@@ -385,9 +398,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 s.playSound(0, 0.3f);
                 SaveManager.getInstance().saveSettings(InputController.triggerBindingsMain,
-                        InputController.triggerBindingsAlt,
                         InputController.switchesBindingsMain,
-                        InputController.switchesBindingsAlt,
                         musicVolume,
                         soundFXVolume);
                 switchToHome();
@@ -430,53 +441,61 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     }
 
     private void regenerateControlTable(final Table table) {
+        // button group
+        HorizontalGroup horizontalGroup = new HorizontalGroup();
+        buttonGroup = new ButtonGroup<>();
+
+        for (int i = 1; i < InputController.MAX_BAND_MEMBERS; i++) {
+            TextButton.TextButtonStyle tempStyle = new TextButton.TextButtonStyle();
+            if (i == 1) {
+                tempStyle.up = new TextureRegionDrawable(leftButtonGroup);
+                tempStyle.checked = new TextureRegionDrawable(leftButtonGroupSelected);
+            } else if (i == InputController.MAX_BAND_MEMBERS - 1) {
+                tempStyle.up = new TextureRegionDrawable(rightButtonGroup);
+                tempStyle.checked = new TextureRegionDrawable(rightButtonGroupSelected);
+            } else {
+                tempStyle.up = new TextureRegionDrawable(middleButtonGroup);
+                tempStyle.checked = new TextureRegionDrawable(buttonGroupSelected);
+            }
+            tempStyle.checkedFontColor = Color.WHITE;
+            tempStyle.font = blinkerSemiBoldSmaller;
+            tempStyle.fontColor = fontColor;
+            TextButton memberSelectButton = new TextButton(i + 1 + " Members", tempStyle);
+
+            buttonGroup.add(memberSelectButton);
+
+            memberSelectButton.setChecked(i == currBandMemberCount - 1);
+            horizontalGroup.addActor(memberSelectButton);
+        }
+
         // controls for note hits
         table.add(new Label("Note Hits", labelStyle)).padBottom(30).expandX();
         String[] currentTriggerKeybinds = InputController.triggerKeyBinds(true);
-        String[] currentTriggerKeybindsAlt = InputController.triggerKeyBinds(false);
 
         for (int i = 0; i < 4; i++) {
-            table.add(getControlWidget(i + 1, currentTriggerKeybinds[i], currentTriggerKeybindsAlt[i], fishOutline)).padBottom(30);
+            table.add(getControlWidget(i + 1, currentTriggerKeybinds[i], fishOutline)).padBottom(30);
         }
 
         table.row();
 
+        table.add();
+        table.add(horizontalGroup).colspan(4).left();
+        table.row();
+
         // controls for switching
-        VerticalGroup membersLabel = new VerticalGroup();
-        membersLabel.addActor(new Label("Members Switches", labelStyle));
+        table.add(new Label("Members Switches", labelStyle));
 
-        final SelectBox<Integer> dropdown = new SelectBox<>(dropdownStyle);
-        dropdown.setItems(2, 3, 4);
-        dropdown.setSelected(currBandMemberCount);
-        dropdown.setAlignment(Align.center);
-        dropdown.getList().setAlignment(Align.center);
-        dropdown.getList().setSelected(currBandMemberCount);
-        membersLabel.addActor(dropdown);
-
-        table.add(membersLabel).expandX().fillX();
-        String[] currentSwitchKeybinds = InputController.switchKeyBinds(currBandMemberCount - 1, true);
-        String[] currentSwitchKeybindsAlt = InputController.switchKeyBinds(currBandMemberCount - 1, false);
+        String[] currentSwitchKeybinds = InputController.switchKeyBinds(currBandMemberCount - 1);
 
         for (int i = 0; i < currBandMemberCount; i++) {
-            table.add(getControlWidget(i + 1, currentSwitchKeybinds[i], currentSwitchKeybindsAlt[i], catOutline)).expandX();
+            table.add(getControlWidget(i + 1, currentSwitchKeybinds[i], catOutline)).expandX();
         }
         for (int i = 0; i < 4 - currBandMemberCount; i++) {
             table.add(new Table()).expandX();
         }
-
-        dropdown.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent changeEvent, Actor actor) {
-                s.playSound(0, 0.3f);
-                currBandMemberCount = dropdown.getSelected();
-                table.clear();
-                regenerateControlTable(table);
-            }
-        });
     }
 
-    // TODO: FIX THIS SO THAT WE DON'T HAVE TO CREATE NEW TABLES EVERY TIME
-    private Table getControlWidget(final int nth, final String primaryKeybind, String secondaryKeybind, final Texture outlineImage) {
+    private Table getControlWidget(final int nth, final String primaryKeybind, final Texture outlineImage) {
         Table tempTable = new Table();
         tempTable.add(new Label("" + nth + "", boldLabelStyle));
 
@@ -484,9 +503,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
         Image image = new Image(outlineImage);
         tempTable.add(image);
-
-        VerticalGroup stack = new VerticalGroup();
-        stack.space(10);
 
         TextButton.TextButtonStyle primaryKeyStyle = new TextButton.TextButtonStyle();
         TextButton.TextButtonStyle secondaryKeyStyle = new TextButton.TextButtonStyle();
@@ -515,20 +531,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
             ((TextButton) primaryKeyButton).getStyle().downFontColor = Color.WHITE;
         }
 
-        final Button secondaryKeyButton = keyImageMap.get(secondaryKeybind) != null ?
-                new ImageButton(new TextureRegionDrawable(keyImageMap.get(secondaryKeybind))) : new TextButton(secondaryKeybind, secondaryKeyStyle);
-        if (secondaryKeybind.equals("")) {
-            secondaryKeyButton.getStyle().up = new TextureRegionDrawable(secondaryBoxUnbound);
-        } else {
-            secondaryKeyButton.getStyle().up = new TextureRegionDrawable(secondaryBox);
-        }
-        secondaryKeyButton.getStyle().down = new TextureRegionDrawable(secondaryBoxActive);
-        secondaryKeyButton.getStyle().checked = new TextureRegionDrawable(secondaryBoxActive);
-        if (secondaryKeyButton instanceof TextButton) {
-            ((TextButton) secondaryKeyButton).getStyle().checkedFontColor = Color.WHITE;
-            ((TextButton) secondaryKeyButton).getStyle().downFontColor = Color.WHITE;
-        }
-
         ChangeListener buttonChangeListener = new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -542,13 +544,9 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
             }
         };
 
-        stack.addActor(primaryKeyButton);
-        stack.addActor(secondaryKeyButton);
+        tempTable.add(primaryKeyButton);
 
         primaryKeyButton.addListener(buttonChangeListener);
-        secondaryKeyButton.addListener(buttonChangeListener);
-
-        tempTable.add(stack);
 
         return tempTable;
     }
@@ -602,6 +600,8 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
         tableContainer.pad(50);
 
+        buttonGroup = new ButtonGroup<>();
+
         // fonts
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Blinker-Bold.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -621,7 +621,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
         // Compute the dimensions from the canvas
         resize(canvas.getWidth(),canvas.getHeight());
-        currBandMemberCount = 4;
+        currBandMemberCount = 2;
         musicVolume = SaveManager.getInstance().getMusicVolume();
         soundFXVolume = SaveManager.getInstance().getFXVolume();
         active = false;
@@ -635,6 +635,12 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
                     draw();
                     break;
                 case SETTINGS:
+                    int prev = currBandMemberCount;
+                    currBandMemberCount = buttonGroup.getCheckedIndex() + 2;
+                    if (prev != currBandMemberCount) {
+                        controlTable.clear();
+                        regenerateControlTable(controlTable);
+                    }
                     drawSettings();
                     break;
             }
@@ -659,7 +665,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         canvas.draw(logo, Color.WHITE, logo.getWidth()/2, logo.getHeight()/2,
                 canvas.getWidth()/2, 0.65f * canvas.getHeight(), 0, 0.52f * scale, 0.52f * scale);
 
-        canvas.draw(catOrnament, 0, 0, canvas.getWidth(), canvas.getHeight());
+        canvas.drawBackground(catOrnament, 0, 0);
 
         if (pressState == PLAY_PRESSED || hoverState == PLAY_HOVERED) {
             canvas.draw(playButtonHover, Color.WHITE, playButtonHover.getWidth() / 2, playButton.getHeight() / 2,

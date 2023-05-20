@@ -520,7 +520,7 @@
 		}
 	,
 		{
-			"instrument" : "piano",
+			"instrument" : "violin",
 			"notes" : [
 				{
 					"type" : "switch",
@@ -1379,7 +1379,7 @@
 		}
 	,
 		{
-			"instrument" : "piano",
+			"instrument" : "voice",
 			"notes" : [
 				{
 					"type" : "switch",
@@ -2250,7 +2250,7 @@
 		}
 	,
 		{
-			"instrument" : "piano",
+			"instrument" : "drum",
 			"notes" : [
 				{
 					"type" : "switch",

@@ -6,13 +6,13 @@ background: cafe-background
 song: challenger
 startPosition: 0
 bpm: 144
-fallSpeed: 10
+fallSpeed: 7
 maxCompetency: 100
 linesPerMember: 4
-thresholdA: 40000
-thresholdB: 30000
-thresholdC: 20000
-thresholdS: 50000
+thresholdA: 150000
+thresholdB: 170000
+thresholdC: 190000
+thresholdS: 210000
 bandMembers: [
 	{
 		instrument: piano
@@ -1706,8 +1706,8 @@ bandMembers: [
 		]
 		compFlags: [
 			{
-				rate: 4
-				gain: 3
+				rate: 3
+				gain: 4
 				position: 0
 			}
 			{
@@ -1717,31 +1717,31 @@ bandMembers: [
 			}
 			{
 				rate: 4
-				gain: 2
+				gain: 3
 				position: 1377900
 			}
 			{
 				rate: 4
-				gain: 1
+				gain: 2
 				position: 2314872
 			}
 			{
-				rate: 4
-				gain: 3
+				rate: 3
+				gain: 4
 				position: 2406732
 			}
 			{
-				rate: 6
-				gain: 3
+				rate: 4
+				gain: 4
 				position: 2682312
 			}
 			{
 				rate: 4
-				gain: 1
+				gain: 2
 				position: 3306960
 			}
 			{
-				rate: 9
+				rate: 6
 				gain: 2
 				position: 3398820
 			}
@@ -1909,13 +1909,13 @@ bandMembers: [
 			{
 				type: held
 				position: 1019646
-				duration: 128604
+				duration: 64302
 				line: 1
 			}
 			{
 				type: held
 				position: 1019646
-				duration: 128604
+				duration: 64302
 				line: 3
 			}
 			{
@@ -1975,14 +1975,14 @@ bandMembers: [
 			{
 				type: held
 				position: 1313598
-				duration: 124011
-				line: 0
+				duration: 64302
+				line: 2
 			}
 			{
 				type: held
 				position: 1313598
-				duration: 124011
-				line: 2
+				duration: 64302
+				line: 0
 			}
 			{
 				type: switch
@@ -3097,8 +3097,8 @@ bandMembers: [
 		]
 		compFlags: [
 			{
-				rate: 4
-				gain: 1
+				rate: 3
+				gain: 4
 				position: 0
 			}
 			{
@@ -3108,17 +3108,17 @@ bandMembers: [
 			}
 			{
 				rate: 4
-				gain: 1
+				gain: 2
 				position: 2314872
 			}
 			{
-				rate: 4
-				gain: 3
+				rate: 3
+				gain: 4
 				position: 2737428
 			}
 			{
 				rate: 4
-				gain: 1
+				gain: 2
 				position: 3306960
 			}
 			{
