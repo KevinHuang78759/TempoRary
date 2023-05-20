@@ -3,6 +3,9 @@ package edu.cornell.gdiac.temporary;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
@@ -25,6 +28,11 @@ public class Level {
 
     private Texture hitCBOX;
     private Texture switchCBOX;
+
+    private FreeTypeFontGenerator fontGenerator;
+
+    private BitmapFont font;
+    private FreeTypeFontGenerator.FreeTypeFontParameter fontParameter;
 
     public BandMember[] getBandMembers() {
         return bandMembers;
@@ -490,6 +498,12 @@ public class Level {
         // need autoplay ranges, need switch ranges, need random hit
         JsonValue tutorialData = data.get("tutorialData");
         if (tutorialData != null) {
+            fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Blinker-SemiBold.ttf"));
+
+            fontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+            fontParameter.size = 96;
+            font = fontGenerator.generateFont(fontParameter);
+            fontScale = 1f;
             isTutorial = true;
 
             autoplayRanges = new Queue<>();
@@ -832,7 +846,7 @@ public class Level {
      * @return
      */
     public boolean hasUnlocked(){ return true; };
-
+    float fontScale;
     /**
      * this draws everything the level needs to display on the given canvas
      * @param canvas - what are we drawing on
@@ -868,6 +882,18 @@ public class Level {
                 }
                 if(isTutorial){
                     bandMembers[i].drawControlBox(canvas, hitCBOX);
+                    String[] controls = InputController.triggerKeyBinds(true);
+                    GlyphLayout l = new GlyphLayout(font,controls[0]);
+                    float boundSize = hitCBOX.getHeight()*Math.min(0.2f * bandMembers[i].getHeight()/hitCBOX.getHeight(), 0.85f*bandMembers[i].getWidth()/hitCBOX.getWidth());
+                    fontScale *= 0.2f*boundSize/l.width;
+                    font.getData().setScale(fontScale);
+                    for(int k = 0; k < 4; ++k){
+                        GlyphLayout layout = new GlyphLayout(font,controls[k]);
+
+
+                        font.setColor(Color.WHITE);
+                        canvas.drawTextSetColor(controls[k], font, bandMembers[i].getBottomLeft().x + bandMembers[i].getWidth()/8f + k*bandMembers[i].getWidth()/4f - layout.width/2, 0.85f*bandMembers[i].getHeight()+ bandMembers[i].getBottomLeft().y + layout.height/2);
+                    }
                 }
             }
             //Otherwise just draw the switch notes, and we only have 1 hit bar to draw
@@ -879,6 +905,13 @@ public class Level {
                 }
                 if(isTutorial){
                     bandMembers[i].drawControlBox(canvas, switchCBOX);
+                    String[] controls = InputController.switchKeyBinds(bandMembers.length,true);
+                    GlyphLayout layout = new GlyphLayout(font,controls[i]);
+                    float boundSize = switchCBOX.getHeight()*Math.min(0.2f * bandMembers[i].getHeight()/switchCBOX.getHeight(), 0.85f*bandMembers[i].getWidth()/switchCBOX.getWidth());
+                    fontScale *= 0.2f*boundSize/layout.width;
+                    font.getData().setScale(fontScale);
+                    font.setColor(Color.WHITE);
+                    canvas.drawTextSetColor(controls[i], font, bandMembers[i].getBottomLeft().x + bandMembers[i].getWidth()/2f - layout.width/2f, 0.85f*bandMembers[i].getHeight()+ bandMembers[i].getBottomLeft().y + layout.height/2);
                 }
             }
         }
