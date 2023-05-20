@@ -8,6 +8,8 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonReader;
@@ -15,6 +17,10 @@ import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.ScreenListener;
+
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     SoundController<Integer> s;
@@ -98,6 +104,8 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     /** Standard window height (for scaling) */
     private static int STANDARD_HEIGHT = 800;
 
+    Map<String, Texture> letterGrades =new HashMap<>();
+
 
     /** hardButton x and y coordinates represented as a vector */
     private Vector2 hardButtonCoords;
@@ -122,6 +130,8 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     private Vector2 goRightCoords;
 
     private AssetDirectory directory;
+    private Texture scoreBox;
+    private Texture scoreLine;
 
     private int EASY = 1;
     private int MEDIUM = 2;
@@ -145,6 +155,8 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     float albumScales[];
 
     static int nLevels;
+
+    private BitmapFont blinkerBold;
 
 
     public LevelSelect(GameCanvas canvas) {
@@ -201,11 +213,20 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         return selectedJson;
     }
 
+    FreeTypeFontGenerator generator;
+    FreeTypeFontGenerator.FreeTypeFontParameter parameter;
+
+
     /**
      * Parse information about the levels .
      *
      */
     public void populate(AssetDirectory assetDirectory) {
+        generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Blinker-Bold.ttf"));
+        parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 30;
+        blinkerBold = generator.generateFont(parameter);
+
         s.addSound(0, "sound/click.ogg");
         directory  = assetDirectory;
         background  = directory.getEntry("background",Texture.class); //menu background
@@ -231,8 +252,20 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         hardButtonInactive = directory.getEntry("hard-inactive",Texture.class);
         goLeft = directory.getEntry("level-select-left",Texture.class);
         goRight = directory.getEntry("level-select-right",Texture.class);
+//        Texture d = directory.getEntry("score-d",Texture.class);
+//        letterGrades.put("d",d);
+//        Texture c = directory.getEntry("score-c",Texture.class);
+//        letterGrades.put("c", c);
+//        Texture b =  directory.getEntry("score-b",Texture.class);
+//        letterGrades.put("b", b);
+//        Texture a =  directory.getEntry("score-a",Texture.class);
+//        letterGrades.put("a",a);
+//        Texture s =  directory.getEntry("score-s",Texture.class);
+//        letterGrades.put("s", s);
         levelBackground = directory.getEntry("level-select-background", Texture.class);
-//      album covers are called 1, 2, 3 and so on in assets.json
+        scoreBox = directory.getEntry("score-box",Texture.class);
+        scoreLine = directory.getEntry("score-box-line",Texture.class);
+        // album covers are called 1, 2, 3 and so on in assets.json
         for (int i = 0; i < numSongs; i++){
             albumCovers[i] = directory.getEntry(Integer.toString(i+1),Texture.class);
         }
@@ -248,20 +281,22 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         float sy = ((float)height)/STANDARD_HEIGHT;
 
         scale = (sx < sy ? sx : sy);
-        centerScale = 0.65f*scale;
-        cornerScale = 0.45f*scale;
+//        centerScale = 0.65f*scale;
+//        cornerScale = 0.45f*scale;
+        centerScale = (float) (0.09f* Math.log(width));
+        cornerScale = (float) (0.07f* Math.log(width));
         goBackCoords=new Vector2 (width/12f, height*9f/10f);
-        goLeftCoords = new Vector2(width/10f,height/2f);
-        goRightCoords = new Vector2(width-(width/10f),height/2f);
-        playButtonCoords = new Vector2(width/2f,height/9f);
-        mediumButtonCoords = new Vector2(width/2f , height/3.7f);
-        easyButtonCoords = new Vector2((width/2f)-(width/10f), height/3.7f);
-        hardButtonCoords = new Vector2((width/2f)+(width/10f), height/3.7f);
+        goLeftCoords = new Vector2(width/14f,height/2f);
+        goRightCoords = new Vector2(width-(width/14f),height/2f);
+        playButtonCoords = new Vector2(width/2f,height*0.15f);
+        mediumButtonCoords = new Vector2(width/2f , height*0.35f);
+        easyButtonCoords = new Vector2((width/2f)-(width/10f), height*0.35f);
+        hardButtonCoords = new Vector2((width/2f)+(width/10f), height*0.35f);
         drawLeft=false;
         albumCoverLeftX = width/4f;
         albumCoverMiddleX = width/2f;
-        albumCoverRightX = width*3f/4f;
-        albumCoverY = height*7/12;
+        albumCoverRightX = width/2f + width/4f;
+        albumCoverY = height*0.55f;
         if (selectedLevel+1< numSongs){
             albumCoverCoords[selectedLevel+1] = new Vector2(albumCoverRightX,albumCoverY);
             albumScales[selectedLevel+1] = cornerScale;
@@ -298,21 +333,8 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         canvas.draw(goBack, Color.WHITE, goBack.getWidth()/2, goBack.getHeight()/2,
                 goBackCoords.x, goBackCoords.y, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 
-        // draw easy, medium, and hard buttons
-        Texture tempEasy = (hoverState == EASY_HOVERED ? easyButton: easyButtonInactive);
-        canvas.draw(tempEasy, Color.WHITE, easyButton.getWidth()/2, easyButton.getHeight()/2,
-                easyButtonCoords.x, easyButtonCoords.y, 0, 0.4f*scale, 0.4f*scale);
-
-        Texture tempMedium = (hoverState == MEDIUM_HOVERED ? mediumButton: mediumButtonInactive);
-        canvas.draw(tempMedium, Color.WHITE, mediumButton.getWidth()/2, mediumButton.getHeight()/2,
-                mediumButtonCoords.x, mediumButtonCoords.y, 0, 0.4f*scale, 0.4f*scale);
-
-        Texture tempHard = (selectedDifficulty == HARD_HOVERED ? hardButton: hardButtonInactive);
-        canvas.draw(tempHard, Color.WHITE, hardButton.getWidth()/2, hardButton.getHeight()/2,
-                hardButtonCoords.x, hardButtonCoords.y, 0, 0.4f*scale, 0.4f*scale);
-
         canvas.draw(levelGhost, Color.WHITE, hardButton.getWidth()/2, hardButton.getHeight()/2,
-                canvas.getWidth()/4f, canvas.getHeight()/9f, 0, BUTTON_SCALE*scale*0.1f, BUTTON_SCALE*scale*0.1f);
+                canvas.getWidth()/4f, canvas.getHeight()/12f, 0, BUTTON_SCALE*scale*0.1f, BUTTON_SCALE*scale*0.1f);
 
         // draw each song
         if (selectedLevel>=1){ //check that if there are a song to the left; if so, draw.
@@ -346,14 +368,62 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         }
 
         if (hoverState == PLAY_HOVERED){
-            canvas.draw(playButton, Color.WHITE, playButton.getWidth()/2f, playButton.getHeight()/2f,
+            canvas.draw(playButton, Color.WHITE, playButton.getWidth()/2f, playButtonInactive.getHeight()/2f,
                     playButtonCoords.x, playButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
         }else{
             canvas.draw(playButtonInactive, Color.WHITE, playButtonInactive.getWidth()/2f, playButtonInactive.getHeight()/2f,
                     playButtonCoords.x,playButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
         }
 
+        // draw easy, medium, and hard buttons
+        Texture tempEasy = (hoverState == EASY_HOVERED || selectedDifficulty==1? easyButton: easyButtonInactive);
+        canvas.draw(tempEasy, Color.WHITE, easyButton.getWidth()/2, easyButton.getHeight()/2,
+                easyButtonCoords.x, easyButtonCoords.y, 0, 0.4f*scale, 0.4f*scale);
+
+        Texture tempMedium = (hoverState == MEDIUM_HOVERED || selectedDifficulty==2 ? mediumButton: mediumButtonInactive);
+        canvas.draw(tempMedium, Color.WHITE, mediumButton.getWidth()/2, mediumButton.getHeight()/2,
+                mediumButtonCoords.x, mediumButtonCoords.y, 0, 0.4f*scale, 0.4f*scale);
+
+        Texture tempHard = (selectedDifficulty == HARD_HOVERED || selectedDifficulty==3 ? hardButton: hardButtonInactive);
+        canvas.draw(tempHard, Color.WHITE, hardButton.getWidth()/2, hardButton.getHeight()/2,
+                hardButtonCoords.x, hardButtonCoords.y, 0, 0.4f*scale, 0.4f*scale);
+
+
+        // draw past scores
+        drawPastScores(1, 2,1000000,"S",1000, true);
+
         canvas.end();
+    }
+
+    /**
+     * Draw past scores, if possible
+     *
+     */
+    private void drawPastScores(int level, int diff, int pastScore, String letterGrade, int combo, boolean hasData){
+        if (hasData&& level == selectedLevel && diff ==selectedDifficulty ){
+//            System.out.println(letterGrades.values());
+            canvas.draw(scoreBox, Color.WHITE, scoreBox.getWidth()/2f, scoreBox.getHeight()/2f,
+                    canvas.getWidth()/2f, canvas.getHeight()*0.85f, 0, scale, scale);
+
+            canvas.draw(scoreLine, Color.WHITE, scoreLine.getWidth()/2f, scoreLine.getHeight()/2f,
+                    canvas.getWidth()/2f+scoreLine.getWidth()/4, canvas.getHeight()*0.85f, 0, 0.85f*scale, 0.85f*scale);
+
+            parameter.size = 40;
+            canvas.drawText("Combo "+combo, blinkerBold,canvas.getWidth()/2f+scoreLine.getWidth()/10,
+                    canvas.getHeight()*0.9f, Color.valueOf("FF00FE"));
+
+            canvas.drawText(Integer.toString(pastScore), blinkerBold,canvas.getWidth()/2f+scoreLine.getWidth()/10,
+                    canvas.getHeight()*0.85f, Color.valueOf("1531D7"));
+
+//            Texture pastLetterGrade = letterGrades.get(letterGrade);
+            Texture pastLetterGrade = directory.getEntry("score-s",Texture.class);
+            canvas.draw(pastLetterGrade, Color.WHITE, pastLetterGrade.getWidth()/2f, pastLetterGrade.getHeight()/2f,
+                    canvas.getWidth()/2f-scoreBox.getWidth()/3, canvas.getHeight()*0.85f, 0, 0.55f*scale,
+                    0.55f*scale);
+
+        }
+
+
     }
 
     /**
@@ -404,6 +474,12 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
      */
     private boolean isInTransition;
 
+
+    private static final int NO_BUTTON_PRESSED = 206;
+    private static final int EASY_PRESSED = 208;
+    private static final int MEDIUM_PRESSED = 209;
+    private static final int HARD_PRESSED = 210;
+
     /**
      * Called when the screen was touched or a mouse button was pressed.
      *
@@ -429,6 +505,8 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             if (isButtonPressed(screenX, screenY, easyButton, easyButtonCoords, 0.4f*scale)) {
                 s.playSound(0, 0.3f);
                 selectedDifficulty = 1;
+
+
             }
 
             if (isButtonPressed(screenX, screenY, mediumButton, mediumButtonCoords, 0.4f*scale)) {

@@ -98,11 +98,8 @@ public class GameMode implements Screen {
 	/** Button textures */
 	private Texture resumeButton;
 	private Texture restartButton;
-
 	private Texture levelAlbumCover;
-
 	private Texture ruinShow;
-
 	private Texture resultIcon;
 	private Texture difficultyIcon;
 	private Texture levelButton;
