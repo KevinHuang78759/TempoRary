@@ -741,6 +741,30 @@ public class Level {
             bandMembers[i].recieveSample(sample);
             bandMembers[i].pickFrame();
         }
+
+        JsonValue tutorialData = data.get("tutorialData");
+        if (tutorialData != null) {
+            isTutorial = true;
+
+            autoplayRanges = new Queue<>();
+            switchRanges = new Queue<>();
+            arrowAppear = new Queue<>();
+
+            long[] autoplayRanges = tutorialData.get("autoplayRanges").asLongArray();
+            for (long val : autoplayRanges) {
+                this.autoplayRanges.addLast(val);
+            }
+
+            long[] switchRanges = tutorialData.get("switchSamples").asLongArray();
+            for (long val : switchRanges) {
+                this.switchRanges.addLast(val);
+            }
+
+            long[] arrowAppear = tutorialData.get("arrowAppear").asLongArray();
+            for (long val : arrowAppear) {
+                this.arrowAppear.addLast(val);
+            }
+        }
     }
 
     public void stopMusic() {
@@ -794,12 +818,16 @@ public class Level {
             //draw the character sprite and the comp bar
             bandMembers[i].drawCharacterSprite(canvas);
             bandMembers[i].drawHPBar(canvas);
+
             //If we are the goal of the active lane we need to draw separation lines and held/beat notes
             //We also need to draw a separate hit bar for each line
             if(active == i || goal == i){
                 bandMembers[i].drawHitNotes(canvas);
                 bandMembers[i].drawLineSeps(canvas, sepLine);
                 bandMembers[i].drawIndicator(canvas, noteIndicator, noteIndicatorHit, triggers);
+                if (isArrowAppearing()) {
+                    bandMembers[i].drawArrow(canvas);
+                }
             }
             //Otherwise just draw the switch notes, and we only have 1 hit bar to draw
             else{

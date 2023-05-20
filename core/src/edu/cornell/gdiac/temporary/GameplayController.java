@@ -281,11 +281,11 @@ public class GameplayController {
 	 */
 	public void resize(int width, int height){
 		setBounds(width, height);
+		level.setBounds(new Vector2(totalWidth, totalHeight*0.05f), new Vector2(0f,0f));
 		setWidths();
 		setYVals();
 		updateBandMemberCoords();
 	}
-
 
 	/**
 	 * Sets the offset in determining beat calculation, converting it to samples
@@ -475,9 +475,9 @@ public class GameplayController {
 		level.receiveInterrupt(activeBandMember, DF, JK, MISS);
 		level.updateCompRates();
 
-		if (!level.isInAutoplayRange()) {
-			InputController.getInstance().setAutoplay(false);
-		}
+//		if (!level.isInAutoplayRange()) {
+//			InputController.getInstance().setAutoplay(false);
+//		}
 	}
 
 	/**
@@ -510,8 +510,6 @@ public class GameplayController {
 	 * The maximum number of lines per lane
 	 */
 	public int lpl = 4;
-
-
 
 	/**
 	 * Garbage collect for note indicators.

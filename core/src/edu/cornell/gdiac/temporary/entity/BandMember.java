@@ -30,7 +30,6 @@ public class BandMember {
         JK = f[4];
         ACTIVE_IDLE = f[5];
         MISS = f[6];
-
     }
     boolean done;
     float sample;
@@ -47,6 +46,7 @@ public class BandMember {
     public void setSPB(float s){
         samplesPerBeat = s;
     }
+
     private enum ACTIVE_STATE{
         IDLE,MISS,DF,JK
     }
@@ -256,6 +256,12 @@ public class BandMember {
     private Texture missIndicator;
 
     private FilmStrip characterSprite;
+
+    private Texture arrow;
+
+    public void setArrow(Texture arrow) {
+        this.arrow = arrow;
+    }
 
     public void setBottomLeft(Vector2 V){
         bottomLeftCorner = V;
@@ -662,6 +668,13 @@ public class BandMember {
 
     public void drawHPBar(GameCanvas canvas){
         float scale = (bottomLeftCorner.y*4/5)/hpbar.getRegionHeight();
+        float trueHeight = scale*hpbar.getRegionHeight();
+        canvas.draw(hpbar, Color.WHITE, 0, 0, bottomLeftCorner.x + width/10, (bottomLeftCorner.y - trueHeight)/2,
+                0.0f, scale, scale);
+    }
+
+    public void drawArrow(GameCanvas canvas) {
+        float scale = Math.min((bottomLeftCorner.y*4/5)/characterSprite.getRegionHeight(), 1.5f*width/characterSprite.getRegionWidth());
         float trueHeight = scale*hpbar.getRegionHeight();
         canvas.draw(hpbar, Color.WHITE, 0, 0, bottomLeftCorner.x + width/10, (bottomLeftCorner.y - trueHeight)/2,
                 0.0f, scale, scale);
