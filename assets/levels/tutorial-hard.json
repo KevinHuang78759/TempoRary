@@ -1,17 +1,18 @@
 {
-levelName: "tutorial-hard.json",
+levelName: "tutorial-hard.json"
 levelNumber: 1
-	background: basement-background,
+levelImage: basement
+background: basement-background
 song: Tutorial
 startPosition: 0
 bpm: 90
 fallSpeed: 5
 maxCompetency: 100
-linesPerMember: 4
-thresholdA: 4000
-thresholdB: 3000
-thresholdC: 2000
-thresholdS: 5000
+linesPerMember: 4,
+thresholdA: 210000
+	thresholdB: 190000
+	thresholdC: 170000
+	thresholdS: 230000,
 bandMembers: [
 	{
 		instrument: piano

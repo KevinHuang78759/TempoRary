@@ -1,5 +1,5 @@
 {
-levelName: "challenger-medium.json",
+levelName: "challenger-medium.json"
 levelNumber: 1
 levelImage: cafe
 background: cafe-background
@@ -9,10 +9,10 @@ bpm: 144
 fallSpeed: 5
 maxCompetency: 100
 linesPerMember: 4
-thresholdA: 4000
-thresholdB: 3000
-thresholdC: 2000
-thresholdS: 5000
+thresholdA: 150000
+thresholdB: 100000
+thresholdC: 90000
+thresholdS: 50000
 bandMembers: [
 	{
 		instrument: piano
@@ -1844,8 +1844,8 @@ bandMembers: [
 		]
 		compFlags: [
 			{
-				rate: 4
-				gain: 4
+				rate: 3
+				gain: 3
 				position: 0
 			}
 		]
@@ -3356,8 +3356,8 @@ bandMembers: [
 		]
 		compFlags: [
 			{
-				rate: 4
-				gain: 4
+				rate: 3
+				gain: 3
 				position: 0
 			}
 		]

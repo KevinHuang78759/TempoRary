@@ -1,18 +1,18 @@
 {
-levelName: "challenger-hard.json",
+levelName: "challenger-hard.json"
 levelNumber: 1
 levelImage: cafe
 background: cafe-background
 song: challenger
 startPosition: 0
 bpm: 144
-fallSpeed: 7
+fallSpeed: 10
 maxCompetency: 100
 linesPerMember: 4
-thresholdA: 170000
-thresholdB: 190000
-thresholdC: 210000
-thresholdS: 230000
+thresholdA: 190000
+thresholdB: 150000
+thresholdC: 100000
+thresholdS: 250000
 bandMembers: [
 	{
 		instrument: piano
@@ -27,19 +27,19 @@ bandMembers: [
 				type: beat
 				position: 18372
 				duration: 0
-				line: 1
+				line: 0
 			}
 			{
 				type: beat
 				position: 36744
 				duration: 0
-				line: 0
+				line: 1
 			}
 			{
 				type: beat
 				position: 45930
 				duration: 0
-				line: 1
+				line: 0
 			}
 			{
 				type: beat
@@ -51,7 +51,7 @@ bandMembers: [
 				type: beat
 				position: 82674
 				duration: 0
-				line: 1
+				line: 0
 			}
 			{
 				type: beat
@@ -63,61 +63,55 @@ bandMembers: [
 				type: beat
 				position: 110232
 				duration: 0
-				line: 1
+				line: 0
 			}
 			{
 				type: beat
 				position: 146976
 				duration: 0
-				line: 1
+				line: 2
 			}
 			{
 				type: beat
 				position: 165348
 				duration: 0
-				line: 1
+				line: 3
 			}
 			{
 				type: beat
 				position: 183720
 				duration: 0
-				line: 1
+				line: 2
 			}
 			{
 				type: beat
 				position: 192906
 				duration: 0
-				line: 1
+				line: 3
 			}
 			{
 				type: beat
 				position: 211278
 				duration: 0
-				line: 1
+				line: 2
 			}
 			{
 				type: beat
 				position: 229650
 				duration: 0
-				line: 1
+				line: 3
 			}
 			{
 				type: beat
 				position: 238836
 				duration: 0
-				line: 1
+				line: 2
 			}
 			{
 				type: beat
 				position: 257208
 				duration: 0
-				line: 1
-			}
-			{
-				type: switch
-				position: 275580
-				duration: 0
-				line: -1
+				line: 3
 			}
 			{
 				type: beat
@@ -178,12 +172,6 @@ bandMembers: [
 				position: 404184
 				duration: 0
 				line: 0
-			}
-			{
-				type: switch
-				position: 422556
-				duration: 0
-				line: -1
 			}
 			{
 				type: beat
@@ -247,115 +235,115 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 569532
+				position: 551160
 				duration: 0
 				line: -1
 			}
 			{
 				type: beat
-				position: 587904
+				position: 583311
 				duration: 0
 				line: 3
 			}
 			{
 				type: beat
-				position: 606276
+				position: 601683
 				duration: 0
 				line: 1
 			}
 			{
 				type: beat
-				position: 615462
+				position: 610869
 				duration: 0
 				line: 2
 			}
 			{
 				type: beat
-				position: 633834
+				position: 629241
 				duration: 0
 				line: 0
 			}
 			{
 				type: beat
-				position: 652206
+				position: 647613
 				duration: 0
 				line: 2
 			}
 			{
 				type: beat
-				position: 670578
+				position: 665985
 				duration: 0
 				line: 1
 			}
 			{
 				type: beat
-				position: 688950
+				position: 684357
 				duration: 0
 				line: 3
 			}
 			{
 				type: beat
-				position: 707322
+				position: 702729
 				duration: 0
 				line: 0
 			}
 			{
 				type: switch
-				position: 716508
+				position: 702729
 				duration: 0
 				line: -1
 			}
 			{
 				type: beat
-				position: 734880
+				position: 730287
 				duration: 0
 				line: 0
 			}
 			{
 				type: beat
-				position: 753252
+				position: 748659
 				duration: 0
 				line: 1
 			}
 			{
 				type: beat
-				position: 762438
+				position: 757845
 				duration: 0
 				line: 0
 			}
 			{
 				type: beat
-				position: 776217
+				position: 771624
 				duration: 0
 				line: 2
 			}
 			{
 				type: beat
-				position: 794589
+				position: 789996
 				duration: 0
 				line: 1
 			}
 			{
 				type: beat
-				position: 812961
+				position: 808368
 				duration: 0
 				line: 3
 			}
 			{
 				type: beat
-				position: 831333
+				position: 826740
 				duration: 0
 				line: 2
 			}
 			{
 				type: beat
-				position: 849705
+				position: 845112
 				duration: 0
 				line: 3
 			}
 			{
 				type: switch
-				position: 863484
+				position: 845112
 				duration: 0
 				line: -1
 			}
@@ -363,55 +351,49 @@ bandMembers: [
 				type: beat
 				position: 881856
 				duration: 0
-				line: 0
+				line: 1
 			}
 			{
 				type: beat
 				position: 891042
 				duration: 0
-				line: 0
-			}
-			{
-				type: beat
-				position: 900228
-				duration: 0
-				line: 0
+				line: 1
 			}
 			{
 				type: held
 				position: 900228
 				duration: 32151
-				line: 1
+				line: 0
 			}
 			{
 				type: beat
 				position: 932379
 				duration: 0
-				line: 0
-			}
-			{
-				type: beat
-				position: 946158
-				duration: 0
-				line: 0
+				line: 1
 			}
 			{
 				type: beat
 				position: 955344
 				duration: 0
-				line: 0
-			}
-			{
-				type: held
-				position: 973716
-				duration: 27558
 				line: 1
 			}
 			{
 				type: beat
-				position: 1001274
+				position: 964530
 				duration: 0
+				line: 1
+			}
+			{
+				type: held
+				position: 973716
+				duration: 32151
 				line: 0
+			}
+			{
+				type: beat
+				position: 1005867
+				duration: 0
+				line: 1
 			}
 			{
 				type: beat
@@ -571,38 +553,38 @@ bandMembers: [
 			}
 			{
 				type: beat
-				position: 1460574
+				position: 1455981
 				duration: 0
 				line: 1
 			}
 			{
 				type: beat
-				position: 1460574
+				position: 1455981
 				duration: 0
 				line: 2
 			}
 			{
 				type: beat
-				position: 1469760
+				position: 1465167
 				duration: 0
 				line: 1
 			}
 			{
 				type: beat
-				position: 1469760
+				position: 1465167
 				duration: 0
 				line: 2
 			}
 			{
 				type: held
-				position: 1488132
-				duration: 27558
+				position: 1483539
+				duration: 32151
 				line: 1
 			}
 			{
 				type: held
-				position: 1488132
-				duration: 27558
+				position: 1483539
+				duration: 32151
 				line: 2
 			}
 			{
@@ -613,74 +595,74 @@ bandMembers: [
 			}
 			{
 				type: beat
-				position: 1534062
+				position: 1529469
 				duration: 0
 				line: 0
 			}
 			{
 				type: beat
-				position: 1534062
+				position: 1529469
 				duration: 0
 				line: 3
 			}
 			{
 				type: beat
-				position: 1543248
+				position: 1538655
 				duration: 0
 				line: 0
 			}
 			{
 				type: beat
-				position: 1543248
-				duration: 0
-				line: 3
-			}
-			{
-				type: held
-				position: 1561620
-				duration: 27558
-				line: 0
-			}
-			{
-				type: held
-				position: 1561620
-				duration: 27558
-				line: 3
-			}
-			{
-				type: beat
-				position: 1607550
-				duration: 0
-				line: 0
-			}
-			{
-				type: beat
-				position: 1607550
-				duration: 0
-				line: 3
-			}
-			{
-				type: beat
-				position: 1616736
-				duration: 0
-				line: 0
-			}
-			{
-				type: beat
-				position: 1616736
+				position: 1538655
 				duration: 0
 				line: 3
 			}
 			{
 				type: held
-				position: 1635108
-				duration: 22965
+				position: 1557027
+				duration: 32151
+				line: 0
+			}
+			{
+				type: held
+				position: 1557027
+				duration: 32151
+				line: 3
+			}
+			{
+				type: beat
+				position: 1602957
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 1602957
+				duration: 0
+				line: 3
+			}
+			{
+				type: beat
+				position: 1612143
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 1612143
+				duration: 0
+				line: 3
+			}
+			{
+				type: held
+				position: 1630515
+				duration: 32151
 				line: 1
 			}
 			{
 				type: held
-				position: 1635108
-				duration: 22965
+				position: 1630515
+				duration: 32151
 				line: 2
 			}
 			{
@@ -691,20 +673,20 @@ bandMembers: [
 			}
 			{
 				type: beat
-				position: 1681038
+				position: 1676445
 				duration: 0
 				line: 3
 			}
 			{
 				type: beat
-				position: 1690224
+				position: 1685631
 				duration: 0
 				line: 0
 			}
 			{
 				type: held
-				position: 1708596
-				duration: 22965
+				position: 1704003
+				duration: 32151
 				line: 0
 			}
 			{
@@ -715,85 +697,79 @@ bandMembers: [
 			}
 			{
 				type: beat
-				position: 1754526
+				position: 1749933
 				duration: 0
 				line: 1
 			}
 			{
 				type: beat
-				position: 1763712
+				position: 1759119
 				duration: 0
 				line: 1
 			}
 			{
 				type: held
-				position: 1782084
-				duration: 22965
+				position: 1777491
+				duration: 32151
 				line: 1
 			}
 			{
 				type: beat
-				position: 1828014
+				position: 1823421
 				duration: 0
 				line: 2
 			}
 			{
 				type: beat
-				position: 1837200
+				position: 1832607
 				duration: 0
 				line: 2
 			}
 			{
 				type: held
-				position: 1855572
-				duration: 22965
+				position: 1850979
+				duration: 32151
 				line: 2
 			}
 			{
 				type: beat
-				position: 1901502
+				position: 1896909
 				duration: 0
 				line: 1
 			}
 			{
 				type: beat
-				position: 1910688
+				position: 1906095
 				duration: 0
 				line: 1
 			}
 			{
 				type: held
-				position: 1929060
-				duration: 22965
+				position: 1924467
+				duration: 32151
 				line: 1
 			}
 			{
-				type: switch
-				position: 1965804
-				duration: 0
-				line: -1
-			}
-			{
 				type: beat
-				position: 1974990
+				position: 1970397
 				duration: 0
 				line: 1
 			}
 			{
 				type: beat
-				position: 1984176
+				position: 1979583
 				duration: 0
 				line: 1
 			}
 			{
 				type: held
-				position: 2002548
-				duration: 22965
+				position: 1997955
+				duration: 32151
 				line: 2
 			}
 			{
 				type: switch
-				position: 2020920
+				position: 2011734
 				duration: 0
 				line: -1
 			}
@@ -831,23 +807,23 @@ bandMembers: [
 				type: beat
 				position: 2094408
 				duration: 0
-				line: 1
+				line: 2
 			}
 			{
 				type: held
-				position: 2103594
-				duration: 27558
+				position: 2099001
+				duration: 32151
 				line: 1
 			}
 			{
 				type: beat
 				position: 2149524
 				duration: 0
-				line: 1
+				line: 2
 			}
 			{
 				type: switch
-				position: 2167896
+				position: 2149524
 				duration: 0
 				line: -1
 			}
@@ -973,7 +949,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 2425104
+				position: 2415918
 				duration: 0
 				line: -1
 			}
@@ -1050,12 +1026,6 @@ bandMembers: [
 				line: 0
 			}
 			{
-				type: switch
-				position: 2544522
-				duration: 0
-				line: -1
-			}
-			{
 				type: beat
 				position: 2562894
 				duration: 0
@@ -1104,12 +1074,6 @@ bandMembers: [
 				line: 1
 			}
 			{
-				type: switch
-				position: 2618010
-				duration: 0
-				line: -1
-			}
-			{
 				type: beat
 				position: 2636382
 				duration: 0
@@ -1156,12 +1120,6 @@ bandMembers: [
 				position: 2682312
 				duration: 0
 				line: 2
-			}
-			{
-				type: switch
-				position: 2691498
-				duration: 0
-				line: -1
 			}
 			{
 				type: beat
@@ -1219,7 +1177,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 2764986
+				position: 2774172
 				duration: 0
 				line: -1
 			}
@@ -1273,7 +1231,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 2838474
+				position: 2847660
 				duration: 0
 				line: -1
 			}
@@ -1326,12 +1284,6 @@ bandMembers: [
 				line: 0
 			}
 			{
-				type: switch
-				position: 2921148
-				duration: 0
-				line: -1
-			}
-			{
 				type: beat
 				position: 2930334
 				duration: 0
@@ -1342,12 +1294,6 @@ bandMembers: [
 				position: 2944113
 				duration: 0
 				line: 1
-			}
-			{
-				type: switch
-				position: 2948706
-				duration: 0
-				line: -1
 			}
 			{
 				type: beat
@@ -1375,7 +1321,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 3013008
+				position: 2994636
 				duration: 0
 				line: -1
 			}
@@ -1484,6 +1430,120 @@ bandMembers: [
 			{
 				type: beat
 				position: 3288588
+				duration: 0
+				line: 3
+			}
+			{
+				type: switch
+				position: 3398820
+				duration: 0
+				line: -1
+			}
+			{
+				type: beat
+				position: 3430971
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 3430971
+				duration: 0
+				line: 3
+			}
+			{
+				type: beat
+				position: 3449343
+				duration: 0
+				line: 3
+			}
+			{
+				type: beat
+				position: 3463122
+				duration: 0
+				line: 2
+			}
+			{
+				type: beat
+				position: 3472308
+				duration: 0
+				line: 3
+			}
+			{
+				type: beat
+				position: 3490680
+				duration: 0
+				line: 2
+			}
+			{
+				type: beat
+				position: 3509052
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 3518238
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 3541203
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 3577947
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 3577947
+				duration: 0
+				line: 3
+			}
+			{
+				type: beat
+				position: 3596319
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 3610098
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 3619284
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 3637656
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 3656028
+				duration: 0
+				line: 2
+			}
+			{
+				type: beat
+				position: 3665214
+				duration: 0
+				line: 3
+			}
+			{
+				type: beat
+				position: 3683586
 				duration: 0
 				line: 3
 			}
@@ -1878,15 +1938,9 @@ bandMembers: [
 				line: 2
 			}
 			{
-				type: beat
-				position: 289359
-				duration: 0
-				line: 3
-			}
-			{
 				type: held
-				position: 293952
-				duration: 124011
+				position: 289359
+				duration: 133197
 				line: 3
 			}
 			{
@@ -1914,15 +1968,9 @@ bandMembers: [
 				line: 2
 			}
 			{
-				type: beat
-				position: 436335
-				duration: 0
-				line: 3
-			}
-			{
 				type: held
-				position: 440928
-				duration: 124011
+				position: 436335
+				duration: 133197
 				line: 3
 			}
 			{
@@ -1950,74 +1998,62 @@ bandMembers: [
 				line: 2
 			}
 			{
-				type: beat
-				position: 583311
-				duration: 0
-				line: 3
-			}
-			{
 				type: held
-				position: 587904
-				duration: 124011
+				position: 583311
+				duration: 133197
 				line: 3
 			}
 			{
-				type: switch
-				position: 716508
-				duration: 0
-				line: -1
-			}
-			{
 				type: beat
-				position: 734880
+				position: 730287
 				duration: 0
 				line: 3
 			}
 			{
 				type: beat
-				position: 753252
+				position: 748659
 				duration: 0
 				line: 2
 			}
 			{
 				type: beat
-				position: 762438
+				position: 757845
 				duration: 0
 				line: 3
 			}
 			{
 				type: beat
-				position: 776217
+				position: 771624
 				duration: 0
 				line: 1
 			}
 			{
 				type: beat
-				position: 794589
+				position: 789996
 				duration: 0
 				line: 3
 			}
 			{
 				type: beat
-				position: 812961
+				position: 808368
 				duration: 0
 				line: 0
 			}
 			{
 				type: beat
-				position: 831333
+				position: 826740
 				duration: 0
 				line: 1
 			}
 			{
 				type: beat
-				position: 849705
+				position: 845112
 				duration: 0
 				line: 0
 			}
 			{
 				type: switch
-				position: 863484
+				position: 845112
 				duration: 0
 				line: -1
 			}
@@ -2035,7 +2071,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 1010460
+				position: 1005867
 				duration: 0
 				line: -1
 			}
@@ -2119,19 +2155,19 @@ bandMembers: [
 			}
 			{
 				type: beat
-				position: 1322784
+				position: 1318191
 				duration: 0
 				line: 3
 			}
 			{
 				type: beat
-				position: 1341156
+				position: 1336563
 				duration: 0
 				line: 2
 			}
 			{
 				type: beat
-				position: 1350342
+				position: 1345749
 				duration: 0
 				line: 3
 			}
@@ -2268,22 +2304,10 @@ bandMembers: [
 				line: 1
 			}
 			{
-				type: switch
-				position: 1809642
-				duration: 0
-				line: -1
-			}
-			{
 				type: beat
 				position: 1818828
 				duration: 0
 				line: 1
-			}
-			{
-				type: switch
-				position: 1828014
-				duration: 0
-				line: -1
 			}
 			{
 				type: beat
@@ -2304,12 +2328,6 @@ bandMembers: [
 				line: 3
 			}
 			{
-				type: switch
-				position: 1901502
-				duration: 0
-				line: -1
-			}
-			{
 				type: beat
 				position: 1910688
 				duration: 0
@@ -2320,12 +2338,6 @@ bandMembers: [
 				position: 1919874
 				duration: 0
 				line: 3
-			}
-			{
-				type: switch
-				position: 1938246
-				duration: 0
-				line: -1
 			}
 			{
 				type: beat
@@ -2340,12 +2352,6 @@ bandMembers: [
 				line: 2
 			}
 			{
-				type: switch
-				position: 1974990
-				duration: 0
-				line: -1
-			}
-			{
 				type: beat
 				position: 1984176
 				duration: 0
@@ -2358,14 +2364,8 @@ bandMembers: [
 				line: 1
 			}
 			{
-				type: beat
-				position: 2020920
-				duration: 0
-				line: 0
-			}
-			{
 				type: switch
-				position: 2020920
+				position: 2011734
 				duration: 0
 				line: -1
 			}
@@ -2443,7 +2443,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 2167896
+				position: 2149524
 				duration: 0
 				line: -1
 			}
@@ -2593,7 +2593,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 2425104
+				position: 2415918
 				duration: 0
 				line: -1
 			}
@@ -2604,34 +2604,16 @@ bandMembers: [
 				line: 0
 			}
 			{
-				type: switch
-				position: 2507778
-				duration: 0
-				line: -1
-			}
-			{
 				type: held
 				position: 2516964
 				duration: 73488
 				line: 3
 			}
 			{
-				type: switch
-				position: 2581266
-				duration: 0
-				line: -1
-			}
-			{
 				type: held
 				position: 2590452
 				duration: 73488
 				line: 2
-			}
-			{
-				type: switch
-				position: 2654754
-				duration: 0
-				line: -1
 			}
 			{
 				type: held
@@ -2689,7 +2671,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 2792544
+				position: 2783358
 				duration: 0
 				line: -1
 			}
@@ -2718,6 +2700,12 @@ bandMembers: [
 				line: 2
 			}
 			{
+				type: switch
+				position: 2829288
+				duration: 0
+				line: -1
+			}
+			{
 				type: beat
 				position: 2838474
 				duration: 0
@@ -2734,12 +2722,6 @@ bandMembers: [
 				position: 2847660
 				duration: 0
 				line: 0
-			}
-			{
-				type: switch
-				position: 2866032
-				duration: 0
-				line: -1
 			}
 			{
 				type: beat
@@ -2785,7 +2767,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 2939520
+				position: 2944113
 				duration: 0
 				line: -1
 			}
@@ -2833,7 +2815,7 @@ bandMembers: [
 			}
 			{
 				type: switch
-				position: 3013008
+				position: 2994636
 				duration: 0
 				line: -1
 			}
@@ -2986,6 +2968,12 @@ bandMembers: [
 				position: 3288588
 				duration: 0
 				line: 1
+			}
+			{
+				type: switch
+				position: 3683586
+				duration: 0
+				line: -1
 			}
 			{
 				type: beat
@@ -3359,6 +3347,11 @@ bandMembers: [
 				rate: 4
 				gain: 4
 				position: 0
+			}
+			{
+				rate: 5
+				gain: 5
+				position: 863484
 			}
 		]
 	}

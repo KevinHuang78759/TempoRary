@@ -1,7 +1,8 @@
 {
-levelName: "tutorial-medium.json",
+levelName: "tutorial-medium.json"
 levelNumber: 1
-	background: basement-background,
+levelImage: basement
+background: basement-background
 song: Tutorial
 startPosition: 0
 bpm: 90
