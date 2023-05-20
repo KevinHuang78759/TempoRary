@@ -430,7 +430,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             canvas.draw(tempMedium, Color.WHITE, mediumButton.getWidth()/2, mediumButton.getHeight()/2,
                     mediumButtonCoords.x, mediumButtonCoords.y, 0, 0.4f*scale, 0.4f*scale);
 
-            Texture tempHard = (selectedDifficulty == HARD_HOVERED || selectedDifficulty==3 ? hardButton: hardButtonInactive);
+            Texture tempHard = (hoverState == HARD_HOVERED || selectedDifficulty==3 ? hardButton: hardButtonInactive);
             canvas.draw(tempHard, Color.WHITE, tempHard.getWidth()/2, tempHard.getHeight()/2,
                     hardButtonCoords.x, hardButtonCoords.y, 0, 0.4f*scale, 0.4f*scale);
 

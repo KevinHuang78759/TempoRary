@@ -112,7 +112,7 @@ public class GameMode implements Screen {
 	private Texture levelButtonWon;
 
 	/** Play button to display when done */
-	float WON_BUTTON_SCALE = 0.7f;
+	float WON_BUTTON_SCALE = 0.6f;
 
 	private Texture goBack;
 
