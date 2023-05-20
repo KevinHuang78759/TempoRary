@@ -21,6 +21,7 @@ import java.util.PriorityQueue;
 public class Level {
 
     private Texture arrow;
+    private Texture pawIndicator;
 
     public BandMember[] getBandMembers() {
         return bandMembers;
@@ -342,6 +343,7 @@ public class Level {
         frontSplash = new FilmStrip(directory.getEntry("front-splash", Texture.class), 5, 5, 21);
 
         arrow = directory.getEntry("pointer-arrow", Texture.class);
+        pawIndicator = directory.getEntry("paw-indicator", Texture.class);
 
         autoplayBackground = directory.getEntry("autoplay-background", Texture.class);
         progressBackground = directory.getEntry("autoplay-progress-background", Texture.class);
@@ -829,6 +831,10 @@ public class Level {
                 bandMembers[i].drawHitNotes(canvas);
                 bandMembers[i].drawLineSeps(canvas, sepLine);
                 bandMembers[i].drawIndicator(canvas, noteIndicator, noteIndicatorHit, triggers);
+                if (isInAutoplayRange()) {
+                    int j = bandMembers[i].getHitNotes().isEmpty() ? -1 : bandMembers[i].getHitNotes().first().getLine();
+                    bandMembers[i].drawPawIndicator(canvas, pawIndicator, j);
+                }
                 if (isArrowAppearing()) {
                     bandMembers[i].drawArrow(canvas, arrow);
                 }

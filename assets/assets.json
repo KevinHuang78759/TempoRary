@@ -113,6 +113,7 @@
         "switch-indicator": "images/bandmember_lanes/switch_indicator_line.png",
         "switch-indicator-hit": "images/bandmember_lanes/switch_indicator_line.png",
         "pointer-arrow": "images/ui/arrow.png",
+        "paw-indicator": "images/ui/pawindicator.png",
 
         "violin-cat": "images/cats/violin_spritesheet.png",
 

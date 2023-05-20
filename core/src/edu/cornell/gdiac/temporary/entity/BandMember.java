@@ -8,7 +8,6 @@ import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.temporary.*;
 import edu.cornell.gdiac.util.FilmStrip;
 
-import java.util.Map;
 import java.util.PriorityQueue;
 
 
@@ -46,6 +45,7 @@ public class BandMember {
     public void setSPB(float s){
         samplesPerBeat = s;
     }
+
 
     private enum ACTIVE_STATE{
         IDLE,MISS,DF,JK
@@ -541,6 +541,15 @@ public class BandMember {
                     ((bottomLeftCorner.x + i * width/numLines) + (bottomLeftCorner.x +(i+1) * width/numLines)) / 2 - 5, hitY,
                     0.0f, scale, scale);
 //            canvas.drawText(InputController.triggerKeyBinds()[i], displayFont, (bottomLeftCorner.x + i * width/numLines + bottomLeftCorner.x +(i+1) * width/numLines) / 2, hitY - 80);
+        }
+    }
+
+    public void drawPawIndicator(GameCanvas canvas, Texture pawIndicator, int line) {
+        float scale = NOTE_SIZE_SCALE*(width/4)/pawIndicator.getWidth();
+        if (line >= 0) {
+            canvas.draw(pawIndicator, Color.WHITE, pawIndicator.getWidth() / 2, pawIndicator.getHeight() / 2,
+                    ((bottomLeftCorner.x + line * width / numLines) + (bottomLeftCorner.x + (line + 1) * width / numLines)) / 2 - 5, hitY,
+                    0.0f, scale, scale);
         }
     }
 
