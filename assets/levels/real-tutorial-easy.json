@@ -1,0 +1,1255 @@
+{
+levelName: "dfasdf"
+levelNumber: 1
+song: "waves"
+startPosition: 0
+bpm: 85
+fallSpeed: 5
+maxCompetency: 100
+linesPerMember: 4
+thresholdA: 4000
+thresholdB: 3000
+thresholdC: 2000
+thresholdS: 5000
+bandMembers: [
+	{
+		instrument: violin
+		notes: [
+			{
+				type: beat
+				position: 0
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 135520
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 271040
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 406560
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 542080
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 677600
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 813120
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 948640
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 1084160
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 1219680
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 1355200
+				duration: 0
+				line: 2
+			}
+			{
+				type: beat
+				position: 1490720
+				duration: 0
+				line: 3
+			}
+			{
+				type: beat
+				position: 1626240
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 1761760
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 1897280
+				duration: 0
+				line: 2
+			}
+			{
+				type: beat
+				position: 2032800
+				duration: 0
+				line: 3
+			}
+			{
+				type: beat
+				position: 3252480
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 3354120
+				duration: 0
+				line: 3
+			}
+			{
+				type: beat
+				position: 3388000
+				duration: 0
+				line: 2
+			}
+			{
+				type: beat
+				position: 3421880
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 3455760
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 3489640
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 3523520
+				duration: 0
+				line: 2
+			}
+			{
+				type: held
+				position: 3557400
+				duration: 42350
+				line: 3
+			}
+			{
+				type: beat
+				position: 3625160
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 3659040
+				duration: 0
+				line: 2
+			}
+			{
+				type: beat
+				position: 3684450
+				duration: 0
+				line: 3
+			}
+			{
+				type: beat
+				position: 3726800
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 3752210
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 3777620
+				duration: 0
+				line: 2
+			}
+			{
+				type: beat
+				position: 3794560
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 3896200
+				duration: 0
+				line: 3
+			}
+			{
+				type: beat
+				position: 3930080
+				duration: 0
+				line: 2
+			}
+			{
+				type: beat
+				position: 3963960
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 3997840
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 4031720
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 4065600
+				duration: 0
+				line: 2
+			}
+			{
+				type: beat
+				position: 4091010
+				duration: 0
+				line: 3
+			}
+			{
+				type: beat
+				position: 4167240
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 4201120
+				duration: 0
+				line: 2
+			}
+			{
+				type: beat
+				position: 4226530
+				duration: 0
+				line: 3
+			}
+			{
+				type: beat
+				position: 4268880
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 4294290
+				duration: 0
+				line: 2
+			}
+			{
+				type: beat
+				position: 4319700
+				duration: 0
+				line: 3
+			}
+			{
+				type: beat
+				position: 4438280
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 4472160
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 4573800
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 4607680
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 4709320
+				duration: 0
+				line: 2
+			}
+			{
+				type: beat
+				position: 4743200
+				duration: 0
+				line: 2
+			}
+			{
+				type: beat
+				position: 4980360
+				duration: 0
+				line: 3
+			}
+			{
+				type: beat
+				position: 5014240
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 5115880
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 5149760
+				duration: 0
+				line: 3
+			}
+			{
+				type: beat
+				position: 5251400
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 5285280
+				duration: 0
+				line: 3
+			}
+			{
+				type: switch
+				position: 6572720
+				duration: 0
+				line: -1
+			}
+			{
+				type: beat
+				position: 6606600
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 6640480
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 6742120
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 6776000
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 6886110
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 6911520
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 7013160
+				duration: 0
+				line: 2
+			}
+			{
+				type: beat
+				position: 7047040
+				duration: 0
+				line: 3
+			}
+			{
+				type: beat
+				position: 7148680
+				duration: 0
+				line: 3
+			}
+			{
+				type: beat
+				position: 7182560
+				duration: 0
+				line: 2
+			}
+			{
+				type: beat
+				position: 7284200
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 7318080
+				duration: 0
+				line: 0
+			}
+		]
+		compFlags: [
+			{
+				rate: 45
+				gain: 45
+				position: 0
+			}
+			{
+				rate: 45
+				gain: 45
+				position: 474320
+			}
+			{
+				rate: 45
+				gain: 45
+				position: 1075690
+			}
+			{
+				rate: 45
+				gain: 45
+				position: 1558480
+			}
+			{
+				rate: 75
+				gain: 75
+				position: 3218600
+			}
+			{
+				rate: 75
+				gain: 75
+				position: 4895660
+			}
+		]
+	}
+	{
+		instrument: violin
+		notes: [
+			{
+				type: held
+				position: 575960
+				duration: 169400
+				line: 0
+			}
+			{
+				type: held
+				position: 745360
+				duration: 67760
+				line: 1
+			}
+			{
+				type: held
+				position: 813120
+				duration: 186340
+				line: 0
+			}
+			{
+				type: held
+				position: 999460
+				duration: 84700
+				line: 0
+			}
+			{
+				type: held
+				position: 3252480
+				duration: 203280
+				line: 0
+			}
+			{
+				type: beat
+				position: 3362590
+				duration: 0
+				line: 3
+			}
+			{
+				type: beat
+				position: 3371060
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 3438820
+				duration: 0
+				line: 2
+			}
+			{
+				type: held
+				position: 3455760
+				duration: 203280
+				line: 3
+			}
+			{
+				type: beat
+				position: 3506580
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 3548930
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 3574340
+				duration: 0
+				line: 2
+			}
+			{
+				type: held
+				position: 3659040
+				duration: 203280
+				line: 2
+			}
+			{
+				type: held
+				position: 3862320
+				duration: 203280
+				line: 1
+			}
+			{
+				type: held
+				position: 4065600
+				duration: 160930
+				line: 2
+			}
+			{
+				type: held
+				position: 4387460
+				duration: 152460
+				line: 1
+			}
+			{
+				type: held
+				position: 4539920
+				duration: 67760
+				line: 2
+			}
+			{
+				type: held
+				position: 4658500
+				duration: 220220
+				line: 1
+			}
+		]
+		compFlags: [
+			{
+				rate: 75
+				gain: 75
+				position: 4345110
+			}
+		]
+	}
+	{
+		instrument: violin
+		notes: [
+			{
+				type: beat
+				position: 1829520
+				duration: 0
+				line: 0
+			}
+			{
+				type: switch
+				position: 2168320
+				duration: 0
+				line: -1
+			}
+			{
+				type: beat
+				position: 2202200
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 2227610
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 2269960
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 2295370
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 2337720
+				duration: 0
+				line: 2
+			}
+			{
+				type: beat
+				position: 2363130
+				duration: 0
+				line: 2
+			}
+			{
+				type: held
+				position: 2405480
+				duration: 33880
+				line: 3
+			}
+			{
+				type: beat
+				position: 2473240
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 2498650
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 2541000
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 2566410
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 2608760
+				duration: 0
+				line: 2
+			}
+			{
+				type: beat
+				position: 2634170
+				duration: 0
+				line: 2
+			}
+			{
+				type: held
+				position: 2676520
+				duration: 33880
+				line: 3
+			}
+			{
+				type: held
+				position: 2744280
+				duration: 25410
+				line: 0
+			}
+			{
+				type: held
+				position: 2812040
+				duration: 25410
+				line: 1
+			}
+			{
+				type: held
+				position: 2879800
+				duration: 25410
+				line: 2
+			}
+			{
+				type: held
+				position: 2939090
+				duration: 25410
+				line: 3
+			}
+			{
+				type: held
+				position: 3015320
+				duration: 25410
+				line: 3
+			}
+			{
+				type: held
+				position: 3083080
+				duration: 25410
+				line: 2
+			}
+			{
+				type: held
+				position: 3150840
+				duration: 25410
+				line: 1
+			}
+			{
+				type: switch
+				position: 5353040
+				duration: 0
+				line: -1
+			}
+			{
+				type: beat
+				position: 5395390
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 5429270
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 5463150
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 5497030
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 5530910
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 5564790
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 5573260
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 5581730
+				duration: 0
+				line: 2
+			}
+			{
+				type: beat
+				position: 5598670
+				duration: 0
+				line: 3
+			}
+			{
+				type: beat
+				position: 5615610
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 5657960
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 5683370
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 5717250
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 5751130
+				duration: 0
+				line: 3
+			}
+			{
+				type: beat
+				position: 5785010
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 5801950
+				duration: 0
+				line: 1
+			}
+			{
+				type: held
+				position: 5827360
+				duration: 33880
+				line: 1
+			}
+			{
+				type: beat
+				position: 5886650
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 5929000
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 5954410
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 5988290
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 6022170
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 6056050
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 6089930
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 6106870
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 6115340
+				duration: 0
+				line: 2
+			}
+			{
+				type: beat
+				position: 6123810
+				duration: 0
+				line: 3
+			}
+			{
+				type: beat
+				position: 6140750
+				duration: 0
+				line: 3
+			}
+			{
+				type: held
+				position: 6157690
+				duration: 33880
+				line: 3
+			}
+			{
+				type: beat
+				position: 6225450
+				duration: 0
+				line: 3
+			}
+			{
+				type: beat
+				position: 6259330
+				duration: 0
+				line: 3
+			}
+			{
+				type: beat
+				position: 6293210
+				duration: 0
+				line: 3
+			}
+			{
+				type: beat
+				position: 6327090
+				duration: 0
+				line: 3
+			}
+			{
+				type: beat
+				position: 6344030
+				duration: 0
+				line: 2
+			}
+			{
+				type: beat
+				position: 6360970
+				duration: 0
+				line: 2
+			}
+			{
+				type: beat
+				position: 6394850
+				duration: 0
+				line: 2
+			}
+			{
+				type: beat
+				position: 6428730
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 6454140
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 6471080
+				duration: 0
+				line: 1
+			}
+			{
+				type: beat
+				position: 6488020
+				duration: 0
+				line: 2
+			}
+			{
+				type: held
+				position: 6504960
+				duration: 33880
+				line: 3
+			}
+		]
+		compFlags: [
+			{
+				rate: 50
+				gain: 15
+				position: 1795640
+			}
+			{
+				rate: 90
+				gain: 90
+				position: 1998920
+			}
+			{
+				rate: 75
+				gain: 75
+				position: 2066680
+			}
+			{
+				rate: 90
+				gain: 90
+				position: 2134440
+			}
+			{
+				rate: 45
+				gain: 45
+				position: 2151380
+			}
+			{
+				rate: 45
+				gain: 45
+				position: 2439360
+			}
+			{
+				rate: 45
+				gain: 45
+				position: 2718870
+			}
+			{
+				rate: 45
+				gain: 45
+				position: 2981440
+			}
+		]
+	}
+	{
+		instrument: violin
+		notes: [
+			{
+				type: beat
+				position: 1016400
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 1041810
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 1084160
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 1151920
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 1219680
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 1287440
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 1372140
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 1422960
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 1490720
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 1558480
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 1626240
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 1694000
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 1761760
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 1829520
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 1914220
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 1965040
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 2032800
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 2100560
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 2168320
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 2236080
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 2303840
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 2371600
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 2456300
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 2507120
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 2574880
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 2642640
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 2710400
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 2778160
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 2845920
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 2913680
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 2998380
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 3049200
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 3116960
+				duration: 0
+				line: 0
+			}
+			{
+				type: beat
+				position: 3184720
+				duration: 0
+				line: 0
+			}
+		]
+		compFlags: [
+			{
+				rate: 0
+				gain: 2
+				position: 982520
+			}
+		]
+	}
+]
+randomHits: [],
+	"tutorialData": {
+		"autoplayRanges": [
+			2151380,
+			2439360
+		],
+		"switchSamples": [
+			646800,
+			800000
+		],
+		"arrowAppear": [
+			88200,
+			352800
+		]
+	}
+}

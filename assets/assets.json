@@ -80,10 +80,11 @@
 
         "hard": "images/hard.png",
         "1": "images/album_covers/praeludium_album.png",
-        "2": "images/album_covers/aliens_album.png",
-        "3": "images/album_covers/challenger_album.png",
-        "4": "images/album_covers/american_album.png",
-        "5": "images/album_covers/Yellow_river.png",
+        "2": "images/album_covers/praeludium_album.png",
+        "3": "images/album_covers/aliens_album.png",
+        "4": "images/album_covers/challenger_album.png",
+        "5": "images/album_covers/american_album.png",
+        "6": "images/album_covers/Yellow_river.png",
         "level-select-button": "images/ui/level_select.png",
         "quit-button": "images/ui/quit.png",
         "restart-button": "images/ui/restart.png",
@@ -200,7 +201,8 @@
       "american": "music/American_Finale.ogg",
       "calibration": "music/calibration.ogg",
       "Tutorial": "music/Tutorial.ogg",
-      "YR": "music/Yellow_River.ogg"
+      "YR": "music/Yellow_River.ogg",
+      "waves": "music/can-you-hear-the-waves.ogg"
     },
     "soundtrack": {
       "calibration": {
@@ -240,6 +242,9 @@
       }
     },
     "levels": [
+      "levels/real-tutorial-easy.json",
+      "levels/real-tutorial-medium.json",
+      "levels/real-tutorial-hard.json",
       "levels/tutorial-easy.json",
       "levels/tutorial-medium.json",
       "levels/tutorial-hard.json",
