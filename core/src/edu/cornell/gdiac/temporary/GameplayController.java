@@ -21,14 +21,13 @@
 package edu.cornell.gdiac.temporary;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.graphics.Texture;
 
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.temporary.entity.*;
-
-import java.util.Arrays;
 
 /**
  * Controller to handle gameplay interactions.
@@ -451,6 +450,9 @@ public class GameplayController {
 	 *
 	 */
 	public void update(int mode, int ticks){
+		// check if we are in autoplay
+		InputController.getInstance().setAutoplay(level.isInAutoplayRange());
+
 		//First, check for dead notes and remove them from active arrays
 		checkDeadNotes();
 		//Then, update the notes for each band member and spawn new notes
@@ -463,7 +465,7 @@ public class GameplayController {
 			o.update(0f);
 		}
 
-		level.recieveInterrupt(activeBandMember, DF, JK, MISS);
+		level.receiveInterrupt(activeBandMember, DF, JK, MISS);
 		level.updateCompRates();
 	}
 

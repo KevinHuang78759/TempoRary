@@ -1,26 +1,19 @@
 package edu.cornell.gdiac.temporary;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.AudioEngine;
 import edu.cornell.gdiac.audio.AudioSource;
-import edu.cornell.gdiac.audio.AudioStream;
 import edu.cornell.gdiac.audio.MusicQueue;
 import edu.cornell.gdiac.temporary.entity.BandMember;
 import edu.cornell.gdiac.temporary.entity.Note;
 import edu.cornell.gdiac.util.FilmStrip;
 
-import javax.swing.plaf.TextUI;
-import java.nio.ByteBuffer;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
@@ -168,6 +161,35 @@ public class Level {
     private long cThreshold;
     private long sThreshold;
     private MusicQueue music;
+
+    private boolean isTutorial;
+    private Queue<Long> autoplayRanges;
+    private Queue<Long> switchRanges;
+    private Queue<Long> arrowAppear;
+
+    public boolean getIsTutorial() {
+        return isTutorial;
+    }
+
+    public boolean isInAutoplayRange() {
+        long currentSample = getCurrentSample();
+        if (isTutorial && !autoplayRanges.isEmpty()) {
+            if (autoplayRanges.size % 2 == 0) {
+                if (currentSample >= autoplayRanges.first()) {
+                    autoplayRanges.removeFirst();
+                    return true;
+                }
+            } else {
+                if (currentSample <= autoplayRanges.first()) {
+                    return true;
+                } else {
+                    autoplayRanges.removeFirst();
+                }
+            }
+            return false;
+        }
+        return false;
+    }
 
     /**
      * The last sample that health was decremented due to continuous decay
@@ -383,18 +405,31 @@ public class Level {
         // TUTORIAL LOGIC
 
         // need autoplay ranges, need switch ranges, need random hit
-        JsonValue tutorialData = data.get("tutorial");
-        Array<Integer> arr = new Array<>();
-        for (int i = 0; i < tutorialData.get("autoplayRange").size; i++) {
+        JsonValue tutorialData = data.get("tutorialData");
+        if (tutorialData != null) {
+            isTutorial = true;
 
+            autoplayRanges = new Queue<>();
+            switchRanges = new Queue<>();
+            arrowAppear = new Queue<>();
+
+            long[] autoplayRanges = tutorialData.get("autoplayRanges").asLongArray();
+            for (long val : autoplayRanges) {
+                this.autoplayRanges.addLast(val);
+            }
+
+            long[] switchRanges = tutorialData.get("switchSamples").asLongArray();
+            for (long val : switchRanges) {
+                this.switchRanges.addLast(val);
+            }
+
+            long[] arrowAppear = tutorialData.get("arrowAppear").asLongArray();
+            for (long val : arrowAppear) {
+                this.arrowAppear.addLast(val);
+            }
         }
     }
 
-    public boolean isInAutoplay() {
-        return false;
-    }
-
-    // TODO: document and multiply by the base music volume
     public void setMusicVolume(float vol) {
         music.setVolume(vol);
     }
@@ -403,7 +438,6 @@ public class Level {
         return music.getVolume();
     }
 
-    // TODO: REMOVE THIS AND REPLACE WITH ACTUAL ANIMATION BASED ON SAMPLE
     /**
      * Takes BPM and converts it to rate of animation (as all animations should be on beat)
      * @param bpm BPM of song in level
@@ -497,7 +531,7 @@ public class Level {
 
     private long sample = 0;
 
-    public void recieveInterrupt(int BM_id, boolean DFflag, boolean JKflag, boolean MISSflag){
+    public void receiveInterrupt(int BM_id, boolean DFflag, boolean JKflag, boolean MISSflag){
         bandMembers[BM_id].recieveSample(sample);
         bandMembers[BM_id].recieveFlags(DFflag, JKflag, MISSflag);
     }

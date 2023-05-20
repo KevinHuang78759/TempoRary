@@ -935,5 +935,20 @@ bandMembers: [
 		]
 	}
 ]
-randomHits: []
+randomHits: [],
+"tutorialData": {
+	"autoplayRanges": [
+		88200,
+		352800,
+		529200,
+		646800
+	],
+	"switchSamples": [
+		235200
+	],
+	"arrowAppear": [
+		88200,
+		352800
+	]
+}
 }
