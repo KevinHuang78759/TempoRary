@@ -29,6 +29,8 @@ import com.badlogic.gdx.graphics.Texture;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.temporary.entity.*;
 
+import java.util.Arrays;
+
 /**
  * Controller to handle gameplay interactions.
  * This controller also acts as the root class for all the models.
@@ -453,6 +455,12 @@ public class GameplayController {
 		// check if we are in autoplay
 		InputController.getInstance().setAutoplay(level.isInAutoplayRange());
 
+		if (level.isAutoSwitching()) {
+			InputController.getInstance().setAutoplay(true);
+			InputController.getInstance().setSwitch((activeBandMember + 1) % level.getBandMembers().length, true);
+			System.out.println(Arrays.toString(InputController.getInstance().didSwitch()));
+		}
+
 		//First, check for dead notes and remove them from active arrays
 		checkDeadNotes();
 		//Then, update the notes for each band member and spawn new notes
@@ -467,6 +475,10 @@ public class GameplayController {
 
 		level.receiveInterrupt(activeBandMember, DF, JK, MISS);
 		level.updateCompRates();
+
+		if (!level.isInAutoplayRange()) {
+			InputController.getInstance().setAutoplay(false);
+		}
 	}
 
 	/**

@@ -350,14 +350,17 @@ public class InputController {
 	}
 
 	public void setSwitch(int line, boolean val) {
-		if (autoplay) {
-			switchesPress[line] = val;
-		}
+		switchesPress[line] = val;
 	}
 
 	public void resetTriggers() {
 		Arrays.fill(triggerPress, false);
 	}
+
+	public void resetSwitches() {
+		Arrays.fill(switchesPress, false);
+	}
+
 
 	/**
 	 * Reads input from the keyboard.
@@ -382,8 +385,10 @@ public class InputController {
 				triggerPress[i] = Gdx.input.isKeyPressed(triggerBindingsMain[i]) || Gdx.input.isKeyPressed(triggerBindingsAlt[i]);
 			}
 			if (i < numBandMembers) {
-				switchesPress[i] = Gdx.input.isKeyPressed(switchesBindingsMain.get(numBandMembers - 1)[i])
-						|| Gdx.input.isKeyPressed(switchesBindingsAlt.get(numBandMembers - 1)[i]);
+				if (!autoplay) {
+					switchesPress[i] = Gdx.input.isKeyPressed(switchesBindingsMain.get(numBandMembers - 1)[i])
+							|| Gdx.input.isKeyPressed(switchesBindingsAlt.get(numBandMembers - 1)[i]);
+				}
 				if (switchesPress[i]) {
 					resetTriggers();
 				}

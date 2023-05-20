@@ -191,6 +191,18 @@ public class Level {
         return false;
     }
 
+    public boolean isAutoSwitching() {
+        long currentSample = getCurrentSample();
+        if (isTutorial && !switchRanges.isEmpty()) {
+            if (currentSample >= switchRanges.first()) {
+                switchRanges.removeFirst();
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
+
     /**
      * The last sample that health was decremented due to continuous decay
      */
