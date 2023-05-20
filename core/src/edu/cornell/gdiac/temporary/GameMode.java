@@ -677,7 +677,9 @@ public class GameMode implements Screen {
 			}
 
 			// draw the scoreboard
-			gameplayController.sb.displayScoreBoard(canvas);
+			if (!gameplayController.level.isInAutoplayRange() && !gameplayController.level.isAutoSwitching()) {
+				gameplayController.sb.displayScoreBoard(canvas);
+			}
 			// draw pause menu UI if paused
 			if (gameState == GameState.PAUSE) {
 				//Draw the buttons for the pause menu

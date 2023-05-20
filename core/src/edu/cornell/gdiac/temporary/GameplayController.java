@@ -241,7 +241,8 @@ public class GameplayController {
 		numberGood =0;
 		numberPerfect =0;
 		sb.setletterTH(new long[]{level.getcThreshold(), level.getbThreshold(), level.getaThreshold(), level.getsThreshold()});
-		level.setBounds(new Vector2(totalWidth, totalHeight*0.05f), new Vector2(0f,0f));}
+		level.setBounds(new Vector2(totalWidth, totalHeight), new Vector2(0f,19f*TOPBOUND/20f + totalHeight/20f));
+	}
 
 	public void reloadLevel(){
 		InputController.getInstance().resetTriggers();
@@ -281,7 +282,7 @@ public class GameplayController {
 	 */
 	public void resize(int width, int height){
 		setBounds(width, height);
-		level.setBounds(new Vector2(totalWidth, totalHeight*0.05f), new Vector2(0f,0f));
+		level.setBounds(new Vector2(totalWidth, totalHeight), new Vector2(0f,19f*TOPBOUND/20f + totalHeight/20f));
 		setWidths();
 		setYVals();
 		updateBandMemberCoords();

@@ -872,7 +872,7 @@ public class Level {
 
         if (isInAutoplayRange() || isAutoSwitching()) {
             canvas.draw(autoplayBackground,
-                    Color.WHITE,
+                    Color.BLACK,
                     autoplayBackground.getWidth()/2f, autoplayBackground.getHeight()/2f,
                     (TR.x + BL.x)/2f, (TR.y + BL.y)/2f,
                     0f,
@@ -880,25 +880,25 @@ public class Level {
             canvas.draw(progressBackground,
                     Color.WHITE,
                     progressBackground.getWidth()/2f, progressBackground.getHeight()/2f,
-                    (TR.x + BL.x)/2f, (TR.y + TR.y + TR.y * 0.3f)/2f,
+                    (TR.x + BL.x)/2f, (BL.y),
                     0f,
-                    (TR.x - BL.x)/(progressBackground.getWidth()),(TR.y + TR.y * 0.3f - TR.y)/(progressBackground.getHeight()));
+                    (TR.x - BL.x)/(progressBackground.getWidth()),(BL.y - (BL.y - (TR.y - BL.y) * 0.1f))/(progressBackground.getHeight()));
             long st = isInAutoplayRange() ? startRange : startSwitchRange;
             long fin = isInAutoplayRange() ? endRange : endSwitchRange;
             canvas.draw(progressForeground,
                     Color.WHITE,
                     0, progressForeground.getHeight()/2f,
-                    0, (TR.y + TR.y + TR.y * 0.3f)/2f,
+                    0, (BL.y),
                     0f,
                     (TR.x - BL.x)/(progressForeground.getWidth()) * ((float) (getCurrentSample() - st)/(fin - st)),
-                    (TR.y + TR.y * 0.3f - TR.y)/(progressForeground.getHeight()));
+                    (BL.y - (BL.y - (TR.y - BL.y) * 0.1f))/(progressForeground.getHeight()));
             canvas.draw(progressKnob,
                     Color.WHITE,
                     progressKnob.getWidth()/2f, progressKnob.getHeight()/2f,
                     progressForeground.getWidth() * (TR.x - BL.x)/(progressForeground.getWidth()) * ((float) (getCurrentSample() - st)/(fin - st)),
-                    (TR.y + TR.y + TR.y * 0.3f)/2f,
+                    (BL.y),
                     0f,
-                    (TR.y + TR.y * 0.6f - TR.y)/progressKnob.getWidth(),(TR.y + TR.y * 0.6f - TR.y)/progressKnob.getWidth());
+                    ((BL.y - (TR.y - BL.y) * 0.2f) - BL.y)/progressKnob.getWidth(),((BL.y - (TR.y - BL.y) * 0.2f) - BL.y)/progressKnob.getWidth());
         }
     }
 
