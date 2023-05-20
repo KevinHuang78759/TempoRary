@@ -58,10 +58,8 @@ public class InputController {
 	// TODO SWITCH THIS TO ARRAYS
 	// TODO REMOVE STATIC FIELDS
 	public static IntMap<int[]> switchesBindingsMain;
-	public static IntMap<int[]> switchesBindingsAlt;
 
 	public static int[] triggerBindingsMain;
-	public static int[] triggerBindingsAlt;
 
 	//Arrays to registering switch and trigger presses
 	//We need to track their previous values so that we dont register a hold as repeated clicks
@@ -179,13 +177,7 @@ public class InputController {
 				Input.Keys.F,
 				Input.Keys.J,
 				Input.Keys.K
-		}, true);
-		triggerBindingsAlt = SaveManager.getInstance().getHitKeybindingSettings(new int[]{
-				Input.Keys.LEFT,
-				Input.Keys.DOWN,
-				Input.Keys.UP,
-				Input.Keys.RIGHT
-		}, false);
+		});
 		// DEFAULT PRESETS!
 		int[] switchesBindingsMainAll = new int[]{
 				Input.Keys.E,
@@ -193,34 +185,19 @@ public class InputController {
 				Input.Keys.U,
 				Input.Keys.I,
 		};
-		int[] switchesBindingsAltAll = new int[]{
-				Input.Keys.NUM_1,
-				Input.Keys.NUM_2,
-				Input.Keys.NUM_3,
-				Input.Keys.NUM_4,
-		};
 		switchesBindingsMain = new IntMap<>();
-		switchesBindingsAlt = new IntMap<>();
 		for (int i = 0; i < 4; i++) {
 			switchesBindingsMain.put(i, Arrays.copyOfRange(switchesBindingsMainAll, 0, i + 1));
-			switchesBindingsAlt.put(i, Arrays.copyOfRange(switchesBindingsAltAll, 0, i + 1));
 		}
-		switchesBindingsMain = SaveManager.getInstance().getSwitchKeybindingSettings(switchesBindingsMain, true);
-		switchesBindingsAlt = SaveManager.getInstance().getSwitchKeybindingSettings(switchesBindingsAlt, false);
+		switchesBindingsMain = SaveManager.getInstance().getSwitchKeybindingSettings(switchesBindingsMain);
 		masterKeybindingMap = new IntMap<>();
 		// fill up keybinding map
 		// TODO: TURN THIS INTO CONSTANTS
 		for (int val : triggerBindingsMain) {
 			masterKeybindingMap.put(val, "triggerMain");
 		}
-		for (int val : triggerBindingsAlt) {
-			masterKeybindingMap.put(val, "triggerAlt");
-		}
 		for (int val : switchesBindingsMainAll) {
 			masterKeybindingMap.put(val, "switchesMain");
-		}
-		for (int val : switchesBindingsAltAll) {
-			masterKeybindingMap.put(val, "switchesAlt");
 		}
 	}
 
@@ -244,29 +221,10 @@ public class InputController {
 						}
 					}
 					break;
-				case "switchesAlt":
-					for (IntMap.Entry<int[]> kv : switchesBindingsAlt) {
-						if (!bindingObj.equals(newPossessor) || kv.key == numBandMembers) {
-							int[] arr = switchesBindingsAlt.get(kv.key);
-							for (int i = 0; i < arr.length; i++) {
-								if (arr[i] == binding) {
-									arr[i] = -99;
-								}
-							}
-						}
-					}
-					break;
 				case "triggerMain":
 					for (int i = 0; i < triggerBindingsMain.length; i++) {
 						if (triggerBindingsMain[i] == binding) {
 							triggerBindingsMain[i] = -99;
-						}
-					}
-					break;
-				case "triggerAlt":
-					for (int i = 0; i < triggerBindingsAlt.length; i++) {
-						if (triggerBindingsAlt[i] == binding) {
-							triggerBindingsAlt[i] = -99;
 						}
 					}
 					break;
@@ -286,19 +244,13 @@ public class InputController {
 	public void setKeybinding(int numBandMembers, int lane, int newKeybind, boolean main) {
 		assert lane < numBandMembers && lane >= 0;
 		updateKeybindingMap(newKeybind, main ? "switchesMain" : "switchesAlt", numBandMembers);
-		if (main)
-			switchesBindingsMain.get(numBandMembers)[lane] = newKeybind;
-		else
-			switchesBindingsAlt.get(numBandMembers)[lane] = newKeybind;
+		switchesBindingsMain.get(numBandMembers)[lane] = newKeybind;
 	}
 
 	// keybindings for hitting the notes (triggers)
 	public void setKeybinding(int line, int newKeybind, boolean main) {
 		updateKeybindingMap(newKeybind, main ? "triggerMain" : "triggerAlt", -1);
-		if (main)
-			triggerBindingsMain[line] = newKeybind;
-		else
-			triggerBindingsAlt[line] = newKeybind;
+		triggerBindingsMain[line] = newKeybind;
 	}
 
 	// READ INPUT FUNCTIONS
@@ -356,10 +308,9 @@ public class InputController {
 		boolean[] switchesPress = new boolean[4];
 
 		for (int i = 0; i < triggerBindingsMain.length; i++) {
-			triggerPress[i] = Gdx.input.isKeyPressed(triggerBindingsMain[i]) || Gdx.input.isKeyPressed(triggerBindingsAlt[i]);
+			triggerPress[i] = Gdx.input.isKeyPressed(triggerBindingsMain[i]);
 			if (i < numBandMembers) {
-				switchesPress[i] = Gdx.input.isKeyPressed(switchesBindingsMain.get(numBandMembers - 1)[i])
-						|| Gdx.input.isKeyPressed(switchesBindingsAlt.get(numBandMembers - 1)[i]);
+				switchesPress[i] = Gdx.input.isKeyPressed(switchesBindingsMain.get(numBandMembers - 1)[i]);
 			}
 		}
 
@@ -390,15 +341,12 @@ public class InputController {
 	 *
 	 * @return
 	 */
-	public static String[] switchKeyBinds(int numBandMembers, boolean main) {
+	public static String[] switchKeyBinds(int numBandMembers) {
 		String[] bindings = new String[numBandMembers + 1];
 		for (int i = 0; i < numBandMembers + 1; i++) {
-			if (switchesBindingsMain.get(numBandMembers)[i] >= 0 && main) {
+			if (switchesBindingsMain.get(numBandMembers)[i] >= 0) {
 				bindings[i] = Input.Keys.toString(switchesBindingsMain.get(numBandMembers)[i]);
-			} else if (switchesBindingsAlt.get(numBandMembers)[i] >= 0 && !main) {
-				bindings[i] = Input.Keys.toString(switchesBindingsAlt.get(numBandMembers)[i]);
-			}
-			else {
+			} else {
 				bindings[i] = "";
 			}
 		}
@@ -412,10 +360,8 @@ public class InputController {
 	public static String[] triggerKeyBinds(boolean main) {
 		String[] bindings = new String[triggers.length];
 		for (int i = 0; i < bindings.length; i++) {
-			if (triggerBindingsMain[i] >= 0 && main) {
+			if (triggerBindingsMain[i] >= 0) {
 				bindings[i] = Input.Keys.toString(triggerBindingsMain[i]);
-			} else if (triggerBindingsAlt[i] >= 0 && !main) {
-				bindings[i] = Input.Keys.toString(triggerBindingsAlt[i]);
 			} else {
 				bindings[i] = "";
 			}

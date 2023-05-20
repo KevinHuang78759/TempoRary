@@ -15,7 +15,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
@@ -147,6 +146,8 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
     private Texture leftButtonGroupSelected;
     private Texture rightButtonGroupSelected;
 
+    private Texture switchSelectBackground;
+
     // fonts
     private BitmapFont blinkerBold;
     private BitmapFont blinkerSemiBold;
@@ -223,6 +224,8 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         buttonGroupSelected = directory.getEntry("button-group-selected", Texture.class);
         rightButtonGroupSelected = directory.getEntry("right-selected-button-group", Texture.class);
 
+        switchSelectBackground = directory.getEntry("switch-select-background", Texture.class);
+
         keyImageMap.put("Left", directory.getEntry("left-arrow-graphic", Texture.class));
         keyImageMap.put("Right", directory.getEntry("right-arrow-graphic", Texture.class));
         keyImageMap.put("Down", directory.getEntry("down-arrow-graphic", Texture.class));
@@ -279,13 +282,11 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
         windowStyle.background = new TextureRegionDrawable(dialogBackground);
         windowStyle.titleFont = blinkerRegular;
-
     }
 
     // TODO: ADD A WAY TO RESET ALL SETTINGS AND CLEAR SAVE DATA
     private void addSceneElements() {
         // MAIN TABLE IS 3 COLUMNS, EACH TABLE ADDED SHOULD SPAN 3 COLUMNS
-
         Table headerTable = new Table();
         Table switchTable = new Table();
         Table volumeTable = new Table();
@@ -397,9 +398,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 s.playSound(0, 0.3f);
                 SaveManager.getInstance().saveSettings(InputController.triggerBindingsMain,
-                        InputController.triggerBindingsAlt,
                         InputController.switchesBindingsMain,
-                        InputController.switchesBindingsAlt,
                         musicVolume,
                         soundFXVolume);
                 switchToHome();
@@ -465,11 +464,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
 
             buttonGroup.add(memberSelectButton);
 
-            if (i == currBandMemberCount - 1) {
-                memberSelectButton.setChecked(true);
-            } else {
-                memberSelectButton.setChecked(false);
-            }
+            memberSelectButton.setChecked(i == currBandMemberCount - 1);
             horizontalGroup.addActor(memberSelectButton);
         }
 
@@ -490,7 +485,7 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         // controls for switching
         table.add(new Label("Members Switches", labelStyle));
 
-        String[] currentSwitchKeybinds = InputController.switchKeyBinds(currBandMemberCount - 1, true);
+        String[] currentSwitchKeybinds = InputController.switchKeyBinds(currBandMemberCount - 1);
 
         for (int i = 0; i < currBandMemberCount; i++) {
             table.add(getControlWidget(i + 1, currentSwitchKeybinds[i], catOutline)).expandX();
@@ -498,7 +493,6 @@ public class MenuMode implements Screen, InputProcessor, ControllerListener {
         for (int i = 0; i < 4 - currBandMemberCount; i++) {
             table.add(new Table()).expandX();
         }
-
     }
 
     private Table getControlWidget(final int nth, final String primaryKeybind, final Texture outlineImage) {
