@@ -49,6 +49,8 @@ public class LoadingMode implements Screen {
 	/** The actual assets to be loaded */
 	private AssetDirectory assets;
 
+	private FilmStrip graciasCat;
+
 	/** Background texture for start-up */
 	private Texture background;
 
@@ -102,6 +104,7 @@ public class LoadingMode implements Screen {
 	/** Scaling factor for when the student changes the resolution. */
 	private float scale;
 
+	private final int numAnimations = 50;
 	/** Current progress (0 to 1) of the asset manager */
 	private float progress;
 	/** The amount of time to devote to loading assets (as opposed to on screen hints, etc.) */
@@ -197,7 +200,7 @@ public class LoadingMode implements Screen {
 
 		background = internal.getEntry( "background", Texture.class );
 		background.setFilter( TextureFilter.Linear, TextureFilter.Linear );
-
+		graciasCat = new FilmStrip(internal.getEntry("cat", Texture.class), 1, 10, 10);
 		loadingText = internal.getEntry("loading", Texture.class);
 
 		// Break up the status bar texture into regions
@@ -238,6 +241,7 @@ public class LoadingMode implements Screen {
 	private void update(float delta) {
 		assets.update(budget);
 		this.progress = assets.getProgress();
+		graciasCat.setFrame((int)(graciasCat.getSize() * (progress % (1f/numAnimations))/(1f/numAnimations)));
 	}
 
 	/**
@@ -250,8 +254,10 @@ public class LoadingMode implements Screen {
 	private void draw() {
 		canvas.begin();
 		canvas.drawBackground(background, 0, 0);
-		canvas.draw(loadingText, Color.WHITE, loadingText.getWidth()/2, loadingText.getHeight()/2, canvas.getWidth()/2, 0.23f * canvas.getHeight(), 0, 1.5f * scale, 1.5f * scale);
+		canvas.draw(loadingText, Color.WHITE, loadingText.getWidth()/2, loadingText.getHeight()/2, 4*canvas.getWidth()/5, 0.23f * canvas.getHeight(), 0, 1.5f * scale, 1.5f * scale);
 		drawProgress(canvas);
+		float catScale = Math.min((float)canvas.getWidth()/graciasCat.getRegionWidth(),(float)canvas.getHeight()/graciasCat.getRegionHeight());
+		canvas.draw(graciasCat, Color.WHITE, graciasCat.getRegionWidth()/2f, graciasCat.getRegionHeight()/2f, 4*canvas.getWidth()/5f, canvas.getHeight()/2f, 0, catScale/3f, catScale/3f);
 		canvas.end();
 	}
 	
@@ -319,7 +325,7 @@ public class LoadingMode implements Screen {
 		this.width = (int)(BAR_WIDTH_RATIO*width);
 		innerWidth = (int)(BAR_WIDTH_RATIO*0.95*width);
 		centerY = (int)(BAR_HEIGHT_RATIO*height);
-		centerX = width/2;
+		centerX = 4*width/5;
 	}
 
 	/**

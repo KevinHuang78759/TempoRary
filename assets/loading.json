@@ -1,5 +1,6 @@
 {
 	"textures": {
+        "cat": "images/cats/ghost_cat_spritesheet.png",
         "background": {
           "file":     "images/backgrounds/loading_screen_v4.png",
           "minFilter": "linear",
