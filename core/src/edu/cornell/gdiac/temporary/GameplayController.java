@@ -271,6 +271,7 @@ public class GameplayController {
 		numberOk =0;
 		numberGood =0;
 		numberPerfect =0;
+		setupBandMembers();
 		sb.setletterTH(new long[]{level.getcThreshold(), level.getbThreshold(), level.getaThreshold(), level.getsThreshold()});
 		garbageCollectNoteIndicators();
 	}
@@ -452,8 +453,7 @@ public class GameplayController {
 	public void update(int mode, int ticks){
 		//First, check for dead notes and remove them from active arrays
 		checkDeadNotes();
-		//Then, update the notes for each band member and spawn new notes
-		level.updateBandMemberNotes(noteSpawnY, mode, ticks, getIntroLength());
+
 		//Update the objects of this class (mostly stars)
 		for(Particle o : particles){
 			o.update(0f);
@@ -464,6 +464,8 @@ public class GameplayController {
 
 		level.recieveInterrupt(activeBandMember, DF, JK, MISS);
 		level.updateCompRates();
+		//Then, update the notes for each band member and spawn new notes
+		level.updateBandMemberNotes(noteSpawnY, mode, ticks, getIntroLength());
 
 	}
 
@@ -650,8 +652,8 @@ public class GameplayController {
 		if(dist < miss) {
 			if (dist < okHit) {
 				if(nt != Note.NoteType.SWITCH){
-					DF = note.getLine() < NUM_LANES/2;
-					JK = note.getLine() >= NUM_LANES/2;
+					DF = note.getLine() < 2;
+					JK = note.getLine() >= 2;
 				}
 				//If so, destroy the note and set a positive hit status. Also set that we
 				//have registered a hit for this line for this click. This ensures that
@@ -679,8 +681,8 @@ public class GameplayController {
 						spawnHitIndicator(hitStatusX,hitStatusY,okIndicator,1);
 					}
 				}
-
 				note.setHolding(true);
+				note.setBottomY(hitY);
 				note.setHitStatus(compGain);
 				spawnHitEffect(note.getHitStatus(), note.getX(), spawnEffectY);
 				if (dist < perfectHit) {
@@ -690,8 +692,6 @@ public class GameplayController {
 					hitReg[note.getLine()] = true;
 				}
 				note.setDestroyed(destroy);
-				// move the note to where the indicator is
-				note.setBottomY(hitY);
 				String soundKey = nt == Note.NoteType.SWITCH ?
 						"switchHit" : (dist < perfectHit ? "perfectHit" : (dist < goodHit ? "goodHit" : "okHit"));
 				sfx.playSound(soundKey, GLOBAL_VOLUME_ADJ);
@@ -699,18 +699,28 @@ public class GameplayController {
 				sb.receiveHit(pointsReceived);
 			} else {
 				// lose some competency since you played a bit off beat
-				MISS = true;
-				sb.resetCombo();
-				note.setHitStatus(offBeatLoss);
+				if(nt == Note.NoteType.SWITCH || nt == Note.NoteType.BEAT){
+					MISS = true;
+					sb.resetCombo();
+					note.setHitStatus(offBeatLoss);
+					numberMiss++;
+				}
 			}
+		}
+		if (nt == Note.NoteType.HELD && !lifted && adjustedPosition - note.getHitSample() < note.getHoldSamples() && adjustedPosition >= note.getHitSample()){
+			note.setHolding(true);
+			note.setBottomY(hitY);
+			DF = note.getLine() < 2;
+			JK = note.getLine() >= 2;
 		}
 		//if we let go too early we need to reset the combo
 		if (lifted && dist >= miss){
 			MISS = true;
 			sb.resetCombo();
 			note.setHitStatus(offBeatLoss);
+			numberMiss++;
 		}
-		numberMiss++;
+
 	}
 
 

@@ -727,6 +727,8 @@ public class GameCanvas {
     }
 
 
+
+
 	/**
 	 * Draws text centered on the screen. Also takes color as a parameter
 	 *

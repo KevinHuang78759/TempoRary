@@ -45,12 +45,19 @@ public class BandMember {
         assert  k == -1 || k ==1;
         mode = k;
     }
+
     private boolean gameOver;
     public void setGameOver(boolean value){
         gameOver = value;
     }
-    boolean DFprev;
-    boolean JKprev;
+    private boolean DFprev;
+    private boolean JKprev;
+
+    boolean held;
+    public boolean hasHold(){
+        return held;
+    }
+
     public void setSPB(float s){
         samplesPerBeat = s;
     }
@@ -111,6 +118,9 @@ public class BandMember {
                 }
                 else if(jk){
                     beginProcess(ACTIVE_STATE.JK, sample, sample + samplesPerBeat);
+                }
+                else{
+                    AS = ACTIVE_STATE.IDLE;
                 }
             }
         }
@@ -185,6 +195,7 @@ public class BandMember {
                 }
             }
         }
+        held = (DFprev && df) || (JKprev && jk);
         DFprev = df;
         JKprev = jk;
     }
