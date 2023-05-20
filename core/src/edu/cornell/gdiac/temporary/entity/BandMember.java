@@ -105,6 +105,9 @@ public class BandMember {
                 else if(jk){
                     beginProcess(ACTIVE_STATE.JK, sample, sample + samplesPerBeat);
                 }
+                else{
+                    AS = ACTIVE_STATE.IDLE;
+                }
             }
         }
         else if(AS == ACTIVE_STATE.DF){
