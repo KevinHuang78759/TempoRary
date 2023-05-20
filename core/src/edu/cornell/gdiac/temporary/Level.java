@@ -20,6 +20,8 @@ import edu.cornell.gdiac.util.FilmStrip;
 
 import javax.swing.plaf.TextUI;
 import java.nio.ByteBuffer;
+import java.util.Comparator;
+import java.util.PriorityQueue;
 
 public class Level {
 
@@ -146,10 +148,10 @@ public class Level {
     private Texture hpbar;
     private Texture noteIndicator;
     private Texture noteIndicatorHit;
-    private FilmStrip violinSprite;
-    private FilmStrip drummerSprite;
-    private FilmStrip voiceSprite;
-    private FilmStrip synthSprite;
+    private FilmStrip[] violinSet;
+    private FilmStrip[] drummerSet;
+    private FilmStrip[] singerSet;
+    private FilmStrip[] pianoSet;
     private FilmStrip backSplash;
     private FilmStrip frontSplash;
 
@@ -203,6 +205,15 @@ public class Level {
     JsonValue data;
 
     float maxSample;
+
+    // this comparator is used for comparing comp flag data later on
+    private static class CustomComparator implements Comparator<Long[]> {
+        @Override
+        public int compare(Long[] o1, Long[] o2) {
+            return Long.compare(o1[0], o2[1]);
+        }
+    }
+
     public Level(JsonValue data, AssetDirectory directory) {
         JsonReader jr = new JsonReader();
         JsonValue assets = jr.parse(Gdx.files.internal("assets.json"));
@@ -219,24 +230,60 @@ public class Level {
         noteIndicatorHit = directory.getEntry("note-indicator-hit", Texture.class);
         switchIndicator = directory.getEntry("switch-indicator", Texture.class);
         switchIndicatorHit = directory.getEntry("switch-indicator-hit", Texture.class);
-        violinSprite = new FilmStrip(directory.getEntry("violin-cat", Texture.class), 2, 5, 6);
-        voiceSprite = new FilmStrip(directory.getEntry("singer-cat", Texture.class), 2, 5, 6);
-        drummerSprite = new FilmStrip(directory.getEntry("drummer-cat", Texture.class), 2, 5, 6);
-        synthSprite = new FilmStrip(directory.getEntry("piano-cat", Texture.class), 2, 5, 10);
+
+
+        violinSet = new FilmStrip[7];
+        violinSet[0] = new FilmStrip(directory.getEntry("violin-INACTIVE-NOTES", Texture.class), 1, 6, 6);
+        violinSet[1] = new FilmStrip(directory.getEntry("violin-INACTIVE-NO-NOTES", Texture.class), 1, 6, 6);
+        violinSet[2] = new FilmStrip(directory.getEntry("violin-INACTIVE-LOW", Texture.class), 1, 2, 2);
+        violinSet[3] = new FilmStrip(directory.getEntry("violin-ACTIVE-LEFT", Texture.class), 1, 8, 8);
+        violinSet[4] = new FilmStrip(directory.getEntry("violin-ACTIVE-RIGHT", Texture.class), 1, 8, 8);
+        violinSet[5] = new FilmStrip(directory.getEntry("violin-ACTIVE-IDLE", Texture.class), 1, 6, 6);
+        violinSet[6] = new FilmStrip(directory.getEntry("violin-ACTIVE-MISS", Texture.class), 1, 1, 1);
+
+        singerSet = new FilmStrip[7];
+        singerSet[0] = new FilmStrip(directory.getEntry("singer-INACTIVE-NOTES", Texture.class), 1, 6, 6);
+        singerSet[1] = new FilmStrip(directory.getEntry("singer-INACTIVE-NO-NOTES", Texture.class), 1, 8, 8);
+        singerSet[2] = new FilmStrip(directory.getEntry("singer-INACTIVE-LOW", Texture.class), 1, 4, 4);
+        singerSet[3] = new FilmStrip(directory.getEntry("singer-ACTIVE-LEFT", Texture.class), 1, 8, 8);
+        singerSet[4] = new FilmStrip(directory.getEntry("singer-ACTIVE-RIGHT", Texture.class), 1, 8, 8);
+        singerSet[5] = new FilmStrip(directory.getEntry("singer-ACTIVE-IDLE", Texture.class), 1, 8, 8);
+        singerSet[6] = new FilmStrip(directory.getEntry("singer-ACTIVE-MISS", Texture.class), 1, 1, 1);
+
+        drummerSet = new FilmStrip[7];
+        drummerSet[0] = new FilmStrip(directory.getEntry("drummer-INACTIVE-NOTES", Texture.class), 1, 6, 6);
+        drummerSet[1] = new FilmStrip(directory.getEntry("drummer-INACTIVE-NO-NOTES", Texture.class), 1, 6, 6);
+        drummerSet[2] = new FilmStrip(directory.getEntry("drummer-INACTIVE-LOW", Texture.class), 1, 4, 4);
+        drummerSet[3] = new FilmStrip(directory.getEntry("drummer-ACTIVE-LEFT", Texture.class), 1, 14, 14);
+        drummerSet[4] = new FilmStrip(directory.getEntry("drummer-ACTIVE-RIGHT", Texture.class), 1, 14, 14);
+        drummerSet[5] = new FilmStrip(directory.getEntry("drummer-ACTIVE-IDLE", Texture.class), 1, 6, 6);
+        drummerSet[6] = new FilmStrip(directory.getEntry("drummer-ACTIVE-MISS", Texture.class), 1, 1, 1);
+
+        pianoSet = new FilmStrip[7];
+        pianoSet[0] = new FilmStrip(directory.getEntry("piano-INACTIVE-NOTES", Texture.class), 1, 8, 8);
+        pianoSet[1] = new FilmStrip(directory.getEntry("piano-INACTIVE-NO-NOTES", Texture.class), 1, 6, 6);
+        pianoSet[2] = new FilmStrip(directory.getEntry("piano-INACTIVE-LOW", Texture.class), 1, 3, 3);
+        pianoSet[3] = new FilmStrip(directory.getEntry("piano-ACTIVE-LEFT", Texture.class), 1, 8, 8);
+        pianoSet[4] = new FilmStrip(directory.getEntry("piano-ACTIVE-RIGHT", Texture.class), 1, 8, 8);
+        pianoSet[5] = new FilmStrip(directory.getEntry("piano-ACTIVE-IDLE", Texture.class), 1, 6, 6);
+        pianoSet[6] = new FilmStrip(directory.getEntry("piano-ACTIVE-MISS", Texture.class), 1, 1, 1);
+
         backSplash = new FilmStrip(directory.getEntry("back-splash", Texture.class), 5, 5, 23);
         frontSplash = new FilmStrip(directory.getEntry("front-splash", Texture.class), 5, 5, 21);
         this.data = data;
         //Read in Json  Value and populate asset textures
         lastDec = 0;
         levelName = data.getString("levelName");
+        System.out.println(levelName);
         levelNumber = data.getInt("levelNumber");
         maxCompetency = data.getInt("maxCompetency");
-        aThreshold = data.get("a-threshold").asLong();
-        bThreshold = data.get("b-threshold").asLong();
-        cThreshold = data.get("c-threshold").asLong();
-        sThreshold = data.get("s-threshold").asLong();
+        aThreshold = data.get("thresholdA").asLong();
+        bThreshold = data.get("thresholdB").asLong();
+        cThreshold = data.get("thresholdC").asLong();
+        sThreshold = data.get("thresholdS").asLong();
         bpm = data.getInt("bpm");
         String song = data.getString("song");
+        int fallSpeed = data.getInt("fallSpeed");
         music = ((AudioEngine) Gdx.audio).newMusic(Gdx.files.internal(assets.get("samples").getString(song)));
         songSource = music.getSource(0);
         music.setVolume(0.8f);
@@ -250,13 +297,29 @@ public class Level {
 
         // preallocate band members
         bandMembers = new BandMember[data.get("bandMembers").size];
-        spawnOffset = music.getSampleRate();
+        spawnOffset = 10*music.getSampleRate()/fallSpeed;
         // switch note is twice as slow
         spawnOffsetSwitch = 2L * spawnOffset;
         System.out.println(spawnOffset);
+        float samplesPerBeat = songSource.getSampleRate() * 60f/bpm;
         for(int i = 0; i < bandMembers.length; i++){
             bandMembers[i] = new BandMember();
             JsonValue bandMemberData = data.get("bandMembers").get(i);
+
+            // we store comp flags as arrays of size 3: song position, lossRate, gainRate
+            // we sort these comp flags in a PriorityQueue for each band member based on song position
+            JsonValue compFlags = bandMemberData.get("compFlags");
+            PriorityQueue<Long[]> compData = new PriorityQueue<>(10, new CustomComparator());
+            for(int j = 0; j < compFlags.size; ++j){
+                JsonValue thisCompFlag = compFlags.get(j);
+                Long[] arr = new Long[3];
+                arr[0] = thisCompFlag.getLong("position");
+                arr[1] = (long) thisCompFlag.getInt("rate");
+                arr[2] = (long) thisCompFlag.getInt("gain");
+                compData.add(arr);
+            }
+            bandMembers[i].setCompData(compData);
+
             Queue<Note> notes = new Queue<>();
             JsonValue noteData = bandMemberData.get("notes");
             for(int j = 0; j < noteData.size; ++j){
@@ -290,29 +353,40 @@ public class Level {
             bandMembers[i].setCurComp(maxCompetency);
             bandMembers[i].setMaxComp(maxCompetency);
             // TODO: FIX THIS SO THAT IT FITS THE LEVEL JSON
-            bandMembers[i].setLossRate(bandMemberData.getInt("competencyLossRate"));
+            Long[] firstCompData = bandMembers[i].getCompData().poll();
+            if (firstCompData != null) {
+                bandMembers[i].setLossRate(firstCompData[1].intValue());
+                bandMembers[i].setGainRate(firstCompData[2].intValue());
+            }
             bandMembers[i].setHpBarFilmStrip(hpbar, 47);
             bandMembers[i].setIndicatorTextures(noteIndicator, noteIndicatorHit);
+            bandMembers[i].setSPB(samplesPerBeat);
             switch (bandMemberData.getString("instrument")) {
                 case "violin":
-                    bandMembers[i].setCharacterFilmstrip(violinSprite);
+                    bandMembers[i].setFilmStrips(violinSet);
                     break;
                 case "piano":
-                    bandMembers[i].setCharacterFilmstrip(synthSprite);
+                    bandMembers[i].setFilmStrips(pianoSet);
                     break;
                 case "drum":
-                    bandMembers[i].setCharacterFilmstrip(drummerSprite);
+                    bandMembers[i].setFilmStrips(drummerSet);
                     break;
                 case "voice":
-                    bandMembers[i].setCharacterFilmstrip(voiceSprite);
+                    bandMembers[i].setFilmStrips(singerSet);
                     break;
             }
+            bandMembers[i].recieveSample(sample);
+            bandMembers[i].pickFrame();
         }
     }
 
     // TODO: document and multiply by the base music volume
     public void setMusicVolume(float vol) {
         music.setVolume(vol);
+    }
+
+    public float getMusicVolume() {
+        return music.getVolume();
     }
 
     // TODO: REMOVE THIS AND REPLACE WITH ACTUAL ANIMATION BASED ON SAMPLE
@@ -365,6 +439,7 @@ public class Level {
         bandMembers[activeBandMember].setWidth(large_width);
         bandMembers[activeBandMember].setLineHeight(maxLineHeight);
         bandMembers[activeBandMember].setLaneTint(1f);
+        bandMembers[activeBandMember].setMode(1);
     }
 
     /**
@@ -408,6 +483,36 @@ public class Level {
 
     private long sample = 0;
 
+    public void recieveInterrupt(int BM_id, boolean DFflag, boolean JKflag, boolean MISSflag){
+        bandMembers[BM_id].recieveSample(sample);
+        bandMembers[BM_id].recieveFlags(DFflag, JKflag, MISSflag);
+    }
+
+
+    public void swapActive(int prev, int next){
+        bandMembers[prev].changeMode();
+        bandMembers[next].changeMode();
+    }
+
+    /**
+     * We check to see if we have reached the song position of the next comp rate change, and change if we have
+     * */
+    public void updateCompRates() {
+        for (int i=0; i < bandMembers.length; i++) {
+            Long[] top = bandMembers[i].getCompData().peek();
+            if (top == null) return;
+            if (getCurrentSample() >= top[0]) {
+                top = bandMembers[i].getCompData().poll();
+                bandMembers[i].setLossRate((top[1]).intValue());
+                bandMembers[i].setGainRate((top[2]).intValue());
+            }
+        }
+    }
+
+    public int gainRate(int activeBandMember) {
+        return bandMembers[activeBandMember].getGainRate();
+    }
+
     /**
      * Spawns new notes according to what sample we are at. Also decrements bandmembers' competency
      * for some amount about once a second. It also updates the frame of the bandmember.
@@ -423,26 +528,27 @@ public class Level {
             int startSample = -(int) (((float) rate/60f)*introLength);
             sample = startSample + (int) (((float) rate/60f)*ticks);
         }
-        float samplesPerBeat = rate * 60f/bpm;
 
-        for (BandMember bandMember : bandMembers) {
-            //update the uh frame
-            float frameprogress = (sample % samplesPerBeat) / (samplesPerBeat);
-            int totalframes = bandMember.getCharacterFrames();
+        for (int i = 0; i < bandMembers.length; ++i) {
+            BandMember bandMember = bandMembers[i];
             if (mode==1) {
-                bandMember.setFrame((int) (totalframes * frameprogress));
+                bandMember.recieveSample(sample);
+                bandMember.pickFrame();
             }
 
-            //spawn new notes accordingly
-            bandMember.spawnNotes(sample);
-            //update the note frames
-            bandMember.updateNotes(spawnY, sample);
+
+
 
             if (!bandMember.getHitNotes().isEmpty() && mode == 1) {
                 float loss = -1f * bandMember.getLossRate() * (sample - lastDec) / ((float) music.getSampleRate());
                 // TODO: ONLY UPDATE IF YOU ARE NOT HOLDING
                 bandMember.compUpdate(loss);
             }
+            //spawn new notes accordingly
+            bandMember.spawnNotes(sample);
+            //update the note frames
+            bandMember.updateNotes(spawnY, sample);
+
         }
         lastDec = sample;
     }
@@ -474,7 +580,8 @@ public class Level {
         // reset volume
         music.setVolume(oldVolume);
         bandMembers = new BandMember[data.get("bandMembers").size];
-        spawnOffset = music.getSampleRate();
+        int fallSpeed = data.getInt("fallSpeed");
+        spawnOffset = 10*music.getSampleRate()/fallSpeed;
         spawnOffsetSwitch = spawnOffset * 2L;
         for(int i = 0; i < bandMembers.length; i++){
             bandMembers[i] = new BandMember();
@@ -510,22 +617,34 @@ public class Level {
             bandMembers[i].setAllNotes(notes);
             bandMembers[i].setCurComp(maxCompetency);
             bandMembers[i].setMaxComp(maxCompetency);
-            bandMembers[i].setLossRate(bandMemberData.getInt("competencyLossRate"));
+            JsonValue compFlags = bandMemberData.get("compFlags");
+            PriorityQueue<Long[]> compData = new PriorityQueue<>(10, new CustomComparator());
+            for(int j = 0; j < compFlags.size; ++j){
+                JsonValue thisCompFlag = compFlags.get(j);
+                Long[] arr = new Long[3];
+                arr[0] = thisCompFlag.getLong("position");
+                arr[1] = (long) thisCompFlag.getInt("rate");
+                arr[2] = (long) thisCompFlag.getInt("gain");
+                compData.add(arr);
+            }
+            bandMembers[i].setCompData(compData);
             bandMembers[i].setHpBarFilmStrip(hpbar, 47);
             switch (bandMemberData.getString("instrument")) {
                 case "violin":
-                    bandMembers[i].setCharacterFilmstrip(violinSprite);
+                    bandMembers[i].setFilmStrips(violinSet);
                     break;
                 case "piano":
-                    bandMembers[i].setCharacterFilmstrip(synthSprite);
+                    bandMembers[i].setFilmStrips(pianoSet);
                     break;
                 case "drum":
-                    bandMembers[i].setCharacterFilmstrip(drummerSprite);
+                    bandMembers[i].setFilmStrips(drummerSet);
                     break;
                 case "voice":
-                    bandMembers[i].setCharacterFilmstrip(voiceSprite);
+                    bandMembers[i].setFilmStrips(singerSet);
                     break;
             }
+            bandMembers[i].recieveSample(sample);
+            bandMembers[i].pickFrame();
         }
     }
 

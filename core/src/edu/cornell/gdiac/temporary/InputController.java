@@ -466,6 +466,9 @@ public class InputController {
 	private boolean placeStart;
 	private boolean placeStartLast;
 
+	private boolean changeMeow;
+	private boolean changeMeowLast;
+
 	private boolean placeFlags;
 	private boolean placeFlagsLast;
 
@@ -542,6 +545,7 @@ public class InputController {
 		boolean placeStartPress = Gdx.input.isKeyPressed(Input.Keys.P);
 		boolean placeFlagsPress = Gdx.input.isKeyPressed(Input.Keys.C);
 		boolean placeHitsPress = Gdx.input.isKeyPressed(Input.Keys.X);
+		boolean changeMeowPress = Gdx.input.isKeyPressed(Input.Keys.MINUS);
 		boolean savePress = Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && Gdx.input.isKeyPressed(Input.Keys.S);
 		boolean loadPress = Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && Gdx.input.isKeyPressed(Input.Keys.L);
 		boolean upDurationPress = Gdx.input.isKeyPressed(Input.Keys.NUM_9);
@@ -573,6 +577,9 @@ public class InputController {
 
 		downDuration = !downDurationLast && downDurationPress;
 		downDurationLast = downDurationPress;
+
+		changeMeow = !changeMeowLast && changeMeowPress;
+		changeMeowLast = changeMeowPress;
 
 		placeStart = !placeStartLast && placeStartPress;
 		placeStartLast = placeStartPress;
@@ -628,10 +635,10 @@ public class InputController {
 	public boolean didPressPlay() {return play;}
 	public boolean didPressPlay(boolean relocate) {
 		if (!relocate) {
-			return play && !Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT);
+			return play && Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT);
 		}
 		else {
-			return play && Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT);
+			return play && !Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT);
 		}
 	}
 	public boolean didHoldPlay() {return playPress;}
@@ -655,6 +662,8 @@ public class InputController {
 	public boolean didSave() {return save;}
 
 	public boolean didLoad() {return load;}
+
+	public boolean changedMeow() {return changeMeow;}
 
 	public boolean durationUp() {return upDuration;}
 

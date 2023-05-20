@@ -108,6 +108,11 @@ public class GameplayController {
 	/** number of notes hit perfect */
 	private int numberPerfect;
 
+	/** the multiplier for a perfect hit */
+	private static float PERFECT_HIT = 1.5f;
+	/** the multiplier for a good hit */
+	private static float GOOD_HIT = 1.25f;
+
 	/**
 	 * Create gameplaycontroler
 	 * @param width
@@ -308,14 +313,13 @@ public class GameplayController {
 				//If a note is out of bounds and it has not been hit, we need to mark it destroyed and assign
 				//a negative hit status
 				if(n.getY() < noteDieY && !n.isDestroyed()){
-					if (n.getNoteType() == Note.NoteType.HELD) {
-					}
 					n.setDestroyed(true);
 					if(i == activeBandMember){
 						sb.resetCombo();
-						float hitStatusX = LEFTBOUND+((activeBandMember+1)*(HIT_IND_SIZE/3))+((activeBandMember+1) * smallwidth);
+						float hitStatusX = LEFTBOUND+((activeBandMember+1)*(HIT_IND_SIZE/3f))+((activeBandMember+1) * smallwidth);
 						float hitStatusY = BOTTOMBOUND-(HIT_IND_SIZE/1.6f);
 						spawnHitIndicator(hitStatusX,hitStatusY,missIndicator,1);
+						MISS = true;
 					}
 				}
 				if(n.isDestroyed()){
@@ -438,7 +442,7 @@ public class GameplayController {
 		if (countTime >= 1f / 20f) {
 			countTime = countTime * (1f / 2f);
 		}
-		return ((int)(3f/countTime)) + 120;
+		return ((int)(3f/countTime)) + 121;
 	}
 
 	/**
@@ -457,6 +461,10 @@ public class GameplayController {
 		for (Particle o: noteIndicatorParticles){
 			o.update(0f);
 		}
+
+		level.recieveInterrupt(activeBandMember, DF, JK, MISS);
+		level.updateCompRates();
+
 	}
 
 	/**
@@ -610,7 +618,9 @@ public class GameplayController {
 	public int okHit;
 	public int miss;
 
-
+	boolean DF;
+	boolean MISS;
+	boolean JK;
 	/**
 	 * Handles logic of a hit, whether it is on beat or not, etc.
 	 * @param note the note that we are trying to hit
@@ -620,11 +630,12 @@ public class GameplayController {
 	 */
 	public void checkHit(Note note,
 						 long currentSample,
-						 int perfectGain, int goodGain, int okGain, int offBeatLoss,
+						 int gainRate, int offBeatLoss,
 						 float spawnEffectY,
 						 boolean destroy,
 						 boolean[] hitReg,
 						 boolean lifted) {
+
 		Note.NoteType nt = note.getNoteType();
 		// check for precondition that lifted is true iff note type is HELD
 		assert !lifted || nt == Note.NoteType.HELD;
@@ -638,10 +649,14 @@ public class GameplayController {
 		// check if note was hit or on beat
 		if(dist < miss) {
 			if (dist < okHit) {
+				if(nt != Note.NoteType.SWITCH){
+					DF = note.getLine() < NUM_LANES/2;
+					JK = note.getLine() >= NUM_LANES/2;
+				}
 				//If so, destroy the note and set a positive hit status. Also set that we
 				//have registered a hit for this line for this click. This ensures that
 				//We do not have a single hit count for two notes that are close together
-				int compGain = dist < perfectHit ? perfectGain : (dist < goodHit ? goodGain : okGain);
+				int compGain = dist < perfectHit ? (int)(PERFECT_HIT*gainRate) : (dist < goodHit ? (int)(GOOD_HIT*gainRate) : gainRate);
 
 				if (dist < perfectHit){
 					numberPerfect++;
@@ -684,12 +699,14 @@ public class GameplayController {
 				sb.receiveHit(pointsReceived);
 			} else {
 				// lose some competency since you played a bit off beat
+				MISS = true;
 				sb.resetCombo();
 				note.setHitStatus(offBeatLoss);
 			}
 		}
 		//if we let go too early we need to reset the combo
 		if (lifted && dist >= miss){
+			MISS = true;
 			sb.resetCombo();
 			note.setHitStatus(offBeatLoss);
 		}
@@ -698,6 +715,10 @@ public class GameplayController {
 
 
 	public void recieveInput(InputController input){
+		DF = false;
+		JK = false;
+		MISS = false;
+
 		switches = input.didSwitch();
 		triggers = input.didTrigger();
 		lifted = input.triggerLifted;
@@ -726,12 +747,18 @@ public class GameplayController {
 
 		// SWITCH NOTE HIT HANDLING
 		if (curP == PlayPhase.NOTES){
-
 			for (int i = 0; i < switches.length; ++i){
 				if (switches[i] && i != activeBandMember){
 					//Check only the lanes that are not the current active lane
 					for(Note n : level.getBandMembers()[i].getSwitchNotes()) {
-						checkHit(n, currentSample, 5, 4, 3, 0, n.getY(),true, hitReg, false);
+						int switchGainRate = level.gainRate(activeBandMember) * 2;
+						checkHit(n, currentSample, switchGainRate, 0, n.getY(),true, hitReg, false);
+					}
+					for(Note n : level.getBandMembers()[activeBandMember].getHitNotes()){
+						if(n.getNoteType() == Note.NoteType.HELD && n.isHolding()){
+							int liftedGainRate = (int) (level.gainRate(activeBandMember) * 0.75);
+							checkHit(n, currentSample, liftedGainRate, -1, n.getBottomY(),true, hitReg, true);
+						}
 					}
 					//set goalBM
 					goalBandMember = i;
@@ -740,6 +767,7 @@ public class GameplayController {
 					//reset progress
 					t_progress = 0; //transition progress
 					t_start = level.getLevelSample();
+					level.swapActive(activeBandMember, goalBandMember);
 					return;
 				}
 			}
@@ -767,31 +795,38 @@ public class GameplayController {
 				if (triggers[n.getLine()] && !hitReg[n.getLine()]){
 					//Check for all the notes in this line and in the active band member
 					//See if any are close enough
-					checkHit(n, currentSample, 4, 3, 2, -1, n.getY(),true, hitReg, false);
+					checkHit(n, currentSample, level.gainRate(activeBandMember), -1, n.getY(),true, hitReg, false);
 				}
 			}
 			// HOLD NOTE
 			else {
 				//Check if we hit the trigger down close enough to the head
 				if(triggers[n.getLine()] && !hitReg[n.getLine()]){
-					checkHit(n, currentSample, 4, 3, 2, -1, n.getBottomY(),false, hitReg, false);
+					checkHit(n, currentSample, level.gainRate(activeBandMember), -1, n.getBottomY(),false, hitReg, false);
 				}
 				//check if we lifted close to the end (we only check if we ended up holding the note in the first place)
 				if(lifted[n.getLine()] && n.isHolding()){
-					checkHit(n, currentSample, 3, 2, 1, -1, n.getBottomY(),true, hitReg, true);
+					int liftedGainRate = (int) (level.gainRate(activeBandMember) * 0.75);
+					checkHit(n, currentSample, liftedGainRate, -1, n.getBottomY(),true, hitReg, true);
 					n.setHeldFor(0);
 					// destroy (if you are already holding)
-					if (n.isHolding()) n.setDestroyed(true);
+					n.setDestroyed(true);
 					n.setHolding(false);
 				}
 				// check the hold
 				if (n.isHolding()) {
+					if(n.getLine() < NUM_LANES/2){
+						DF = true;
+					}
+					else{
+						JK = true;
+					}
 					// update competency every beat
 					long samplesPerBeat = (long) (level.getMusic().getSampleRate() * (60f / level.getBpm()));
 					// approximation of how many samples held
 					long heldSamples = level.getCurrentSample() - n.getHitSample();
 					if (heldSamples / samplesPerBeat > n.getHeldFor()) {
-						level.getBandMembers()[activeBandMember].compUpdate(3);
+						level.getBandMembers()[activeBandMember].compUpdate(level.gainRate(activeBandMember));
 						n.setHeldFor(n.getHeldFor() + 1);
 					}
 				}
@@ -803,7 +838,10 @@ public class GameplayController {
 					sb.resetCombo();
 				}
 			}
+
 		}
+
+
 	}
 
 	public void dispose(){

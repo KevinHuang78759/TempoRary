@@ -1,17 +1,21 @@
 {
-  "levelname" : "YR hard",
-  "background" : "livestream-background",
+  "levelname" : "YR",
   "levelNumber" : 12,
+  "levelImage" : "livestream",
+  "background" : "livestream-background",
   "song" : "YR",
   "startPosition" : 0,
   "bpm" : 150,
-  "maxCompetency" : 150,
+  "fallSpeed" : 10,
+  "maxCompetency" :175,
   "linesPerMember" : 4,
-  "a-threshold":800000,"b-threshold":500000,"c-threshold":320000,"s-threshold":1100000,
+  "thresholdA" : 800000,
+  "thresholdB" : 500000,
+  "thresholdC" : 320000,
+  "thresholdS" : 1100000,
   "bandMembers" : [
     {
       "instrument" : "piano",
-      "competencyLossRate" : 15,
       "notes" : [
         {
           "type" : "beat",
@@ -1136,12 +1140,17 @@
           "line" : 2
         }
       ],
-      "lossRates" : []
+      "compFlags" : [
+        {
+          "rate" : 10,
+          "gain" : 4,
+          "position" : 0
+        }
+      ]
     }
   ,
     {
       "instrument" : "piano",
-      "competencyLossRate" : 15,
       "notes" : [
         {
           "type" : "switch",
@@ -1780,12 +1789,17 @@
           "line" : 1
         }
       ],
-      "lossRates" : []
+      "compFlags" : [
+        {
+          "rate" : 10,
+          "gain" : 4,
+          "position" : 0
+        }
+      ]
     }
   ,
     {
       "instrument" : "piano",
-      "competencyLossRate" : 15,
       "notes" : [
         {
           "type" : "switch",
@@ -2760,12 +2774,17 @@
           "line" : 1
         }
       ],
-      "lossRates" : []
+      "compFlags" : [
+        {
+          "rate" : 10,
+          "gain" : 4,
+          "position" : 0
+        }
+      ]
     }
   ,
     {
       "instrument" : "piano",
-      "competencyLossRate" : 15,
       "notes" : [
         {
           "type" : "switch",
@@ -3938,9 +3957,13 @@
           "line" : 3
         }
       ],
-      "lossRates" : []
+      "compFlags" : [
+        {
+          "rate" : 10,
+          "gain" : 4,
+          "position" : 0
+        }
+      ]
     }
-
-  ],
-  "randomHits" : []
+  ]
 }
