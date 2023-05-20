@@ -42,8 +42,13 @@ public class BandMember {
         assert  k == -1 || k ==1;
         mode = k;
     }
-    boolean DFprev;
-    boolean JKprev;
+    private boolean DFprev;
+    private boolean JKprev;
+
+    boolean held;
+    public boolean hasHold(){
+        return held;
+    }
     public void setSPB(float s){
         samplesPerBeat = s;
     }
@@ -181,6 +186,7 @@ public class BandMember {
                 }
             }
         }
+        held = (DFprev && df) || (JKprev && jk);
         DFprev = df;
         JKprev = jk;
     }

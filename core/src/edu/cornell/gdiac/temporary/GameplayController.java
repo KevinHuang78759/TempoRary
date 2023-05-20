@@ -453,8 +453,7 @@ public class GameplayController {
 	public void update(int mode, int ticks){
 		//First, check for dead notes and remove them from active arrays
 		checkDeadNotes();
-		//Then, update the notes for each band member and spawn new notes
-		level.updateBandMemberNotes(noteSpawnY, mode, ticks, getIntroLength());
+
 		//Update the objects of this class (mostly stars)
 		for(Particle o : particles){
 			o.update(0f);
@@ -465,6 +464,8 @@ public class GameplayController {
 
 		level.recieveInterrupt(activeBandMember, DF, JK, MISS);
 		level.updateCompRates();
+		//Then, update the notes for each band member and spawn new notes
+		level.updateBandMemberNotes(noteSpawnY, mode, ticks, getIntroLength());
 
 	}
 
