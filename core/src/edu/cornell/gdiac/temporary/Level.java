@@ -193,14 +193,6 @@ public class Level {
     private long startRange;
     private long endRange;
 
-    public long getStartRange() {
-        return startRange;
-    }
-
-    public long getEndRange() {
-        return endRange;
-    }
-
     private long startSwitchRange;
     private long endSwitchRange = -1;
     public long getStartSwitchRange() {
@@ -212,6 +204,12 @@ public class Level {
 
     public boolean getIsTutorial() {
         return isTutorial;
+    }
+
+    private int toBandMember;
+
+    public int getToBandMember() {
+        return toBandMember;
     }
 
     public boolean isInAutoplayRange() {
@@ -244,6 +242,7 @@ public class Level {
                     startSwitchRange = switchRanges.first() - music.getSampleRate();
                     endSwitchRange = switchRanges.first() + music.getSampleRate();
                     switchRanges.removeFirst();
+                    toBandMember = switchRanges.removeFirst().intValue();
                 }
             }
             return currentSample <= endSwitchRange && currentSample >= startSwitchRange;
@@ -334,7 +333,6 @@ public class Level {
         switchIndicator = directory.getEntry("switch-indicator", Texture.class);
         switchIndicatorHit = directory.getEntry("switch-indicator-hit", Texture.class);
 
-
         violinSet = new FilmStrip[7];
         violinSet[0] = new FilmStrip(directory.getEntry("violin-INACTIVE-NOTES", Texture.class), 1, 6, 6);
         violinSet[1] = new FilmStrip(directory.getEntry("violin-INACTIVE-NO-NOTES", Texture.class), 1, 6, 6);
@@ -414,7 +412,6 @@ public class Level {
         spawnOffset = 10*music.getSampleRate()/fallSpeed;
         // switch note is twice as slow
         spawnOffsetSwitch = 2L * spawnOffset;
-        System.out.println(spawnOffset);
         float samplesPerBeat = songSource.getSampleRate() * 60f/bpm;
         for(int i = 0; i < bandMembers.length; i++){
             bandMembers[i] = new BandMember();
@@ -723,15 +720,33 @@ public class Level {
         bandMembers = new BandMember[data.get("bandMembers").size];
         int fallSpeed = data.getInt("fallSpeed");
         spawnOffset = 10*music.getSampleRate()/fallSpeed;
-        spawnOffsetSwitch = spawnOffset * 2L;
+        // switch note is twice as slow
+        spawnOffsetSwitch = 2L * spawnOffset;
+        float samplesPerBeat = songSource.getSampleRate() * 60f/bpm;
         for(int i = 0; i < bandMembers.length; i++){
             bandMembers[i] = new BandMember();
             JsonValue bandMemberData = data.get("bandMembers").get(i);
+
+            // we store comp flags as arrays of size 3: song position, lossRate, gainRate
+            // we sort these comp flags in a PriorityQueue for each band member based on song position
+            JsonValue compFlags = bandMemberData.get("compFlags");
+            PriorityQueue<Long[]> compData = new PriorityQueue<>(10, new CustomComparator());
+            for(int j = 0; j < compFlags.size; ++j){
+                JsonValue thisCompFlag = compFlags.get(j);
+                Long[] arr = new Long[3];
+                arr[0] = thisCompFlag.getLong("position");
+                arr[1] = (long) thisCompFlag.getInt("rate");
+                arr[2] = (long) thisCompFlag.getInt("gain");
+                compData.add(arr);
+            }
+            bandMembers[i].setCompData(compData);
+
             Queue<Note> notes = new Queue<>();
             JsonValue noteData = bandMemberData.get("notes");
             for(int j = 0; j < noteData.size; ++j){
                 JsonValue thisNote = noteData.get(j);
                 Note n;
+
                 if (thisNote.getString("type").equals("beat")){
                     if(thisNote.getLong("position") > maxSample){
                         continue;
@@ -758,18 +773,14 @@ public class Level {
             bandMembers[i].setAllNotes(notes);
             bandMembers[i].setCurComp(maxCompetency);
             bandMembers[i].setMaxComp(maxCompetency);
-            JsonValue compFlags = bandMemberData.get("compFlags");
-            PriorityQueue<Long[]> compData = new PriorityQueue<>(10, new CustomComparator());
-            for(int j = 0; j < compFlags.size; ++j){
-                JsonValue thisCompFlag = compFlags.get(j);
-                Long[] arr = new Long[3];
-                arr[0] = thisCompFlag.getLong("position");
-                arr[1] = (long) thisCompFlag.getInt("rate");
-                arr[2] = (long) thisCompFlag.getInt("gain");
-                compData.add(arr);
+            Long[] firstCompData = bandMembers[i].getCompData().poll();
+            if (firstCompData != null) {
+                bandMembers[i].setLossRate(firstCompData[1].intValue());
+                bandMembers[i].setGainRate(firstCompData[2].intValue());
             }
-            bandMembers[i].setCompData(compData);
             bandMembers[i].setHpBarFilmStrip(hpbar, 47);
+            bandMembers[i].setIndicatorTextures(noteIndicator, noteIndicatorHit);
+            bandMembers[i].setSPB(samplesPerBeat);
             switch (bandMemberData.getString("instrument")) {
                 case "violin":
                     bandMembers[i].setFilmStrips(violinSet);
@@ -788,8 +799,17 @@ public class Level {
             bandMembers[i].pickFrame();
         }
 
+        // TUTORIAL LOGIC
+
+        // need autoplay ranges, need switch ranges, need random hit
         JsonValue tutorialData = data.get("tutorialData");
         if (tutorialData != null) {
+            fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Blinker-SemiBold.ttf"));
+
+            fontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+            fontParameter.size = 96;
+            font = fontGenerator.generateFont(fontParameter);
+            fontScale = 1f;
             isTutorial = true;
 
             autoplayRanges = new Queue<>();
@@ -886,6 +906,7 @@ public class Level {
                     for(int k = 0; k < 4; ++k){
                         GlyphLayout layout = new GlyphLayout(font,controls[k]);
                         float boundSize = hitCBOX.getHeight()*Math.min(0.2f * bandMembers[i].getHeight()/hitCBOX.getHeight(), 0.85f*bandMembers[i].getWidth()/hitCBOX.getWidth());
+                        System.out.println(hitCBOX.getHeight() + " " +  bandMembers[i].getHeight() + " " + bandMembers[i].getWidth());
                         fontScale *= 0.5*Math.min(boundSize/layout.width, boundSize/layout.height);
                         font.getData().setScale(fontScale);
                         layout = new GlyphLayout(font, controls[k]);
@@ -898,7 +919,7 @@ public class Level {
             else{
                 bandMembers[i].drawSwitchNotes(canvas);
                 bandMembers[i].drawIndicator(canvas, switchIndicator, switchIndicatorHit, switches[i]);
-                if (isAutoSwitching() && i == (active + 1) % bandMembers.length && getCurrentSample() <= (endSwitchRange + startSwitchRange)/2f) {
+                if (isAutoSwitching() && i == toBandMember && getCurrentSample() <= (endSwitchRange + startSwitchRange)/2f) {
                     bandMembers[i].drawPawIndicator(canvas, pawIndicator);
                 }
                 if(isTutorial){

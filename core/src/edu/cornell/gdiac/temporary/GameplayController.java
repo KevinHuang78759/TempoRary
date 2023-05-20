@@ -459,7 +459,7 @@ public class GameplayController {
 		InputController.getInstance().setAutoswitch(level.isAutoSwitching());
 		if (level.isAutoSwitching() && !switchSetInAutoPlay) {
 			if (level.getCurrentSample() >= (level.getStartSwitchRange() + level.getEndSwitchRange()) / 2f) {
-				InputController.getInstance().setSwitch((activeBandMember + 1) % level.getBandMembers().length, true);
+				InputController.getInstance().setSwitch(level.getToBandMember(), true);
 				switchSetInAutoPlay = true;
 			}
 		}
@@ -483,10 +483,6 @@ public class GameplayController {
 			InputController.getInstance().resetSwitches();
 			switchSetInAutoPlay = false;
 		}
-
-//		if (!level.isInAutoplayRange()) {
-//			InputController.getInstance().setAutoplay(false);
-//		}
 	}
 
 	/**

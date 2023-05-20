@@ -388,7 +388,7 @@ public class InputController {
 		calibrationHitLast = calibrationHitPressed;
 
 		for (int i = 0; i < triggerBindingsMain.length; i++) {
-			if (!autoplay) {
+			if (!autoplay && !autoswitch) {
 				triggerPress[i] = Gdx.input.isKeyPressed(triggerBindingsMain[i]) || Gdx.input.isKeyPressed(triggerBindingsAlt[i]);
 			}
 			if (i < numBandMembers) {
