@@ -75,12 +75,17 @@ public class InputController {
 	private boolean[] moves;
 
 	private boolean autoplay;
+	private boolean autoswitch;
 
 	/** XBox Controller support */
 	private XBoxController xbox;
 
 	public void setAutoplay(boolean ap) {
 		autoplay = ap;
+	}
+
+	public void setAutoswitch(boolean as) {
+		autoswitch = as;
 	}
 
 	/**
@@ -350,7 +355,9 @@ public class InputController {
 	}
 
 	public void setSwitch(int line, boolean val) {
-		switchesPress[line] = val;
+		if (autoswitch) {
+			switchesPress[line] = val;
+		}
 	}
 
 	public void resetTriggers() {
@@ -385,7 +392,7 @@ public class InputController {
 				triggerPress[i] = Gdx.input.isKeyPressed(triggerBindingsMain[i]) || Gdx.input.isKeyPressed(triggerBindingsAlt[i]);
 			}
 			if (i < numBandMembers) {
-				if (!autoplay) {
+				if (!autoswitch) {
 					switchesPress[i] = Gdx.input.isKeyPressed(switchesBindingsMain.get(numBandMembers - 1)[i])
 							|| Gdx.input.isKeyPressed(switchesBindingsAlt.get(numBandMembers - 1)[i]);
 				}

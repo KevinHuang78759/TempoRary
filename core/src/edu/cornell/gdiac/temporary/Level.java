@@ -182,6 +182,23 @@ public class Level {
     private long startRange;
     private long endRange;
 
+    public long getStartRange() {
+        return startRange;
+    }
+
+    public long getEndRange() {
+        return endRange;
+    }
+
+    private long startSwitchRange;
+    private long endSwitchRange = -1;
+    public long getStartSwitchRange() {
+        return startSwitchRange;
+    }
+    public long getEndSwitchRange() {
+        return endSwitchRange;
+    }
+
     public boolean getIsTutorial() {
         return isTutorial;
     }
@@ -209,12 +226,15 @@ public class Level {
 
     public boolean isAutoSwitching() {
         long currentSample = getCurrentSample();
-        if (isTutorial && !switchRanges.isEmpty()) {
-            if (currentSample >= switchRanges.first()) {
-                switchRanges.removeFirst();
-                return true;
+        if (isTutorial && (currentSample <= endSwitchRange || endSwitchRange == -1 || !switchRanges.isEmpty())) {
+            // set it to one second before
+            if (!switchRanges.isEmpty()) {
+                if (currentSample >= switchRanges.first() - music.getSampleRate() / 2) {
+                    startSwitchRange = switchRanges.first() - music.getSampleRate() / 2;
+                    endSwitchRange = switchRanges.first() + music.getSampleRate() / 2;
+                }
             }
-            return false;
+            return currentSample <= endSwitchRange && currentSample >= startSwitchRange;
         }
         return false;
     }
@@ -843,6 +863,10 @@ public class Level {
             else{
                 bandMembers[i].drawSwitchNotes(canvas);
                 bandMembers[i].drawIndicator(canvas, switchIndicator, switchIndicatorHit, switches[i]);
+                if (isInAutoplayRange()) {
+//                    int j = bandMembers[i].getHitNotes().isEmpty() ? -1 : bandMembers[i].getHitNotes().first().getLine();
+//                    bandMembers[i].drawPawIndicator(canvas, pawIndicator, j);
+                }
             }
         }
 

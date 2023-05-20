@@ -446,6 +446,8 @@ public class GameplayController {
 		return ((int)(3f/countTime)) + 121;
 	}
 
+	private boolean switchSetInAutoPlay = false;
+
 	/**
 	 * Updates the state.
 	 *
@@ -453,11 +455,12 @@ public class GameplayController {
 	public void update(int mode, int ticks){
 		// check if we are in autoplay
 		InputController.getInstance().setAutoplay(level.isInAutoplayRange());
-
-		if (level.isAutoSwitching()) {
-			InputController.getInstance().setAutoplay(true);
-			InputController.getInstance().setSwitch((activeBandMember + 1) % level.getBandMembers().length, true);
-			System.out.println(Arrays.toString(InputController.getInstance().didSwitch()));
+		InputController.getInstance().setAutoswitch(level.isAutoSwitching());
+		if (level.isAutoSwitching() && !switchSetInAutoPlay) {
+			if (level.getCurrentSample() >= (level.getStartSwitchRange() + level.getEndSwitchRange()) / 2f) {
+				InputController.getInstance().setSwitch((activeBandMember + 1) % level.getBandMembers().length, true);
+				switchSetInAutoPlay = true;
+			}
 		}
 
 		//First, check for dead notes and remove them from active arrays
@@ -474,6 +477,11 @@ public class GameplayController {
 
 		level.receiveInterrupt(activeBandMember, DF, JK, MISS);
 		level.updateCompRates();
+
+		if (!level.isAutoSwitching()) {
+			InputController.getInstance().resetSwitches();
+			switchSetInAutoPlay = false;
+		}
 
 //		if (!level.isInAutoplayRange()) {
 //			InputController.getInstance().setAutoplay(false);

@@ -939,13 +939,11 @@ randomHits: [],
 "tutorialData": {
 	"autoplayRanges": [
 		88200,
-		352800,
-		529200,
-		646800
+		352800
 	],
 	"switchSamples": [
-		235200,
-		452800
+		646800,
+		750000
 	],
 	"arrowAppear": [
 		88200,
