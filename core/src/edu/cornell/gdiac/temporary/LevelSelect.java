@@ -443,14 +443,12 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             }
 
             // draw past scores
-
             for (int i = 0; i < allLevels.length; i++) {
                 String noPath = allLevels[i].substring("levels/".length());
                 long highScore = SaveManager.getInstance().getHighScore(noPath);
                 String grade = SaveManager.getInstance().getGrade(noPath);
                 long highestCombo = SaveManager.getInstance().getHighestCombo(noPath);
-
-                drawPastScores(i % 3, i / 3 + 1, (int) highScore, grade, (int) highestCombo, !grade.equals(""));
+                drawPastScores(i / 3, i < 3 ? 1 : (i % 3 + 1), (int) highScore, grade, (int) highestCombo, !grade.equals(""));
             }
         }
 
