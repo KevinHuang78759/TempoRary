@@ -622,16 +622,16 @@ public class GameMode implements Screen {
 			if (gameState == GameState.PAUSE) {
 				//Draw the buttons for the pause menu
 				Color color = new Color(1f, 1f, 1f, 0.65f);
-				canvas.draw(whiteBackground, color, 0, 0, 0, 0, 0, 1f, 1f);
-				canvas.draw(pauseBackground, Color.WHITE, pauseBackground.getWidth() / 2, pauseBackground.getHeight() / 2,
+				canvas.draw(whiteBackground, color, 0, 0, 0, 0, 0, (float)canvas.getWidth()/whiteBackground.getWidth(), (float)canvas.getHeight()/whiteBackground.getHeight());
+				canvas.draw(pauseBackground, Color.WHITE, pauseBackground.getWidth() / 2f, pauseBackground.getHeight() / 2f,
 						centerX, centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
-				canvas.draw(resumeButton, Color.WHITE, resumeButton.getWidth() / 2, resumeButton.getHeight() / 2,
+				canvas.draw(resumeButton, Color.WHITE, resumeButton.getWidth() / 2f, resumeButton.getHeight() / 2f,
 						centerX, 1.325f*centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
-				canvas.draw(restartButton, Color.WHITE, restartButton.getWidth() / 2, restartButton.getHeight() / 2,
+				canvas.draw(restartButton, Color.WHITE, restartButton.getWidth() / 2f, restartButton.getHeight() / 2f,
 						centerX, 1.1075f*centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
-				canvas.draw(levelButton, Color.WHITE, levelButton.getWidth() / 2, levelButton.getHeight() / 2,
+				canvas.draw(levelButton, Color.WHITE, levelButton.getWidth() / 2f, levelButton.getHeight() / 2f,
 						centerX, 0.8925f*centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
-				canvas.draw(menuButton, Color.WHITE, menuButton.getWidth() / 2, menuButton.getHeight() / 2,
+				canvas.draw(menuButton, Color.WHITE, menuButton.getWidth() / 2f, menuButton.getHeight() / 2f,
 						centerX, 0.675f*centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 			}
 			float scl;
@@ -645,7 +645,7 @@ public class GameMode implements Screen {
 				} else if (introTime%100 <= 30){
 					//lerp from 1.25 to 1
 					lerpFactor = ((float) ((introTime%100)-20))/10f;
-					scl = 1.25f*(1f - lerpFactor) + 1.0f*lerpFactor;
+					scl = 1.25f*(1f - lerpFactor) + lerpFactor;
 				} else {
 					scl = 1f;
 				}
@@ -658,14 +658,14 @@ public class GameMode implements Screen {
 						if (ticks > 90) {
 							mask.set(0.0f, 0.0f, 0.0f, 0.0f);
 						}
-						canvas.draw(introMask, mask, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, 0, 0, 3, 3);
+						canvas.draw(introMask, mask, 0, 0, 0, 0, 0, (float)canvas.getWidth()/introMask.getWidth(), (float)canvas.getHeight()/introMask.getHeight());
 					}
 				} else if (introTime < 100){
-					canvas.draw(introThree, Color.WHITE, introThree.getWidth()/2, introThree.getHeight()/2, canvas.getWidth()/2, canvas.getHeight()/2, 0, scl, scl);
+					canvas.draw(introThree, Color.WHITE, introThree.getWidth()/2f, introThree.getHeight()/2f, canvas.getWidth()/2f, canvas.getHeight()/2f, 0, scl, scl);
 				} else if (introTime < 200){
-					canvas.draw(introTwo, Color.WHITE, introTwo.getWidth()/2, introTwo.getHeight()/2, canvas.getWidth()/2, canvas.getHeight()/2, 0, scl, scl);
+					canvas.draw(introTwo, Color.WHITE, introTwo.getWidth()/2f, introTwo.getHeight()/2f, canvas.getWidth()/2f, canvas.getHeight()/2f, 0, scl, scl);
 				} else if (introTime < 300){
-					canvas.draw(introOne, Color.WHITE, introOne.getWidth()/2, introOne.getHeight()/2, canvas.getWidth()/2, canvas.getHeight()/2, 0, scl, scl);
+					canvas.draw(introOne, Color.WHITE, introOne.getWidth()/2f, introOne.getHeight()/2f, canvas.getWidth()/2f, canvas.getHeight()/2f, 0, scl, scl);
 				}
 			}
 			if (gameState == GameState.PLAY){
@@ -674,16 +674,17 @@ public class GameMode implements Screen {
 					if (ticks >= 15) {
 						mask.set(1.0f, 1.0f, 1.0f, 1f - ((float) ticks - 15) / 60f);
 					}
-					canvas.draw(introGo, mask, introGo.getWidth() / 2, introGo.getHeight() / 2, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, 1.25f, 1.25f);
+
+					float goScale = introGo.getWidth()/introGo.getHeight() > canvas.getWidth()/canvas.getHeight() ? (canvas.getWidth()/5f)/introGo.getWidth() : (canvas.getHeight()/5f)/introGo.getHeight();
+					canvas.draw(introGo, mask, introGo.getWidth() / 2, introGo.getHeight() / 2, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, goScale, goScale);
 				}
 			}
 			if (gameState == GameState.PLAY && endTime >= 120) {
 				if (endTime <= 150) {
 					mask.set(1f, 1f, 1f, (((float)(endTime-120))/30f));
-					canvas.draw(introMask, mask, introMask.getWidth()/2, introMask.getHeight()/2, canvas.getWidth()/2, canvas.getHeight()/2, 0, 3, 3);
+					canvas.draw(introMask, mask, 0, 0, 0, 0, 0, (float)canvas.getWidth()/introMask.getWidth(), (float)canvas.getHeight()/introMask.getHeight());
 				} else {
-					canvas.draw(introMask, Color.WHITE, introMask.getWidth()/2, introMask.getHeight()/2, canvas.getWidth()/2, canvas.getHeight()/2, 0, 3, 3);
-				}
+					canvas.draw(introMask, mask, 0, 0, 0, 0, 0, (float)canvas.getWidth()/introMask.getWidth(), (float)canvas.getHeight()/introMask.getHeight());				}
 			}
 			if ((gameState == GameState.OVER && ticks < 120)){
 				//gray lose filter
@@ -695,7 +696,7 @@ public class GameMode implements Screen {
 				if (ticks > 110) {
 					mask.lerp(0.0f, 0.0f, 0.0f, 1f, ((float) (ticks - 110)) / 10f);
 				}
-				canvas.draw(introMask, mask, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, 0, 0, 3, 3);
+				canvas.draw(introMask, mask, 0, 0, 0, 0, 0, (float)canvas.getWidth()/introMask.getWidth(), (float)canvas.getHeight()/introMask.getHeight());
 			}
 		}
 		canvas.end();
@@ -712,40 +713,40 @@ public class GameMode implements Screen {
 
 		// draw the next button; next should be
 		long score = gameplayController.sb.getScore();
-		canvas.draw(combo, Color.WHITE, combo.getWidth()/2, combo.getHeight()/2,
+		canvas.draw(combo, Color.WHITE, combo.getWidth()/2f, combo.getHeight()/2f,
 				centerX*0.45f, centerY*1.5f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		long maxCombo =gameplayController.sb.getMaxCombo();
 		canvas.drawText(String.valueOf(maxCombo), blinkerRegular,centerX*0.45f+(scale*combo.getWidth()/2),centerY*1.53f,
 				Color.WHITE);
 
-		canvas.draw(perfect, Color.WHITE, perfect.getWidth()/2, perfect.getHeight()/2,
+		canvas.draw(perfect, Color.WHITE, perfect.getWidth()/2f, perfect.getHeight()/2f,
 				centerX*0.45f, centerY*1.25f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		long nPerfect = gameplayController.getNPerfect();
 		canvas.drawText(String.valueOf(nPerfect), blinkerRegular,centerX*0.45f+(scale*combo.getWidth()/2),centerY*1.28f,
 				Color.WHITE);
 
-		canvas.draw(good, Color.WHITE, good.getWidth()/2, good.getHeight()/2,
+		canvas.draw(good, Color.WHITE, good.getWidth()/2f, good.getHeight()/2f,
 				centerX*0.45f, centerY, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		long nGood = gameplayController.getNGood();
 		canvas.drawText(String.valueOf(nGood), blinkerRegular,centerX*0.45f+(scale*combo.getWidth()/2),centerY*1.03f,
 				Color.WHITE);
 
-		canvas.draw(ok, Color.WHITE, ok.getWidth()/2, ok.getHeight()/2,
+		canvas.draw(ok, Color.WHITE, ok.getWidth()/2f, ok.getHeight()/2f,
 				centerX*0.45f, centerY*0.75f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		long nOk =gameplayController.getNOk();
 		canvas.drawText(String.valueOf(nOk), blinkerRegular,centerX*0.45f+(scale*combo.getWidth()/2),centerY*0.78f,
 				Color.WHITE);
 
-		canvas.draw(miss, Color.WHITE, miss.getWidth()/2, miss.getHeight()/2,
+		canvas.draw(miss, Color.WHITE, miss.getWidth()/2f, miss.getHeight()/2f,
 				centerX*0.45f, centerY*0.5f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		long nMiss = gameplayController.getNOk();
 		canvas.drawText(String.valueOf(nMiss), blinkerRegular,centerX*0.45f+(scale*combo.getWidth()/2), centerY*0.53f,
 				Color.WHITE);
 
-		canvas.draw(line, Color.WHITE, line.getWidth()/2, line.getHeight()/2,
+		canvas.draw(line, Color.WHITE, line.getWidth()/2f, line.getHeight()/2f,
 				centerX*0.6f, centerY*0.375f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 
-		canvas.draw(scoreIcon, Color.WHITE, scoreIcon.getWidth()/2, scoreIcon.getHeight()/2,
+		canvas.draw(scoreIcon, Color.WHITE, scoreIcon.getWidth()/2f, scoreIcon.getHeight()/2f,
 				centerX*0.45f, centerY*0.25f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		canvas.drawText(String.valueOf(score), blinkerRegular,centerX*0.45f+(scale*combo.getWidth()/2),centerY*0.28f,
 				Color.WHITE);
@@ -760,6 +761,12 @@ public class GameMode implements Screen {
 		Texture letterGrade = gameplayController.sb.getLetterGrade();
 		canvas.draw(letterGrade, Color.WHITE, letterGrade.getWidth()/2, letterGrade.getHeight()/2,
 				centerX*1.25f, centerY*1.45f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
+		// draw transition mask
+
+		if (endTime >= 150) {
+			mask.set(1f, 1f, 1f, (1-(endTime-150)/30f));
+			canvas.draw(introMask, mask, 0, 0, 0, 0, 0, (float)canvas.getWidth()/introMask.getWidth(), (float)canvas.getHeight()/introMask.getHeight());		}
+
 	}
 
 
@@ -769,10 +776,10 @@ public class GameMode implements Screen {
 	 * */
 	public void drawLose(){
 		canvas.drawBackground(loseBackground.getTexture(),0,0);
-		canvas.draw(ruinShow, Color.WHITE,ruinShow.getWidth()/2,ruinShow.getHeight()/2,0.5f*centerX,
+		canvas.draw(ruinShow, Color.WHITE,ruinShow.getWidth()/2f,ruinShow.getHeight()/2f,0.5f*centerX,
 				centerY, 0,WON_BUTTON_SCALE*scale,WON_BUTTON_SCALE*scale);
 		drawNextRetryLevel();
-		canvas.draw(cross, Color.WHITE, cross.getWidth()/2, cross.getHeight()/2,
+		canvas.draw(cross, Color.WHITE, cross.getWidth()/2f, cross.getHeight()/2f,
 				centerX*1.25f, centerY*1.45f, 0, WON_BUTTON_SCALE*scale,WON_BUTTON_SCALE*scale);
 	}
 
@@ -782,21 +789,21 @@ public class GameMode implements Screen {
 	 *
 	 */
 	public void drawNextRetryLevel(){
-		canvas.draw(resultIcon,Color.WHITE,resultIcon.getWidth()/2,resultIcon.getHeight()/2,centerX,
+		canvas.draw(resultIcon,Color.WHITE,resultIcon.getWidth()/2f,resultIcon.getHeight()/2f,centerX,
 		1.8f*centerY,0,WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 
-		canvas.draw(goBack, Color.WHITE, goBack.getWidth()/2, goBack.getHeight()/2,
+		canvas.draw(goBack, Color.WHITE, goBack.getWidth()/2f, goBack.getHeight()/2f,
 				centerX*0.2f, 1.8f*centerY, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 
-		canvas.draw(restartButtonWon, Color.WHITE, restartButtonWon.getWidth()/2, restartButtonWon.getHeight()/2,
+		canvas.draw(restartButtonWon, Color.WHITE, restartButtonWon.getWidth()/2f, restartButtonWon.getHeight()/2f,
 				1.25f*centerX, centerY*0.3f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
-		canvas.draw(levelButtonWon, Color.WHITE, levelButtonWon.getWidth()/2, levelButtonWon.getHeight()/2,
+		canvas.draw(levelButtonWon, Color.WHITE, levelButtonWon.getWidth()/2f, levelButtonWon.getHeight()/2f,
 				1.5f*centerX, centerY*0.3f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 
-		canvas.draw(levelAlbumCover,Color.WHITE, levelAlbumCover.getWidth()/2,levelAlbumCover.getHeight()/2,
+		canvas.draw(levelAlbumCover,Color.WHITE, levelAlbumCover.getWidth()/2f,levelAlbumCover.getHeight()/2f,
 				1.5f*centerX,centerY,0,ALBUM_SCALE*scale,ALBUM_SCALE*scale);
 
-		canvas.draw(difficultyIcon, Color.WHITE, difficultyIcon.getWidth()/2,difficultyIcon.getHeight()/2,
+		canvas.draw(difficultyIcon, Color.WHITE, difficultyIcon.getWidth()/2f,difficultyIcon.getHeight()/2f,
 				centerX*1.78f,centerY*0.67f,0,WON_BUTTON_SCALE*scale,WON_BUTTON_SCALE*scale);
 	}
 
