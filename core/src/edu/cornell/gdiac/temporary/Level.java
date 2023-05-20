@@ -215,6 +215,7 @@ public class Level {
     }
 
     public Level(JsonValue data, AssetDirectory directory) {
+        sample = 0;
         JsonReader jr = new JsonReader();
         JsonValue assets = jr.parse(Gdx.files.internal("assets.json"));
         bkgTexture = directory.getEntry(data.getString("background"), Texture.class);
@@ -274,7 +275,6 @@ public class Level {
         //Read in Json  Value and populate asset textures
         lastDec = 0;
         levelName = data.getString("levelName");
-        System.out.println(levelName);
         levelNumber = data.getInt("levelNumber");
         maxCompetency = data.getInt("maxCompetency");
         aThreshold = data.get("thresholdA").asLong();
@@ -300,7 +300,6 @@ public class Level {
         spawnOffset = 10*music.getSampleRate()/fallSpeed;
         // switch note is twice as slow
         spawnOffsetSwitch = 2L * spawnOffset;
-        System.out.println(spawnOffset);
         float samplesPerBeat = songSource.getSampleRate() * 60f/bpm;
         for(int i = 0; i < bandMembers.length; i++){
             bandMembers[i] = new BandMember();
@@ -481,7 +480,7 @@ public class Level {
         return op.op(t_progress);
     }
 
-    private long sample = 0;
+    private long sample;
 
     public void recieveInterrupt(int BM_id, boolean DFflag, boolean JKflag, boolean MISSflag){
         bandMembers[BM_id].recieveSample(sample);
@@ -570,6 +569,7 @@ public class Level {
     }
 
     public void resetLevel(){
+        sample = 0;
         float oldVolume = music.getVolume();
         lastDec = 0;
         music.stop();
@@ -579,6 +579,7 @@ public class Level {
         music.addSource(songSource);
         // reset volume
         music.setVolume(oldVolume);
+        float samplesPerBeat = songSource.getSampleRate() * 60f/bpm;
         bandMembers = new BandMember[data.get("bandMembers").size];
         int fallSpeed = data.getInt("fallSpeed");
         spawnOffset = 10*music.getSampleRate()/fallSpeed;
@@ -628,6 +629,7 @@ public class Level {
                 compData.add(arr);
             }
             bandMembers[i].setCompData(compData);
+            bandMembers[i].setSPB(samplesPerBeat);
             bandMembers[i].setHpBarFilmStrip(hpbar, 47);
             switch (bandMemberData.getString("instrument")) {
                 case "violin":

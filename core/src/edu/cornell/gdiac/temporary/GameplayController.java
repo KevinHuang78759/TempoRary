@@ -271,6 +271,7 @@ public class GameplayController {
 		numberOk =0;
 		numberGood =0;
 		numberPerfect =0;
+		setupBandMembers();
 		sb.setletterTH(new long[]{level.getcThreshold(), level.getbThreshold(), level.getaThreshold(), level.getsThreshold()});
 		garbageCollectNoteIndicators();
 	}

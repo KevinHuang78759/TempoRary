@@ -186,6 +186,7 @@ public class BandMember {
     }
 
     public void pickFrame(){
+
         if(mode == 1){
             if(AS == ACTIVE_STATE.IDLE){
                 characterSprite = ACTIVE_IDLE;
