@@ -650,8 +650,8 @@ public class GameplayController {
 		if(dist < miss) {
 			if (dist < okHit) {
 				if(nt != Note.NoteType.SWITCH){
-					DF = note.getLine() < NUM_LANES/2;
-					JK = note.getLine() >= NUM_LANES/2;
+					DF = note.getLine() < 2;
+					JK = note.getLine() >= 2;
 				}
 				//If so, destroy the note and set a positive hit status. Also set that we
 				//have registered a hit for this line for this click. This ensures that
