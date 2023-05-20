@@ -178,6 +178,11 @@ public class Scoreboard {
         multiplierFont.getData().setScale(multiplierScale);
     }
 
+    public Texture getLetterGrade(){
+        return letterGrades[curTH];
+    }
+
+
     public void displayScore(float xPos, float yPos, GameCanvas canvas){
         String disp = Long.toString(totalScore);
         scoreLayout.setText(scoreFont, disp);
