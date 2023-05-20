@@ -15,12 +15,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.ScreenListener;
-
-import java.util.HashMap;
-import java.util.Map;
-
 
 public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     SoundController<Integer> s;
@@ -40,6 +35,9 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     /** Play button to display when done */
     private Texture playButton;
 
+
+    private Texture tutorialGoRight;
+
     private Texture playButtonInactive;
 
     /** Play button to display easy level*/
@@ -58,9 +56,10 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
     private Texture levelBackground;
 
-    private Texture howToPlay1;
 
-    private Texture howToPlay2;
+
+    private Texture[] howToPlayBackgrounds;
+
 
     /** button for a level */
     private static Texture[] albumCovers;
@@ -118,7 +117,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     private Texture letterGradeB;
     private Texture letterGradeC;
     private Texture letterGradeD;
-
     private Texture letterGradeS;
 
 
@@ -184,6 +182,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         mediumButton=null;
         hardButton=null;
         isInTransition = false;
+        tutorialIdx = 0;
     }
 
     /**
@@ -231,6 +230,11 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     FreeTypeFontGenerator generator;
     FreeTypeFontGenerator.FreeTypeFontParameter parameter;
 
+    Vector2 tutorialGoRightCoords;
+
+    Vector2 tutorialReadyCoords;
+
+    private Texture tutorialReady;
 
     /**
      * Parse information about the levels .
@@ -241,7 +245,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 30;
         blinkerBold = generator.generateFont(parameter);
-
         s.addSound(0, "sound/click.ogg");
         directory  = assetDirectory;
         background  = directory.getEntry("background",Texture.class); //menu background
@@ -258,6 +261,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         albumCovers = new Texture[numSongs];
         playButton = directory.getEntry("play-button-active",Texture.class);
         levelGhost = directory.getEntry("level-ghost",Texture.class);
+        tutorialReady = directory.getEntry("tutorial-ready", Texture.class);
         playButtonInactive = directory.getEntry("play-button",Texture.class);
         easyButton = directory.getEntry("easy-active",Texture.class);
         easyButtonInactive =directory.getEntry("easy-inactive",Texture.class);
@@ -266,6 +270,8 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         hardButton = directory.getEntry("hard-active",Texture.class);
         hardButtonInactive = directory.getEntry("hard-inactive",Texture.class);
         goLeft = directory.getEntry("level-select-left",Texture.class);
+        tutorialGoRight =directory.getEntry("tutorial-go-right",Texture.class);
+
         goRight = directory.getEntry("level-select-right",Texture.class);
         letterGradeD = directory.getEntry("score-d",Texture.class);
         letterGradeC= directory.getEntry("score-c",Texture.class);
@@ -280,8 +286,12 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
             albumCovers[i] = directory.getEntry(Integer.toString(i+1),Texture.class);
         }
 
-        howToPlay1 = directory.getEntry("htp1",Texture.class);
-        howToPlay2 = directory.getEntry("htp1",Texture.class);
+        howToPlayBackgrounds = new Texture[5];
+        howToPlayBackgrounds[0] = directory.getEntry("htp1",Texture.class);
+        howToPlayBackgrounds[1]  = directory.getEntry("htp2",Texture.class);
+        howToPlayBackgrounds[2]  = directory.getEntry("htp3",Texture.class);
+        howToPlayBackgrounds[3]  = directory.getEntry("htp4",Texture.class);
+        howToPlayBackgrounds[4]  = directory.getEntry("htp5",Texture.class);
 
         setCoords(canvas.getWidth(),canvas.getHeight());
         howToPlayActive = directory.getEntry("how-to-play-active", Texture.class);
@@ -298,13 +308,13 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         float sy = ((float)height)/STANDARD_HEIGHT;
 
         scale = (sx < sy ? sx : sy);
-//        centerScale = 0.65f*scale;
-//        cornerScale = 0.45f*scale;
         centerScale = (float) (0.09f* Math.log(width));
         cornerScale = (float) (0.07f* Math.log(width));
         goBackCoords=new Vector2 (width/12f, height*9f/10f);
         goLeftCoords = new Vector2(width/14f,height/2f);
+        tutorialReadyCoords =new Vector2(width-(width/14f),height/2f);
         goRightCoords = new Vector2(width-(width/14f),height/2f);
+        tutorialGoRightCoords = new Vector2(width-(width/14f),height/2f);
         playButtonCoords = new Vector2(width/2f,height*0.15f);
         mediumButtonCoords = new Vector2(width/2f , height*0.35f);
         easyButtonCoords = new Vector2((width/2f)-(width/10f), height*0.35f);
@@ -342,82 +352,100 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         isInTransition = false;
         hoverState = NO_BUTTON_HOVERED;
         howToPlayPressed = false;
+        tutorialIdx = 0;
     }
 
 
     public void draw(){
         canvas.begin();
 
-        canvas.draw(levelBackground, 0, 0, canvas.getWidth(), canvas.getHeight());
-        canvas.draw(goBack, Color.WHITE, goBack.getWidth()/2, goBack.getHeight()/2,
-                goBackCoords.x, goBackCoords.y, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
-
-        canvas.draw(levelGhost, Color.WHITE, hardButton.getWidth()/2, hardButton.getHeight()/2,
-                canvas.getWidth()/4f, canvas.getHeight()/12f, 0, BUTTON_SCALE*scale*0.1f, BUTTON_SCALE*scale*0.1f);
-
-        // draw each song
-        if (selectedLevel>=1){ //check that if there are a song to the left; if so, draw.
-            canvas.draw(albumCovers[selectedLevel-1], Color.WHITE, albumCovers[selectedLevel-1].getWidth()/2,
-                    albumCovers[selectedLevel-1].getHeight()/2, albumCoverCoords[selectedLevel-1].x,
-                    albumCoverCoords[selectedLevel-1].y, 0, albumScales[selectedLevel-1]*scale,
-                    albumScales[selectedLevel-1]*scale);
-        }
-
-        // It an invariant that selectedLevel is a valid index, so we can simply draw.
-        canvas.draw(albumCovers[selectedLevel],Color.WHITE,albumCovers[selectedLevel].getWidth()/2,
-                albumCovers[selectedLevel].getHeight()/2,albumCoverCoords[selectedLevel].x,
-                albumCoverCoords[selectedLevel].y,0, albumScales[selectedLevel]*scale,
-                albumScales[selectedLevel]*scale);
-
-        if (selectedLevel+1< numSongs) {//check that if there are a song to the right; if so, draw.
-            canvas.draw(albumCovers[selectedLevel+1],Color.WHITE,albumCovers[selectedLevel+1].getWidth()/2,
-                    albumCovers[selectedLevel+1].getHeight()/2,albumCoverCoords[selectedLevel+1].x,
-                    albumCoverCoords[selectedLevel+1].y,0, albumScales[selectedLevel+1]*scale,
-                    albumScales[selectedLevel+1]*scale);
-        }
-
-        // draw the goleft and go right buttons
-        if (selectedLevel-1>=0) {
-            canvas.draw(goLeft, Color.WHITE, goLeft.getWidth() / 2, goLeft.getHeight() / 2,
-                    goLeftCoords.x, goLeftCoords.y, 0, 0.9f * scale, 0.9f * scale);
-        }
-        if (selectedLevel+1< numSongs) {
-            canvas.draw(goRight, Color.WHITE, goRight.getWidth() / 2, goRight.getHeight() / 2,
-                    goRightCoords.x, goRightCoords.y, 0, 0.9f * scale, 0.9f * scale);
-        }
-
-        if (hoverState == PLAY_HOVERED){
-            canvas.draw(playButton, Color.WHITE, playButton.getWidth()/2f, playButtonInactive.getHeight()/2f,
-                    playButtonCoords.x, playButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
-        }else{
-            canvas.draw(playButtonInactive, Color.WHITE, playButtonInactive.getWidth()/2f, playButtonInactive.getHeight()/2f,
-                    playButtonCoords.x,playButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
-        }
-
-        // draw easy, medium, and hard buttons
-        Texture tempEasy = (hoverState == EASY_HOVERED || selectedDifficulty==1? easyButton: easyButtonInactive);
-        canvas.draw(tempEasy, Color.WHITE, easyButton.getWidth()/2, easyButton.getHeight()/2,
-                easyButtonCoords.x, easyButtonCoords.y, 0, 0.4f*scale, 0.4f*scale);
-
-        Texture tempMedium = (hoverState == MEDIUM_HOVERED || selectedDifficulty==2 ? mediumButton: mediumButtonInactive);
-        canvas.draw(tempMedium, Color.WHITE, mediumButton.getWidth()/2, mediumButton.getHeight()/2,
-                mediumButtonCoords.x, mediumButtonCoords.y, 0, 0.4f*scale, 0.4f*scale);
-
-        Texture tempHard = (selectedDifficulty == HARD_HOVERED || selectedDifficulty==3 ? hardButton: hardButtonInactive);
-        canvas.draw(tempHard, Color.WHITE, tempHard.getWidth()/2, tempHard.getHeight()/2,
-                hardButtonCoords.x, hardButtonCoords.y, 0, 0.4f*scale, 0.4f*scale);
+        System.out.println("howToPlayPressed"+howToPlayPressed);
+        System.out.println("tutorialIdx"+tutorialIdx);
 
 
-        if (hoverState == HOW_TO_PLAY_HOVERED){
-            canvas.draw(howToPlayActive, Color.WHITE, howToPlayActive.getWidth()/2, howToPlayActive.getHeight()/2,
-                    howToPlayCoords.x, howToPlayCoords.y, 0, scale, scale);
+        if (howToPlayPressed && tutorialIdx<5){
+            canvas.draw(howToPlayBackgrounds[tutorialIdx], 0, 0, canvas.getWidth(), canvas.getHeight());
+            if (tutorialIdx<4){
+                canvas.draw(tutorialGoRight, Color.WHITE, tutorialGoRight.getWidth()/2, tutorialGoRight.getHeight()/2,
+                        tutorialGoRightCoords.x, tutorialGoRightCoords.y,0, 0.9f * scale, 0.9f * scale);
+            }
+            if (tutorialIdx==4){
+                canvas.draw(tutorialReady, Color.WHITE, tutorialReady.getWidth()/2, tutorialReady.getHeight()/2,
+                        tutorialReadyCoords.x, tutorialReadyCoords.y,0, 0.9f * scale, 0.9f * scale);
+
+            }
         } else{
-            canvas.draw(howToPlayInactive, Color.WHITE, howToPlayInactive.getWidth()/2, howToPlayActive.getHeight()/2,
-                    howToPlayCoords.x, howToPlayCoords.y, 0, scale, scale);
-        }
+            canvas.draw(levelBackground, 0, 0, canvas.getWidth(), canvas.getHeight());
+            canvas.draw(goBack, Color.WHITE, goBack.getWidth()/2, goBack.getHeight()/2,
+                    goBackCoords.x, goBackCoords.y, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 
-        // draw past scores
-        drawPastScores(1, 2,1000000,"S",1000, true);
+            canvas.draw(levelGhost, Color.WHITE, hardButton.getWidth()/2, hardButton.getHeight()/2,
+                    canvas.getWidth()/4f, canvas.getHeight()/12f, 0, BUTTON_SCALE*scale*0.1f, BUTTON_SCALE*scale*0.1f);
+
+            // draw each song
+            if (selectedLevel>=1){ //check that if there are a song to the left; if so, draw.
+                canvas.draw(albumCovers[selectedLevel-1], Color.WHITE, albumCovers[selectedLevel-1].getWidth()/2,
+                        albumCovers[selectedLevel-1].getHeight()/2, albumCoverCoords[selectedLevel-1].x,
+                        albumCoverCoords[selectedLevel-1].y, 0, albumScales[selectedLevel-1]*scale,
+                        albumScales[selectedLevel-1]*scale);
+            }
+
+            // It an invariant that selectedLevel is a valid index, so we can simply draw.
+            canvas.draw(albumCovers[selectedLevel],Color.WHITE,albumCovers[selectedLevel].getWidth()/2,
+                    albumCovers[selectedLevel].getHeight()/2,albumCoverCoords[selectedLevel].x,
+                    albumCoverCoords[selectedLevel].y,0, albumScales[selectedLevel]*scale,
+                    albumScales[selectedLevel]*scale);
+
+            if (selectedLevel+1< numSongs) {//check that if there are a song to the right; if so, draw.
+                canvas.draw(albumCovers[selectedLevel+1],Color.WHITE,albumCovers[selectedLevel+1].getWidth()/2,
+                        albumCovers[selectedLevel+1].getHeight()/2,albumCoverCoords[selectedLevel+1].x,
+                        albumCoverCoords[selectedLevel+1].y,0, albumScales[selectedLevel+1]*scale,
+                        albumScales[selectedLevel+1]*scale);
+            }
+
+            // draw the goleft and go right buttons
+            if (selectedLevel-1>=0) {
+                canvas.draw(goLeft, Color.WHITE, goLeft.getWidth() / 2, goLeft.getHeight() / 2,
+                        goLeftCoords.x, goLeftCoords.y, 0, 0.9f * scale, 0.9f * scale);
+            }
+            if (selectedLevel+1< numSongs) {
+                canvas.draw(goRight, Color.WHITE, goRight.getWidth() / 2, goRight.getHeight() / 2,
+                        goRightCoords.x, goRightCoords.y, 0, 0.9f * scale, 0.9f * scale);
+            }
+
+            if (hoverState == PLAY_HOVERED){
+                canvas.draw(playButton, Color.WHITE, playButton.getWidth()/2f, playButtonInactive.getHeight()/2f,
+                        playButtonCoords.x, playButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+            }else{
+                canvas.draw(playButtonInactive, Color.WHITE, playButtonInactive.getWidth()/2f, playButtonInactive.getHeight()/2f,
+                        playButtonCoords.x,playButtonCoords.y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+            }
+
+            // draw easy, medium, and hard buttons
+            Texture tempEasy = (hoverState == EASY_HOVERED || selectedDifficulty==1? easyButton: easyButtonInactive);
+            canvas.draw(tempEasy, Color.WHITE, easyButton.getWidth()/2, easyButton.getHeight()/2,
+                    easyButtonCoords.x, easyButtonCoords.y, 0, 0.4f*scale, 0.4f*scale);
+
+            Texture tempMedium = (hoverState == MEDIUM_HOVERED || selectedDifficulty==2 ? mediumButton: mediumButtonInactive);
+            canvas.draw(tempMedium, Color.WHITE, mediumButton.getWidth()/2, mediumButton.getHeight()/2,
+                    mediumButtonCoords.x, mediumButtonCoords.y, 0, 0.4f*scale, 0.4f*scale);
+
+            Texture tempHard = (selectedDifficulty == HARD_HOVERED || selectedDifficulty==3 ? hardButton: hardButtonInactive);
+            canvas.draw(tempHard, Color.WHITE, tempHard.getWidth()/2, tempHard.getHeight()/2,
+                    hardButtonCoords.x, hardButtonCoords.y, 0, 0.4f*scale, 0.4f*scale);
+
+
+            if (hoverState == HOW_TO_PLAY_HOVERED){
+                canvas.draw(howToPlayActive, Color.WHITE, howToPlayActive.getWidth()/2, howToPlayActive.getHeight()/2,
+                        howToPlayCoords.x, howToPlayCoords.y, 0, scale, scale);
+            } else{
+                canvas.draw(howToPlayInactive, Color.WHITE, howToPlayInactive.getWidth()/2, howToPlayActive.getHeight()/2,
+                        howToPlayCoords.x, howToPlayCoords.y, 0, scale, scale);
+            }
+
+            // draw past scores
+            drawPastScores(1, 2,1000000,"S",1000, true);
+        }
 
         canvas.end();
     }
@@ -502,11 +530,12 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
      */
     private boolean isInTransition;
 
-
     private static final int NO_BUTTON_PRESSED = 206;
     private static final int EASY_PRESSED = 208;
     private static final int MEDIUM_PRESSED = 209;
     private static final int HARD_PRESSED = 210;
+
+    private int tutorialIdx;
 
     /**
      * Called when the screen was touched or a mouse button was pressed.
@@ -530,79 +559,94 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                 return true;
             }
 
-            if (isButtonPressed(screenX, screenY, easyButton, easyButtonCoords, 0.4f*scale)) {
-                s.playSound(0, 0.3f);
-                selectedDifficulty = 1;
-            }
+            if (!howToPlayPressed){
+                if (isButtonPressed(screenX, screenY, easyButton, easyButtonCoords, 0.4f*scale)) {
+                    s.playSound(0, 0.3f);
+                    selectedDifficulty = 1;
+                }
 
-            if (isButtonPressed(screenX, screenY, mediumButton, mediumButtonCoords, 0.4f*scale)) {
-                s.playSound(0, 0.3f);
-                selectedDifficulty = 2;
-            }
+                if (isButtonPressed(screenX, screenY, mediumButton, mediumButtonCoords, 0.4f*scale)) {
+                    s.playSound(0, 0.3f);
+                    selectedDifficulty = 2;
+                }
 
-            if (isButtonPressed(screenX, screenY, hardButton, hardButtonCoords, 0.4f*scale)) {
-                s.playSound(0, 0.3f);
-                selectedDifficulty = 3;
-            }
 
-            // if there are a previous level, we allow decrement.
-            if (isButtonPressed(screenX, screenY, goLeft, goLeftCoords, 0.9f*scale)) {
-                s.playSound(0, 0.3f);
+                if (isButtonPressed(screenX, screenY, hardButton, hardButtonCoords, 0.4f*scale)) {
+                    s.playSound(0, 0.3f);
+                    selectedDifficulty = 3;
+                }
+
+                // if there are a previous level, we allow decrement.
+                if (isButtonPressed(screenX, screenY, goLeft, goLeftCoords, 0.9f*scale)) {
+                    s.playSound(0, 0.3f);
+                    if (selectedLevel-1>=0){
+                        prevLevel = selectedLevel;
+                        selectedLevel--;
+                    }
+                }
+
+                // if there are a next level, we allow increment.
+                if (isButtonPressed(screenX, screenY, goRight, goRightCoords, 0.9f*scale)) {
+                    s.playSound(0, 0.3f);
+                    if (selectedLevel+1< numSongs){
+                        prevLevel = selectedLevel;
+                        selectedLevel++;
+                    }
+                }
+
+    //         check if the albums on the sides are touched; if so, update selected level
                 if (selectedLevel-1>=0){
-                    prevLevel = selectedLevel;
-                    selectedLevel--;
+                    Vector2 temp = new Vector2(albumCoverLeftX,albumCoverY);
+                    if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel-1], temp, cornerScale)) {
+                        s.playSound(0, 0.3f);
+                        prevLevel = selectedLevel;
+                        selectedLevel--;
+                        return true;
+                    }
                 }
-            }
 
-            // if there are a next level, we allow increment.
-            if (isButtonPressed(screenX, screenY, goRight, goRightCoords, 0.9f*scale)) {
-                s.playSound(0, 0.3f);
                 if (selectedLevel+1< numSongs){
-                    prevLevel = selectedLevel;
-                    selectedLevel++;
+                    Vector2 temp = new Vector2(albumCoverRightX,albumCoverY);
+                    if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel], temp, cornerScale)) {
+                        s.playSound(0, 0.3f);
+                        prevLevel = selectedLevel;
+                        selectedLevel++;
+                    }
                 }
-            }
 
-//         check if the albums on the sides are touched; if so, update selected level
-            if (selectedLevel-1>=0){
-                Vector2 temp = new Vector2(albumCoverLeftX,albumCoverY);
-                if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel-1], temp, cornerScale)) {
+                if (isButtonPressed(screenX, screenY, playButton, playButtonCoords,BUTTON_SCALE*scale)) {
                     s.playSound(0, 0.3f);
-                    prevLevel = selectedLevel;
-                    selectedLevel--;
-                    return true;
+                    playPressed=true;
                 }
-            }
 
-            if (selectedLevel+1< numSongs){
-                Vector2 temp = new Vector2(albumCoverRightX,albumCoverY);
-                if (isButtonPressed(screenX, screenY, albumCovers[selectedLevel], temp, cornerScale)) {
+                if (isButtonPressed(screenX, screenY, goBack, goBackCoords,WON_BUTTON_SCALE)){
                     s.playSound(0, 0.3f);
-                    prevLevel = selectedLevel;
-                    selectedLevel++;
+                    listener.exitScreen(this, ExitCode.TO_MENU);
                 }
-            }
+            } else{
+                if (tutorialIdx<5 && howToPlayPressed){
+                    if (isButtonPressed(screenX, screenY, tutorialGoRight, tutorialGoRightCoords, 0.9f*scale)) {
+                        tutorialIdx++;
+                    }
+                }
 
-            if (isButtonPressed(screenX, screenY, playButton, playButtonCoords,BUTTON_SCALE*scale)) {
-                s.playSound(0, 0.3f);
-                playPressed=true;
-            }
-
-
-            if (isButtonPressed(screenX, screenY, goBack, goBackCoords,WON_BUTTON_SCALE)){
-                s.playSound(0, 0.3f);
-                listener.exitScreen(this,  ExitCode.TO_MENU);
+                if (tutorialIdx==4){
+                    if (isButtonPressed(screenX, screenY, tutorialReady, tutorialReadyCoords, 0.9f*scale)) {
+                        tutorialIdx=0;
+                        howToPlayPressed = false;
+                    }
+                }
             }
 
             if (isButtonPressed(screenX, screenY, howToPlayInactive, howToPlayCoords,scale)){
                 howToPlayPressed = true;
-                System.out.println("howtoplay pressed");
-
             }
+
         }
 
         return false;
     }
+
 
     boolean howToPlayPressed;
 
@@ -650,7 +694,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
                     set1=false;
                     isInTransition=false;
                 }
-
             } else{// we need to transition to left (move to the right)
                 if (selectedLevel>=1 && !set1) {
                     albumCoverCoords[selectedLevel-1] = new Vector2(0, albumCoverY);
@@ -683,8 +726,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 
         }
 
-
-
     }
 
     @Override
@@ -703,13 +744,12 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     private static final int EASY_HOVERED = 108;
     private static final int MEDIUM_HOVERED = 109;
     private static final int HARD_HOVERED = 110;
-
     private static final int HOW_TO_PLAY_HOVERED = 111;
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
-        screenY = canvas.getHeight() - screenY;
 
+        screenY = canvas.getHeight() - screenY;
         if (isButtonPressed(screenX, screenY, playButton, playButtonCoords,BUTTON_SCALE*scale)) {
             hoverState = PLAY_HOVERED;
         } else if (isButtonPressed(screenX, screenY, easyButton, easyButtonCoords,0.4f*scale)) {
@@ -723,8 +763,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
         } else {
             hoverState = NO_BUTTON_HOVERED;
         }
-
-
         return false;
     }
 

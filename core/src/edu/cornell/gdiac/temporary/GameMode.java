@@ -72,6 +72,7 @@ public class GameMode implements Screen {
 	private Texture introOne;
 	private Texture introGo;
 
+
 	private SoundController<String> introSFX;
 
 	private boolean saidThree;
@@ -282,6 +283,7 @@ public class GameMode implements Screen {
 		ruinShow = directory.getEntry("ruin-show",Texture.class);
 		menuButton = directory.getEntry("menu-button", Texture.class);
 		pauseBackground = directory.getEntry("pause-background", Texture.class);
+
 		whiteBackground = directory.getEntry("white-background", Texture.class);
 		Texture albumCovers[] = LevelSelect.getAlbumCovers();
 		levelAlbumCover = albumCovers[currLevel];
