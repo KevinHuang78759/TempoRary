@@ -17,6 +17,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
@@ -96,48 +98,26 @@ public class GameMode implements Screen {
 	/** Button textures */
 	private Texture resumeButton;
 	private Texture restartButton;
-
 	private Texture levelAlbumCover;
-
 	private Texture ruinShow;
-
-	private Vector2 ruinShowCoords;
-
 	private Texture resultIcon;
-
-	private Vector2 resultIconCoords;
 	private Texture difficultyIcon;
-
-	private Vector2 difficultyIconCoords;
-
-	private Vector2 levelAlbumCoverCoords;
 	private Texture levelButton;
 	private Texture menuButton;
 	private Texture pauseBackground;
 	private Texture whiteBackground;
-
 	private Texture nextButtonWon;
 	private Texture restartButtonWon;
 	private Texture levelButtonWon;
 
-	/* BUTTON LOCATIONS */
-
-	/** Resume button for win/lose screen x and y coordinates represented as a vector */
-	private Vector2 nextWonCoords;
-	/** Restart button or win/lose screen x and y coordinates represented as a vector */
-	private Vector2 restartWonCoords;
-	/** Level select or win/lose screen button x and y coordinates represented as a vector */
-	private Vector2 levelWonCoords;
-
 	/** Play button to display when done */
-	float WON_BUTTON_SCALE = 0.7f;
+	float WON_BUTTON_SCALE = 0.6f;
 
 	private Texture goBack;
-	private Vector2 goBackCoords;
 
 	private static float BUTTON_SCALE = 1.0f;
 
-	private static float ALBUM_SCALE  = 0.75f;
+	private static float ALBUM_SCALE  = 0.7f;
 
 	/** The current state of each button */
 	private int pressState;
@@ -148,6 +128,8 @@ public class GameMode implements Screen {
 
 	/** Reference to drawing context to display graphics (VIEW CLASS) */
 	private GameCanvas canvas;
+
+	private BitmapFont blinkerRegular;
 
 	/** Reads input from keyboard or game pad (CONTROLLER CLASS) */
 	private InputController inputController;
@@ -172,56 +154,25 @@ public class GameMode implements Screen {
 	private int introTime;
 	/** time in special units for measuring how far we are in the intro sequence */
 	private int endTime = 0;
-	/** volume of the music */
+/** volume of the music */
     private float volume;
-
 	/** the current level */
 	private int currLevel;
-
 	private int currDifficulty;
 
 	/** the index of the next game */
-
 	private int nextIdx;
-
-	// TODO: REMOVE ALL INSTANCES OF VECTOR2
 	private Texture cross;
-	private Vector2 crossCoords;
-
 	private Texture combo;
-	private Vector2 comboCoords;
 	private Texture perfect;
-	private Vector2 perfectCoords;
-
 	private Texture good;
-	private Vector2 goodCoords;
-
 	private Texture ok;
-	private Vector2 okCoords;
-
 	private Texture miss;
-	private Vector2 missCoords;
-
 	private Texture line;
-	private Vector2 lineCoords;
-
 	private Texture scoreIcon;
-	private Vector2 scoreIconCoords;
 	AssetDirectory directory;
-
-	private Texture scoreA;
-	private Vector2 scoreACoords;
-
-	private Texture scoreB;
-	private Vector2 scoreBCoords;
-
-	private Texture scoreC;
-	private Vector2 scoreCCoords;
-
-	private Texture scoreS;
-	private Vector2 scoreSCoords;
-
-	String levelString;
+	FreeTypeFontGenerator generator;
+	FreeTypeFontGenerator.FreeTypeFontParameter parameter;
 
 	/**
 	 * Creates a new game with the given drawing context.
@@ -243,6 +194,7 @@ public class GameMode implements Screen {
 		gameplayController = new GameplayController(canvas.getWidth(),canvas.getHeight());
 		introSFX = new SoundController<>();
 		s = new SoundController<>();
+		scoreLayout = new GlyphLayout();
 	}
 
 	/**
@@ -252,7 +204,10 @@ public class GameMode implements Screen {
 		gameState = GameState.INTRO;
 		pressState = NO_BUTTON_PRESSED;
 		gameplayController.garbageCollectNoteIndicators();
-		volume = gameplayController.level.getMusicVolume();
+		gameplayController.reset();
+		ticks = 0;
+		endTime = 0;
+//		resetLevel();
 	}
 
 	/**
@@ -263,31 +218,23 @@ public class GameMode implements Screen {
 		gameplayController.setOffset(offset);
 	}
 
-	public void readLevel(String level, AssetDirectory assetDirectory, int selectedLevel, int difficulty) {
-		levelString = level;
 
+
+	public void readLevel(String levelString, AssetDirectory assetDirectory, int selectedLevel, int difficulty) {
 		currLevel = selectedLevel;
 		currDifficulty = difficulty;
-
 		directory = assetDirectory;
-
-		int start = level.indexOf("/");
-		int end = level.indexOf(".");
+		nextIdx = (difficulty)+(((selectedLevel+1)*3));
 
 		JsonReader jr = new JsonReader();
-//		nextIdx = Integer.parseInt(level.substring(start + 1, end))+3;
-		nextIdx = currLevel++;
 
-		JsonValue levelData = jr.parse(Gdx.files.internal(level));
-
-//		System.out.println("level read");
+		JsonValue levelData = jr.parse(Gdx.files.internal(levelString));
 		gameplayController.loadLevel(levelData, directory);
 		inputController = InputController.getInstance();
 	}
 
 	public void setSoundVolume(float fxVolume, float musicVolume) {
 		gameplayController.level.setMusicVolume(musicVolume);
-		volume = gameplayController.level.getMusicVolume();
 	}
 
 	/**
@@ -312,6 +259,11 @@ public class GameMode implements Screen {
 	 * @param directory     Reference to the asset directory.
 	 */
 	public void populate(AssetDirectory directory) {
+		generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Blinker-Regular.ttf"));
+		parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+		parameter.size = 30;
+		blinkerRegular = generator.generateFont(parameter);
+
 		streetLevelBackground = new FilmStrip(directory.getEntry("street-background", Texture.class), 1, 1);
 		winBackground = new FilmStrip(directory.getEntry("win-background", Texture.class), 1, 1);
 		loseBackground = new FilmStrip(directory.getEntry("lose-background", Texture.class), 1, 1);
@@ -323,7 +275,6 @@ public class GameMode implements Screen {
 		levelButton = directory.getEntry("level-select-button", Texture.class);
 
 		resultIcon =  directory.getEntry("result", Texture.class);
-		resultIconCoords=new Vector2(canvas.getWidth()/2,canvas.getHeight()-resultIcon.getHeight()/2);
 		nextButtonWon = directory.getEntry("win-lose-next", Texture.class);
 		restartButtonWon = directory.getEntry("win-lose-restart", Texture.class);
 		levelButtonWon = directory.getEntry("win-lose-select", Texture.class);
@@ -333,57 +284,20 @@ public class GameMode implements Screen {
 
 		menuButton = directory.getEntry("menu-button", Texture.class);
 		pauseBackground = directory.getEntry("pause-background", Texture.class);
+
 		whiteBackground = directory.getEntry("white-background", Texture.class);
-
-		nextWonCoords = new Vector2(canvas.getWidth()*3/4+ nextButtonWon.getWidth()*2, canvas.getHeight()/7);
-		restartWonCoords = new Vector2(canvas.getWidth()*3/4 - nextButtonWon.getWidth()*2, canvas.getHeight()/7);
-		levelWonCoords = new Vector2(canvas.getWidth()*3/4, canvas.getHeight()/7);
-
-		System.out.println("currSong:"+currLevel);
-		levelAlbumCover = directory.getEntry(String.valueOf(currLevel), Texture.class);
-		levelAlbumCoverCoords = new Vector2(canvas.getWidth()*3/4, canvas.getHeight()/2);
-
+		Texture albumCovers[] = LevelSelect.getAlbumCovers();
+		levelAlbumCover = albumCovers[currLevel];
 		difficultyIcon = directory.getEntry(matchDifficulty(currDifficulty), Texture.class);
-		difficultyIconCoords = new Vector2(levelAlbumCoverCoords.x+(difficultyIcon.getWidth()*1.3f),
-				levelAlbumCoverCoords.y-(difficultyIcon.getWidth()*1.2f));
-
-		crossCoords = new Vector2(levelAlbumCoverCoords.x-cross.getWidth()+10, levelAlbumCoverCoords.y+(cross.getHeight())-20);
-
-		ruinShowCoords= new Vector2(canvas.getWidth()/3,canvas.getHeight()/2);
 
 		goBack = directory.getEntry("go-back", Texture.class);
-		goBackCoords=new Vector2 (goBack.getWidth(), canvas.getHeight()-goBack.getWidth());
-
 		combo = directory.getEntry("combo", Texture.class);
-		comboCoords = new Vector2((canvas.getWidth()/7f)+(combo.getWidth()/2)-2,levelAlbumCoverCoords.y+cross.getHeight());
-
 		perfect = directory.getEntry("perfect", Texture.class);
-		perfectCoords = new Vector2((canvas.getWidth()/7f)+(perfect.getWidth()/2)-2,comboCoords.y-perfect.getHeight()*2f);
-
 		good=directory.getEntry("good", Texture.class);
-		goodCoords = new Vector2((canvas.getWidth()/7f)+(good.getWidth()/2)+3,perfectCoords.y-perfect.getHeight()*2f);
-
 		ok=directory.getEntry("ok", Texture.class);
-		okCoords =new Vector2((canvas.getWidth()/7f)+(ok.getWidth()/2)+10,goodCoords.y-perfect.getHeight()*2f);
-
 		miss=directory.getEntry("miss", Texture.class);
-		missCoords=new Vector2((canvas.getWidth()/7f)+(miss.getWidth()/2)+5,okCoords.y-perfect.getHeight()*2f);
-
 		line=directory.getEntry("line", Texture.class);
-		lineCoords=new Vector2(canvas.getWidth()/3f-30,missCoords.y-perfect.getHeight()*2f);
-
 		scoreIcon = directory.getEntry("score", Texture.class);
-		scoreIconCoords=new Vector2((canvas.getWidth()/7f)+(scoreIcon.getWidth()/2)-6,lineCoords.y-perfect.getHeight()*2f);
-
-		scoreA = directory.getEntry("score-a", Texture.class);
-		scoreB = directory.getEntry("score-b", Texture.class);
-		scoreC = directory.getEntry("score-c", Texture.class);
-		scoreS = directory.getEntry("score-s", Texture.class);
-
-		scoreACoords=new Vector2(levelAlbumCoverCoords.x-scoreA.getWidth()+10, levelAlbumCoverCoords.y+(scoreA.getHeight()));
-		scoreBCoords=new Vector2(levelAlbumCoverCoords.x-scoreA.getWidth()+10, levelAlbumCoverCoords.y+(scoreA.getHeight()));
-		scoreCCoords=new Vector2(levelAlbumCoverCoords.x-scoreA.getWidth()+10, levelAlbumCoverCoords.y+(scoreA.getHeight()));
-		scoreSCoords=new Vector2(levelAlbumCoverCoords.x-scoreA.getWidth()+10, levelAlbumCoverCoords.y+(scoreA.getHeight()));
 		introMask = directory.getEntry("white-background", Texture.class);
 		introThree = directory.getEntry("intro-3", Texture.class);
 		introTwo = directory.getEntry("intro-2", Texture.class);
@@ -464,40 +378,77 @@ public class GameMode implements Screen {
 					gameplayController.level.startmusic();
 				}
 				break;
+			case WON:
+				if (didInput) {
+					int screenX = (int) inputController.getMouseX();
+					int screenY = (int) inputController.getMouseY();
+					screenY = canvas.getHeight() - screenY;
+					Vector2 goBackCoords = new Vector2(centerX*0.2f, 1.8f*centerY);
+					boolean didGoBack = (isButtonPressed(screenX, screenY, goBack, goBackCoords, WON_BUTTON_SCALE));
+
+					Vector2 restartWonCoords= new Vector2(1.25f*centerX, centerY*0.3f);
+					boolean didRestartWon = (isButtonPressed(screenX, screenY, restartButtonWon, restartWonCoords, WON_BUTTON_SCALE));
+
+					Vector2 levelWonCoords= new Vector2(1.5f*centerX, centerY*0.3f);
+					boolean didLevel = (isButtonPressed(screenX, screenY, levelButtonWon, levelWonCoords, WON_BUTTON_SCALE));
+
+					Vector2 nextWonCoords = new Vector2(1.75f*centerX, centerY*0.3f);
+					boolean didNext = (isButtonPressed(screenX, screenY, nextButtonWon, nextWonCoords, WON_BUTTON_SCALE));
+
+					if (didGoBack) {
+						s.playSound(0, 0.3f);
+						pressState = ExitCode.TO_LEVEL;
+					}
+					if (didRestartWon) {
+						s.playSound(0, 0.3f);
+						pressState = ExitCode.TO_PLAYING;
+
+						resetLevel();
+					}
+					if (didLevel) {
+						s.playSound(0, 0.3f);
+						pressState = ExitCode.TO_LEVEL;
+					}
+					if ((nextIdx<LevelSelect.getnLevels()) && didNext) {
+						s.playSound(0, 0.3f);
+
+						goNextLevel();
+//						reset();
+					}
+				}
+				break;
 			case OVER:
 				if (ticks >= 120) {
 					if (didInput) {
 						int screenX = (int) inputController.getMouseX();
 						int screenY = (int) inputController.getMouseY();
 						screenY = canvas.getHeight() - screenY;
+						Vector2 goBackCoords = new Vector2(centerX*0.2f, 1.8f*centerY);
 						boolean didGoBack = (isButtonPressed(screenX, screenY, goBack, goBackCoords, WON_BUTTON_SCALE));
+
+						Vector2 restartWonCoords= new Vector2(1.25f*centerX, centerY*0.3f);
 						boolean didRestartWon = (isButtonPressed(screenX, screenY, restartButtonWon, restartWonCoords, WON_BUTTON_SCALE));
+
+						Vector2 levelWonCoords= new Vector2(1.5f*centerX, centerY*0.3f);
 						boolean didLevel = (isButtonPressed(screenX, screenY, levelButtonWon, levelWonCoords, WON_BUTTON_SCALE));
+
+						Vector2 nextWonCoords = new Vector2(1.75f*centerX, centerY*0.3f);
 						boolean didNext = (isButtonPressed(screenX, screenY, nextButtonWon, nextWonCoords, WON_BUTTON_SCALE));
 
 						if (didGoBack) {
 							s.playSound(0, 0.3f);
-							System.out.println("pressed back");
-							pressState = ExitCode.TO_MENU;
+							pressState = ExitCode.TO_LEVEL;
 						}
 
 						if (didRestartWon) {
 							s.playSound(0, 0.3f);
-							System.out.println("pressed restart");
 							resetLevel();
 						}
 
 						if (didLevel) {
 							s.playSound(0, 0.3f);
-							System.out.println("pressed level");
 							pressState = ExitCode.TO_LEVEL;
 						}
-
-						if (didNext) {
-							s.playSound(0, 0.3f);
-							goNextLevel();
-						}
-
 					}
 					if (inputController.didReset()) {
 						s.playSound(0, 0.3f);
@@ -547,46 +498,34 @@ public class GameMode implements Screen {
 					}
 				}
 				break;
-			case WON:
-				if (didInput) {
-					int screenX = (int) inputController.getMouseX();
-					int screenY = (int) inputController.getMouseY();
-					screenY = canvas.getHeight() - screenY;
-					boolean didGoBack = (isButtonPressed(screenX, screenY, goBack, goBackCoords, WON_BUTTON_SCALE));
-					boolean didRestartWon = (isButtonPressed(screenX, screenY, restartButtonWon, restartWonCoords, WON_BUTTON_SCALE));
-					boolean didLevel = (isButtonPressed(screenX, screenY, levelButtonWon, levelWonCoords, WON_BUTTON_SCALE));
-					boolean didNext = (isButtonPressed(screenX, screenY, nextButtonWon, nextWonCoords, WON_BUTTON_SCALE));
-					if (didGoBack) {
-						s.playSound(0, 0.3f);
-						pressState = ExitCode.TO_MENU;
-					}
-					if (didRestartWon) {
-						s.playSound(0, 0.3f);
-						System.out.println("pressed restart");
-						pressState = ExitCode.TO_PLAYING;
-						resetLevel();
-					}
-					if (didLevel) {
-						s.playSound(0, 0.3f);
-						System.out.println("pressed level");
-						pressState = ExitCode.TO_LEVEL;
-					}
-					if (didNext) {
-						s.playSound(0, 0.3f);
-						goNextLevel();
-					}
-				}
-				break;
 			default:
 				break;
 		}
 	}
 
-	// TODO: FIX THIS
+	private GlyphLayout scoreLayout;
+	private float scoreScale = 1f;
+
+	public void setScoreScale(float heightConfine){
+		String disp = "Score 0000000";
+		scoreLayout.setText(blinkerRegular, disp);
+		scoreScale *= heightConfine/scoreLayout.height;
+		blinkerRegular.getData().setScale(scoreScale);
+	}
+
 	private void goNextLevel(){
-		System.out.println("next pressed:" + nextIdx);
-		LevelSelect.setSelectedJson("levels/"+nextIdx+".json");
+		// load in album cover
+		currLevel ++; //level is song
+		Texture allAlbums[] = LevelSelect.getAlbumCovers();
+		levelAlbumCover = allAlbums[currLevel];
+
+		//load in next json
+		String levelNames[]=LevelSelect.getAllLevels();
+		LevelSelect.setSelectedJson(levelNames[nextIdx]);
+
+		readLevel(levelNames[nextIdx], directory, currLevel, currDifficulty);
 		pressState = ExitCode.TO_PLAYING;
+		gameState = GameState.PLAY;
 	}
 
 	/**
@@ -607,7 +546,6 @@ public class GameMode implements Screen {
 	 */
 	protected void play(float delta) {
 		// Update objects.
-
 
 		if (gameState == GameState.PLAY) {
 			gameplayController.reactToAction();
@@ -655,7 +593,6 @@ public class GameMode implements Screen {
 	private void draw() {
 		canvas.begin();
 		// First draw the background
-		// TODO: SWITCH BACKGROUND BASED ON LEVEL JSON (may need to move this to a different location)
 		if (gameState == GameState.OVER) {
 			if (ticks >= 120) {
 				drawLose();
@@ -664,9 +601,6 @@ public class GameMode implements Screen {
 		if (gameState == GameState.WON || (gameState == GameState.PLAY && endTime >= 150) ) {
 			drawWin();
 		} else if (gameState == GameState.PLAY || gameState == GameState.INTRO || gameState == GameState.PAUSE || (gameState == GameState.OVER && ticks < 120)){
-//			drawLose();
-//			gameState = GameState.OVER;
-//		}
 //			Draw everything in the current level
 			gameplayController.level.drawEverything(canvas,
 					gameplayController.activeBandMember, gameplayController.goalBandMember,
@@ -775,72 +709,58 @@ public class GameMode implements Screen {
 	public void drawWin(){
 		canvas.drawBackground(winBackground.getTexture(),0,0);
 		displayFont.setColor(Color.WHITE);
+		setScoreScale(30);
 
 		// draw the next button; next should be
-
 		long score = gameplayController.sb.getScore();
 		canvas.draw(combo, Color.WHITE, combo.getWidth()/2f, combo.getHeight()/2f,
-				comboCoords.x, comboCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+				centerX*0.45f, centerY*1.5f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		long maxCombo =gameplayController.sb.getMaxCombo();
-		canvas.drawText(String.valueOf(maxCombo), lucidaFont,comboCoords.x+combo.getWidth()/2f,comboCoords.y,
+		canvas.drawText(String.valueOf(maxCombo), blinkerRegular,centerX*0.45f+(scale*combo.getWidth()/2),centerY*1.53f,
 				Color.WHITE);
 
 		canvas.draw(perfect, Color.WHITE, perfect.getWidth()/2f, perfect.getHeight()/2f,
-				perfectCoords.x, perfectCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+				centerX*0.45f, centerY*1.25f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		long nPerfect = gameplayController.getNPerfect();
-		canvas.drawText(String.valueOf(nPerfect), lucidaFont,perfectCoords.x+combo.getWidth()/2f,perfectCoords.y,
+		canvas.drawText(String.valueOf(nPerfect), blinkerRegular,centerX*0.45f+(scale*combo.getWidth()/2),centerY*1.28f,
 				Color.WHITE);
 
 		canvas.draw(good, Color.WHITE, good.getWidth()/2f, good.getHeight()/2f,
-				goodCoords.x, goodCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+				centerX*0.45f, centerY, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		long nGood = gameplayController.getNGood();
-		canvas.drawText(String.valueOf(nGood), lucidaFont,goodCoords.x+good.getWidth()/2f,goodCoords.y,
+		canvas.drawText(String.valueOf(nGood), blinkerRegular,centerX*0.45f+(scale*combo.getWidth()/2),centerY*1.03f,
 				Color.WHITE);
 
 		canvas.draw(ok, Color.WHITE, ok.getWidth()/2f, ok.getHeight()/2f,
-				okCoords.x, okCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+				centerX*0.45f, centerY*0.75f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		long nOk =gameplayController.getNOk();
-		canvas.drawText(String.valueOf(nOk), lucidaFont,okCoords.x+good.getWidth()/2f,okCoords.y,
+		canvas.drawText(String.valueOf(nOk), blinkerRegular,centerX*0.45f+(scale*combo.getWidth()/2),centerY*0.78f,
 				Color.WHITE);
 
 		canvas.draw(miss, Color.WHITE, miss.getWidth()/2f, miss.getHeight()/2f,
-				missCoords.x, missCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+				centerX*0.45f, centerY*0.5f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		long nMiss = gameplayController.getNOk();
-		canvas.drawText(String.valueOf(nMiss), lucidaFont,missCoords.x+good.getWidth()/2f,missCoords.y,
+		canvas.drawText(String.valueOf(nMiss), blinkerRegular,centerX*0.45f+(scale*combo.getWidth()/2), centerY*0.53f,
 				Color.WHITE);
 
 		canvas.draw(line, Color.WHITE, line.getWidth()/2f, line.getHeight()/2f,
-				lineCoords.x, lineCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+				centerX*0.6f, centerY*0.375f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 
 		canvas.draw(scoreIcon, Color.WHITE, scoreIcon.getWidth()/2f, scoreIcon.getHeight()/2f,
-				scoreIconCoords.x, scoreIconCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
-
-		canvas.drawText(String.valueOf(score), lucidaFont,scoreIconCoords.x+good.getWidth(),scoreIconCoords.y,
+				centerX*0.45f, centerY*0.25f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
+		canvas.drawText(String.valueOf(score), blinkerRegular,centerX*0.45f+(scale*combo.getWidth()/2),centerY*0.28f,
 				Color.WHITE);
 
-		drawNextRetryLevel(true);
+		drawNextRetryLevel();
 
-		//draw score from JSON thresholds
-
-		long aThreshold = gameplayController.level.getaThreshold();
-		long bThreshold = gameplayController.level.getbThreshold();
-		long cThreshold = gameplayController.level.getcThreshold();
-		long sThreshold = gameplayController.level.getsThreshold();
-
-		if (score>=sThreshold){
-			canvas.draw(scoreS, Color.WHITE, scoreS.getWidth()/2f, scoreS.getHeight()/2f,
-					scoreSCoords.x, scoreSCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
-		} else if (score>=aThreshold) {
-			canvas.draw(scoreA, Color.WHITE, scoreA.getWidth()/2f, scoreA.getHeight()/2f,
-					scoreACoords.x, scoreACoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
-		}else if (score>=bThreshold) {
-			canvas.draw(scoreB, Color.WHITE, scoreB.getWidth()/2f, scoreB.getHeight()/2f,
-					scoreBCoords.x, scoreBCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
-		} else if (score>=cThreshold) {
-			canvas.draw(scoreC, Color.WHITE, scoreC.getWidth()/2f, scoreC.getHeight()/2f,
-					scoreCCoords.x, scoreCCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+		if (nextIdx<=LevelSelect.getnLevels()){
+			canvas.draw(nextButtonWon, Color.WHITE, nextButtonWon.getWidth()/2, nextButtonWon.getHeight()/2,
+					1.75f*centerX, centerY*0.3f, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
 		}
 
+		Texture letterGrade = gameplayController.sb.getLetterGrade();
+		canvas.draw(letterGrade, Color.WHITE, letterGrade.getWidth()/2, letterGrade.getHeight()/2,
+				centerX*1.25f, centerY*1.45f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		// draw transition mask
 
 		if (endTime >= 150) {
@@ -856,11 +776,11 @@ public class GameMode implements Screen {
 	 * */
 	public void drawLose(){
 		canvas.drawBackground(loseBackground.getTexture(),0,0);
-		canvas.draw(ruinShow, Color.WHITE,ruinShow.getWidth()/2f,ruinShow.getHeight()/2f,ruinShowCoords.x,ruinShowCoords.y,
-				0,WON_BUTTON_SCALE,WON_BUTTON_SCALE);
-		drawNextRetryLevel(false);
+		canvas.draw(ruinShow, Color.WHITE,ruinShow.getWidth()/2f,ruinShow.getHeight()/2f,0.5f*centerX,
+				centerY, 0,WON_BUTTON_SCALE*scale,WON_BUTTON_SCALE*scale);
+		drawNextRetryLevel();
 		canvas.draw(cross, Color.WHITE, cross.getWidth()/2f, cross.getHeight()/2f,
-				crossCoords.x, crossCoords.y, 0, WON_BUTTON_SCALE,WON_BUTTON_SCALE);
+				centerX*1.25f, centerY*1.45f, 0, WON_BUTTON_SCALE*scale,WON_BUTTON_SCALE*scale);
 	}
 
 
@@ -868,29 +788,23 @@ public class GameMode implements Screen {
 	 * Draws next, retry, and level on the right of the win/lose screen; things in common for win/lose screen.
 	 *
 	 */
-	public void drawNextRetryLevel(boolean drawNextLevel){
-		canvas.draw(resultIcon,Color.WHITE,resultIcon.getWidth()/2f,resultIcon.getHeight()/2f,resultIconCoords.x,
-				resultIconCoords.y,0,WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+	public void drawNextRetryLevel(){
+		canvas.draw(resultIcon,Color.WHITE,resultIcon.getWidth()/2f,resultIcon.getHeight()/2f,centerX,
+		1.8f*centerY,0,WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 
 		canvas.draw(goBack, Color.WHITE, goBack.getWidth()/2f, goBack.getHeight()/2f,
-				goBackCoords.x, goBackCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
-
-		// TODO: FIX THIS
-//		if (nextIdx<=9 && drawNextLevel){
-//			canvas.draw(nextButtonWon, Color.WHITE, nextButtonWon.getWidth()/2, nextButtonWon.getHeight()/2,
-//					nextWonCoords.x, nextWonCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
-//		}
+				centerX*0.2f, 1.8f*centerY, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 
 		canvas.draw(restartButtonWon, Color.WHITE, restartButtonWon.getWidth()/2f, restartButtonWon.getHeight()/2f,
-				restartWonCoords.x, restartWonCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+				1.25f*centerX, centerY*0.3f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 		canvas.draw(levelButtonWon, Color.WHITE, levelButtonWon.getWidth()/2f, levelButtonWon.getHeight()/2f,
-				levelWonCoords.x, levelWonCoords.y, 0, WON_BUTTON_SCALE, WON_BUTTON_SCALE);
+				1.5f*centerX, centerY*0.3f, 0, WON_BUTTON_SCALE*scale, WON_BUTTON_SCALE*scale);
 
 		canvas.draw(levelAlbumCover,Color.WHITE, levelAlbumCover.getWidth()/2f,levelAlbumCover.getHeight()/2f,
-				levelAlbumCoverCoords.x,levelAlbumCoverCoords.y,0,ALBUM_SCALE,ALBUM_SCALE );
+				1.5f*centerX,centerY,0,ALBUM_SCALE*scale,ALBUM_SCALE*scale);
 
 		canvas.draw(difficultyIcon, Color.WHITE, difficultyIcon.getWidth()/2f,difficultyIcon.getHeight()/2f,
-				difficultyIconCoords.x,difficultyIconCoords.y,0,WON_BUTTON_SCALE,WON_BUTTON_SCALE);
+				centerX*1.78f,centerY*0.67f,0,WON_BUTTON_SCALE*scale,WON_BUTTON_SCALE*scale);
 	}
 
 	/**
@@ -968,6 +882,9 @@ public class GameMode implements Screen {
 		float sx = ((float)width)/STANDARD_WIDTH;
 		float sy = ((float)height)/STANDARD_HEIGHT;
 		scale = Math.min(sx, sy);
+		parameter.size = Math.round(30*(1+scale));
+		blinkerRegular = generator.generateFont(parameter);
+
 		centerY = height/2;
 		centerX = width/2;
 	}
@@ -997,7 +914,6 @@ public class GameMode implements Screen {
 	 * also paused before it is destroyed.
 	 */
 	public void pause() {
-		// TODO Auto-generated method stub
 	}
 
 	/**
@@ -1006,7 +922,6 @@ public class GameMode implements Screen {
 	 * This is usually when it regains focus.
 	 */
 	public void resume() {
-		// TODO Auto-generated method stub
 	}
 
 	/**

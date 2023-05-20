@@ -164,7 +164,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			playing.setScreenListener(this);
 			String fileName = LevelSelect.getSelectedJson();
 			int levelIdx = levelscreen.getSelectedLevel();
-			playing.readLevel(fileName, directory, levelIdx, levelscreen.getSelectedDifficulty());
+			playing.readLevel( fileName, directory, levelIdx, levelscreen.getSelectedDifficulty());
 			playing.populate(directory);
 			playing.initializeOffset(calibration.getOffset());
 			playing.setSoundVolume(MenuMode.getFXVolumeSetting(), MenuMode.getMusicVolumeSetting());
