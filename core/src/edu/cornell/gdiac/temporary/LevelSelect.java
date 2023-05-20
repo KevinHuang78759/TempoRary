@@ -359,9 +359,6 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
     public void draw(){
         canvas.begin();
 
-        System.out.println("howToPlayPressed"+howToPlayPressed);
-        System.out.println("tutorialIdx"+tutorialIdx);
-
 
         if (howToPlayPressed && tutorialIdx<5){
             canvas.draw(howToPlayBackgrounds[tutorialIdx], 0, 0, canvas.getWidth(), canvas.getHeight());
@@ -793,7 +790,7 @@ public class LevelSelect implements Screen, InputProcessor, ControllerListener {
 //                System.out.println("selected difficulty:" + selectedDifficulty);
                 int gameIdx = selectedDifficulty+(selectedLevel*3);
                 currLevel = gameIdx;
-                System.out.println("game index: "+gameIdx);
+//                System.out.println("game index: "+gameIdx);
                 selectedJson=allLevels[gameIdx-1];
                 listener.exitScreen(this, ExitCode.TO_PLAYING);
             } else if (pressedEscape && listener != null) {

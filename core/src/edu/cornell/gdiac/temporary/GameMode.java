@@ -221,8 +221,6 @@ public class GameMode implements Screen {
 
 
 	public void readLevel(String levelString, AssetDirectory assetDirectory, int selectedLevel, int difficulty) {
-
-		System.out.println("selectedlevel"+selectedLevel);
 		currLevel = selectedLevel;
 		currDifficulty = difficulty;
 		directory = assetDirectory;
@@ -403,13 +401,12 @@ public class GameMode implements Screen {
 					}
 					if (didRestartWon) {
 						s.playSound(0, 0.3f);
-						System.out.println("pressed restart");
 						pressState = ExitCode.TO_PLAYING;
+
 						resetLevel();
 					}
 					if (didLevel) {
 						s.playSound(0, 0.3f);
-						System.out.println("pressed level");
 						pressState = ExitCode.TO_LEVEL;
 					}
 					if ((nextIdx<LevelSelect.getnLevels()) && didNext) {
@@ -440,19 +437,16 @@ public class GameMode implements Screen {
 
 						if (didGoBack) {
 							s.playSound(0, 0.3f);
-							System.out.println("pressed back");
 							pressState = ExitCode.TO_LEVEL;
 						}
 
 						if (didRestartWon) {
 							s.playSound(0, 0.3f);
-							System.out.println("pressed restart");
 							resetLevel();
 						}
 
 						if (didLevel) {
 							s.playSound(0, 0.3f);
-							System.out.println("pressed level");
 							pressState = ExitCode.TO_LEVEL;
 						}
 					}
